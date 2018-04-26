@@ -1,0 +1,45 @@
+apply plugin: 'jacoco'
+def jacocoRetrolambdaMap = [:]
+final testBuildType = 'coverage'
+
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+}
+
+task jacocoTestReport(type: JacocoReport,
+        dependsOn: ["test${testBuildType.capitalize()}UnitTest",
+                    "create${testBuildType.capitalize()}CoverageReport"]) {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+    jacocoClasspath = configurations['androidJacocoAnt']
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+                      '**/*Test*.*', 'android/**/*.*', '**/*Lambda*.*']
+    def debugTree = fileTree(
+            dir: "${buildDir}/intermediates/classes/${testBuildType}",
+            excludes: fileFilter)
+    def mainSrc = "${projectDir}/src/main/java"
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    def execFile = "${buildDir}/jacoco/test${testBuildType.capitalize()}UnitTest.exec"
+
+    executionData = files(execFile, "${buildDir}/outputs/code-coverage/connected/coverage.ec")
+
+    doFirst {
+        new File("${buildDir}/intermediates/classes/${testBuildType}").eachFileRecurse { file ->
+            if (file.name.contains('$$')) {
+                def renamed = file.path.replace '$$', '$'
+                jacocoRetrolambdaMap[renamed] = file.path
+                file.renameTo renamed
+            }
+        }
+    }
+    doLast {
+        // Revert renamed files back to their generated names
+        jacocoRetrolambdaMap.each { renamed, original ->
+            new File(renamed).renameTo original
+        }
+        println "jacoco report has been generated to file://${reports.html.destination}/index.html"
+    }
+}

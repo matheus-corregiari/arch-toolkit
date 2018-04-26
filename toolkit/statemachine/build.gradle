@@ -1,0 +1,25 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply from: '../../tools/quality.gradle'
+
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.Methe'
+
+android {
+
+    defaultConfig {
+        consumerProguardFiles 'consumer-proguard-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+}
+
+dependencies {
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    ktlint "com.github.shyiko:ktlint:0.22.0"
+}

@@ -1,0 +1,80 @@
+buildscript {
+    ext.kotlin_version = '1.2.30'
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+subprojects {
+
+    afterEvaluate {
+
+        if (!project.hasProperty('android')) return
+
+        android {
+            compileSdkVersion 27
+            buildToolsVersion '27.0.3'
+
+            defaultConfig {
+                minSdkVersion 21
+                targetSdkVersion 27
+
+                versionCode 1
+                versionName "1.0"
+
+                resConfigs "pt"
+            }
+
+            lintOptions {
+                abortOnError false
+                absolutePaths false
+                disable 'InvalidPackage'
+            }
+
+            aaptOptions {
+                cruncherEnabled = false
+            }
+
+            testOptions {
+                unitTests.returnDefaultValues = true
+                animationsDisabled true
+            }
+
+            packagingOptions {
+                exclude 'META-INF/LICENSE'
+                pickFirst 'protobuf.meta'
+            }
+
+            sourceSets {
+                main.java.srcDirs += 'src/main/kotlin'
+                test.java.srcDirs += 'src/test/kotlin'
+                androidTest.java.srcDirs += 'src/androidTest/kotlin'
+                androidTest.resources.srcDirs += 'src/androidTest/res'
+            }
+
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
