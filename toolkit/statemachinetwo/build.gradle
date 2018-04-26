@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply from: "$rootDir/tools/quality.gradle"
 apply from: "$rootDir/tools/publish.gradle"
 
-version = "0.0.2"
+version = "0.0.1"
 
 android {
 
