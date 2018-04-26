@@ -10,8 +10,8 @@ ext.mavenConfig = {
             inceptionYear INCEPTION_YEAR
 
             scm {
-                url SCM_URL
-                connection SCM_CONNECTION
+                url REPO_URL
+                connection REPO_GIT_URL
             }
 
             developers {

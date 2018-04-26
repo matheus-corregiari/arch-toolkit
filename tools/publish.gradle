@@ -1,4 +1,3 @@
-// Bintray
 final Properties localConfig = new Properties()
 
 if (file("$rootDir/local.properties").exists())
@@ -16,13 +15,16 @@ bintray {
 
     configurations = ['archives']
     pkg {
-        repo = 'maven'
-        name = 'arch-toolkit'
-        userOrg = 'methe'
+        repo = BINTRAY_REPOSITORY
+        name = project.name
+        userOrg = ORGANIZATION
         desc = DESCRIPTION
-        vcsUrl = SCM_CONNECTION
-        issueTrackerUrl = SCM_ISSUE_TRACKER
-        websiteUrl = SCM_URL
+
+        // Urls
+        websiteUrl = REPO_URL
+        vcsUrl = REPO_GIT_URL
+        issueTrackerUrl = REPO_ISSUE_TRACKER
+
         licenses = ["Apache-2.0"]
         publish = true
         publicDownloadNumbers = true
