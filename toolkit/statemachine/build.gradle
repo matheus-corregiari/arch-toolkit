@@ -7,7 +7,16 @@ group='com.github.Methe'
 
 android {
 
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
     defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 27
+
+        versionCode 1
+        versionName "1.0"
+
         consumerProguardFiles 'consumer-proguard-rules.pro'
     }
 
@@ -23,3 +32,33 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     ktlint "com.github.shyiko:ktlint:0.22.0"
 }
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'statemachine'   // Has to be same as your library module name
+
+    publishedGroupId = 'com.github.methe'
+    libraryName = 'arch-toolkit'
+    artifact = 'statemachine'     // Has to be same as your library module name
+
+    libraryDescription = 'Android Library to make any text into Toast with Awesome prepended to the text'
+
+    // Your github repo link
+    siteUrl = 'https://github.com/Methe/ArchToolkit'
+    gitUrl = 'https://github.com/Methe/ArchToolkit.git'
+    githubRepository= 'Methe/ArchToolkit'
+
+    libraryVersion = '1.0'
+
+    developerId = 'Methe'
+    developerName = 'Matheus Barbieri Corregiari'
+    developerEmail = 'metheus.92@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+// Place it at the end of the file
+apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/bintrayv1.gradle'
