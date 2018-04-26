@@ -1,8 +1,23 @@
+[ ![Download](https://api.bintray.com/packages/methe/arch-toolkit/statemachine/images/download.svg) ](https://bintray.com/methe/arch-toolkit/statemachine/_latestVersion)
+
 # State Machine
 
 Abstract implementation to handle view states changes based on some key (represented by a **Int**)
 
-##### Simple Usage
+### Usage
+
+#### Add into your project
+
+###### build.gradle
+```groovy
+implementation "br.com.arch.toolkit:statemachine:$latest_version"
+```
+
+```groovy
+api "br.com.arch.toolkit:statemachine:$latest_version"
+```
+
+#### How to use
 
 ###### Setup
 ```kotlin

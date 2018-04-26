@@ -38,9 +38,7 @@ subprojects {
                 targetSdkVersion 27
 
                 versionCode 1
-                versionName "1.0"
-
-                resConfigs "pt"
+                versionName version
             }
 
             lintOptions {

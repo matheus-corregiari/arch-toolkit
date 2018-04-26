@@ -7,16 +7,7 @@ version = "0.0.1"
 
 android {
 
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
-
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 27
-
-        versionCode 1
-        versionName version
-
         consumerProguardFiles 'consumer-proguard-rules.pro'
     }
 
