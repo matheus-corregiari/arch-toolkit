@@ -84,7 +84,7 @@ ext {
     // Android Arch
     arch = '1.1.1'
 
-    // Android Arch
+    // KtLint
     ktLint = '0.22.0'
 
 }
