@@ -22,6 +22,7 @@ android {
 final versions = rootProject.ext
 
 dependencies {
+    compileOnly "com.android.support:recyclerview-v7:$versions.androidSupport"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     ktlint "com.github.shyiko:ktlint:$versions.ktLint"
 }

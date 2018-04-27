@@ -76,6 +76,19 @@ subprojects {
     }
 }
 
+ext {
+
+    // Android
+    androidSupport = '27.1.1'
+
+    // Android Arch
+    arch = '1.1.1'
+
+    // Android Arch
+    ktLint = '0.22.0'
+
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
