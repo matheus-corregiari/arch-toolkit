@@ -43,35 +43,40 @@ class SceneStateMachineExampleActivity : BaseActivity() {
         btStateThree.setOnClickListener { stateMachine.changeState(STATE_THREE) }
     }
 
-    private fun setupStateMachine(savedInstanceState: Bundle?) {
-        stateMachine.setup(initialState = STATE_ONE, restoreState = savedInstanceState) {
+    private fun setupStateMachine(savedInstanceState: Bundle?) = with(stateMachine) {
 
-            onChangeState { newActiveStateKey ->
+        restoreInstanceState(savedInstanceState)
+
+        config {
+            initialState = STATE_ONE
+            onChangeState = { newActiveStateKey ->
                 displayToast("Default Listener: $newActiveStateKey")
             }
+        }
 
-            add(STATE_ONE) {
-                scene(R.layout.scene_one to stateContainer)
+        state(STATE_ONE) {
+            scene(R.layout.scene_one to stateContainer)
 
-                onEnter {
-                    displayToast("State One Is Active")
-                }
-            }
-
-            add(STATE_TWO) {
-                scene(R.layout.scene_two to stateContainer)
-                transition(Fade())
-
-                onExit {
-                    displayToast("State Two Is Hidden")
-                }
-            }
-
-            add(STATE_THREE) {
-                scene(R.layout.scene_three to stateContainer)
-                transition(Slide(Gravity.LEFT))
+            onEnter {
+                displayToast("State One Is Active")
             }
         }
+
+        state(STATE_TWO) {
+            scene(R.layout.scene_two to stateContainer)
+            transition(Fade())
+
+            onExit {
+                displayToast("State Two Is Hidden")
+            }
+        }
+
+        state(STATE_THREE) {
+            scene(R.layout.scene_three to stateContainer)
+            transition(Slide(Gravity.LEFT))
+        }
+
+        start()
     }
 
     private fun initViews() {

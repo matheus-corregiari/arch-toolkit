@@ -22,15 +22,28 @@ api "br.com.arch.toolkit:statemachine:$latest_version"
 ###### Setup
 ```kotlin
 stateMachine.setup {
-    onChangeState { stateKey -> } // Optional handler called when a state becomes active
+    config { ... } // Optional configuration for initial setup
 
-    add(YOUR_INT_CONSTANT) {}     // to Add a state into the state machine
+    state(YOUR_INT_CONSTANT) { // to Add a state into the state machine
+        onEnter { ... }   // Will be executed when this state becomes Active
+
+        ...
+
+        onExit { ... }    // Will be executed when this state is leaving
+    }
 }
 ```
 
 ###### Change State
 ```kotlin
+// Simple change state
 stateMachine.changeState(YOUR_INT_CONSTANT)
+
+// To force the state change even when it is the current state
+stateMachine.changeState(YOUR_INT_CONSTANT, forceChange = true)
+
+// A custom onChangeState implementation [See the Config section]
+stateMachine.changeState(YOUR_INT_CONSTANT, onChangeState = { stateKey -> ... })
 ```
 
 ###### Save State
@@ -43,11 +56,16 @@ outState.putBundle("YOUR_STATE_KEY", stateMachine.saveInstanceState())
 
 ```kotlin
 stateMachine.restoreInstanceState(savedInstanceState.getBundle("YOUR_STATE_KEY"))
-
-// OR
-
-stateMachine.setup(restoreState = savedInstanceState.getBundle("YOUR_STATE_KEY")) { }
 ```
+
+###### Config
+```kotlin
+stateMachine.config {
+    initialState = INITIAL_STATE_KEY
+    onChangeState = { stateKey -> ... } // Handler called whenever state becomes active
+}
+```
+
 
 ### ViewStateMachine
 
@@ -57,15 +75,11 @@ To use this, all views must be already in the layout.
 ##### Simple Usage
 
 ```kotlin
-add(YOUR_INT_CONSTANT) {
-
-    onEnter {}   // Will be executed when this state becomes Active
+stateMachine.state(YOUR_INT_CONSTANT) {
 
     visibles()   // views to become visible
     invisibles() // views to become invisible
     gones()      // views to become gone
-
-    onExit {}    // Will be executed when this state is leaving
 
 }
 ```
@@ -78,14 +92,10 @@ To use this, you must have a layout container to put a custom layout on it.
 ##### Usage
 
 ```kotlin
-add(YOUR_INT_CONSTANT) {
-
-    onEnter {}                        // Will be executed when this state becomes Active
+stateMachine.state(YOUR_INT_CONSTANT) {
 
     scene(layoutRes to containerView) // Receives a Pair with LayoutId and the container ViewGroup to inflate the layout on it
     transition()                      // Optional Transition to animate the scene change
-
-    onExit {}                         // Will be executed when this state is leaving
 
 }
 ```

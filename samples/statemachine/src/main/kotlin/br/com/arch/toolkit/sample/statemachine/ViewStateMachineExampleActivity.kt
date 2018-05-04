@@ -42,36 +42,42 @@ class ViewStateMachineExampleActivity : BaseActivity() {
         btStateThree.setOnClickListener { stateMachine.changeState(STATE_THREE) }
     }
 
-    private fun setupStateMachine(savedInstanceState: Bundle?) {
-        stateMachine.setup(initialState = STATE_ONE, restoreState = savedInstanceState) {
+    private fun setupStateMachine(savedInstanceState: Bundle?) = with(stateMachine) {
 
-            onChangeState { newActiveStateKey ->
+        config {
+            initialState = STATE_ONE
+            onChangeState = { newActiveStateKey ->
                 displayToast("Default Listener: $newActiveStateKey")
             }
+        }
 
-            add(STATE_ONE) {
-                visibles(stateOne)
-                invisibles(stateTwo)
-                gones(stateThree)
+        state(STATE_ONE) {
+            visibles(stateOne)
+            invisibles(stateTwo)
+            gones(stateThree)
 
-                onEnter {
-                    displayToast("State One Is Active")
-                }
-            }
-
-            add(STATE_TWO) {
-                visibles(stateTwo)
-                invisibles(stateOne, stateThree)
-                onExit {
-                    displayToast("State Two Is Hidden")
-                }
-            }
-
-            add(STATE_THREE) {
-                visibles(stateThree)
-                gones(stateOne, stateTwo)
+            onEnter {
+                displayToast("State One Is Active")
             }
         }
+
+        state(STATE_TWO) {
+            visibles(stateTwo)
+            invisibles(stateOne, stateThree)
+
+            onExit {
+                displayToast("State Two Is Hidden")
+            }
+        }
+
+        state(STATE_THREE) {
+            visibles(stateThree)
+            gones(stateOne, stateTwo)
+        }
+
+        restoreInstanceState(savedInstanceState)
+
+        start()
     }
 
     private fun initViews() {

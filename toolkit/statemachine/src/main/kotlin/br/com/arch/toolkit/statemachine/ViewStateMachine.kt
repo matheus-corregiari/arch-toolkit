@@ -1,22 +1,16 @@
 package br.com.arch.toolkit.statemachine
 
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.View.INVISIBLE
+import android.view.View.*
 
 /**
  * Implementation of [StateMachine]
  * This implementation uses View Visibility to make State transitions
  */
-class ViewStateMachine : StateMachine<ViewState>() {
+class ViewStateMachine : StateMachine<ViewState>(::ViewState) {
 
-    override fun performChangeState(state: ViewState) {
-        stateMap[currentStateKey]?.exit?.invoke()
-        state.gones.forEach { it.visibility = GONE }
-        state.visibles.forEach { it.visibility = VISIBLE }
-        state.invisibles.forEach { it.visibility = INVISIBLE }
-        state.enter?.invoke()
+    override fun performChangeState(state: ViewState) = with(state) {
+        gones.forEach { it.visibility = GONE }
+        visibles.forEach { it.visibility = VISIBLE }
+        invisibles.forEach { it.visibility = INVISIBLE }
     }
-
-    override fun createState() = ViewState()
 }
