@@ -72,6 +72,36 @@ subprojects {
                 sourceCompatibility JavaVersion.VERSION_1_8
                 targetCompatibility JavaVersion.VERSION_1_8
             }
+
+            compileSdkVersion = 27
+            task sourcesJar(type: Jar) {
+                from android.sourceSets.main.java.srcDirs
+                classifier = 'sources'
+            }
+
+            tasks.withType(Javadoc) {
+                options.addStringOption('Xdoclint:none', '-quiet')
+                options.addStringOption('encoding', 'UTF-8')
+            }
+
+            task javadoc(type: Javadoc) {
+                excludes = ['**/*.kt']
+                source = android.sourceSets.main.java.srcDirs
+                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+            }
+
+            task javadocJar(type: Jar, dependsOn: javadoc) {
+                classifier = 'javadoc'
+                from javadoc.destinationDir
+            }
+
+            task publishRelease(group: "publishing",
+                    dependsOn: ["clean", "build", "install", "bintrayUpload"])
+
+                artifacts {
+                archives javadocJar
+                archives sourcesJar
+            }
         }
     }
 }
