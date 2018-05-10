@@ -77,12 +77,12 @@ abstract class StateMachine<STATE : StateMachine.State>(val stateCreator: () -> 
         val state = stateMap[stateKey]
                 ?: throw IllegalStateException("State $stateKey not exists! Make sure to setup the State Machine before change the states!")
 
+        // On change state
+        onChangeState?.invoke(stateKey)
+
         stateMap[currentStateKey]?.exit?.invoke()
         performChangeState(state)
         state.enter?.invoke()
-
-        // On change state
-        onChangeState?.invoke(stateKey)
 
         currentStateKey = stateKey
     }
