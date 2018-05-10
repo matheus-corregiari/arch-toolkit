@@ -134,7 +134,6 @@ abstract class StateMachine<STATE : StateMachine.State>(val stateCreator: () -> 
      */
     open fun saveInstanceState() = Bundle().apply {
         putInt("STATE_MACHINE_CURRENT_KEY", currentStateKey)
-        started = false
     }
     //endregion
 
