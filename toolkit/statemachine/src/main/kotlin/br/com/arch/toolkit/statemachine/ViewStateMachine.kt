@@ -9,8 +9,13 @@ import android.view.View.*
 class ViewStateMachine : StateMachine<ViewState>(::ViewState) {
 
     override fun performChangeState(state: ViewState) = with(state) {
+        // Visibility
         gones.forEach { it.visibility = GONE }
         visibles.forEach { it.visibility = VISIBLE }
         invisibles.forEach { it.visibility = INVISIBLE }
+
+        // Enable
+        enables.forEach { it.isEnabled = true }
+        disables.forEach { it.isEnabled = false }
     }
 }

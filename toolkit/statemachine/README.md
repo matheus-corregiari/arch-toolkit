@@ -77,9 +77,14 @@ To use this, all views must be already in the layout.
 ```kotlin
 stateMachine.state(YOUR_INT_CONSTANT) {
 
+    // Visibility
     visibles()   // views to become visible
     invisibles() // views to become invisible
     gones()      // views to become gone
+
+    // Enable
+    enables()    // views to become enable
+    disables()   // views to become disable
 
 }
 ```
