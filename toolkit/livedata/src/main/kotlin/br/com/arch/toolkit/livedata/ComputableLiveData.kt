@@ -1,14 +1,17 @@
 package br.com.arch.toolkit.livedata
 
+import android.arch.lifecycle.LiveData
 import android.support.annotation.WorkerThread
+import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicBoolean
 
-abstract class ComputableLiveData<T> : InterceptableLiveData<T>() {
+abstract class ComputableLiveData<T> : LiveData<T>() {
 
     private val lock = Object()
 
     private val computing = AtomicBoolean(false)
     private val computed = AtomicBoolean(false)
+    private var lastThread: WeakReference<Thread>? = null
 
     val running get() = computing.get()
     val isComputed get() = computed.get()
@@ -18,9 +21,18 @@ abstract class ComputableLiveData<T> : InterceptableLiveData<T>() {
     @WorkerThread
     protected abstract fun compute()
 
+    protected abstract fun abort()
+
     open fun invalidate() {
         if (!hasObservers() && computed.get()) computed.set(false)
-        else if (!computing.get()) async(this::executeRunnable)
+        else if (!computing.get()) lastThread = WeakReference(async(this::executeRunnable))
+    }
+
+    open fun interrupt() {
+        lastThread?.get()?.interrupt()
+        abort()
+        computing.set(false)
+        computed.set(false)
     }
 
     override fun onActive() {
@@ -41,5 +53,4 @@ abstract class ComputableLiveData<T> : InterceptableLiveData<T>() {
             computing.set(false)
         }
     }
-
 }

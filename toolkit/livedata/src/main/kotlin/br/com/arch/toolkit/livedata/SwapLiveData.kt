@@ -2,7 +2,7 @@ package br.com.arch.toolkit.livedata
 
 import android.arch.lifecycle.MediatorLiveData
 
-open class SwapLiveData<T> : ComputableLiveData<T>() {
+class SwapLiveData<T> : ComputableLiveData<T>() {
 
     private val sourceLiveData = MediatorLiveData<Any>()
     private val sourceObserver: (Any?) -> Unit = {}
@@ -37,9 +37,16 @@ open class SwapLiveData<T> : ComputableLiveData<T>() {
 
     override fun compute() = Unit
 
+    override fun abort() = Unit
+
     override fun invalidate() {
         super.invalidate()
         lastSource?.invalidate()
+    }
+
+    override fun interrupt() {
+        super.interrupt()
+        lastSource?.interrupt()
     }
 
     private fun clearSource() {
