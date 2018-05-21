@@ -34,5 +34,4 @@ abstract class BaseActivity : AppCompatActivity() {
 
         const val STATE_MACHINE_RESTORE_KEY = "STATE_MACHINE_RESTORE_KEY"
     }
-
 }

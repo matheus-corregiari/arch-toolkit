@@ -73,7 +73,7 @@ class SceneStateMachineExampleActivity : BaseActivity() {
 
         state(STATE_THREE) {
             scene(R.layout.scene_three to stateContainer)
-            transition(Slide(Gravity.LEFT))
+            transition(Slide(Gravity.START))
         }
 
         start()
@@ -88,5 +88,4 @@ class SceneStateMachineExampleActivity : BaseActivity() {
         btStateTwo = findViewById(R.id.bt_state_two)
         btStateThree = findViewById(R.id.bt_state_three)
     }
-
 }

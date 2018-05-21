@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply from: "$rootDir/tools/quality.gradle"
 
 android {
     defaultConfig {
@@ -16,8 +15,6 @@ android {
 
 }
 
-final versions = rootProject.ext
-
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -29,6 +26,4 @@ dependencies {
     }
 
     implementation project(":toolkit:statemachine")
-
-    ktlint "com.github.shyiko:ktlint:$versions.ktLint"
 }

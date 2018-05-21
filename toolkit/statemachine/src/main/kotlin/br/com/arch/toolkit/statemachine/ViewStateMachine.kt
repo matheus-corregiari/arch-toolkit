@@ -1,6 +1,8 @@
 package br.com.arch.toolkit.statemachine
 
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.view.View.INVISIBLE
 
 /**
  * Implementation of [StateMachine]

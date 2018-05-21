@@ -34,7 +34,6 @@ fun <T> LiveData<T>.observeUntil(observer: ((T?) -> Boolean)) = observeForever(o
     }
 })
 
-
 fun <T> MediatorLiveData<T>.addSource(source: LiveData<T>) = addSource(source) {
     value = it
 }
