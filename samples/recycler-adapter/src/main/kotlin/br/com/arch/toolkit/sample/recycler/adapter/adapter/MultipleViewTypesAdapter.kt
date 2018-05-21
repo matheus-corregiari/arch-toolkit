@@ -23,6 +23,4 @@ class MultipleViewTypesAdapter : BaseRecyclerAdapter<String>() {
         const val TYPE_ONE = 0
         const val TYPE_TWO = 1
     }
-
 }
-

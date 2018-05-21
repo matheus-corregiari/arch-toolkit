@@ -91,5 +91,4 @@ class ViewStateMachineExampleActivity : BaseActivity() {
         btStateTwo = findViewById(R.id.bt_state_two)
         btStateThree = findViewById(R.id.bt_state_three)
     }
-
 }

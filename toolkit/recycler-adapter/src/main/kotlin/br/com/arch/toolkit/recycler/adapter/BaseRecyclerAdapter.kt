@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 
-
 abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> = DefaultItemDiffer()) : RecyclerView.Adapter<BaseViewHolder>() {
 
     @Suppress("LeakingThis")
@@ -61,5 +60,4 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
     open fun removeItem(item: MODEL) = setList(items.minus(item))
 
     open fun addItem(item: MODEL) = setList(items.plus(item))
-
 }

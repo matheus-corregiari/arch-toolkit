@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.statemachine
 
-import android.view.View.*
+import android.view.View
 
 /**
  * Implementation of [StateMachine]
@@ -10,9 +10,9 @@ class ViewStateMachine : StateMachine<ViewState>(::ViewState) {
 
     override fun performChangeState(state: ViewState) = with(state) {
         // Visibility
-        gones.forEach { it.visibility = GONE }
-        visibles.forEach { it.visibility = VISIBLE }
-        invisibles.forEach { it.visibility = INVISIBLE }
+        gones.forEach { it.visibility = View.GONE }
+        visibles.forEach { it.visibility = View.VISIBLE }
+        invisibles.forEach { it.visibility = View.INVISIBLE }
 
         // Enable
         enables.forEach { it.isEnabled = true }

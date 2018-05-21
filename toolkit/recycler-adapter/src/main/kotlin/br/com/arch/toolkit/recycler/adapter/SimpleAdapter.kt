@@ -8,5 +8,4 @@ open class SimpleAdapter<MODEL, out VIEW>(private val creator: (context: Context
         where VIEW : View, VIEW : ViewBinder<MODEL> {
 
     override fun viewCreator(context: Context, viewType: Int) = creator.invoke(context)
-
 }
