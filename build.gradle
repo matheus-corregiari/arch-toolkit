@@ -25,6 +25,10 @@ allprojects {
 
 subprojects {
 
+    if (name == 'toolkit' || name == 'samples') return
+
+    apply from: "$rootDir/tools/quality.gradle"
+
     afterEvaluate {
 
         if (!project.hasProperty('android')) return
@@ -102,6 +106,10 @@ subprojects {
                 archives javadocJar
                 archives sourcesJar
             }
+
+            dependencies {
+                ktlint "com.github.shyiko:ktlint:$versions.ktLint"
+            }
         }
     }
 }
@@ -118,6 +126,8 @@ ext {
     ktLint = '0.22.0'
 
 }
+
+ext.versions = ext
 
 task clean(type: Delete) {
     delete rootProject.buildDir

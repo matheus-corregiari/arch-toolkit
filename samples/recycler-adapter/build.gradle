@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 
 android {
     defaultConfig {
-        applicationId "br.com.arch.toolkit.sample.statemachine"
+        applicationId "br.com.arch.toolkit.sample.recycler.adapter"
     }
 
     buildTypes {
@@ -16,7 +16,7 @@ android {
 }
 
 dependencies {
-
+    implementation "com.android.support:recyclerview-v7:$versions.androidSupport"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "com.android.support:support-annotations:$versions.androidSupport"
     implementation "com.android.support:support-v4:$versions.androidSupport"
@@ -25,5 +25,5 @@ dependencies {
         exclude module: 'support-v4'
     }
 
-    implementation project(":toolkit:statemachine")
+    implementation project(":toolkit:recycler-adapter")
 }

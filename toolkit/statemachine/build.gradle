@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply from: "$rootDir/tools/quality.gradle"
 apply from: "$rootDir/tools/publish.gradle"
 
 version = "0.0.5"
@@ -19,9 +18,6 @@ android {
 
 }
 
-final versions = rootProject.ext
-
 dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    ktlint "com.github.shyiko:ktlint:$versions.ktLint"
 }
