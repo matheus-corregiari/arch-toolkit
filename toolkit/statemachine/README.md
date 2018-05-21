@@ -9,9 +9,31 @@ Abstract implementation to handle view states changes based on some key (represe
 #### Add into your project
 
 ###### build.gradle
+
+First you need to add Kotlin
+
+```groovy
+
+// Root project build.gradle
+dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+}
+
+// Module build.gradle
+apply plugin: 'kotlin-android'
+
+dependencies{
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+```
+
+Then add the StateMachine
+
 ```groovy
 implementation "br.com.arch.toolkit:statemachine:$latest_version"
 ```
+
+or
 
 ```groovy
 api "br.com.arch.toolkit:statemachine:$latest_version"

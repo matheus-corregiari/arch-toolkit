@@ -11,7 +11,7 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
 
     @Suppress("LeakingThis")
     private val listDiffer = AsyncListDiffer<MODEL>(this, differ)
-    protected val items: MutableList<MODEL>
+    protected val items: List<MODEL>
         get() = listDiffer.currentList
 
     private var onItemClick: ((MODEL) -> Unit)? = null
@@ -32,7 +32,7 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
             bindHolder(holder, items[position], clickMap[getItemViewType(position)] ?: onItemClick)
 
     @Suppress("UNCHECKED_CAST")
-    open fun <T> bindHolder(holder: BaseViewHolder, model: T, onItemClick: ((T) -> Unit)? = null) {
+    protected open fun <T> bindHolder(holder: BaseViewHolder, model: T, onItemClick: ((T) -> Unit)? = null) {
         val binder = (holder.itemView as? ViewBinder<T>)
                 ?: throw IllegalStateException("${holder.itemView::class} cannot be cast to ViewBinder<>")
         binder.bind(model)
@@ -52,7 +52,7 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
         return this
     }
 
-    open fun withListener(itemType: Int, onItemClick: (model: MODEL) -> Unit): BaseRecyclerAdapter<MODEL> {
+    fun withListener(itemType: Int, onItemClick: (model: MODEL) -> Unit): BaseRecyclerAdapter<MODEL> {
         this.clickMap[itemType] = onItemClick
         return this
     }
