@@ -46,9 +46,9 @@ subprojects {
             }
 
             lintOptions {
-                abortOnError false
+                abortOnError true
                 absolutePaths false
-                disable 'InvalidPackage'
+                disable 'InvalidPackage', 'HardcodedText'
             }
 
             aaptOptions {
