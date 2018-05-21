@@ -7,6 +7,7 @@ apply from: "$rootDir/tools/publish/maven-config.gradle"
 apply plugin: 'com.jfrog.bintray'
 
 group = GROUP
+version = VERSION
 
 bintray {
 

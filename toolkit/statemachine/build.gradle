@@ -2,8 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: "$rootDir/tools/publish.gradle"
 
-version = "0.0.5"
-
 android {
 
     defaultConfig {
