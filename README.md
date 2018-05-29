@@ -30,9 +30,9 @@ Take a look in the REAME files inside the project modules and give it a try. =P
 You'll find instructions to add them into your project and how to use them.
 
 ###### Have improvements?
-Open a pull request! It will make me reallt really happy!
+Open a pull request! It will make me really really happy!
 
 ###### Need some custom behavior or something else?
-Open a issue or copy the classes into yout project, I think the code is small and simple, your can do whatever you want with them.
+Open a issue or copy the classes into your project, I think the code is small and simple, your can do whatever you want with them.
 
 But try to tell me what you miss and then I can improve!! =D
