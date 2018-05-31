@@ -70,7 +70,7 @@ class YourActivity : Activity {
     override fun onCreate(savedInstanceState: Bundle?) {
         // Your code here
 
-        recycler.adapter = adapter
+        recyclerView.adapter = adapter
         adapter.setList(someList)
     }
 
