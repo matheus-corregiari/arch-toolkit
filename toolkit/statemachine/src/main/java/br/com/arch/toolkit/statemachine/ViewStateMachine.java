@@ -90,5 +90,15 @@ public final class ViewStateMachine extends StateMachine<ViewStateMachine.State>
             disables.addAll(Arrays.asList(views));
             return this;
         }
+
+        @Override
+        public State onEnter(@NonNull Callback callback) {
+            return (State) super.onEnter(callback);
+        }
+
+        @Override
+        public State onExit(@NonNull Callback callback) {
+            return (State) super.onExit(callback);
+        }
     }
 }

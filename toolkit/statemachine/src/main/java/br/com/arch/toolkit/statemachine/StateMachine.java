@@ -224,12 +224,12 @@ public abstract class StateMachine<STATE extends StateMachine.State> {
         @Nullable
         private Callback exit = null;
 
-        public final State onEnter(@NonNull final Callback callback) {
+        public State onEnter(@NonNull final Callback callback) {
             enter = callback;
             return this;
         }
 
-        public final State onExit(@NonNull final Callback callback) {
+        public State onExit(@NonNull final Callback callback) {
             exit = callback;
             return this;
         }
