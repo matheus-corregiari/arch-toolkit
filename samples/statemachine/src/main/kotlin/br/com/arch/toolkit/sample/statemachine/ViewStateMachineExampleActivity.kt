@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import br.com.arch.toolkit.statemachine.ViewStateMachine
+import br.com.arch.toolkit.statemachine.config
+import br.com.arch.toolkit.statemachine.setup
+import br.com.arch.toolkit.statemachine.state
 
 class ViewStateMachineExampleActivity : BaseActivity() {
 
@@ -31,10 +34,10 @@ class ViewStateMachineExampleActivity : BaseActivity() {
     }
 
     private fun setupClickListeners() {
-        btStateOne.setOnClickListener { stateMachine.changeState(STATE_ONE, forceChange = true) }
+        btStateOne.setOnClickListener { stateMachine.changeState(STATE_ONE, true) }
 
         btStateTwo.setOnClickListener {
-            stateMachine.changeState(STATE_TWO, onChangeState = { newActiveStateKey ->
+            stateMachine.changeState(STATE_TWO, { newActiveStateKey ->
                 displayToast("Custom Listener: $newActiveStateKey")
             })
         }
@@ -42,11 +45,11 @@ class ViewStateMachineExampleActivity : BaseActivity() {
         btStateThree.setOnClickListener { stateMachine.changeState(STATE_THREE) }
     }
 
-    private fun setupStateMachine(savedInstanceState: Bundle?) = with(stateMachine) {
+    private fun setupStateMachine(savedInstanceState: Bundle?) = stateMachine.setup {
 
         config {
             initialState = STATE_ONE
-            onChangeState = { newActiveStateKey ->
+            setOnChangeState { newActiveStateKey ->
                 displayToast("Default Listener: $newActiveStateKey")
             }
         }
@@ -76,8 +79,6 @@ class ViewStateMachineExampleActivity : BaseActivity() {
         }
 
         restoreInstanceState(savedInstanceState)
-
-        start()
     }
 
     private fun initViews() {

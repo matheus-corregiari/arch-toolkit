@@ -18,4 +18,5 @@ android {
 
 dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compileOnly "com.android.support:support-annotations:$versions.androidSupport"
 }
