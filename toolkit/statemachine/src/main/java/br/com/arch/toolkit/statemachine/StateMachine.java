@@ -74,7 +74,7 @@ public abstract class StateMachine<STATE extends StateMachine.State> {
 
         if (getCurrentStateKey() <= -1) return;
 
-        final STATE state = stateMap.get(currentStateKey);
+        final STATE state = stateMap.get(getCurrentStateKey());
         if (state == null) throw new IllegalStateException("State not found! " +
                 "Make sure to add all states before init the Machine");
         started = true;
@@ -96,7 +96,7 @@ public abstract class StateMachine<STATE extends StateMachine.State> {
         if (!started)
             throw new IllegalStateException("Call StateMachine#start() method before make any state changes");
 
-        if (stateKey == currentStateKey && !forceChange) return;
+        if (stateKey == getCurrentStateKey() && !forceChange) return;
 
         final STATE state = stateMap.get(stateKey);
 
