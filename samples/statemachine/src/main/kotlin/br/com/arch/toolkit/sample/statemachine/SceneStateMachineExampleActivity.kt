@@ -7,6 +7,9 @@ import android.view.Gravity
 import android.widget.Button
 import android.widget.FrameLayout
 import br.com.arch.toolkit.statemachine.SceneStateMachine
+import br.com.arch.toolkit.statemachine.config
+import br.com.arch.toolkit.statemachine.scene
+import br.com.arch.toolkit.statemachine.state
 
 class SceneStateMachineExampleActivity : BaseActivity() {
 
@@ -32,10 +35,10 @@ class SceneStateMachineExampleActivity : BaseActivity() {
     }
 
     private fun setupClickListeners() {
-        btStateOne.setOnClickListener { stateMachine.changeState(STATE_ONE, forceChange = true) }
+        btStateOne.setOnClickListener { stateMachine.changeState(STATE_ONE, true) }
 
         btStateTwo.setOnClickListener {
-            stateMachine.changeState(STATE_TWO, onChangeState = { newActiveStateKey ->
+            stateMachine.changeState(STATE_TWO, { newActiveStateKey ->
                 displayToast("Custom Listener: $newActiveStateKey")
             })
         }
@@ -49,7 +52,7 @@ class SceneStateMachineExampleActivity : BaseActivity() {
 
         config {
             initialState = STATE_ONE
-            onChangeState = { newActiveStateKey ->
+            setOnChangeState { newActiveStateKey ->
                 displayToast("Default Listener: $newActiveStateKey")
             }
         }

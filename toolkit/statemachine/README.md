@@ -8,26 +8,7 @@ Abstract implementation to handle view states changes based on some key (represe
 
 #### Add into your project
 
-###### build.gradle
-
-First you need to add Kotlin
-
-```groovy
-
-// Root project build.gradle
-dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-}
-
-// Module build.gradle
-apply plugin: 'kotlin-android'
-
-dependencies{
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-}
-```
-
-Then add the StateMachine
+###### Module -> build.gradle
 
 ```groovy
 implementation "br.com.arch.toolkit:statemachine:$latest_version"
@@ -39,9 +20,11 @@ or
 api "br.com.arch.toolkit:statemachine:$latest_version"
 ```
 
-#### How to use
+### How to use
 
-###### Setup
+##### Setup
+
+###### Kotlin
 ```kotlin
 stateMachine.setup {
     config { ... } // Optional configuration for initial setup
@@ -56,36 +39,69 @@ stateMachine.setup {
 }
 ```
 
-###### Change State
-```kotlin
+###### Java
+```java
+final Config config = stateMachine.getConfig();
+
+...
+
+final State state = stateMachine.newStateInstance();
+state.onEnter(() -> {}); // Will be executed when this state becomes Active
+
+...
+
+state.onExit(() -> {});  // Will be executed when this state is leaving
+
+stateMachine
+    .addState(YOUR_INT_CONSTANT, state) // Add the configured state
+    .restoreInstanceState(bundle);      // Optional restore state
+    .start();                           // In java you need to start the machine after the setup
+```
+
+##### Change State
+
+```java
 // Simple change state
-stateMachine.changeState(YOUR_INT_CONSTANT)
+stateMachine.changeState(YOUR_INT_CONSTANT);
 
 // To force the state change even when it is the current state
-stateMachine.changeState(YOUR_INT_CONSTANT, forceChange = true)
+stateMachine.changeState(YOUR_INT_CONSTANT, true);
 
 // A custom onChangeState implementation [See the Config section]
-stateMachine.changeState(YOUR_INT_CONSTANT, onChangeState = { stateKey -> ... })
+stateMachine.changeState(YOUR_INT_CONSTANT, stateKey -> { ... });
+
+// Full
+stateMachine.changeState(YOUR_INT_CONSTANT, true, stateKey -> { ... });
 ```
 
-###### Save State
+##### Save and Restore State
 
+###### Save
 ```kotlin
-outState.putBundle("YOUR_STATE_KEY", stateMachine.saveInstanceState())
+outState.putBundle("YOUR_STATE_KEY", stateMachine.saveInstanceState());
 ```
 
-###### Restore State
-
+###### Restore
 ```kotlin
-stateMachine.restoreInstanceState(savedInstanceState.getBundle("YOUR_STATE_KEY"))
+stateMachine.restoreInstanceState(savedInstanceState.getBundle("YOUR_STATE_KEY"));
 ```
 
-###### Config
+##### Config
+
+###### Kotlin
 ```kotlin
 stateMachine.config {
     initialState = INITIAL_STATE_KEY
-    onChangeState = { stateKey -> ... } // Handler called whenever state becomes active
+    setOnChangeState { stateKey -> ... } // Handler called whenever state becomes active
 }
+```
+
+###### Java
+```java
+final Config config = stateMachine.getConfig();
+
+config.setInitialState(INITIAL_STATE_KEY);
+config.setOnChangeState(stateKey -> { ... }); // Handler called whenever state becomes active
 ```
 
 
@@ -96,6 +112,7 @@ To use this, all views must be already in the layout.
 
 ##### Simple Usage
 
+###### Kotlin
 ```kotlin
 stateMachine.state(YOUR_INT_CONSTANT) {
 
@@ -111,6 +128,23 @@ stateMachine.state(YOUR_INT_CONSTANT) {
 }
 ```
 
+###### Java
+```java
+final State state = stateMachine.newStateInstance();
+
+state
+    // Visibility
+    .visibles()   // views to become visible
+    .invisibles() // views to become invisible
+    .gones()      // views to become gone
+
+    // Enable
+    .enables()    // views to become enable
+    .disables();  // views to become disable
+
+stateMachine.addState(YOUR_INT_CONSTANT, state);
+```
+
 ### SceneStateMachine
 
 Implementation based on Transition Scenes framework to change a layout content.
@@ -118,6 +152,7 @@ To use this, you must have a layout container to put a custom layout on it.
 
 ##### Usage
 
+###### Kotlin
 ```kotlin
 stateMachine.state(YOUR_INT_CONSTANT) {
 
@@ -125,4 +160,15 @@ stateMachine.state(YOUR_INT_CONSTANT) {
     transition()                      // Optional Transition to animate the scene change
 
 }
+```
+
+###### Java
+```java
+final State state = stateMachine.newStateInstance();
+
+state
+    .scene(layoutRes to containerView) // Receives a Pair with LayoutId and the container ViewGroup to inflate the layout on it
+    .transition();                     // Optional Transition to animate the scene change
+
+stateMachine.addState(YOUR_INT_CONSTANT, state);
 ```
