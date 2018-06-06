@@ -56,5 +56,15 @@ public final class SceneStateMachine extends StateMachine<SceneStateMachine.Stat
             this.transition = transition;
             return this;
         }
+
+        @Override
+        public State onEnter(@NonNull Callback callback) {
+            return (State) super.onEnter(callback);
+        }
+
+        @Override
+        public State onExit(@NonNull Callback callback) {
+            return (State) super.onExit(callback);
+        }
     }
 }
