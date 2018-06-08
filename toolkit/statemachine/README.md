@@ -172,3 +172,16 @@ state
 
 stateMachine.addState(YOUR_INT_CONSTANT, state);
 ```
+
+##### PROGUARD RULES
+
+If you are not using Kotlin(and you should), you need to add this into your proguard-rules.pro file. Because if you are not using Kotlin, the shrinker will become angry with you, telling that some classes cannot be found.
+
+```
+# State Machine (only if you don't use Kotlin)
+-dontwarn kotlin.jvm.internal.Intrinsics
+-dontwarn kotlin.Pair
+-dontwarn kotlin.Metadata
+-dontwarn kotlin.jvm.functions.Function1
+-dontwarn kotlin.Unit
+```
