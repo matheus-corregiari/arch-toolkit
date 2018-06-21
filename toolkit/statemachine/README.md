@@ -173,6 +173,16 @@ state
 stateMachine.addState(YOUR_INT_CONSTANT, state);
 ```
 
+##### AVOID CRASHES AND LEAKS
+
+If your Statemachine instance persists configuration changes, or view lifecycle. Don't forget to call the 'shutdown' method
+
+```kotlin
+stateMachine.shutdown()
+```
+
+This will erase all current references and states of the machine. =)
+
 ##### PROGUARD RULES
 
 If you are not using Kotlin(and you should), you need to add this into your proguard-rules.pro file. Because if you are not using Kotlin, the shrinker will become angry with you, telling that some classes cannot be found.

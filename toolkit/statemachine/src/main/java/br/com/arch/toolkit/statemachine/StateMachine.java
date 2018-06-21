@@ -81,6 +81,30 @@ public abstract class StateMachine<STATE extends StateMachine.State> {
         changeState(getCurrentStateKey(), true);
     }
 
+    /**
+     * @return true if the Machine is started, otherwise, false
+     */
+    public boolean isStarted() {
+        return started;
+    }
+
+    /**
+     * Reset the machine.
+     * <p>
+     * Remote the current state reference
+     * Restore configurations to default
+     * Set the started to false
+     * Clear the states map
+     * <p>
+     * Call when your view/activity/fragment is not available anymore
+     */
+    public void shutdown() {
+        stateMap.clear();
+        started = false;
+        currentStateKey = -1;
+        config.reset();
+    }
+
     //region Change Current State
 
     /**
@@ -212,6 +236,11 @@ public abstract class StateMachine<STATE extends StateMachine.State> {
 
         public void setOnChangeState(@Nullable final OnChangeStateCallback onChangeState) {
             this.onChangeState = onChangeState;
+        }
+
+        private void reset() {
+            initialState = -1;
+            onChangeState = null;
         }
     }
     //endregion
