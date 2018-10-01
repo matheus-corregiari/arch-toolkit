@@ -1,0 +1,15 @@
+afterEvaluate {
+    if (!project.hasProperty('android')) return
+
+    android {
+        dependencies {
+            testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+            testImplementation "junit:junit:$versions.junit"
+            testImplementation "org.mockito:mockito-core:$versions.mockito"
+            testImplementation("org.robolectric:robolectric:$versions.robolectric") {
+                exclude group: 'commons-logging', module: 'commons-logging'
+                exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+            }
+        }
+    }
+}

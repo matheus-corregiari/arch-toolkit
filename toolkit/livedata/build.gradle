@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-//apply from: "$rootDir/tools/publish.gradle"
+apply from: "$rootDir/tools/publish.gradle"
 
 android {
 
