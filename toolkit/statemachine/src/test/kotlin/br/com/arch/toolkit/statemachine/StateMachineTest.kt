@@ -220,7 +220,7 @@ class StateMachineTest {
     @Test(expected = IllegalStateException::class)
     fun addState_withNegativeKey_shouldTrowException() {
         val machine = TestStateMachine()
-        machine.state(-1){}
+        machine.state(-1) {}
     }
 
     private fun TestStateMachine.initMachine(): TestStateMachine {

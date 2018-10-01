@@ -2,7 +2,7 @@ package br.com.arch.toolkit.livedata
 
 import android.arch.lifecycle.MediatorLiveData
 
-class SwapLiveData<T> : ComputableLiveData<T>() {
+open class SwapLiveData<T> : ComputableLiveData<T>() {
 
     private val sourceLiveData = MediatorLiveData<Any>()
     private val sourceObserver: (Any?) -> Unit = {}

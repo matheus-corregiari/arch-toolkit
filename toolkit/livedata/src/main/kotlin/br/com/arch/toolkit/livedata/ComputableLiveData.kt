@@ -25,7 +25,7 @@ abstract class ComputableLiveData<T> : LiveData<T>() {
 
     open fun invalidate() {
         if (!hasObservers() && computed.get()) computed.set(false)
-        else if (!computing.get()) lastThread = WeakReference(async(this::executeRunnable))
+        else if (!computing.get()) lastThread = WeakReference(async(::executeRunnable))
     }
 
     open fun interrupt() {
