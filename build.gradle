@@ -146,7 +146,7 @@ ext.versions = [
         // Test
         espresso      : '3.0.2',
         mockito       : '2.11.0',
-        robolectric   : '3.8',
+        robolectric   : '4.0-alpha-3',
         hamcrest      : '1.3',
         junit         : '4.12',
         rules         : '1.0.2',

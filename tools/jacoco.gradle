@@ -102,6 +102,7 @@ afterEvaluate {
             final fileFilterKt = fileFilter + ['**/*$Companion.*', '**/*Kt.*', '**/*Kt$.*', '**/*.new *', '**/*.new *']
 
             final debugTreeJava = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+            final debugTreeJava2 = fileTree(dir: "${buildDir}/intermediates/javac/debug/compileDebugJavaWithJavac/classes", excludes: fileFilter)
             final debugTreeKotlin = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: fileFilterKt)
 
             // Path to Main sources
@@ -109,7 +110,7 @@ afterEvaluate {
             final mainSrcKotlinPath = "${project.projectDir}/src/main/kotlin"
 
             sourceDirectories = files([mainSrcJavaPath, mainSrcKotlinPath])
-            classDirectories = files([debugTreeJava, debugTreeKotlin])
+            classDirectories = files([debugTreeJava, debugTreeJava2, debugTreeKotlin])
 
             executionData = fileTree(dir: "$buildDir", includes: [
                     "jacoco/testDebugUnitTest.exec",
