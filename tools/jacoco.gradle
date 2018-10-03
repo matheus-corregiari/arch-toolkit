@@ -74,7 +74,8 @@ afterEvaluate {
                 dependsOn "test${flavorName}DebugUnitTest"
 
                 // Generate Coverage Report
-                finalizedBy "uninstall${flavorName}DebugAndroidTest"
+                if (project.android.buildTypes.debug.testCoverageEnabled)
+                    finalizedBy "uninstall${flavorName}DebugAndroidTest"
                 finalizedBy "jacocoCoverageReport-${flavor.name}"
 
                 doLast {
@@ -139,7 +140,8 @@ afterEvaluate {
             dependsOn "testDebugUnitTest"
 
             // Generate Coverage Report
-            finalizedBy "uninstallDebugAndroidTest"
+            if (project.android.buildTypes.debug.testCoverageEnabled)
+                finalizedBy "uninstallDebugAndroidTest"
             finalizedBy "jacocoCoverageReport"
 
             doLast {

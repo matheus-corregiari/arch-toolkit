@@ -9,9 +9,10 @@ package br.com.arch.toolkit.livedata.response
  * @see ResponseLiveData
  */
 data class DataResult<T>(
-        val data: T?,
-        val error: Throwable?,
-        val status: DataResultStatus)
+    val data: T?,
+    val error: Throwable?,
+    val status: DataResultStatus
+)
 
 /**
  * The possible types of statuses of DataResult

@@ -2,6 +2,9 @@ package br.com.arch.toolkit.livedata.response
 
 import android.arch.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.livedata.ExecutorUtil.async
+import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
+import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
+import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS
 
 /**
  * A custom implementation of ResponseLiveData responsible for replicate a value from another ResponseLiveData
@@ -30,7 +33,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         clearSource()
         sourceLiveData.addSource(source) {
             value = it
-            if (it?.status != DataResultStatus.LOADING && discardAfterLoading) value = null
+            if (it?.status != LOADING && discardAfterLoading) value = null
         }
         lastSource = source
     }
@@ -49,9 +52,9 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
             async {
                 if (data == null) return@async
                 val newValue = when (data.status) {
-                    DataResultStatus.SUCCESS -> DataResult(data.data?.let(transformation), null, DataResultStatus.SUCCESS)
-                    DataResultStatus.ERROR -> DataResult<T>(null, data.error, DataResultStatus.ERROR)
-                    DataResultStatus.LOADING -> DataResult<T>(null, null, DataResultStatus.LOADING)
+                    SUCCESS -> DataResult(data.data?.let(transformation), null, SUCCESS)
+                    ERROR -> DataResult<T>(null, data.error, ERROR)
+                    LOADING -> DataResult<T>(null, null, LOADING)
                 }
                 if (value != newValue) postValue(newValue)
             }
