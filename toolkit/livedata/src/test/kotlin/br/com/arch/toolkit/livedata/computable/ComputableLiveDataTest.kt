@@ -182,8 +182,6 @@ class ComputableLiveDataTest {
         Mockito.verifyZeroInteractions(abortObserver)
     }
 
-
-
     @Test
     fun interrupt_withoutCompute_shouldCallAbort() {
         val computeObserver: () -> Unit = mock()

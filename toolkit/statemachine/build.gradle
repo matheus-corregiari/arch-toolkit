@@ -7,7 +7,7 @@ android {
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildTypes.debug.testCoverageEnabled true
+        buildTypes.debug.testCoverageEnabled false
     }
 
     buildTypes {

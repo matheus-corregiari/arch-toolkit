@@ -53,12 +53,13 @@ final Closure<Map<String, Project>> findAllClassesPath = { allChildProjects, fla
     allChildProjects.each { childProject ->
 
         final debugTreeJava = fileTree(dir: "${childProject.buildDir}/intermediates/classes/debug", excludes: fileFilter)
+        final debugTreeJava2 = fileTree(dir: "${childProject.buildDir}/intermediates/javac/debug/compileDebugJavaWithJavac/classes", excludes: fileFilter)
         final debugTreeKotlin = fileTree(dir: "${childProject.buildDir}/tmp/kotlin-classes/debug", excludes: fileFilterKt)
 
         final flavorDebugTreeJava = fileTree(dir: "${childProject.buildDir}/intermediates/classes/$flavorName/debug/com/itau/latam", excludes: fileFilter)
         final flavorDebugTreeKotlin = fileTree(dir: "${childProject.buildDir}/tmp/kotlin-classes/${flavorName}Debug", excludes: fileFilterKt)
 
-        allClassesDirectories.addAll([debugTreeJava.files, debugTreeKotlin.files, flavorDebugTreeJava.files, flavorDebugTreeKotlin.files])
+        allClassesDirectories.addAll([debugTreeJava.files, debugTreeJava2.files, debugTreeKotlin.files, flavorDebugTreeJava.files, flavorDebugTreeKotlin.files])
     }
     allClassesDirectories
 }
@@ -103,28 +104,26 @@ childProjects.each { childProjectPair ->
                     }
                 }
         }
+    }
+}
 
+task("jacocoCoverageReport-unified", type: JacocoReport, group: "coverage-report") {
+    def allChildProjects = findAllChildProjects(project)
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 
-        if (childProjectPair.value.android.productFlavors.isEmpty() && rootProject.tasks.findByName("jacocoCoverageReport-unified") == null)
-            rootProject.task("jacocoCoverageReport-unified", type: JacocoReport, group: "coverage-report") {
-                def allChildProjects = findAllChildProjects(rootProject)
-                reports {
-                    xml.enabled = true
-                    html.enabled = true
-                }
+    sourceDirectories = files(findAllSourcesPath(allChildProjects, ""))
+    classDirectories = files(findAllClassesPath(allChildProjects, ""))
+    executionData = files(findAllCoverageFiles(allChildProjects, ""))
 
-                sourceDirectories = files(findAllSourcesPath(allChildProjects, ""))
-                classDirectories = files(findAllClassesPath(allChildProjects, ""))
-                executionData = files(findAllCoverageFiles(allChildProjects, ""))
+    doFirst {
+        println "\n---------- Start to generate the Unified coverage report ----------"
+    }
 
-                doFirst {
-                    println "\n---------- Start to generate the Unified coverage report ----------"
-                }
-
-                doLast {
-                    println "\n---------- Unified coverage report has finished!! ----------\n"
-                    println "Report path -> file://${reports.html.destination}/index.html\n"
-                }
-            }
+    doLast {
+        println "\n---------- Unified coverage report has finished!! ----------\n"
+        println "Report path -> file://${reports.html.destination}/index.html\n"
     }
 }
