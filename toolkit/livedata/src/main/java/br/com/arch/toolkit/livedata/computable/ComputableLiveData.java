@@ -68,7 +68,10 @@ public abstract class ComputableLiveData<T> extends LiveData<T> {
      */
     public void invalidate() {
         if (!hasObservers() && computed.get()) computed.set(false);
-        else if (!computing.get()) lastThread = new WeakReference<>(async(this::executeRunnable));
+        else if (!computing.get()) {
+            computed.set(false);
+            lastThread = new WeakReference<>(async(this::executeRunnable));
+        }
     }
 
     /**

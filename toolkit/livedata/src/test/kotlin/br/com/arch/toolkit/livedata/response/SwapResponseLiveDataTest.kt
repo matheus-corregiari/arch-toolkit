@@ -82,7 +82,7 @@ class SwapResponseLiveDataTest {
         Assert.assertFalse(swapLiveData.hasDataSource)
 
         swapLiveData.observeData(owner, mockedObserver)
-        Thread.sleep(7)
+        Thread.sleep(10)
 
         swapLiveData.swapSource(liveData, mockedTransformation)
         Assert.assertTrue(swapLiveData.hasDataSource)
@@ -94,11 +94,11 @@ class SwapResponseLiveDataTest {
         liveData.postData(data)
         liveData.postData(data)
 
-        Thread.sleep(10)
+        Thread.sleep(15)
         Mockito.verify(mockedObserver).invoke(result)
 
         Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.SUCCESS))
-        Thread.sleep(10)
+        Thread.sleep(15)
 
         Assert.assertEquals(DataResultStatus.SUCCESS, swapLiveData.status)
         Assert.assertNull(swapLiveData.data)
@@ -106,7 +106,7 @@ class SwapResponseLiveDataTest {
         liveData.postLoading()
         liveData.postError(IllegalStateException())
 
-        Thread.sleep(10)
+        Thread.sleep(15)
         Assert.assertEquals(DataResultStatus.ERROR, swapLiveData.status)
     }
 }
