@@ -5,6 +5,7 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LifecycleRegistry
 import android.arch.lifecycle.LiveData
+import com.nhaarman.mockitokotlin2.given
 import com.nhaarman.mockitokotlin2.mock
 import net.vidageek.mirror.dsl.Mirror
 import org.junit.Assert
@@ -89,7 +90,7 @@ class SwapResponseLiveDataTest {
 
         val data = "data"
         val result = 0
-        Mockito.`when`(mockedTransformation.invoke(data)).thenReturn(result)
+        given(mockedTransformation.invoke(data)).willReturn(result)
 
         liveData.postData(data)
         liveData.postData(data)

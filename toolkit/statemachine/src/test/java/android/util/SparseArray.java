@@ -3,7 +3,7 @@ package android.util;
 import java.util.HashMap;
 
 /**
- * This class is necessary to woraround Unit Testing using SparseArray on Android =(
+ * This class is necessary to workaround Unit Testing using SparseArray on Android =(
  */
 public class SparseArray<E> {
 

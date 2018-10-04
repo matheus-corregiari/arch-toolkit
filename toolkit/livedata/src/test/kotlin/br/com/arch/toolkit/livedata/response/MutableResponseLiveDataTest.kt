@@ -18,7 +18,6 @@ class MutableResponseLiveDataTest {
     @Test
     fun whenPostLoading_shouldHaveLoadingStatus_nullError_nullData() {
         val liveData = MutableResponseLiveData<Any>()
-        Assert.assertNull(liveData.value)
         liveData.postLoading()
 
         Assert.assertNotNull(liveData.value)
@@ -30,7 +29,6 @@ class MutableResponseLiveDataTest {
     @Test
     fun whenPostError_shouldHaveErrorStatus_notNullError_nullData() {
         val liveData = MutableResponseLiveData<Any>()
-        Assert.assertNull(liveData.value)
         val error = IllegalStateException()
         liveData.postError(error)
 
@@ -43,7 +41,6 @@ class MutableResponseLiveDataTest {
     @Test
     fun whenPostData_shouldHaveSuccessStatus_nullError_notNullData() {
         val liveData = MutableResponseLiveData<Any>()
-        Assert.assertNull(liveData.value)
         val data = "data"
         liveData.postData(data)
 
@@ -56,7 +53,6 @@ class MutableResponseLiveDataTest {
     @Test
     fun whenPostSuccess_shouldHaveSuccessStatus_nullError_nullData() {
         val liveData = MutableResponseLiveData<Any>()
-        Assert.assertNull(liveData.value)
         liveData.postSuccess()
 
         Assert.assertNotNull(liveData.value)
@@ -68,7 +64,6 @@ class MutableResponseLiveDataTest {
     @Test
     fun whenSetLoading_shouldHaveLoadingStatus_nullError_nullData() {
         val liveData = MutableResponseLiveData<Any>()
-        Assert.assertNull(liveData.value)
         liveData.setLoading()
 
         Assert.assertNotNull(liveData.value)
@@ -80,7 +75,6 @@ class MutableResponseLiveDataTest {
     @Test
     fun whenSetError_shouldHaveErrorStatus_notNullError_nullData() {
         val liveData = MutableResponseLiveData<Any>()
-        Assert.assertNull(liveData.value)
         val error = IllegalStateException()
         liveData.setError(error)
 
@@ -93,7 +87,6 @@ class MutableResponseLiveDataTest {
     @Test
     fun whenSetData_shouldHaveSuccessStatus_nullError_notNullData() {
         val liveData = MutableResponseLiveData<Any>()
-        Assert.assertNull(liveData.value)
         val data = "data"
         liveData.setData(data)
 
@@ -106,7 +99,6 @@ class MutableResponseLiveDataTest {
     @Test
     fun whenSetSuccess_shouldHaveSuccessStatus_nullError_nullData() {
         val liveData = MutableResponseLiveData<Any>()
-        Assert.assertNull(liveData.value)
         liveData.setSuccess()
 
         Assert.assertNotNull(liveData.value)

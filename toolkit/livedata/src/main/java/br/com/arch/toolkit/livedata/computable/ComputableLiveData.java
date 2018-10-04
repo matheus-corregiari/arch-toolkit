@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static br.com.arch.toolkit.livedata.ExecutorUtil.async;
 
 /**
- * Implementation od LiveData to make possible compute something on the WorkerThread, and abort or invalidate if needed
+ * Implementation of {@link LiveData} to make it possible compute something on the WorkerThread, and abort or invalidate if needed
  * <p>
- * Will compute the value only when it has as least one observer, in other words, if the liveData instance is active
+ * Will compute the value only when it has at least one observer, in other words, if the liveData instance is active
  *
  * @param <T> The type of the value do compute
  */
@@ -28,7 +28,7 @@ public abstract class ComputableLiveData<T> extends LiveData<T> {
     /**
      * Method executed on the WorkerThread and responsible for compute some data
      * <p>
-     * Please, use the postValue method inside the implementation of this method to post new values into the ComputableLiveData
+     * Please, use the {@link LiveData#postValue(Object)} method inside the implementation of this method to post new values into the ComputableLiveData
      */
     @WorkerThread
     abstract void compute();
@@ -37,7 +37,7 @@ public abstract class ComputableLiveData<T> extends LiveData<T> {
      * Method used to abort some ongoing async operation.
      * <p>
      * Example:
-     * - You can call the Thread.invalidade() method if you decided, for some reason, start a new thread in your application
+     * - You can call the {@link Thread#interrupt()} method if you decided, for some reason, start a new thread in your application
      */
     abstract void abort();
 
@@ -75,7 +75,7 @@ public abstract class ComputableLiveData<T> extends LiveData<T> {
     }
 
     /**
-     * Interrupt the ongoing computing Thread and cal
+     * Interrupt the ongoing computing Thread and call {@link ComputableLiveData#abort()}
      */
     public void interrupt() {
         if (lastThread != null && lastThread.get() != null) {

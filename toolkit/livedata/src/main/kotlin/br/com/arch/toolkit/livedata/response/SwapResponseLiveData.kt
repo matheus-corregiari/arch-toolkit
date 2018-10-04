@@ -25,7 +25,8 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * Changes the actual DataSource
      *
      * @param source The ResponseLiveData to replicate the value
-     * @param discardAfterLoading if true, when receives something with status different of LOADING, post the value and then, set the value to null, default is false
+     * @param discardAfterLoading if true, when receives something with status different of LOADING,
+     * post the value and then, set the value to null, default is false
      *
      * @see SwapResponseLiveData.swapSource
      */

@@ -9,6 +9,7 @@ import br.com.arch.toolkit.livedata.extention.observeSingle
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
@@ -20,6 +21,10 @@ class ComputableLiveDataTest {
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    private lateinit var mockedObserver: (Any) -> Unit
+    private lateinit var computeObserver: () -> Unit
+    private lateinit var abortObserver: () -> Unit
+
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
         override fun getLifecycle(): Lifecycle {
@@ -28,11 +33,15 @@ class ComputableLiveDataTest {
         }
     }
 
+    @Before
+    fun setup() {
+        mockedObserver = mock()
+        computeObserver = mock()
+        abortObserver = mock()
+    }
+
     @Test
     fun shouldComputeValueWhenBecomeActive() {
-        val mockedObserver: (Any) -> Unit = mock()
-        val computeObserver: () -> Unit = mock()
-        val abortObserver: () -> Unit = mock()
         val liveData = object : ComputableLiveData<Any>() {
             override fun compute() = computeObserver.invoke()
 
@@ -50,9 +59,6 @@ class ComputableLiveDataTest {
 
     @Test
     fun invalidate_afterCompute_shouldComputeAgain() {
-        val mockedObserver: (Any) -> Unit = mock()
-        val computeObserver: () -> Unit = mock()
-        val abortObserver: () -> Unit = mock()
         val liveData = object : ComputableLiveData<Any>() {
             override fun compute() = computeObserver.invoke()
 
@@ -75,9 +81,6 @@ class ComputableLiveDataTest {
 
     @Test
     fun invalidate_afterCompute_withoutObservers_shouldSetComputedFlagToFalseAndNotCompute() {
-        val mockedObserver: (Any) -> Unit = mock()
-        val computeObserver: () -> Unit = mock()
-        val abortObserver: () -> Unit = mock()
         val liveData = object : ComputableLiveData<Any>() {
             override fun compute() = computeObserver.invoke()
 
@@ -103,9 +106,6 @@ class ComputableLiveDataTest {
 
     @Test
     fun invalidate_whileIsRunning_shouldDoNothing() {
-        val mockedObserver: (Any) -> Unit = mock()
-        val computeObserver: () -> Unit = mock()
-        val abortObserver: () -> Unit = mock()
         val liveData = object : ComputableLiveData<Any>() {
             override fun compute() {
                 computeObserver.invoke()
@@ -133,9 +133,6 @@ class ComputableLiveDataTest {
 
     @Test
     fun computeWithException_shouldSetCputedToFalse() {
-        val mockedObserver: (Any) -> Unit = mock()
-        val computeObserver: () -> Unit = mock()
-        val abortObserver: () -> Unit = mock()
         val liveData = object : ComputableLiveData<Any>() {
             override fun compute() {
                 computeObserver.invoke()
@@ -158,9 +155,6 @@ class ComputableLiveDataTest {
 
     @Test
     fun becomeActive_afterCompute_shouldDoNothing() {
-        val mockedObserver: (Any) -> Unit = mock()
-        val computeObserver: () -> Unit = mock()
-        val abortObserver: () -> Unit = mock()
         val liveData = object : ComputableLiveData<Any>() {
             override fun compute() = computeObserver.invoke()
 
@@ -184,8 +178,6 @@ class ComputableLiveDataTest {
 
     @Test
     fun interrupt_withoutCompute_shouldCallAbort() {
-        val computeObserver: () -> Unit = mock()
-        val abortObserver: () -> Unit = mock()
         val liveData = object : ComputableLiveData<Any>() {
             override fun compute() = computeObserver.invoke()
 
@@ -204,9 +196,6 @@ class ComputableLiveDataTest {
 
     @Test
     fun interrupt_afterCompute_shouldCallAbort() {
-        val mockedObserver: (Any) -> Unit = mock()
-        val computeObserver: () -> Unit = mock()
-        val abortObserver: () -> Unit = mock()
         val liveData = object : ComputableLiveData<Any>() {
             override fun compute() = computeObserver.invoke()
 
