@@ -52,10 +52,8 @@ workflows:
   version: 2
   teste:
     jobs:
-      - checkout
-      - ktLint:
-        requires:
-          - checkout
+      - checkout-repo
+      - ktLint
 #      - lint:
 #        requires:
 #          - checkout
