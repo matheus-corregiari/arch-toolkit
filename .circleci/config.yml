@@ -63,6 +63,15 @@ jobs:
           keys:
             - gradle-{{ checksum "build.gradle" }}
             - jacoco-files-{{ checksum "toolkit/livedata/build.gradle" }}
+      - restore_cache:
+          keys:
+            - jacoco-files-{{ checksum "toolkit/livedata/build.gradle" }}
+      - restore_cache:
+          keys:
+            - jacoco-files-{{ checksum "toolkit/recycler-adapter/build.gradle" }}
+      - restore_cache:
+          keys:
+            - jacoco-files-{{ checksum "toolkit/statemachine/build.gradle" }}
       - run:
           name: Generate Unified Jacoco Coverage Report
           command: ./gradlew jacocoCoverageReport-unified
@@ -111,6 +120,12 @@ jobs:
           path: toolkit/recycler-adapter/build/reports/jacoco/jacocoCoverageReport/html
           destination: reports/recycler-adapter
 
+      - save_cache:
+           paths:
+              - ~/toolkit/recycler-adapter/build/jacoco
+              - ~/toolkit/recycler-adapter/build/outputs/code-coverage/connected
+           key: jacoco-files-{{ checksum "toolkit/recycler-adapter/build.gradle" }}
+
   statemachine:
     working_directory: ~/arch-toolkit
     docker:
@@ -127,6 +142,12 @@ jobs:
       - store_artifacts:
           path: toolkit/statemachine/build/reports/jacoco/jacocoCoverageReport/html
           destination: reports/statemachine
+
+      - save_cache:
+           paths:
+              - ~/toolkit/statemachine/build/jacoco
+              - ~/toolkit/statemachine/build/outputs/code-coverage/connected
+           key: jacoco-files-{{ checksum "toolkit/statemachine/build.gradle" }}
 
   livedata-deploy:
     working_directory: ~/arch-toolkit
