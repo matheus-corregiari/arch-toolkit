@@ -40,6 +40,62 @@ jobs:
           path: build/reports/lint
           destination: reports/lint
 
+  generate-jacoco-unified-report:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Generate Unified Jacoco Coverage Report
+          command: ./gradlew jacocoCoverageReport-unified
+
+      - store_artifacts:
+          path: build/reports/jacoco/jacocoCoverageReport-unified
+          destination: reports/coverage
+
+  livedata:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Run Livedata test
+          command: ./gradlew :toolkit:livedata:jacocoTestReport
+
+      - store_artifacts:
+          path: toolkit/livedata/build/reports/jacoco/jacocoCoverageReport
+          destination: reports/livedata
+
+  recycler-adapter:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Run Recycler Adapter test
+          command: ./gradlew :toolkit:recycler-adapter:jacocoTestReport
+
+      - store_artifacts:
+          path: toolkit/recycler-adapter/build/reports/jacoco/jacocoCoverageReport
+          destination: reports/recycler-adapter
+
+  statemachine:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Run Statemachine test
+          command: ./gradlew :toolkit:statemachine:jacocoTestReport
+
+      - store_artifacts:
+          path: toolkit/statemachine/build/reports/jacoco/jacocoCoverageReport
+          destination: reports/statemachine
+
 workflows:
   version: 2
   teste:
@@ -51,3 +107,20 @@ workflows:
       - lint:
           requires:
             - checkout_repo
+      - livedata:
+          requires:
+            - lint
+            - ktLint
+      - recycler-adapter:
+          requires:
+            - lint
+            - ktLint
+      - statemachine:
+          requires:
+            - lint
+            - ktLint
+      - generate-jacoco-unified-report:
+          requires:
+            - livedata
+            - recycler-adapter
+            - statemachine
