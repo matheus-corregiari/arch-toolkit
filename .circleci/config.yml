@@ -14,6 +14,8 @@ jobs:
 
   ktLint:
     working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
     steps:
       - checkout
       - run:
