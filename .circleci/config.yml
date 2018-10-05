@@ -53,7 +53,7 @@ jobs:
           path: build/reports/lint
           destination: reports/lint
 
-  generate-jacoco-unified-report:
+  jacoco-unified:
     working_directory: ~/arch-toolkit
     docker:
       - image: circleci/android:api-25-alpha
@@ -174,26 +174,26 @@ workflows:
           requires:
             - lint
             - ktLint
-      - generate-jacoco-unified-report:
+      - jacoco-unified:
           requires:
             - livedata
             - recycler-adapter
             - statemachine
       - livedata-deploy:
           requires:
-            - generate-jacoco-unified-report
+            - jacoco-unified
           filters:
             branches:
               only: master
       - recycler-adapter-deploy:
           requires:
-            - generate-jacoco-unified-report
+            - jacoco-unified
           filters:
             branches:
               only: master
       - statemachine-deploy:
           requires:
-            - generate-jacoco-unified-report
+            - jacoco-unified
           filters:
             branches:
               only: master

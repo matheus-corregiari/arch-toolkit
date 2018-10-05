@@ -69,11 +69,11 @@ class ComputableLiveDataTest {
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(5)
+        Thread.sleep(10)
 
         // Call again if have observers
         liveData.invalidate()
-        Thread.sleep(5)
+        Thread.sleep(10)
 
         Mockito.verify(computeObserver, times(2)).invoke()
         Mockito.verifyZeroInteractions(abortObserver)
@@ -91,7 +91,7 @@ class ComputableLiveDataTest {
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(5)
+        Thread.sleep(10)
         Mockito.verify(computeObserver).invoke()
 
         liveData.removeObservers(owner)
