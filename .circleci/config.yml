@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  checkout-repo:
+  checkout_repo:
     working_directory: ~/arch-toolkit
     docker:
       - image: circleci/android:api-25-alpha
@@ -19,8 +19,6 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "toolkit/livedata/build.gradle" }}-{{ checksum  "toolkit/recycler-adapter/build.gradle" }}-{{ checksum  "toolkit/statemachine/build.gradle" }}
 
   ktLint:
-    docker:
-      - image: circleci/android:api-25-alpha
     steps:
       - run:
         name: Run KtLint
@@ -52,10 +50,10 @@ workflows:
   version: 2
   teste:
     jobs:
-      - checkout-repo
+      - checkout_repo
       - ktLint:
         requires:
-          - checkout-repo
+          - checkout_repo
 #      - lint:
 #        requires:
 #          - checkout
