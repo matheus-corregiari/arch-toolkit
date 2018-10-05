@@ -155,6 +155,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Deploy Livedata
           command: ./gradlew :toolkit:livedata:bintrayUpload
@@ -165,6 +168,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Deploy Recycler Adapter
           command: ./gradlew :toolkit:recycler-adapter:bintrayUpload
@@ -175,6 +181,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Deploy Statemachine
           command: ./gradlew :toolkit:statemachine:bintrayUpload

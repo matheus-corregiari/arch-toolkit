@@ -3,6 +3,9 @@ final Properties localConfig = new Properties()
 if (file("$rootDir/local.properties").exists())
     localConfig.load(file("$rootDir/local.properties").newDataInputStream())
 
+def bintrayUserEnv = System.getenv('BINTRAY_USER')
+def bintrayApiKeyEnv = System.getenv('BINTRAY_API_KEY')
+
 apply from: "$rootDir/tools/publish/maven-config.gradle"
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
@@ -12,8 +15,15 @@ version = VERSION
 
 bintray {
 
-    user = localConfig.getProperty('bintray.user')
-    key = localConfig.getProperty('bintray.apikey')
+    if (bintrayUserEnv == null || bintrayUserEnv.isEmpty())
+        user = localConfig.getProperty('bintray.user')
+    else
+        user = bintrayUserEnv
+
+    if (bintrayApiKeyEnv == null || bintrayApiKeyEnv.isEmpty())
+        key = localConfig.getProperty('bintray.apikey')
+    else
+        key = bintrayApiKeyEnv
 
     configurations = ['archives']
     pkg {
