@@ -190,7 +190,7 @@ jobs:
 
 workflows:
   version: 2
-  teste:
+  lint-test-deploy:
     jobs:
       - checkout-repo
       - ktLint:
