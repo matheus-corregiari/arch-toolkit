@@ -65,7 +65,7 @@ jobs:
           command: ./gradlew :toolkit:livedata:jacocoTestReport
 
       - store_artifacts:
-          path: toolkit/livedata/build/reports/jacoco/jacocoCoverageReport
+          path: toolkit/livedata/build/reports/jacoco/jacocoCoverageReport/html
           destination: reports/livedata
 
   recycler-adapter:
@@ -79,7 +79,7 @@ jobs:
           command: ./gradlew :toolkit:recycler-adapter:jacocoTestReport
 
       - store_artifacts:
-          path: toolkit/recycler-adapter/build/reports/jacoco/jacocoCoverageReport
+          path: toolkit/recycler-adapter/build/reports/jacoco/jacocoCoverageReport/html
           destination: reports/recycler-adapter
 
   statemachine:
@@ -93,8 +93,38 @@ jobs:
           command: ./gradlew :toolkit:statemachine:jacocoTestReport
 
       - store_artifacts:
-          path: toolkit/statemachine/build/reports/jacoco/jacocoCoverageReport
+          path: toolkit/statemachine/build/reports/jacoco/jacocoCoverageReport/html
           destination: reports/statemachine
+
+  livedata-deploy:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Deploy Livedata
+          command: ./gradlew :toolkit:livedata:bintrayUpload
+
+  recycler-adapter-deploy:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Deploy Recycler Adapter
+          command: ./gradlew :toolkit:recycler-adapter:bintrayUpload
+
+  statemachine-deploy:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Deploy Statemachine
+          command: ./gradlew :toolkit:statemachine:bintrayUpload
 
 workflows:
   version: 2
@@ -124,3 +154,21 @@ workflows:
             - livedata
             - recycler-adapter
             - statemachine
+      - livedata-deploy:
+          requires:
+            - generate-jacoco-unified-report
+          filters:
+            branches:
+              only: master
+      - recycler-adapter-deploy:
+          requires:
+            - generate-jacoco-unified-report
+          filters:
+            branches:
+              only: master
+      - statemachine:
+          requires:
+            - generate-jacoco-unified-report
+          filters:
+            branches:
+              only: master
