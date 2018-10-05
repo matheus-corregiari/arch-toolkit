@@ -53,7 +53,7 @@ workflows:
   teste:
     jobs:
       - checkout-repo
-      - ktLint
+      - ktLint:
         requires:
           - checkout-repo
 #      - lint:
