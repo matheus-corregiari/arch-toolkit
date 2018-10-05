@@ -1,3 +1,6 @@
+[ ![Download](https://api.bintray.com/packages/methe/arch-toolkit/recycler-adapter/images/download.svg) ](https://bintray.com/methe/arch-toolkit/recycler-adapter/_latestVersion)
+[![CircleCI](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master.svg?style=svg)](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master)
+
 # Recycler Adapter
 
 Basic implementation of a simple Recycler Adapter using Custom Views

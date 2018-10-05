@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master.svg?style=svg)](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master)
+
 # Arch Toolkit
 
 ### Hello World!!
