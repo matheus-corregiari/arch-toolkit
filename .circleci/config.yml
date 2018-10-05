@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  checkout_repo:
+  checkout-repo:
     working_directory: ~/arch-toolkit
     docker:
       - image: circleci/android:api-25-alpha
@@ -183,13 +183,13 @@ workflows:
   version: 2
   teste:
     jobs:
-      - checkout_repo
+      - checkout-repo
       - ktLint:
           requires:
-            - checkout_repo
+            - checkout-repo
       - lint:
           requires:
-            - checkout_repo
+            - checkout-repo
       - livedata:
           requires:
             - lint
