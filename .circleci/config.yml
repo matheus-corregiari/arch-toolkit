@@ -62,6 +62,7 @@ jobs:
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle" }}
+            - gradle-{{ checksum "toolkit/livedata/build.gradle" }}
       - run:
           name: Generate Unified Jacoco Coverage Report
           command: ./gradlew jacocoCoverageReport-unified
@@ -86,6 +87,12 @@ jobs:
       - store_artifacts:
           path: toolkit/livedata/build/reports/jacoco/jacocoCoverageReport/html
           destination: reports/livedata
+
+      - save_cache:
+           paths:
+              - ~/toolkit/livedata/build/jacoco
+              - ~/toolkit/livedata/build/outputs/code-coverage/connected
+           key: gradle-{{ checksum "toolkit/livedata/build.gradle" }}
 
   recycler-adapter:
     working_directory: ~/arch-toolkit
