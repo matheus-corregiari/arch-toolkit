@@ -9,14 +9,14 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "toolkit/*/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "toolkit/livedata/build.gradle" }}-{{ checksum  "toolkit/recycler-adapter/build.gradle" }}-{{ checksum  "toolkit/statemachine/build.gradle" }}
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "toolkit/*/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "toolkit/livedata/build.gradle" }}-{{ checksum  "toolkit/recycler-adapter/build.gradle" }}-{{ checksum  "toolkit/statemachine/build.gradle" }}
 
   ktLint:
     docker:
@@ -54,6 +54,8 @@ workflows:
     jobs:
       - checkout-repo
       - ktLint
+        requires:
+          - checkout-repo
 #      - lint:
 #        requires:
 #          - checkout
