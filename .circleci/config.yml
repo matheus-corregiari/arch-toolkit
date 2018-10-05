@@ -166,7 +166,7 @@ workflows:
           filters:
             branches:
               only: master
-      - statemachine:
+      - statemachine-deploy:
           requires:
             - generate-jacoco-unified-report
           filters:
