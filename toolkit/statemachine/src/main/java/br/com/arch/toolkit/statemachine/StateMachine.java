@@ -72,12 +72,13 @@ public abstract class StateMachine<STATE extends StateMachine.State> {
     public final void start() {
         if (started) throw new IllegalStateException("Machine already started");
 
+        started = true;
+
         if (getCurrentStateKey() <= -1) return;
 
         final STATE state = stateMap.get(getCurrentStateKey());
         if (state == null) throw new IllegalStateException("State not found! " +
                 "Make sure to add all states before init the Machine");
-        started = true;
         changeState(getCurrentStateKey(), true);
     }
 
@@ -123,6 +124,7 @@ public abstract class StateMachine<STATE extends StateMachine.State> {
         if (stateKey == getCurrentStateKey() && !forceChange) return;
 
         final STATE state = stateMap.get(stateKey);
+        final STATE currentState = stateMap.get(getCurrentStateKey());
 
         if (state == null)
             throw new IllegalStateException("State " + stateKey + " not exists! Make sure to setup the State Machine before change the states!");
@@ -130,7 +132,7 @@ public abstract class StateMachine<STATE extends StateMachine.State> {
         // On change state
         if (onChangeState != null) onChangeState.onChangeState(stateKey);
 
-        if (state.getExit() != null) state.getExit().invoke();
+        if (stateKey != getCurrentStateKey() && currentState != null && currentState.getExit() != null) currentState.getExit().invoke();
         performChangeState(state);
         if (state.getEnter() != null) state.getEnter().invoke();
 

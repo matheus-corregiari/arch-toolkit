@@ -32,4 +32,4 @@ ext.mavenConfig = {
     }
 }
 install.repositories.mavenInstaller mavenConfig
-uploadArchives.repositories.mavenDeployer mavenConfig
+//bintrayUpload.repositories.mavenDeployer mavenConfig

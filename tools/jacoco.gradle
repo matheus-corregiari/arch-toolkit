@@ -1,45 +1,170 @@
 apply plugin: 'jacoco'
-def jacocoRetrolambdaMap = [:]
-final testBuildType = 'coverage'
 
 jacoco {
-    toolVersion = "0.7.1.201405082137"
+    toolVersion = "$jacocoVersion"
 }
 
-task jacocoTestReport(type: JacocoReport,
-        dependsOn: ["test${testBuildType.capitalize()}UnitTest",
-                    "create${testBuildType.capitalize()}CoverageReport"]) {
-    reports {
-        xml.enabled = true
-        html.enabled = true
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+afterEvaluate {
+    if (!project.hasProperty('android')) return
+
+    android.productFlavors.all {
+        flavor ->
+
+            /**
+             * Generate tasks to generate Jacoco Coverage Report for each flavor defined
+             */
+            task("jacocoCoverageReport-${flavor.name}", type: JacocoReport, group: "coverage-report") {
+                final def flavorName = flavor.name.capitalize()
+                description "Generate the coverage report for flavor ${flavorName}"
+
+                reports {
+                    xml.enabled = true
+                    html.enabled = true
+                }
+
+                final fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*',
+                                    '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*',
+                                    '**/*_.*', '**/*_*.*', '**/*_$*.*', '**/*ViewBinder*.*', '**/*$ViewBinder*.*']
+
+                final fileFilterKt = fileFilter + ['**/*$Companion.*', '**/*Kt.*', '**/*Kt$.*', '**/*.new *', '**/*.new *']
+
+                final debugTreeJava = fileTree(dir: "${buildDir}/intermediates/classes/${flavor.name}/debug", excludes: fileFilter)
+                final debugTreeKotlin = fileTree(dir: "${buildDir}/tmp/kotlin-classes/${flavor.name}Debug", excludes: fileFilterKt)
+
+                // Path to Main sources
+                final mainSrcJavaPath = "${project.projectDir}/src/main/java"
+                final mainSrcKotlinPath = "${project.projectDir}/src/main/kotlin"
+
+                // Path to Flavor sources
+                final flavorSrcJavaPath = "${project.projectDir}/src/${flavor.name}/java"
+                final flavorSrcKotlinPath = "${project.projectDir}/src/${flavor.name}/kotlin"
+
+                sourceDirectories = files([mainSrcJavaPath, mainSrcKotlinPath, flavorSrcJavaPath, flavorSrcKotlinPath])
+                classDirectories = files([debugTreeJava, debugTreeKotlin])
+
+                executionData = fileTree(dir: "$buildDir", includes: [
+                        "jacoco/test${flavorName}DebugUnitTest.exec",
+                        "outputs/code-coverage/connected/flavors/${flavorName.toUpperCase()}/*coverage.ec"
+                ])
+
+                doFirst {
+                    println "\n---------- Start to generate coverage report for flavor ${flavorName} ----------"
+                }
+
+                doLast {
+                    println "\n---------- Coverage report for flavor ${flavorName} has finished!! ----------\n"
+                    println "Report path -> file://${reports.html.destination}/index.html\n"
+                }
+            }
+
+            /**
+             * Generate tasks to run tests and generate Jacoco Coverage Report for each flavor defined
+             */
+            task("jacocoTestReport-${flavor.name}", group: "coverage-report") {
+                final def flavorName = flavor.name.capitalize()
+                description "Run tests and generate coverage report for flavor ${flavorName}"
+
+                // Run Tests
+                if (project.android.buildTypes.debug.testCoverageEnabled)
+                    dependsOn "create${flavorName}DebugCoverageReport"
+                dependsOn "test${flavorName}DebugUnitTest"
+
+                // Generate Coverage Report
+                if (project.android.buildTypes.debug.testCoverageEnabled)
+                    finalizedBy "uninstall${flavorName}DebugAndroidTest"
+                finalizedBy "jacocoCoverageReport-${flavor.name}"
+
+                doLast {
+                    println "\n---------- Tests on flavor ${flavorName} finished!! ----------\n"
+                }
+            }
     }
-    jacocoClasspath = configurations['androidJacocoAnt']
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
-                      '**/*Test*.*', 'android/**/*.*', '**/*Lambda*.*']
-    def debugTree = fileTree(
-            dir: "${buildDir}/intermediates/classes/${testBuildType}",
-            excludes: fileFilter)
-    def mainSrc = "${projectDir}/src/main/java"
-    sourceDirectories = files([mainSrc])
-    classDirectories = files([debugTree])
-    def execFile = "${buildDir}/jacoco/test${testBuildType.capitalize()}UnitTest.exec"
 
-    executionData = files(execFile, "${buildDir}/outputs/code-coverage/connected/coverage.ec")
+    if (android.productFlavors.isEmpty()) {
+        /**
+         * Generate tasks to generate Jacoco Coverage Report
+         */
+        task("jacocoCoverageReport", type: JacocoReport, group: "coverage-report") {
+            description "Generate the coverage report"
 
-    doFirst {
-        new File("${buildDir}/intermediates/classes/${testBuildType}").eachFileRecurse { file ->
-            if (file.name.contains('$$')) {
-                def renamed = file.path.replace '$$', '$'
-                jacocoRetrolambdaMap[renamed] = file.path
-                file.renameTo renamed
+            reports {
+                xml.enabled = true
+                html.enabled = true
+            }
+
+            final fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*',
+                                '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*',
+                                '**/*_.*', '**/*_*.*', '**/*_$*.*', '**/*ViewBinder*.*', '**/*$ViewBinder*.*']
+
+            final fileFilterKt = fileFilter + ['**/*$Companion.*', '**/*Kt.*', '**/*Kt$.*', '**/*.new *', '**/*.new *']
+
+            final debugTreeJava = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+            final debugTreeJava2 = fileTree(dir: "${buildDir}/intermediates/javac/debug/compileDebugJavaWithJavac/classes", excludes: fileFilter)
+            final debugTreeKotlin = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: fileFilterKt)
+
+            // Path to Main sources
+            final mainSrcJavaPath = "${project.projectDir}/src/main/java"
+            final mainSrcKotlinPath = "${project.projectDir}/src/main/kotlin"
+
+            sourceDirectories = files([mainSrcJavaPath, mainSrcKotlinPath])
+            classDirectories = files([debugTreeJava, debugTreeJava2, debugTreeKotlin])
+
+            executionData = fileTree(dir: "$buildDir", includes: [
+                    "jacoco/testDebugUnitTest.exec",
+                    "outputs/code-coverage/connected/*coverage.ec"
+            ])
+
+            doFirst {
+                println "\n---------- Start to generate coverage report ----------"
+            }
+
+            doLast {
+                println "\n---------- Coverage report has finished!! ----------\n"
+                println "Report path -> file://${reports.html.destination}/index.html\n"
+            }
+        }
+
+        /**
+         * Generate tasks to run tests and generate Jacoco Coverage Report
+         */
+        task("jacocoTestReport", group: "coverage-report") {
+            description "Run tests and generate coverage report"
+
+            // Run Tests
+            if (project.android.buildTypes.debug.testCoverageEnabled)
+                dependsOn "createDebugCoverageReport"
+            dependsOn "testDebugUnitTest"
+
+            // Generate Coverage Report
+            if (project.android.buildTypes.debug.testCoverageEnabled)
+                finalizedBy "uninstallDebugAndroidTest"
+            finalizedBy "jacocoCoverageReport"
+
+            doLast {
+                println "\n---------- Tests finished!! ----------\n"
             }
         }
     }
-    doLast {
-        // Revert renamed files back to their generated names
-        jacocoRetrolambdaMap.each { renamed, original ->
-            new File(renamed).renameTo original
+
+    if (android.productFlavors.isEmpty()) return
+
+    task("jacocoCoverageReport-all", group: "coverage-report") {
+        description "Generate the coverage report for all flavors"
+
+        android.productFlavors.all { flavor ->
+            finalizedBy "jacocoCoverageReport-${flavor.name}"
         }
-        println "jacoco report has been generated to file://${reports.html.destination}/index.html"
+    }
+
+    task("jacocoTestReport-all", group: "coverage-report") {
+        description "Run tests and generate coverage report for all flavors"
+
+        android.productFlavors.all { flavor ->
+            finalizedBy "jacocoTestReport-${flavor.name}"
+        }
     }
 }
