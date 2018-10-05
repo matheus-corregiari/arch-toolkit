@@ -19,12 +19,12 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Run KtLint
-        command: ./gradlew ktLint
+          name: Run KtLint
+          command: ./gradlew ktLint
 
       - store_artifacts:
-        path: build/reports/ktlint
-        destination: reports/ktlint
+          path: app/build/reports
+          destination: reports/ktlint
 
 workflows:
   version: 2
