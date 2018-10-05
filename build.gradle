@@ -62,8 +62,8 @@ subprojects {
                 absolutePaths false
                 warningsAsErrors false
 
-                htmlOutput file("$rootDir/build/reports/html/$name-lint.html")
-                xmlOutput file("$rootDir/build/reports/xml/$name-lint.xml")
+                htmlOutput file("$rootDir/build/reports/lint/html/$name-lint.html")
+                xmlOutput file("$rootDir/build/reports/lint/xml/$name-lint.xml")
             }
 
             aaptOptions {

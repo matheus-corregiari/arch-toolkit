@@ -52,7 +52,7 @@ class ComputableLiveDataTest {
 
         liveData.observe(owner, mockedObserver)
 
-        Thread.sleep(10)
+        Thread.sleep(20)
         Mockito.verify(computeObserver).invoke()
         Mockito.verifyZeroInteractions(abortObserver)
     }
@@ -69,11 +69,11 @@ class ComputableLiveDataTest {
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(5)
+        Thread.sleep(20)
 
         // Call again if have observers
         liveData.invalidate()
-        Thread.sleep(5)
+        Thread.sleep(20)
 
         Mockito.verify(computeObserver, times(2)).invoke()
         Mockito.verifyZeroInteractions(abortObserver)
@@ -91,7 +91,7 @@ class ComputableLiveDataTest {
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(5)
+        Thread.sleep(20)
         Mockito.verify(computeObserver).invoke()
 
         liveData.removeObservers(owner)
@@ -120,7 +120,7 @@ class ComputableLiveDataTest {
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(10)
+        Thread.sleep(20)
         Mockito.verify(computeObserver).invoke()
 
         // Call again if have observers
@@ -146,7 +146,7 @@ class ComputableLiveDataTest {
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(10)
+        Thread.sleep(20)
         Mockito.verify(computeObserver).invoke()
         Assert.assertFalse(liveData.isRunning)
         Assert.assertFalse(liveData.hasComputed())
@@ -165,13 +165,13 @@ class ComputableLiveDataTest {
 
         // Call when become active
         liveData.observeSingle(owner, mockedObserver)
-        Thread.sleep(10)
+        Thread.sleep(20)
         Mockito.verify(computeObserver).invoke()
         Assert.assertFalse(liveData.isRunning)
         Assert.assertTrue(liveData.hasComputed())
 
         liveData.observeSingle(owner, mockedObserver)
-        Thread.sleep(10)
+        Thread.sleep(20)
         Mockito.verifyNoMoreInteractions(computeObserver)
         Mockito.verifyZeroInteractions(abortObserver)
     }

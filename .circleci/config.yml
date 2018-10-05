@@ -1,32 +1,33 @@
 version: 2
 jobs:
-  build:
-    # This is the directory into which our code will be checked out.
-    working_directory: ~/code
-
+  checkout-repo:
+    working_directory: ~/arch-toolkit
     docker:
       - image: circleci/android:api-25-alpha
-
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-
-#      - run:
-#         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-#         command: sudo chmod +x ./gradlew
-
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
-
       - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "toolkit/*/build.gradle" }}
+           paths:
+              - ~/.gradle
+           key: gradle-{{ checksum "build.gradle" }}
 
+  ktLint:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Run KtLint
           command: ./gradlew ktLint
@@ -34,4 +35,193 @@ jobs:
       - store_artifacts:
           path: build/reports/ktlint
           destination: reports/ktlint
-      # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
+
+  lint:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Run Lint
+          command: ./gradlew lintDebug
+
+      - store_artifacts:
+          path: build/reports/lint
+          destination: reports/lint
+
+  jacoco-unified:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+            - jacoco-files-{{ checksum "toolkit/livedata/build.gradle" }}
+      - restore_cache:
+          keys:
+            - jacoco-files-{{ checksum "toolkit/livedata/build.gradle" }}
+      - restore_cache:
+          keys:
+            - jacoco-files-{{ checksum "toolkit/recycler-adapter/build.gradle" }}
+      - restore_cache:
+          keys:
+            - jacoco-files-{{ checksum "toolkit/statemachine/build.gradle" }}
+      - run:
+          name: Generate Unified Jacoco Coverage Report
+          command: ./gradlew jacocoCoverageReport-unified
+
+      - store_artifacts:
+          path: build/reports/jacoco/jacocoCoverageReport-unified/html
+          destination: reports/coverage
+
+  livedata:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Run Livedata test
+          command: ./gradlew :toolkit:livedata:jacocoTestReport
+
+      - store_artifacts:
+          path: toolkit/livedata/build/reports/jacoco/jacocoCoverageReport/html
+          destination: reports/livedata
+
+      - save_cache:
+           paths:
+              - ~/toolkit/livedata/build/jacoco
+              - ~/toolkit/livedata/build/outputs/code-coverage/connected
+           key: jacoco-files-{{ checksum "toolkit/livedata/build.gradle" }}
+
+  recycler-adapter:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Run Recycler Adapter test
+          command: ./gradlew :toolkit:recycler-adapter:jacocoTestReport
+
+      - store_artifacts:
+          path: toolkit/recycler-adapter/build/reports/jacoco/jacocoCoverageReport/html
+          destination: reports/recycler-adapter
+
+      - save_cache:
+           paths:
+              - ~/toolkit/recycler-adapter/build/jacoco
+              - ~/toolkit/recycler-adapter/build/outputs/code-coverage/connected
+           key: jacoco-files-{{ checksum "toolkit/recycler-adapter/build.gradle" }}
+
+  statemachine:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Run Statemachine test
+          command: ./gradlew :toolkit:statemachine:jacocoTestReport
+
+      - store_artifacts:
+          path: toolkit/statemachine/build/reports/jacoco/jacocoCoverageReport/html
+          destination: reports/statemachine
+
+      - save_cache:
+           paths:
+              - ~/toolkit/statemachine/build/jacoco
+              - ~/toolkit/statemachine/build/outputs/code-coverage/connected
+           key: jacoco-files-{{ checksum "toolkit/statemachine/build.gradle" }}
+
+  livedata-deploy:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Deploy Livedata
+          command: ./gradlew :toolkit:livedata:bintrayUpload
+
+  recycler-adapter-deploy:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Deploy Recycler Adapter
+          command: ./gradlew :toolkit:recycler-adapter:bintrayUpload
+
+  statemachine-deploy:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-25-alpha
+    steps:
+      - checkout
+      - run:
+          name: Deploy Statemachine
+          command: ./gradlew :toolkit:statemachine:bintrayUpload
+
+workflows:
+  version: 2
+  teste:
+    jobs:
+      - checkout-repo
+      - ktLint:
+          requires:
+            - checkout-repo
+      - lint:
+          requires:
+            - checkout-repo
+      - livedata:
+          requires:
+            - lint
+            - ktLint
+      - recycler-adapter:
+          requires:
+            - lint
+            - ktLint
+      - statemachine:
+          requires:
+            - lint
+            - ktLint
+      - jacoco-unified:
+          requires:
+            - livedata
+            - recycler-adapter
+            - statemachine
+      - livedata-deploy:
+          requires:
+            - jacoco-unified
+          filters:
+            branches:
+              only: master
+      - recycler-adapter-deploy:
+          requires:
+            - jacoco-unified
+          filters:
+            branches:
+              only: master
+      - statemachine-deploy:
+          requires:
+            - jacoco-unified
+          filters:
+            branches:
+              only: master
