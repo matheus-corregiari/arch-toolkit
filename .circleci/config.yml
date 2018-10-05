@@ -1,0 +1,37 @@
+version: 2
+jobs:
+  build:
+    # This is the directory into which our code will be checked out.
+    working_directory: ~/code
+
+    docker:
+      - image: circleci/android:api-25-alpha
+
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+
+#      - run:
+#         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
+#         command: sudo chmod +x ./gradlew
+
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "toolkit/*/build.gradle" }}
+
+      - run:
+          name: Run KtLint
+          command: ./gradlew ktLint
+
+      - store_artifacts:
+          path: build/reports/ktlint
+          destination: reports/ktlint
+      # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
