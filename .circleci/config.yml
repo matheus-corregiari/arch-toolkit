@@ -8,13 +8,12 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle" }}
-      - run: gradle build
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
       - save_cache:
            paths:
               - ~/.gradle
@@ -26,6 +25,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Run KtLint
           command: ./gradlew ktLint
