@@ -34,36 +34,36 @@ jobs:
         path: build/reports/ktlint
         destination: reports/ktlint
 
-  lint:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-25-alpha
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - checkout
-      - run:
-        name: Run Lint
-        command: ./gradlew lintDebug
-      - store_artifacts:
-          path: build/reports/xml
-          destination: reports/lint/xml
-      - store_artifacts:
-          path: build/reports/html
-          destination: reports/lint/html
+#  lint:
+#    working_directory: ~/arch-toolkit
+#    docker:
+#      - image: circleci/android:api-25-alpha
+#    environment:
+#      JVM_OPTS: -Xmx3200m
+#    steps:
+#      - checkout
+#      - run:
+#        name: Run Lint
+#        command: ./gradlew lintDebug
+#      - store_artifacts:
+#          path: build/reports/xml
+#          destination: reports/lint/xml
+#      - store_artifacts:
+#          path: build/reports/html
+#          destination: reports/lint/html
 
-workflows:
-  version: 2
-  build-test-and-deploy:
-    filters:
-      branches:
-        only:
-          - master
-    jobs:
-      - checkout
-      - ktLint:
-        requires:
-          - checkout
-      - lint:
-        requires:
-          - checkout
+#workflows:
+#  version: 2
+#  build-test-and-deploy:
+#    filters:
+#      branches:
+#        only:
+#          - master
+#    jobs:
+#      - checkout
+#      - ktLint:
+#        requires:
+#          - checkout
+#      - lint:
+#        requires:
+#          - checkout
