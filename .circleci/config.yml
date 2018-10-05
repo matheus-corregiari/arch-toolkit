@@ -11,6 +11,14 @@ jobs:
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+      - run: gradle build
+      - save_cache:
+           paths:
+              - ~/.gradle
+           key: gradle-{{ checksum "build.gradle" }}
 
   ktLint:
     working_directory: ~/arch-toolkit
@@ -32,6 +40,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Run Lint
           command: ./gradlew lintDebug
@@ -46,6 +57,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Generate Unified Jacoco Coverage Report
           command: ./gradlew jacocoCoverageReport-unified
@@ -60,6 +74,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Run Livedata test
           command: ./gradlew :toolkit:livedata:jacocoTestReport
@@ -74,6 +91,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Run Recycler Adapter test
           command: ./gradlew :toolkit:recycler-adapter:jacocoTestReport
@@ -88,6 +108,9 @@ jobs:
       - image: circleci/android:api-25-alpha
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
       - run:
           name: Run Statemachine test
           command: ./gradlew :toolkit:statemachine:jacocoTestReport
