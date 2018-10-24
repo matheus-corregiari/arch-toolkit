@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply from: "$rootDir/tools/publish.gradle"
+apply from: "$rootDir/tools/publish/publish.gradle"
 
 android {
 
@@ -18,7 +18,7 @@ android {
 
 dependencies {
     compileOnly "android.arch.lifecycle:livedata:$versions.arch"
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
 
     testImplementation "android.arch.lifecycle:livedata:$versions.arch"
     testImplementation "android.arch.lifecycle:runtime:$versions.arch"

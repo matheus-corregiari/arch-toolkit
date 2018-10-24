@@ -1,0 +1,69 @@
+apply from: "$rootDir/tools/coverage/jacoco-common.gradle"
+
+afterEvaluate {
+
+    if (!project.hasProperty('android')) return
+
+    def jacocoTasks = []
+    def jacocoVerificationTasks = []
+
+    android.productFlavors.all {
+        flavor ->
+            jacocoTasks.add("jacocoTestReport-${flavor.name}")
+            jacocoVerificationTasks.add("jacocoTestCoverageVerification-${flavor.name}")
+    }
+
+    if (android.productFlavors.isEmpty()) {
+        jacocoTasks.add("jacocoTestReport")
+        jacocoVerificationTasks.add("jacocoTestCoverageVerification")
+    }
+
+    jacocoTasks.each { jacocoTask ->
+        task(jacocoTask, type: JacocoReport, group: "coverage-report") {
+            def flavorName = jacocoTask.split("-").last()
+            flavorName = flavorName == jacocoTask ? "" : flavorName
+
+            // Run Tests
+            if (project.android.buildTypes.debug.testCoverageEnabled)
+                dependsOn "create${flavorName.capitalize()}DebugCoverageReport"
+            dependsOn "test${flavorName.capitalize()}DebugUnitTest"
+
+            reports {
+                xml.enabled = true
+                html.enabled = true
+            }
+
+            sourceDirectories = files(findSourceDirectories(project, flavorName))
+            classDirectories = files(findClassDirectories(project, flavorName))
+            executionData = fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName))
+
+            doFirst {
+                println files(findClassDirectories(project, flavorName)).files
+            }
+
+            doLast {
+                println "Coverage report path -> file://${reports.html.destination}/index.html\n"
+            }
+        }
+    }
+
+    jacocoVerificationTasks.each { jacocoVerificationTask ->
+        task(jacocoVerificationTask, type: JacocoCoverageVerification, group: "coverage-report") {
+            def flavorName = jacocoVerificationTask.split("-").last()
+            flavorName = flavorName == jacocoVerificationTask ? "" : flavorName
+
+            violationRules {
+                failOnViolation = true
+                rule {
+                    limit {
+                        minimum = minCoverage
+                    }
+                }
+            }
+
+            sourceDirectories = files(findSourceDirectories(project, flavorName))
+            classDirectories = files(findClassDirectories(project, flavorName))
+            executionData = fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName))
+        }
+    }
+}

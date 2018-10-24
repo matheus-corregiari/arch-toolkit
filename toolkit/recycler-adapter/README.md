@@ -17,14 +17,14 @@ First you need to add Kotlin and Recycler View
 
 // Root project build.gradle
 dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
 }
 
 // Module build.gradle
 apply plugin: 'kotlin-android'
 
 dependencies{
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
 }
 ```
 

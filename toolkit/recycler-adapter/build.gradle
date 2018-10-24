@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply from: "$rootDir/tools/publish.gradle"
+apply from: "$rootDir/tools/publish/publish.gradle"
 
 android {
 
@@ -18,5 +18,5 @@ android {
 
 dependencies {
     compileOnly "com.android.support:recyclerview-v7:$versions.androidSupport"
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
 }

@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master.svg?style=svg)](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master)
+[![codebeat badge](https://codebeat.co/badges/1add62ed-f5fc-4bd2-9054-501685ca007c)](https://codebeat.co/projects/github-com-matheus-corregiari-arch-toolkit-master)
 
 # Arch Toolkit
 
@@ -15,16 +16,16 @@ This is the toolkit that I had used and improved across the projects I worked wi
 
 - **[Statemachine](toolkit/statemachine)** - A simple way to handle view change states
 - **[Recycler-Adapter](toolkit/recycler-adapter)** - A Recycler Adapter implementation using Custom Views and a "bind" interface
+- **[LiveData](toolkit/livedata)** - Some custom implementations of LiveData and some extensions
 
 ###### In progress:
 
-- **LiveData** - Some custom implementations of LiveData and some extensions
+- **Add Tests and code coverage.** (Improvements with CI and delivery)
 
 ###### Backlog:
 
 - **Delegates** - Some delegates to simplify Activity/Fragment/Views boilerplate code
 - **Extensions** - Some extensions to speed up your code
-- **Add Tests and code coverage.** (Sorry about that) =(
 
 I'm trying to publish everything on JCenter, but I'll only publish projects with javadoc and implemented samples. So if you want use something not published, feel free to copy and paste into your project.
 

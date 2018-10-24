@@ -4,7 +4,7 @@ afterEvaluate {
     android {
         dependencies {
 
-            androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+            androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
             androidTestImplementation "android.arch.core:core-testing:$versions.arch"
 
             androidTestImplementation "junit:junit:$versions.junit"
@@ -26,7 +26,7 @@ afterEvaluate {
             androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:$versions.uiAutomator"
 
             androidTestImplementation "br.com.concretesolutions:kappuccino:$versions.kappuccino"
-            androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+            androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
 
             androidTestImplementation "org.hamcrest:hamcrest-core:$versions.hamcrest"
             androidTestImplementation "org.hamcrest:hamcrest-library:$versions.hamcrest"

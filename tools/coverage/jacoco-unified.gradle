@@ -1,0 +1,72 @@
+apply from: "$rootDir/tools/coverage/jacoco-common.gradle"
+
+afterEvaluate {
+
+    if (childProjects.isEmpty()) return
+    final def flavorNames = []
+    final def childProjectsWithoutChildList = listAllChildProjectWithoutChilds(project)
+
+    childProjectsWithoutChildList.each { child ->
+        child.afterEvaluate {
+            if (!child.hasProperty('android')) return
+
+            child.android.productFlavors.all { flavor ->
+                if (!flavorNames.contains(flavor.name))
+                    flavorNames.add(flavor.name)
+            }
+
+            if (flavorNames.isEmpty()) flavorNames.add("")
+
+            flavorNames.each { flavor ->
+
+                final def sourceDirectoriesList = []
+                final def classDirectoriesList = []
+                final def coverageFilesList = []
+
+                childProjectsWithoutChildList.each { childProject ->
+                    sourceDirectoriesList.addAll(findSourceDirectories(childProject, flavor))
+                    classDirectoriesList.addAll(findClassDirectories(childProject, flavor))
+                    coverageFilesList.addAll(
+                            fileTree(dir: "$childProject.buildDir", includes: findCoverageFiles(flavor)).files
+                    )
+                }
+
+                def jacocoTestReportTaskName = flavor.isEmpty() ? "jacocoTestReport-unified" : "jacocoTestReport-${flavor}-unified"
+                if (tasks.findByName(jacocoTestReportTaskName) == null) {
+                    task(jacocoTestReportTaskName, type: JacocoReport, group: "coverage-report") {
+                        reports {
+                            xml.enabled = true
+                            html.enabled = true
+                        }
+
+                        sourceDirectories = files(sourceDirectoriesList)
+                        classDirectories = files(classDirectoriesList)
+                        executionData = files(coverageFilesList)
+
+                        doLast {
+                            println "Coverage report path -> file://${reports.html.destination}/index.html\n"
+                        }
+                    }
+                }
+
+                def jacocoTestCoverageVerificationTaskName = flavor.isEmpty() ? "jacocoTestCoverageVerification-unified" : "jacocoTestCoverageVerification-${flavor}-unified"
+                if (tasks.findByName(jacocoTestCoverageVerificationTaskName) == null) {
+                    task(jacocoTestCoverageVerificationTaskName, type: JacocoCoverageVerification, group: "coverage-report") {
+                        violationRules {
+                            failOnViolation = true
+                            rule {
+                                limit {
+                                    minimum = minCoverage
+                                }
+                            }
+                        }
+
+                        sourceDirectories = files(sourceDirectoriesList)
+                        classDirectories = files(classDirectoriesList)
+                        executionData = files(coverageFilesList)
+                    }
+                }
+            }
+        }
+    }
+}

@@ -3,7 +3,7 @@ afterEvaluate {
 
     android {
         dependencies {
-            testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+            testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
             testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$versions.mockito_kotlin"
             testImplementation "net.vidageek:mirror:$versions.mirror"
             testImplementation "junit:junit:$versions.junit"
