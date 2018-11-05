@@ -16,11 +16,11 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:recyclerview-v7:$versions.androidSupport"
+    implementation "com.android.support:recyclerview-v7:$versions.android_support"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    implementation "com.android.support:support-annotations:$versions.androidSupport"
-    implementation "com.android.support:support-v4:$versions.androidSupport"
-    implementation("com.android.support:appcompat-v7:$versions.androidSupport") {
+    implementation "com.android.support:support-annotations:$versions.android_support"
+    implementation "com.android.support:support-v4:$versions.android_support"
+    implementation("com.android.support:appcompat-v7:$versions.android_support") {
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
     }

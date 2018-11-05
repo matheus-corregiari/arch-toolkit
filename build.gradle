@@ -1,7 +1,5 @@
 buildscript {
     apply from: "$rootDir/tools/versions.gradle"
-    ext.android_plugin_version = '3.2.1'
-    extensions.jacocoVersion = '0.8.2'
 
     repositories {
         google()
@@ -99,9 +97,14 @@ allprojects {
                 options.addStringOption('encoding', 'UTF-8')
             }
 
+            configurations {
+                javadocDeps
+            }
+
             task javadoc(type: Javadoc) {
                 excludes = ['**/*.kt']
                 source = android.sourceSets.main.java.srcDirs
+                classpath += configurations.javadocDeps
                 classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
             }
 
@@ -119,6 +122,7 @@ allprojects {
             }
 
             dependencies {
+                javadocDeps "com.android.support:support-annotations:$versions.android_support"
                 ktlint "com.github.shyiko:ktlint:$versions.ktLint"
             }
         }

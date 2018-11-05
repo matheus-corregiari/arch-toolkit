@@ -29,7 +29,7 @@ dependencies{
 ```
 
 ```groovy
-implementation "com.android.support:recyclerview-v7:$versions.androidSupport"
+implementation "com.android.support:recyclerview-v7:$versions.android_support"
 ```
 
 Then add the Recycler Adapter

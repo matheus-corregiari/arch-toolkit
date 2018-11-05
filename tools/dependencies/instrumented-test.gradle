@@ -12,11 +12,11 @@ afterEvaluate {
             androidTestImplementation "org.mockito:mockito-core:$versions.mockito"
             androidTestImplementation "org.mockito:mockito-android:$versions.mockito"
 
-            androidTestImplementation "com.android.support:support-annotations:$versions.androidSupport"
-            androidTestImplementation "com.android.support:appcompat-v7:$versions.androidSupport"
-            androidTestImplementation "com.android.support:design:$versions.androidSupport"
-            androidTestImplementation "com.android.support:support-v4:$versions.androidSupport"
-            androidTestImplementation "com.android.support:cardview-v7:$versions.androidSupport"
+            androidTestImplementation "com.android.support:support-annotations:$versions.android_support"
+            androidTestImplementation "com.android.support:appcompat-v7:$versions.android_support"
+            androidTestImplementation "com.android.support:design:$versions.android_support"
+            androidTestImplementation "com.android.support:support-v4:$versions.android_support"
+            androidTestImplementation "com.android.support:cardview-v7:$versions.android_support"
 
             androidTestImplementation "com.android.support.test:runner:$versions.runner"
             androidTestImplementation "com.android.support.test:rules:$versions.rules"
