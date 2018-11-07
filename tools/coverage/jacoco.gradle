@@ -4,6 +4,9 @@ afterEvaluate {
 
     if (!project.hasProperty('android')) return
 
+    /**
+     * Build a list with the task names that will be generated for Jacoco
+     */
     def jacocoTasks = []
     def jacocoVerificationTasks = []
 
@@ -18,6 +21,9 @@ afterEvaluate {
         jacocoVerificationTasks.add("jacocoTestCoverageVerification")
     }
 
+    /**
+     * Iterate all jacocoTask Names list and generate all variants to run tests and create the coverage report html
+     */
     jacocoTasks.each { jacocoTask ->
         task(jacocoTask, type: JacocoReport, group: "coverage-report") {
             def flavorName = jacocoTask.split("-").last()
@@ -47,6 +53,11 @@ afterEvaluate {
         }
     }
 
+    /**
+     * Iterate all jacocoVerificationTask Names list and generate all variants to verify the coverage rule
+     *
+     * This tasks must be executed with all coverage files already generated, in other words, after the jacocoTestReport task
+     */
     jacocoVerificationTasks.each { jacocoVerificationTask ->
         task(jacocoVerificationTask, type: JacocoCoverageVerification, group: "coverage-report") {
             def flavorName = jacocoVerificationTask.split("-").last()

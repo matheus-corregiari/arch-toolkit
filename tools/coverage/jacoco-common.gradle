@@ -23,21 +23,22 @@ private static void addFileTreeIfExists(Project project, List<FileTree> fileTree
 static List<String> findSourceDirectories(Project project, String flavor = "", String buildType = "debug") {
 
     final sourcePaths = []
+    final projectDir = project.projectDir
 
     // Main
-    addPathIfExists(sourcePaths, "${project.projectDir}/src/main/java")
-    addPathIfExists(sourcePaths, "${project.projectDir}/src/main/kotlin")
+    addPathIfExists(sourcePaths, "$projectDir/src/main/java")
+    addPathIfExists(sourcePaths, "$projectDir/src/main/kotlin")
 
     // Flavor
     if (!flavor.isEmpty()) {
-        addPathIfExists(sourcePaths, "${project.projectDir}/src/$flavor/java")
-        addPathIfExists(sourcePaths, "${project.projectDir}/src/$flavor/kotlin")
+        addPathIfExists(sourcePaths, "$projectDir/src/$flavor/java")
+        addPathIfExists(sourcePaths, "$projectDir/src/$flavor/kotlin")
     }
 
     // BuildType
     if (!buildType.isEmpty()) {
-        addPathIfExists(sourcePaths, "${project.projectDir}/src/$buildType/java")
-        addPathIfExists(sourcePaths, "${project.projectDir}/src/$buildType/kotlin")
+        addPathIfExists(sourcePaths, "$projectDir/src/$buildType/java")
+        addPathIfExists(sourcePaths, "$projectDir/src/$buildType/kotlin")
     }
     return sourcePaths
 }
@@ -50,19 +51,20 @@ static List<ConfigurableFileTree> findClassDirectories(Project project, String f
     ]
 
     final classPaths = []
+    final buildDir = project.buildDir
 
     // BuildType
     if (!buildType.isEmpty()) {
-        addFileTreeIfExists(project, classPaths, "${project.buildDir}/intermediates/classes/$buildType", filter.java)
-        addFileTreeIfExists(project, classPaths, "${project.buildDir}/intermediates/javac/$buildType/compile${buildType.capitalize()}JavaWithJavac", filter.java)
-        addFileTreeIfExists(project, classPaths, "${project.buildDir}/tmp/kotlin-classes/$buildType", filter.kotlin)
+        addFileTreeIfExists(project, classPaths, "$buildDir/intermediates/classes/$buildType", filter.java)
+        addFileTreeIfExists(project, classPaths, "$buildDir/intermediates/javac/$buildType/compile${buildType.capitalize()}JavaWithJavac", filter.java)
+        addFileTreeIfExists(project, classPaths, "$buildDir/tmp/kotlin-classes/$buildType", filter.kotlin)
     }
 
     // Flavor
     if (!flavor.isEmpty()) {
-        addFileTreeIfExists(project, classPaths, "${project.buildDir}/intermediates/classes/$flavor/$buildType", filter.java)
-        addFileTreeIfExists(project, classPaths, "${project.buildDir}/intermediates/javac/$flavor${buildType.capitalize()}/compile${flavor.capitalize()}${buildType.capitalize()}JavaWithJavac", filter.java)
-        addFileTreeIfExists(project, classPaths, "${project.buildDir}/tmp/kotlin-classes/$flavor${buildType.capitalize()}", filter.kotlin)
+        addFileTreeIfExists(project, classPaths, "$buildDir/intermediates/classes/$flavor/$buildType", filter.java)
+        addFileTreeIfExists(project, classPaths, "$buildDir/intermediates/javac/$flavor${buildType.capitalize()}/compile${flavor.capitalize()}${buildType.capitalize()}JavaWithJavac", filter.java)
+        addFileTreeIfExists(project, classPaths, "$buildDir/tmp/kotlin-classes/$flavor${buildType.capitalize()}", filter.kotlin)
     }
 
     return classPaths
@@ -82,7 +84,7 @@ static List<String> findCoverageFiles(String flavor = "", String buildType = "de
     }
 }
 
-static List<Project> listAllChildProjectWithoutChilds(Project project) {
+static List<Project> listAllChildProjectWithoutChild(Project project) {
 
     final childProjects = []
 
@@ -91,21 +93,19 @@ static List<Project> listAllChildProjectWithoutChilds(Project project) {
     } else {
         project.childProjects.each {
             childPair ->
-                childProjects.addAll(listAllChildProjectWithoutChilds(childPair.value))
+                childProjects.addAll(listAllChildProjectWithoutChild(childPair.value))
         }
     }
 
     return childProjects
 }
 
-
 ext {
 
     findSourceDirectories = this.&findSourceDirectories
     findClassDirectories = this.&findClassDirectories
     findCoverageFiles = this.&findCoverageFiles
-    listAllChildProjectWithoutChilds = this.&listAllChildProjectWithoutChilds
+    listAllChildProjectWithoutChild = this.&listAllChildProjectWithoutChild
 
     minCoverage = 0.70
 }
-

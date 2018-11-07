@@ -17,16 +17,10 @@ First you need to add the Google Architecture components
 implementation "android.arch.lifecycle:livedata:$versions.arch"
 ```
 
-Then add the Livedata
+Then add the Livedata implementation from arch-toolkit
 
 ```groovy
 implementation "br.com.arch.toolkit:livedata:$latest_version"
-```
-
-or
-
-```groovy
-api "br.com.arch.toolkit:livedata:$latest_version"
 ```
 
 #### More samples and explanations later... sorry =/

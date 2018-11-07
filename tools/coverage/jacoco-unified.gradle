@@ -4,7 +4,7 @@ afterEvaluate {
 
     if (childProjects.isEmpty()) return
     final def flavorNames = []
-    final def childProjectsWithoutChildList = listAllChildProjectWithoutChilds(project)
+    final def childProjectsWithoutChildList = listAllChildProjectWithoutChild(project)
 
     childProjectsWithoutChildList.each { child ->
         child.afterEvaluate {
@@ -33,6 +33,12 @@ afterEvaluate {
 
                 def jacocoTestReportTaskName = flavor.isEmpty() ? "jacocoTestReport-unified" : "jacocoTestReport-${flavor}-unified"
                 if (tasks.findByName(jacocoTestReportTaskName) == null) {
+
+                    /**
+                     * Generates a task with creates a unified coverage report for Jacoco, including all sub-project modules.
+                     *
+                     * This tasks should be executed after all coverage tasks inside each child module
+                     */
                     task(jacocoTestReportTaskName, type: JacocoReport, group: "coverage-report") {
                         reports {
                             xml.enabled = true
@@ -51,6 +57,12 @@ afterEvaluate {
 
                 def jacocoTestCoverageVerificationTaskName = flavor.isEmpty() ? "jacocoTestCoverageVerification-unified" : "jacocoTestCoverageVerification-${flavor}-unified"
                 if (tasks.findByName(jacocoTestCoverageVerificationTaskName) == null) {
+
+                    /**
+                     * Generates a task with verify the coverage rule using including all sub-project modules.
+                     *
+                     * This tasks should be executed after all coverage tasks inside each child module
+                     */
                     task(jacocoTestCoverageVerificationTaskName, type: JacocoCoverageVerification, group: "coverage-report") {
                         violationRules {
                             failOnViolation = true
