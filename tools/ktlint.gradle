@@ -1,99 +1,114 @@
 configurations {
     ktlint
 }
+
 afterEvaluate {
+
     if (!project.hasProperty('android')) return
 
-    /**
-     * Run KtLint only for the code placed in main folder
-     */
-    task("ktLint", type: JavaExec, group: "lint") {
+    def flavors = []
+    def buildTypes = []
 
-        description = "Check Kotlin code style."
-        main = "com.github.shyiko.ktlint.Main"
-        classpath = configurations.ktlint
-
-        args "src/main/**/*.kt",
-                "src/test/**/*.kt",
-                "src/androidTest/**/*.kt",
-                "--reporter=plain",
-                "--reporter=checkstyle,output=$rootDir/build/reports/ktlint/$project.name-main-lint.xml"
-    }
-
-    /**
-     * Run KtLintFormat only for the code placed in main folder
-     */
-    task("ktLintFormat", type: JavaExec, group: "lint") {
-        description = "Fix Kotlin code style deviations."
-        main = "com.github.shyiko.ktlint.Main"
-        classpath = configurations.ktlint
-
-        args "-F",
-                "src/main/**/*.kt",
-                "src/test/**/*.kt",
-                "src/androidTest/**/*.kt"
-    }
+    def taskVariants = []
 
     android.productFlavors.all {
-        flavor ->
-
-            /**
-             * Run KtLint for the main folder and the specific flavor
-             */
-            task("ktLint-${flavor.name}", type: JavaExec, group: "lint") {
-
-                description = "Check Kotlin code style."
-                main = "com.github.shyiko.ktlint.Main"
-                classpath = configurations.ktlint
-
-                dependsOn "ktLint"
-
-                args "src/${flavor.name}/**/*.kt",
-                        "src/test${flavor.name.capitalize()}/**/*.kt",
-                        "src/androidTest${flavor.name.capitalize()}/**/*.kt",
-                        "--reporter=plain",
-                        "--reporter=checkstyle,output=$rootDir/build/reports/ktlint/$project.name-${flavor.name}-lint.xml"
-            }
-
-            /**
-             * Run KtLintFormat for the main folder and the specific flavor
-             */
-            task("ktLintFormat-${flavor.name}", type: JavaExec, group: "lint") {
-                description = "Fix Kotlin code style deviations."
-                main = "com.github.shyiko.ktlint.Main"
-                classpath = configurations.ktlint
-
-                dependsOn "ktLintFormat"
-
-                args "-F",
-                        "src/${flavor.name}/**/*.kt",
-                        "src/test${flavor.name.capitalize()}/**/*.kt",
-                        "src/androidTest${flavor.name.capitalize()}/**/*.kt"
-            }
+        flavor -> flavors.add(flavor.name)
     }
 
-    if (android.productFlavors.isEmpty()) return
+    android.buildTypes.all {
+        buildType -> buildTypes.add(buildType.name)
+    }
 
-    /**
-     * Run KtLintFormat for all flavors
-     */
-    task("ktLint-all", group: "lint") {
-        description = "Check Kotlin code style for all flavors"
+    if (flavors.isEmpty()) {
+        taskVariants.addAll(buildTypes)
+    } else {
+        flavors.each { flavor ->
+            buildTypes.each { buildType ->
+                taskVariants.add("$flavor-$buildType")
+            }
 
-        android.productFlavors.all { flavor ->
-            finalizedBy "ktLint-${flavor.name}"
+            // Runs ktLint with buildVariant for all buildTypes on flavor
+            task("ktLint-$flavor", group: "lint") {
+                buildTypes.each { buildType ->
+                    dependsOn "ktLint-$flavor-$buildType"
+                }
+            }
+            task("ktLintFormat-$flavor", group: "lint-format") {
+                buildTypes.each { buildType ->
+                    dependsOn "ktLintFormat-$flavor-$buildType"
+                }
+            }
+        }
+
+        // Runs ktLint with buildVariant for all flavors
+        buildTypes.each { buildType ->
+            task("ktLint-$buildType", group: "lint") {
+                flavors.each { flavor ->
+                    dependsOn "ktLint-$flavor-$buildType"
+                }
+            }
+            task("ktLintFormat-$buildType", group: "lint-format") {
+                flavors.each { flavor ->
+                    dependsOn "ktLintFormat-$flavor-$buildType"
+                }
+            }
         }
     }
 
-    /**
-     * Run KtLintFormat for all flavors
-     */
-    task("ktLintFormat-all", group: "lint") {
-        description = "Fix Kotlin code style deviations for all flavors"
-
-        android.productFlavors.all { flavor ->
-            finalizedBy "ktLintFormat-${flavor.name}"
+    // Runs ktLint for all task variants possible
+    task("ktLint", group: "lint") {
+        taskVariants.each { taskVariant ->
+            dependsOn "ktLint-$taskVariant"
+        }
+    }
+    task("ktLintFormat", group: "lint-format") {
+        taskVariants.each { taskVariant ->
+            dependsOn "ktLintFormat-$taskVariant"
         }
     }
 
+    // Runs ktLint for specific Variant and Flavor
+    taskVariants.each { taskVariant ->
+        def splitList = taskVariant.split("-")
+        def flavor = splitList.size() > 1 ? "" : splitList.first()
+        def buildType = splitList.last()
+
+        task("ktLint-$taskVariant", type: JavaExec, group: "lint") {
+
+            description = "Check Kotlin code style."
+            main = "com.github.shyiko.ktlint.Main"
+            classpath = configurations.ktlint
+
+            args "src/main/**/*.kt",
+                    "src/test/**/*.kt",
+                    "src/androidTest/**/*.kt",
+
+                    "src/$buildType/**/*.kt",
+
+                    "src/$flavor/**/*.kt",
+                    "src/test${flavor.capitalize()}/**/*.kt",
+                    "src/androidTest${flavor.capitalize()}/**/*.kt",
+
+                    "--reporter=plain",
+                    "--reporter=checkstyle,output=$rootDir/build/reports/ktlint/$project.name-$taskVariant-lint.xml"
+        }
+
+        task("ktLintFormat-$taskVariant", type: JavaExec, group: "lint-format") {
+
+            description = "Fix Kotlin code style deviations."
+            main = "com.github.shyiko.ktlint.Main"
+            classpath = configurations.ktlint
+
+            args "-F",
+                    "src/main/**/*.kt",
+                    "src/test/**/*.kt",
+                    "src/androidTest/**/*.kt",
+
+                    "src/$buildType/**/*.kt",
+
+                    "src/$flavor/**/*.kt",
+                    "src/test${flavor.capitalize()}/**/*.kt",
+                    "src/androidTest${flavor.capitalize()}/**/*.kt"
+        }
+    }
 }

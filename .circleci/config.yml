@@ -74,10 +74,10 @@ jobs:
             - jacoco-files-{{ checksum "toolkit/statemachine/build.gradle" }}
       - run:
           name: Generate Unified Jacoco Coverage Report
-          command: ./gradlew jacocoCoverageReport-unified
+          command: ./gradlew jacocoTestReport-unified
 
       - store_artifacts:
-          path: build/reports/jacoco/jacocoCoverageReport-unified/html
+          path: build/reports/jacoco/jacocoTestReport-unified/html
           destination: reports/coverage
 
   livedata:
@@ -94,7 +94,7 @@ jobs:
           command: ./gradlew :toolkit:livedata:jacocoTestReport
 
       - store_artifacts:
-          path: toolkit/livedata/build/reports/jacoco/jacocoCoverageReport/html
+          path: toolkit/livedata/build/reports/jacoco/jacocoTestReport/html
           destination: reports/livedata
 
       - save_cache:
@@ -117,7 +117,7 @@ jobs:
           command: ./gradlew :toolkit:recycler-adapter:jacocoTestReport
 
       - store_artifacts:
-          path: toolkit/recycler-adapter/build/reports/jacoco/jacocoCoverageReport/html
+          path: toolkit/recycler-adapter/build/reports/jacoco/jacocoTestReport/html
           destination: reports/recycler-adapter
 
       - save_cache:
@@ -140,7 +140,7 @@ jobs:
           command: ./gradlew :toolkit:statemachine:jacocoTestReport
 
       - store_artifacts:
-          path: toolkit/statemachine/build/reports/jacoco/jacocoCoverageReport/html
+          path: toolkit/statemachine/build/reports/jacoco/jacocoTestReport/html
           destination: reports/statemachine
 
       - save_cache:
