@@ -36,6 +36,6 @@ You'll find instructions to add them into your project and how to use them.
 Open a pull request! It will make me really really happy!
 
 ###### Need some custom behavior or something else?
-Open a issue or copy the classes into your project, I think the code is small and simple, your can do whatever you want with them.
+Open a issue or copy the classes into your project, I think the code is small and simple, you can do whatever you want with them.
 
 But try to tell me what you miss and then I can improve!! =D
