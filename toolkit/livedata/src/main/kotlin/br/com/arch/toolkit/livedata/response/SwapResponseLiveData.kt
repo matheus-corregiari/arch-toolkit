@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.livedata.response
 
-import android.arch.lifecycle.MediatorLiveData
+import androidx.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.livedata.ExecutorUtil.async
 import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
 import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING

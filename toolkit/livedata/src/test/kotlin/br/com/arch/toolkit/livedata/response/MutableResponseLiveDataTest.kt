@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.livedata.response
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
 import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
 import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS

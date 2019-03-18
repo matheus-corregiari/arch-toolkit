@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildTypes.debug.testCoverageEnabled false
     }
 
@@ -20,5 +20,5 @@ android {
 
 dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    compileOnly "com.android.support:support-annotations:$versions.android_support"
+    compileOnly "androidx.annotation:annotation:$versions.androidx.annotation"
 }

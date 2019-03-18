@@ -1,9 +1,9 @@
 package br.com.arch.toolkit.livedata.computable
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.LifecycleRegistry
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import br.com.arch.toolkit.livedata.extention.observe
 import br.com.arch.toolkit.livedata.extention.observeSingle
 import com.nhaarman.mockitokotlin2.mock

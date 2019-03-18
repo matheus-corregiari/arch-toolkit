@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.recycler.adapter
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 
 /**
  * Default implementation of DiffUtil.ItemCallback

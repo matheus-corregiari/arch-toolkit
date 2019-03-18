@@ -1,8 +1,8 @@
 package br.com.arch.toolkit.livedata.computable;
 
-import android.arch.lifecycle.LiveData;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
+import androidx.lifecycle.LiveData;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;

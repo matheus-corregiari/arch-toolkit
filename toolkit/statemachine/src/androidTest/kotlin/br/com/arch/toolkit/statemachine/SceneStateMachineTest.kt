@@ -1,8 +1,8 @@
 package br.com.arch.toolkit.statemachine
 
 import android.content.Intent
-import android.support.test.espresso.intent.rule.IntentsTestRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.espresso.intent.rule.IntentsTestRule
+import androidx.test.runner.AndroidJUnit4
 import android.transition.Fade
 import android.transition.Scene
 import android.widget.FrameLayout
