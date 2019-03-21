@@ -1,16 +1,16 @@
 package br.com.arch.toolkit.sample.recycler.adapter
 
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.LinearLayout.VERTICAL
 import br.com.arch.toolkit.sample.recycler.adapter.adapter.MultipleViewTypesAdapter
 
 class ChangingListActivity : BaseActivity() {
 
-    private lateinit var recycler: RecyclerView
+    private lateinit var recycler: androidx.recyclerview.widget.RecyclerView
     private lateinit var restore: View
     private lateinit var sortDescending: View
 
@@ -25,8 +25,8 @@ class ChangingListActivity : BaseActivity() {
         restore = findViewById(R.id.restore)
         sortDescending = findViewById(R.id.sort_descending)
 
-        recycler.layoutManager = LinearLayoutManager(this)
-        recycler.addItemDecoration(DividerItemDecoration(this, VERTICAL))
+        recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        recycler.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(this, VERTICAL))
         recycler.adapter = adapter
 
         adapter.setList(generateStringList())

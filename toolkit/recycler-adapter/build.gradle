@@ -17,6 +17,6 @@ android {
 }
 
 dependencies {
-    compileOnly "com.android.support:recyclerview-v7:$versions.android_support"
+    compileOnly "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
 }

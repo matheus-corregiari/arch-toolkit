@@ -16,14 +16,10 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:recyclerview-v7:$versions.android_support"
+    implementation "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    implementation "com.android.support:support-annotations:$versions.android_support"
-    implementation "com.android.support:support-v4:$versions.android_support"
-    implementation("com.android.support:appcompat-v7:$versions.android_support") {
-        exclude module: 'support-annotations'
-        exclude module: 'support-v4'
-    }
+    implementation "androidx.annotation:annotation:$versions.androidx.annotation"
+    implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
 
     implementation project(":toolkit:recycler-adapter")
 }

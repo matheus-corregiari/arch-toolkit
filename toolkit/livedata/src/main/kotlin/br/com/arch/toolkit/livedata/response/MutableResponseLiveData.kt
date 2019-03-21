@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.livedata.response
 
-import android.support.annotation.NonNull
+import androidx.annotation.NonNull
 import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
 import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
 import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS

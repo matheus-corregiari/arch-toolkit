@@ -1,31 +1,37 @@
 ext.versions = [
 
-        kotlin        : '1.2.71',
-        android_plugin: '3.2.1',
-        jacoco        : '0.8.2',
-        dexcount      : '0.8.2',
-        bintray_plugin: '1.8.4',
-        maven_plugin  : '2.1',
+        kotlin         : '1.3.21',
+        android_plugin : '3.3.2',
+        jacoco         : '0.8.3',
+        dexcount       : '0.8.2',
+        bintray_plugin : '1.8.4',
+        maven_plugin   : '2.1',
 
         // Android
-        android_support: '28.0.0',
-
-        // Android Arch
-        arch          : '1.1.1',
+        androidx       : [
+                appcompat  : '1.0.0',
+                annotation  : '1.0.0',
+                recyclerview: '1.0.0',
+                lifecycle   : [
+                        livedata: '2.0.0-rc01',
+                        runtime : '2.0.0-rc01',
+                        testing : '2.0.0-rc01',
+                ],
+        ],
 
         // KtLint
-        ktLint        : '0.27.0',
+        ktLint         : '0.31.0',
 
         // Test
-        espresso      : '3.0.2',
-        mockito       : '2.11.0',
-        mockito_kotlin: '2.0.0-RC1',
-        robolectric   : '4.0-alpha-3',
-        hamcrest      : '1.3',
-        junit         : '4.12',
-        rules         : '1.0.2',
-        runner        : '1.0.2',
-        kappuccino    : '1.2.0',
-        mirror        : '1.6',
-        uiAutomator   : '2.1.3'
+        espresso       : '3.0.2',
+        mockito        : '2.11.0',
+        mockito_kotlin : '2.0.0-RC1',
+        robolectric    : '4.0-alpha-3',
+        hamcrest       : '1.3',
+        junit          : '4.12',
+        rules          : '1.0.2',
+        runner         : '1.0.2',
+        kappuccino     : '1.2.0',
+        mirror         : '1.6',
+        uiAutomator    : '2.1.3'
 ]

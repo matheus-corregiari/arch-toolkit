@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.livedata;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public final class ExecutorUtil {
 

@@ -3,8 +3,8 @@ package br.com.arch.toolkit.test
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.FrameLayout
 
@@ -20,7 +20,7 @@ class TestActivity : AppCompatActivity() {
         setContentView(content)
     }
 
-    fun setFragment(fragment: Fragment) {
+    fun setFragment(fragment: androidx.fragment.app.Fragment) {
         supportFragmentManager.beginTransaction().add(android.R.id.content, fragment, "TAG").commit()
     }
 

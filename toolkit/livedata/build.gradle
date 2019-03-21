@@ -17,10 +17,10 @@ android {
 }
 
 dependencies {
-    compileOnly "android.arch.lifecycle:livedata:$versions.arch"
+    compileOnly "androidx.lifecycle:lifecycle-livedata:$versions.androidx.lifecycle.livedata"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
 
-    testImplementation "android.arch.lifecycle:livedata:$versions.arch"
-    testImplementation "android.arch.lifecycle:runtime:$versions.arch"
-    testImplementation "android.arch.core:core-testing:$versions.arch"
+    testImplementation "androidx.lifecycle:lifecycle-livedata:$versions.androidx.lifecycle.livedata"
+    testImplementation "androidx.lifecycle:lifecycle-runtime:$versions.androidx.lifecycle.runtime"
+    testImplementation "androidx.arch.core:core-testing:$versions.androidx.lifecycle.testing"
 }

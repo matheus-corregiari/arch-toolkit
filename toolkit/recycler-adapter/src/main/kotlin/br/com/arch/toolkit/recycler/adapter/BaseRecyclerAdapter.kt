@@ -1,16 +1,16 @@
 package br.com.arch.toolkit.recycler.adapter
 
 import android.content.Context
-import android.support.v7.recyclerview.extensions.AsyncListDiffer
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 
 /**
  * Basic implementation of RecyclerView.Adapter using AsyncListDiffer and CustomViews as items
  */
-abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> = DefaultItemDiffer()) : RecyclerView.Adapter<BaseViewHolder>() {
+abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> = DefaultItemDiffer()) : androidx.recyclerview.widget.RecyclerView.Adapter<BaseViewHolder>() {
 
     @Suppress("LeakingThis")
     private val listDiffer = AsyncListDiffer<MODEL>(this, differ)
