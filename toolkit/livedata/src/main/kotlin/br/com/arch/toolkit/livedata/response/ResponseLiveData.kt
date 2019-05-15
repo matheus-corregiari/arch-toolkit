@@ -1,9 +1,9 @@
 package br.com.arch.toolkit.livedata.response
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import br.com.arch.toolkit.livedata.extention.observe
 import br.com.arch.toolkit.livedata.extention.observeUntil
 import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
@@ -83,6 +83,26 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
     fun observeHideLoading(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
         observe(owner) {
             if (it.status != LOADING) observer.invoke()
+        }
+        return this
+    }
+
+    /**
+     * Observes only the Loading Status only one time (until receive another status besides LOADING)
+     *
+     * @param owner The desired Owner to observe
+     * @param observer Will receive true when the actual value has the LOADING status, false otherwise
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.observeLoading
+     */
+    @NonNull
+    fun observeSingleLoading(@NonNull owner: LifecycleOwner, @NonNull observer: (Boolean) -> Unit): ResponseLiveData<T> {
+        observeUntil(owner) {
+            if (it == null) return@observeUntil false
+            observer.invoke(it.status == LOADING)
+            it.status != LOADING
         }
         return this
     }
@@ -285,7 +305,8 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      *
      * @see ResponseLiveData.onNext
      */
-    @NonNull fun <R> map(@NonNull transformation: ((T) -> R)): ResponseLiveData<R> {
+    @NonNull
+    fun <R> map(@NonNull transformation: ((T) -> R)): ResponseLiveData<R> {
         val liveData = SwapResponseLiveData<R>()
         liveData.swapSource(this, transformation)
         return liveData
@@ -302,7 +323,8 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      *
      * @see ResponseLiveData.map
      */
-    @NonNull fun onNext(@NonNull onNext: ((T) -> Unit)): ResponseLiveData<T> {
+    @NonNull
+    fun onNext(@NonNull onNext: ((T) -> Unit)): ResponseLiveData<T> {
         return map {
             onNext(it)
             it
