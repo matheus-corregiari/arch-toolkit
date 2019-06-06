@@ -48,7 +48,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeLoading(@NonNull owner: LifecycleOwner, @NonNull observer: (Boolean) -> Unit): ResponseLiveData<T> {
+    inline fun observeLoading(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: (Boolean) -> Unit): ResponseLiveData<T> {
         observe(owner) {
             observer.invoke(it.status == LOADING)
         }
@@ -64,7 +64,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeShowLoading(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    inline fun observeShowLoading(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: () -> Unit): ResponseLiveData<T> {
         observe(owner) {
             if (it.status == LOADING) observer.invoke()
         }
@@ -80,9 +80,29 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeHideLoading(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    inline fun observeHideLoading(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: () -> Unit): ResponseLiveData<T> {
         observe(owner) {
             if (it.status != LOADING) observer.invoke()
+        }
+        return this
+    }
+
+    /**
+     * Observes only the Loading Status only one time (until receive another status besides LOADING)
+     *
+     * @param owner The desired Owner to observe
+     * @param observer Will receive true when the actual value has the LOADING status, false otherwise
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.observeLoading
+     */
+    @NonNull
+    inline fun observeSingleLoading(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: (Boolean) -> Unit): ResponseLiveData<T> {
+        observeUntil(owner) {
+            if (it == null) return@observeUntil false
+            observer.invoke(it.status == LOADING)
+            it.status != LOADING
         }
         return this
     }
@@ -98,7 +118,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeShowLoading
      */
     @NonNull
-    fun observeSingleShowLoading(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    inline fun observeSingleShowLoading(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: () -> Unit): ResponseLiveData<T> {
         observeUntil(owner) {
             if (it == null) return@observeUntil false
             if (it.status == LOADING) observer.invoke()
@@ -118,7 +138,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeHideLoading
      */
     @NonNull
-    fun observeSingleHideLoading(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    inline fun observeSingleHideLoading(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: () -> Unit): ResponseLiveData<T> {
         observeUntil(owner) {
             if (it == null) return@observeUntil false
             if (it.status != LOADING) observer.invoke()
@@ -138,7 +158,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeError(@NonNull owner: LifecycleOwner, @NonNull observer: (Throwable) -> Unit): ResponseLiveData<T> {
+    inline fun observeError(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: (Throwable) -> Unit): ResponseLiveData<T> {
         observe(owner) {
             if (it.status == ERROR) it.error?.apply(observer)
         }
@@ -154,9 +174,26 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeError(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    inline fun observeError(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: () -> Unit): ResponseLiveData<T> {
         observe(owner) {
             if (it.status == ERROR) observer.invoke()
+        }
+        return this
+    }
+
+    /**
+     * Observes when the ResponseLiveData has the Error Status and have error
+     *
+     * @param owner The desired Owner to observe
+     * @param transformer Transform the Throwable into R before deliver it to the observer
+     * @param observer Will receive the not null error when the actual value has the ERROR status
+     *
+     * @return The ResponseLiveData<T>
+     */
+    @NonNull
+    inline fun <R> observeError(@NonNull owner: LifecycleOwner, @NonNull crossinline transformer: (Throwable) -> R, @NonNull crossinline observer: (R) -> Unit): ResponseLiveData<T> {
+        observe(owner) {
+            if (it.status == ERROR) it.error?.let(transformer)?.apply(observer)
         }
         return this
     }
@@ -172,10 +209,31 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeError
      */
     @NonNull
-    fun observeSingleError(@NonNull owner: LifecycleOwner, @NonNull observer: (Throwable) -> Unit): ResponseLiveData<T> {
+    inline fun observeSingleError(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: (Throwable) -> Unit): ResponseLiveData<T> {
         observeUntil(owner) {
             if (it == null) return@observeUntil false
             if (it.status == ERROR) it.error?.apply(observer)
+            it.status == ERROR
+        }
+        return this
+    }
+
+    /**
+     * Observes when the ResponseLiveData has the Error Status and have error only one time
+     *
+     * @param owner The desired Owner to observe
+     * @param transformer Transform the Throwable into R before deliver it to the observer
+     * @param observer Will receive the not null error when the actual value has the ERROR status
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.observeError
+     */
+    @NonNull
+    inline fun <R> observeSingleError(@NonNull owner: LifecycleOwner, @NonNull crossinline transformer: (Throwable) -> R, @NonNull crossinline observer: (R) -> Unit): ResponseLiveData<T> {
+        observeUntil(owner) {
+            if (it == null) return@observeUntil false
+            if (it.status == ERROR) it.error?.let(transformer)?.apply(observer)
             it.status == ERROR
         }
         return this
@@ -192,7 +250,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeError
      */
     @NonNull
-    fun observeSingleError(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    inline fun observeSingleError(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: () -> Unit): ResponseLiveData<T> {
         observeUntil(owner) {
             if (it == null) return@observeUntil false
             if (it.status == ERROR) observer.invoke()
@@ -212,7 +270,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeData(@NonNull owner: LifecycleOwner, @NonNull observer: (T) -> Unit): ResponseLiveData<T> {
+    inline fun observeData(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: (T) -> Unit): ResponseLiveData<T> {
         observe(owner) {
             if (it.status == DataResultStatus.SUCCESS) it.data?.apply(observer)
         }
@@ -228,7 +286,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeSuccess(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    inline fun observeSuccess(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: () -> Unit): ResponseLiveData<T> {
         observe(owner) {
             if (it.status == DataResultStatus.SUCCESS) observer.invoke()
         }
@@ -246,7 +304,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeData
      */
     @NonNull
-    fun observeSingleData(@NonNull owner: LifecycleOwner, @NonNull observer: (T) -> Unit): ResponseLiveData<T> {
+    inline fun observeSingleData(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: (T) -> Unit): ResponseLiveData<T> {
         observeUntil(owner) {
             if (it == null) return@observeUntil false
             if (it.status == DataResultStatus.SUCCESS) it.data?.apply(observer)
@@ -266,7 +324,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeSuccess
      */
     @NonNull
-    fun observeSingleSuccess(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    inline fun observeSingleSuccess(@NonNull owner: LifecycleOwner, @NonNull crossinline observer: () -> Unit): ResponseLiveData<T> {
         observeUntil(owner) {
             if (it == null) return@observeUntil false
             if (it.status == DataResultStatus.SUCCESS) observer.invoke()
