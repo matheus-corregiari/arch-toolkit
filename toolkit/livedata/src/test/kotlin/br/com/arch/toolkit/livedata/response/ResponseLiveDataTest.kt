@@ -11,7 +11,6 @@ import net.vidageek.mirror.dsl.Mirror
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 
 class ResponseLiveDataTest {
@@ -335,6 +334,31 @@ class ResponseLiveDataTest {
     }
 
     @Test
+    fun whenObserveData_withTransformer_shouldBeCalledWhenStatusIsSuccess() {
+        val mockedObserver: (Int) -> Unit = mock()
+        val mockedTransformer: (String) -> Int = mock()
+        val liveData = MutableResponseLiveData<String>()
+        liveData.observeData(owner, mockedTransformer, mockedObserver)
+
+        liveData.postLoading()
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        val data = "data"
+        Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(0)
+        liveData.postData(data)
+        Mockito.verify(mockedObserver).invoke(0)
+        Mockito.verify(mockedTransformer).invoke(data)
+
+        liveData.postLoading()
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+
+        Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.SUCCESS))
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+    }
+
+    @Test
     fun whenObserveSuccess_shouldBeCalledWhenStatusIsSuccess() {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>()
@@ -352,7 +376,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun whenObserveSingleData_shouldBeCalledWhenStatusIsSuccess() {
+    fun whenObserveSingleData_withTransformer_shouldBeCalledWhenStatusIsSuccess() {
         val mockedObserver: (Any) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSingleData(owner, mockedObserver)
@@ -372,6 +396,37 @@ class ResponseLiveDataTest {
 
         Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.SUCCESS))
         Mockito.verifyNoMoreInteractions(mockedObserver)
+
+        Assert.assertFalse(liveData.hasObservers())
+    }
+
+    @Test
+    fun whenObserveSingleData_shouldBeCalledWhenStatusIsSuccess() {
+        val mockedObserver: (Int) -> Unit = mock()
+        val mockedTransformer: (String) -> Int = mock()
+        val liveData = MutableResponseLiveData<String>()
+        liveData.observeSingleData(owner, mockedTransformer, mockedObserver)
+
+        liveData.postLoading()
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        val data = "data"
+        Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(0)
+        liveData.postData(data)
+        Mockito.verify(mockedObserver).invoke(0)
+        Mockito.verify(mockedTransformer).invoke(data)
+
+        liveData.postLoading()
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+
+        liveData.postData(data)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+
+        Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.SUCCESS))
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
 
         Assert.assertFalse(liveData.hasObservers())
     }
