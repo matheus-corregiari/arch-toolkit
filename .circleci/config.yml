@@ -97,9 +97,6 @@ jobs:
           path: toolkit/livedata/build/reports/jacoco/
           destination: reports/livedata
 
-      - test-results:
-          jacoco: toolkit/livedata/build/reports/**/*.xml
-
       - save_cache:
            paths:
               - ~/toolkit/livedata/build/jacoco
@@ -123,9 +120,6 @@ jobs:
           path: toolkit/recycler-adapter/build/reports/jacoco/
           destination: reports/recycler-adapter
 
-      - test-results:
-          jacoco: toolkit/recycler-adapter/build/reports/**/*.xml
-
       - save_cache:
            paths:
               - ~/toolkit/recycler-adapter/build/jacoco
@@ -148,9 +142,6 @@ jobs:
       - store_artifacts:
           path: toolkit/statemachine/build/reports/jacoco/
           destination: reports/statemachine
-
-      - test-results:
-          jacoco: toolkit/statemachine/build/reports/**/*.xml
 
       - save_cache:
            paths:
