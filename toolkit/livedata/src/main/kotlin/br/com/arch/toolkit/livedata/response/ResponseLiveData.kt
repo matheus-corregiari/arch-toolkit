@@ -490,11 +490,12 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
         }
 
         private class WrapObserver<V, I>(
-                val single: Boolean,
-                val observer: ((V) -> Unit)? = null,
-                val emptyObserver: (() -> Unit)? = null,
-                val transformer: ((V) -> I)? = null,
-                val transformerObserver: ((I) -> Unit)? = null) {
+            val single: Boolean,
+            val observer: ((V) -> Unit)? = null,
+            val emptyObserver: (() -> Unit)? = null,
+            val transformer: ((V) -> I)? = null,
+            val transformerObserver: ((I) -> Unit)? = null
+        ) {
 
             fun handle(data: V?) {
                 emptyObserver?.invoke()
