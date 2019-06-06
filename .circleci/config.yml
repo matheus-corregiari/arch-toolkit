@@ -77,7 +77,7 @@ jobs:
           command: ./gradlew jacocoTestReport-unified
 
       - store_artifacts:
-          path: build/reports/jacoco/jacocoTestReport-unified/html
+          path: build/reports/jacoco/
           destination: reports/coverage
 
   livedata:
@@ -94,8 +94,11 @@ jobs:
           command: ./gradlew :toolkit:livedata:jacocoTestReport
 
       - store_artifacts:
-          path: toolkit/livedata/build/reports/jacoco/jacocoTestReport/html
+          path: toolkit/livedata/build/reports/jacoco/
           destination: reports/livedata
+
+      - test-results:
+          jacoco: toolkit/livedata/build/reports/**/*.xml
 
       - save_cache:
            paths:
@@ -117,8 +120,11 @@ jobs:
           command: ./gradlew :toolkit:recycler-adapter:jacocoTestReport
 
       - store_artifacts:
-          path: toolkit/recycler-adapter/build/reports/jacoco/jacocoTestReport/html
+          path: toolkit/recycler-adapter/build/reports/jacoco/
           destination: reports/recycler-adapter
+
+      - test-results:
+          jacoco: toolkit/recycler-adapter/build/reports/**/*.xml
 
       - save_cache:
            paths:
@@ -140,8 +146,11 @@ jobs:
           command: ./gradlew :toolkit:statemachine:jacocoTestReport
 
       - store_artifacts:
-          path: toolkit/statemachine/build/reports/jacoco/jacocoTestReport/html
+          path: toolkit/statemachine/build/reports/jacoco/
           destination: reports/statemachine
+
+      - test-results:
+          jacoco: toolkit/statemachine/build/reports/**/*.xml
 
       - save_cache:
            paths:

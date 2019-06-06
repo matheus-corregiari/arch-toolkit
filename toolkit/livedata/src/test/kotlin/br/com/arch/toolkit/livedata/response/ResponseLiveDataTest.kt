@@ -108,7 +108,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun whenObserveSingleLoading_shouldReceiveTrueWhenStatusIsLoading_andFalseOtherwise_untilTheFirstFalseArrive() {
+    fun whenObserveSingleLoading_shouldBeCalledWhenStatusIsLoading_untilReceiveAStatusDifferentThenLOADING() {
         val mockedObserver: (Boolean) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSingleLoading(owner, mockedObserver)
@@ -125,6 +125,8 @@ class ResponseLiveDataTest {
 
         liveData.postLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
+
+        Assert.assertFalse(liveData.hasObservers())
     }
 
     @Test
