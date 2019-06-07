@@ -16,7 +16,6 @@ import org.mockito.Mockito
 class ResponseLiveDataTest {
 
     @Rule
-    @get:Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -65,13 +64,13 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeLoading(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verify(mockedObserver).invoke(true)
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke(false)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verify(mockedObserver, times(2)).invoke(true)
     }
 
@@ -81,13 +80,13 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeShowLoading(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verify(mockedObserver).invoke()
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verify(mockedObserver, times(2)).invoke()
     }
 
@@ -97,13 +96,13 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeHideLoading(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke()
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
     }
 
@@ -113,15 +112,17 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSingleLoading(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verify(mockedObserver).invoke(true)
+
         Assert.assertTrue(liveData.hasObservers())
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke(false)
+
         Assert.assertFalse(liveData.hasObservers())
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
@@ -133,13 +134,13 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSingleShowLoading(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verify(mockedObserver).invoke()
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
@@ -151,16 +152,16 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSingleHideLoading(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke()
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
@@ -174,16 +175,16 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeError(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke()
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver, times(2)).invoke()
     }
 
@@ -193,17 +194,43 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeError(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
         val exception = IllegalStateException()
-        liveData.postError(exception)
+        liveData.setError(exception)
         Mockito.verify(mockedObserver).invoke(exception)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.ERROR))
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+    }
+
+    @Test
+    fun whenObserveError_withErrorTransformer_withExceptionData_shouldBeCalledWhenStatusIsError() {
+        val mockedTransformer: (Throwable) -> String = mock()
+        val mockedObserver: (String) -> Unit = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observeError(owner, mockedTransformer, mockedObserver)
+
+        liveData.setLoading()
+        Mockito.verifyZeroInteractions(mockedTransformer)
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        val exception = IllegalStateException()
+        Mockito.`when`(mockedTransformer.invoke(exception)).thenReturn("")
+        liveData.setError(exception)
+        Mockito.verify(mockedTransformer).invoke(exception)
+        Mockito.verify(mockedObserver).invoke("")
+
+        liveData.setLoading()
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+
+        Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.ERROR))
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
         Mockito.verifyNoMoreInteractions(mockedObserver)
     }
 
@@ -213,16 +240,16 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSingleError(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke()
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.postError(IllegalStateException())
+        liveData.setError(IllegalStateException())
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
@@ -234,20 +261,52 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSingleError(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
         val exception = IllegalStateException()
-        liveData.postError(exception)
+        liveData.setError(exception)
         Mockito.verify(mockedObserver).invoke(exception)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.postError(exception)
+        liveData.setError(exception)
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.ERROR))
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+
+        Assert.assertFalse(liveData.hasObservers())
+    }
+
+    @Test
+    fun whenObserveSingleError_withErrorTransformer_withExceptionData_shouldBeCalledWhenStatusIsError() {
+        val mockedTransformer: (Throwable) -> String = mock()
+        val mockedObserver: (String) -> Unit = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observeSingleError(owner, mockedTransformer, mockedObserver)
+
+        liveData.setLoading()
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        val exception = IllegalStateException()
+        Mockito.`when`(mockedTransformer.invoke(exception)).thenReturn("")
+        liveData.setError(exception)
+
+        Mockito.verify(mockedTransformer).invoke(exception)
+        Mockito.verify(mockedObserver).invoke("")
+
+        liveData.setLoading()
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+
+        liveData.setError(exception)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+
+        Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.ERROR))
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
@@ -261,18 +320,43 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeData(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
         val data = "data"
-        liveData.postData(data)
+        liveData.setData(data)
         Mockito.verify(mockedObserver).invoke(data)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.SUCCESS))
         Mockito.verifyNoMoreInteractions(mockedObserver)
+    }
+
+    @Test
+    fun whenObserveData_withTransformer_shouldBeCalledWhenStatusIsSuccess() {
+        val mockedObserver: (Int) -> Unit = mock()
+        val mockedTransformer: (String) -> Int = mock()
+        val liveData = MutableResponseLiveData<String>()
+        liveData.observeData(owner, mockedTransformer, mockedObserver)
+
+        liveData.setLoading()
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        val data = "data"
+        Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(0)
+        liveData.setData(data)
+        Mockito.verify(mockedObserver).invoke(0)
+        Mockito.verify(mockedTransformer).invoke(data)
+
+        liveData.setLoading()
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+
+        Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.SUCCESS))
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
     }
 
     @Test
@@ -281,38 +365,69 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSuccess(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
         val data = "data"
-        liveData.postData(data)
+        liveData.setData(data)
         Mockito.verify(mockedObserver).invoke()
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
     }
 
     @Test
-    fun whenObserveSingleData_shouldBeCalledWhenStatusIsSuccess() {
+    fun whenObserveSingleData_withTransformer_shouldBeCalledWhenStatusIsSuccess() {
         val mockedObserver: (Any) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSingleData(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
         val data = "data"
-        liveData.postData(data)
+        liveData.setData(data)
         Mockito.verify(mockedObserver).invoke(data)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.postData(data)
+        liveData.setData(data)
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.SUCCESS))
         Mockito.verifyNoMoreInteractions(mockedObserver)
+
+        Assert.assertFalse(liveData.hasObservers())
+    }
+
+    @Test
+    fun whenObserveSingleData_shouldBeCalledWhenStatusIsSuccess() {
+        val mockedObserver: (Int) -> Unit = mock()
+        val mockedTransformer: (String) -> Int = mock()
+        val liveData = MutableResponseLiveData<String>()
+        liveData.observeSingleData(owner, mockedTransformer, mockedObserver)
+
+        liveData.setLoading()
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        val data = "data"
+        Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(0)
+        liveData.setData(data)
+        Mockito.verify(mockedObserver).invoke(0)
+        Mockito.verify(mockedTransformer).invoke(data)
+
+        liveData.setLoading()
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+
+        liveData.setData(data)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+
+        Mirror().on(liveData).invoke().method("postValue").withArgs(DataResult<Any>(null, null, DataResultStatus.SUCCESS))
+        Mockito.verifyNoMoreInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
 
         Assert.assertFalse(liveData.hasObservers())
     }
@@ -323,17 +438,17 @@ class ResponseLiveDataTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.observeSingleSuccess(owner, mockedObserver)
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyZeroInteractions(mockedObserver)
 
         val data = "data"
-        liveData.postData(data)
+        liveData.setData(data)
         Mockito.verify(mockedObserver).invoke()
 
-        liveData.postLoading()
+        liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.postData(data)
+        liveData.setData(data)
         Mockito.verifyZeroInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
@@ -351,7 +466,7 @@ class ResponseLiveDataTest {
         val data = "data"
         Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(data)
 
-        liveData.postData(data)
+        liveData.setData(data)
         mappedLiveData.observeData(owner, mockedObserver)
 
         Thread.sleep(5)
@@ -370,7 +485,7 @@ class ResponseLiveDataTest {
 
         val data = "data"
 
-        liveData.postData(data)
+        liveData.setData(data)
         onNextLiveData.observeData(owner, mockedObserver)
 
         Thread.sleep(10)
