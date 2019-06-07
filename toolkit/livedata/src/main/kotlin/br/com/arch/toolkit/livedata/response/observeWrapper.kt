@@ -309,10 +309,10 @@ class ObserveWrapper<T> internal constructor(@NonNull private val liveData: Resp
 }
 
 private class WrapObserver<T, V>(
-        @Nullable val observer: ((T) -> Unit)? = null,
-        @Nullable val emptyObserver: (() -> Unit)? = null,
-        @Nullable val transformer: ((T) -> V)? = null,
-        @Nullable val transformerObserver: ((V) -> Unit)? = null
+    @Nullable val observer: ((T) -> Unit)? = null,
+    @Nullable val emptyObserver: (() -> Unit)? = null,
+    @Nullable val transformer: ((T) -> V)? = null,
+    @Nullable val transformerObserver: ((V) -> Unit)? = null
 ) {
 
     fun handle(@Nullable data: T?) {
