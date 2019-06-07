@@ -455,6 +455,190 @@ class ResponseLiveDataTest {
     }
     // endregion
 
+    // region Result
+    @Test
+    fun whenObserveResult_shouldBeCalledWhenResultIsPosted() {
+        val mockedObserver: (DataResult<Any>) -> Unit = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { result(observer = mockedObserver) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedObserver).invoke(result)
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verify(mockedObserver).invoke(result2)
+    }
+
+    @Test
+    fun whenObserveResult_withTransformer_shouldBeCalledWhenResultIsPostedWithTheTransformedResult() {
+        val mockedObserver: (Int) -> Unit = mock()
+        val mockedTransformer: (DataResult<Any>) -> Int = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { result(observer = mockedObserver, transformer = mockedTransformer) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mockito.`when`(mockedTransformer.invoke(result)).thenReturn(0)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedTransformer).invoke(result)
+        Mockito.verify(mockedObserver).invoke(0)
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mockito.`when`(mockedTransformer.invoke(result2)).thenReturn(1)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verify(mockedTransformer).invoke(result2)
+        Mockito.verify(mockedObserver).invoke(1)
+    }
+
+    @Test
+    fun whenObserveResult_shouldBeCalledWhenResultIsPosted_withoutArguments() {
+        val mockedObserver: () -> Unit = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { result(observer = mockedObserver) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedObserver).invoke()
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verify(mockedObserver, times(2)).invoke()
+    }
+
+    @Test
+    fun whenObserveSingleResult_shouldBeCalledWhenResultIsPosted() {
+        val mockedObserver: (DataResult<Any>) -> Unit = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { result(single = true, observer = mockedObserver) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedObserver).invoke(result)
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        Assert.assertFalse(liveData.hasObservers())
+    }
+
+    @Test
+    fun whenObserveSingleResult_withTransformer_shouldBeCalledWhenResultIsPostedWithTheTransformedResult() {
+        val mockedObserver: (Int) -> Unit = mock()
+        val mockedTransformer: (DataResult<Any>) -> Int = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { result(single = true, observer = mockedObserver, transformer = mockedTransformer) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mockito.`when`(mockedTransformer.invoke(result)).thenReturn(0)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedTransformer).invoke(result)
+        Mockito.verify(mockedObserver).invoke(0)
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mockito.`when`(mockedTransformer.invoke(result2)).thenReturn(1)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verifyZeroInteractions(mockedTransformer)
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        Assert.assertFalse(liveData.hasObservers())
+    }
+
+    @Test
+    fun whenObserveSingleResult_shouldBeCalledWhenResultIsPosted_withoutArguments() {
+        val mockedObserver: () -> Unit = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { result(single = true, observer = mockedObserver) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedObserver).invoke()
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        Assert.assertFalse(liveData.hasObservers())
+    }
+    // endregion
+
+    // region Status
+    @Test
+    fun whenObserveStatus_shouldBeCalledWhenResultIsPosted() {
+        val mockedObserver: (DataResultStatus) -> Unit = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { status(observer = mockedObserver) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedObserver).invoke(DataResultStatus.SUCCESS)
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verify(mockedObserver).invoke(DataResultStatus.ERROR)
+    }
+
+    @Test
+    fun whenObserveStatus_withTransformer_shouldBeCalledWhenResultIsPostedWithTheTransformedStatus() {
+        val mockedObserver: (Int) -> Unit = mock()
+        val mockedTransformer: (DataResultStatus) -> Int = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { status(observer = mockedObserver, transformer = mockedTransformer) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mockito.`when`(mockedTransformer.invoke(DataResultStatus.SUCCESS)).thenReturn(0)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedTransformer).invoke(DataResultStatus.SUCCESS)
+        Mockito.verify(mockedObserver).invoke(0)
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mockito.`when`(mockedTransformer.invoke(DataResultStatus.ERROR)).thenReturn(1)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verify(mockedTransformer).invoke(DataResultStatus.ERROR)
+        Mockito.verify(mockedObserver).invoke(1)
+    }
+
+    @Test
+    fun whenObserveSingleStatus_shouldBeCalledWhenResultIsPosted() {
+        val mockedObserver: (DataResultStatus) -> Unit = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { status(single = true, observer = mockedObserver) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedObserver).invoke(DataResultStatus.SUCCESS)
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        Assert.assertFalse(liveData.hasObservers())
+    }
+
+    @Test
+    fun whenObserveSingleStatus_withTransformer_shouldBeCalledWhenResultIsPostedWithTheTransformedStatus() {
+        val mockedObserver: (Int) -> Unit = mock()
+        val mockedTransformer: (DataResultStatus) -> Int = mock()
+        val liveData = MutableResponseLiveData<Any>()
+        liveData.observe(owner) { status(single = true, observer = mockedObserver, transformer = mockedTransformer) }
+
+        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        Mockito.`when`(mockedTransformer.invoke(DataResultStatus.SUCCESS)).thenReturn(0)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result)
+        Mockito.verify(mockedTransformer).invoke(DataResultStatus.SUCCESS)
+        Mockito.verify(mockedObserver).invoke(0)
+
+        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        Mockito.`when`(mockedTransformer.invoke(DataResultStatus.ERROR)).thenReturn(1)
+        Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
+        Mockito.verifyZeroInteractions(mockedTransformer)
+        Mockito.verifyZeroInteractions(mockedObserver)
+
+        Assert.assertFalse(liveData.hasObservers())
+    }
+    // endregion
+
     @Test
     fun whenMap_shouldTransformData() {
         val mockedTransformer: (String) -> String = mock()
