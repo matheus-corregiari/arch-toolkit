@@ -149,6 +149,82 @@ class ObserveWrapper<T> internal constructor(@NonNull private val liveData: Resp
     }
     //endregion
 
+    //region Result
+    /**
+     * Observes the DataResult
+     *
+     * @param single If true, will execute only until the first non-null result, Default: false
+     * @param observer Will be called for every result and will receive the not null result
+     *
+     * @return The ObserveWrapper<T>
+     */
+    @NonNull
+    fun result(@NonNull single: Boolean = false, @NonNull observer: (DataResult<T>) -> Unit): ObserveWrapper<T> {
+        eventList.add(ResultEvent(WrapObserver<DataResult<T>, Any>(observer = observer), single))
+        return this
+    }
+
+    /**
+     * Observes the DataResult
+     *
+     * @param single If true, will execute only until the first non-null result, Default: false
+     * @param transformer Transform the T into R before deliver it to the observer
+     * @param observer Will be called for every result and will receive the not null transformed result
+     *
+     * @return The ObserveWrapper<T>
+     */
+    @NonNull
+    fun <R> result(@NonNull single: Boolean = false, @NonNull transformer: (DataResult<T>) -> R, @NonNull observer: (R) -> Unit): ObserveWrapper<T> {
+        eventList.add(ResultEvent(WrapObserver(transformer = transformer, transformerObserver = observer), single))
+        return this
+    }
+
+    /**
+     * Observes the DataResult
+     *
+     * @param single If true, will execute only until the first non-null result, Default: false
+     * @param observer Will be called for every result
+     *
+     * @return The ObserveWrapper<T>
+     */
+    @NonNull
+    fun result(@NonNull single: Boolean = false, @NonNull observer: () -> Unit): ObserveWrapper<T> {
+        eventList.add(ResultEvent(WrapObserver<DataResult<T>, Any>(emptyObserver = observer), single))
+        return this
+    }
+    //endregion
+
+    //region Status
+    /**
+     * Observes the Status
+     *
+     * @param single If true, will execute only until the first non-null status, Default: false
+     * @param observer Will be called for every status and will receive the not null status
+     *
+     * @return The ObserveWrapper<T>
+     */
+    @NonNull
+    fun status(@NonNull single: Boolean = false, @NonNull observer: (DataResultStatus) -> Unit): ObserveWrapper<T> {
+        eventList.add(StatusEvent(WrapObserver<DataResultStatus, Any>(observer = observer), single))
+        return this
+    }
+
+    /**
+     * Observes the Status
+     *
+     * @param single If true, will execute only until the first non-null status, Default: false
+     * @param transformer Transform the T into R before deliver it to the observer
+     * @param observer Will be called for every status and will receive the not null transformed status
+     *
+     * @return The ObserveWrapper<T>
+     */
+    @NonNull
+    fun <R> status(@NonNull single: Boolean = false, @NonNull transformer: (DataResultStatus) -> R, @NonNull observer: (R) -> Unit): ObserveWrapper<T> {
+        eventList.add(StatusEvent(WrapObserver(transformer = transformer, transformerObserver = observer), single))
+        return this
+    }
+    //endregion
+
     /**
      * Observes until all observers on Wrapper get removed
      *
@@ -173,33 +249,45 @@ class ObserveWrapper<T> internal constructor(@NonNull private val liveData: Resp
         eventList.iterate { event ->
             when {
                 // Handle Loading
-                event is LoadingEvent -> event.wrapper.let {
-                    it.handle(isLoading)
-                    return@let isLoading.not()
+                event is LoadingEvent -> event.run {
+                    wrapper.handle(isLoading)
+                    return@run isLoading.not()
                 }
 
                 // Handle ShowLoading
-                event is ShowLoadingEvent && isLoading -> event.wrapper.let {
-                    it.handle(isLoading)
-                    return@let true
+                event is ShowLoadingEvent && isLoading -> event.run {
+                    wrapper.handle(isLoading)
+                    return@run true
                 }
 
                 // Handle HideLoading
-                event is HideLoadingEvent && isLoading.not() -> event.wrapper.let {
-                    it.handle(isLoading)
-                    return@let true
+                event is HideLoadingEvent && isLoading.not() -> event.run {
+                    wrapper.handle(isLoading)
+                    return@run true
                 }
 
                 // Handle Error
-                event is ErrorEvent && result.status == ERROR -> event.wrapper.let {
-                    it.handle(result.error)
-                    return@let true
+                event is ErrorEvent && result.status == ERROR -> event.run {
+                    wrapper.handle(result.error)
+                    return@run true
                 }
 
                 // Handle Success
                 event is SuccessEvent && result.status == SUCCESS -> (event as SuccessEvent<T>).wrapper.let {
                     it.handle(result.data)
                     return@let true
+                }
+
+                // Handle Result
+                event is ResultEvent<*> -> (event as ResultEvent<T>).run {
+                    wrapper.handle(result)
+                    return@run true
+                }
+
+                // Handle Status
+                event is StatusEvent -> event.run {
+                    wrapper.handle(result.status)
+                    return@run true
                 }
 
                 else -> return@iterate false
@@ -221,10 +309,10 @@ class ObserveWrapper<T> internal constructor(@NonNull private val liveData: Resp
 }
 
 private class WrapObserver<T, V>(
-    @Nullable val observer: ((T) -> Unit)? = null,
-    @Nullable val emptyObserver: (() -> Unit)? = null,
-    @Nullable val transformer: ((T) -> V)? = null,
-    @Nullable val transformerObserver: ((V) -> Unit)? = null
+        @Nullable val observer: ((T) -> Unit)? = null,
+        @Nullable val emptyObserver: (() -> Unit)? = null,
+        @Nullable val transformer: ((T) -> V)? = null,
+        @Nullable val transformerObserver: ((V) -> Unit)? = null
 ) {
 
     fun handle(@Nullable data: T?) {
@@ -249,3 +337,7 @@ private class HideLoadingEvent(observer: () -> Unit, single: Boolean) : ObserveE
 private class ErrorEvent(wrapper: WrapObserver<Throwable, *>, single: Boolean) : ObserveEvent<Throwable>(wrapper, single)
 
 private class SuccessEvent<T>(wrapper: WrapObserver<T, *>, single: Boolean) : ObserveEvent<T>(wrapper, single)
+
+private class ResultEvent<T>(wrapper: WrapObserver<DataResult<T>, *>, single: Boolean) : ObserveEvent<DataResult<T>>(wrapper, single)
+
+private class StatusEvent(wrapper: WrapObserver<DataResultStatus, *>, single: Boolean) : ObserveEvent<DataResultStatus>(wrapper, single)
