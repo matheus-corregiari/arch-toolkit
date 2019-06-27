@@ -210,6 +210,36 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
 
     // region Success observer methods
     /**
+     * Observes when the ResponseLiveData has the Success Status
+     *
+     * @param owner The desired Owner to observe
+     * @param observer Will be called when the actual value has the SUCCESS status
+     *
+     * @return The ResponseLiveData<T>
+     */
+    @NonNull
+    fun observeSuccess(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+        return observe(owner) { success(observer = observer) }
+    }
+
+    /**
+     * Observes when the ResponseLiveData has the Success Status only one time
+     *
+     * @param owner The desired Owner to observe
+     * @param observer Will be called when the actual value has the SUCCESS status
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.observeSuccess
+     */
+    @NonNull
+    fun observeSingleSuccess(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+        return observe(owner) { success(single = true, observer = observer) }
+    }
+    // endregion
+
+    //region Data observer methods
+    /**
      * Observes when the ResponseLiveData has the Success Status and have data
      *
      * @param owner The desired Owner to observe
@@ -234,19 +264,6 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
     @NonNull
     fun <R> observeData(@NonNull owner: LifecycleOwner, @NonNull transformer: (T) -> R, @NonNull observer: (R) -> Unit): ResponseLiveData<T> {
         return observe(owner) { data(transformer = transformer, observer = observer) }
-    }
-
-    /**
-     * Observes when the ResponseLiveData has the Success Status
-     *
-     * @param owner The desired Owner to observe
-     * @param observer Will be called when the actual value has the SUCCESS status
-     *
-     * @return The ResponseLiveData<T>
-     */
-    @NonNull
-    fun observeSuccess(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
-        return observe(owner) { success(observer = observer) }
     }
 
     /**
@@ -279,22 +296,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
     fun <R> observeSingleData(@NonNull owner: LifecycleOwner, @NonNull transformer: (T) -> R, @NonNull observer: (R) -> Unit): ResponseLiveData<T> {
         return observe(owner) { data(single = true, transformer = transformer, observer = observer) }
     }
-
-    /**
-     * Observes when the ResponseLiveData has the Success Status only one time
-     *
-     * @param owner The desired Owner to observe
-     * @param observer Will be called when the actual value has the SUCCESS status
-     *
-     * @return The ResponseLiveData<T>
-     *
-     * @see ResponseLiveData.observeSuccess
-     */
-    @NonNull
-    fun observeSingleSuccess(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
-        return observe(owner) { success(single = true, observer = observer) }
-    }
-    // endregion
+    //endregion
 
     /**
      * Transform the actual type from T to R
