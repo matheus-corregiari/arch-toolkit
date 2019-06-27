@@ -106,35 +106,6 @@ class ObserveWrapper<T> internal constructor(@NonNull private val liveData: Resp
 
     //region Success
     /**
-     * Observes when the DataResult has the Success Status and have data
-     *
-     * @param single If true, will execute only until the first SUCCESS status, Default: false
-     * @param observer Will receive the not null data when the actual value has the SUCCESS status
-     *
-     * @return The ObserveWrapper<T>
-     */
-    @NonNull
-    fun data(@NonNull single: Boolean = false, @NonNull observer: (T) -> Unit): ObserveWrapper<T> {
-        eventList.add(SuccessEvent(WrapObserver<T, Any>(observer = observer), single))
-        return this
-    }
-
-    /**
-     * Observes when the DataResult has the Success Status and have data
-     *
-     * @param single If true, will execute only until the first SUCCESS status, Default: false
-     * @param transformer Transform the T into R before deliver it to the observer
-     * @param observer Will receive the not null transformed data when the actual value has the SUCCESS status
-     *
-     * @return The ObserveWrapper<T>
-     */
-    @NonNull
-    fun <R> data(@NonNull single: Boolean = false, @NonNull transformer: (T) -> R, @NonNull observer: (R) -> Unit): ObserveWrapper<T> {
-        eventList.add(SuccessEvent(WrapObserver(transformer = transformer, transformerObserver = observer), single))
-        return this
-    }
-
-    /**
      * Observes when the DataResult has the Success Status
      *
      * @param single If true, will execute only until the first SUCCESS status, Default: false
@@ -144,7 +115,38 @@ class ObserveWrapper<T> internal constructor(@NonNull private val liveData: Resp
      */
     @NonNull
     fun success(@NonNull single: Boolean = false, @NonNull observer: () -> Unit): ObserveWrapper<T> {
-        eventList.add(SuccessEvent(WrapObserver<T, Any>(emptyObserver = observer), single))
+        eventList.add(SuccessEvent(WrapObserver<Void, Any>(emptyObserver = observer), single))
+        return this
+    }
+    //endregion
+
+    //region Data
+    /**
+     * Observes when the DataResult has data
+     *
+     * @param single If true, will execute only until the first Non null Data, Default: false
+     * @param observer Will receive the not null data
+     *
+     * @return The ObserveWrapper<T>
+     */
+    @NonNull
+    fun data(@NonNull single: Boolean = false, @NonNull observer: (T) -> Unit): ObserveWrapper<T> {
+        eventList.add(DataEvent(WrapObserver<T, Any>(observer = observer), single))
+        return this
+    }
+
+    /**
+     * Observes when the DataResult has data
+     *
+     * @param single If true, will execute only until the first Non null Data, Default: false
+     * @param transformer Transform the T into R before deliver it to the observer
+     * @param observer Will receive the not null transformed data
+     *
+     * @return The ObserveWrapper<T>
+     */
+    @NonNull
+    fun <R> data(@NonNull single: Boolean = false, @NonNull transformer: (T) -> R, @NonNull observer: (R) -> Unit): ObserveWrapper<T> {
+        eventList.add(DataEvent(WrapObserver(transformer = transformer, transformerObserver = observer), single))
         return this
     }
     //endregion
@@ -273,9 +275,15 @@ class ObserveWrapper<T> internal constructor(@NonNull private val liveData: Resp
                 }
 
                 // Handle Success
-                event is SuccessEvent && result.status == SUCCESS -> (event as SuccessEvent<T>).wrapper.let {
+                event is SuccessEvent && result.status == SUCCESS -> event.run {
+                    wrapper.handle(null)
+                    return@run true
+                }
+
+                // Handle Data
+                event is DataEvent -> (event as DataEvent<T>).wrapper.let {
                     it.handle(result.data)
-                    return@let true
+                    return@let result.data != null
                 }
 
                 // Handle Result
@@ -336,7 +344,9 @@ private class HideLoadingEvent(observer: () -> Unit, single: Boolean) : ObserveE
 
 private class ErrorEvent(wrapper: WrapObserver<Throwable, *>, single: Boolean) : ObserveEvent<Throwable>(wrapper, single)
 
-private class SuccessEvent<T>(wrapper: WrapObserver<T, *>, single: Boolean) : ObserveEvent<T>(wrapper, single)
+private class SuccessEvent(wrapper: WrapObserver<Void, *>, single: Boolean) : ObserveEvent<Void>(wrapper, single)
+
+private class DataEvent<T>(wrapper: WrapObserver<T, *>, single: Boolean) : ObserveEvent<T>(wrapper, single)
 
 private class ResultEvent<T>(wrapper: WrapObserver<DataResult<T>, *>, single: Boolean) : ObserveEvent<DataResult<T>>(wrapper, single)
 

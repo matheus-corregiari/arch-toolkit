@@ -1,6 +1,7 @@
 package br.com.arch.toolkit.livedata.response
 
 import androidx.annotation.NonNull
+import androidx.annotation.Nullable
 import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
 import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
 import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS
@@ -13,24 +14,27 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
     // region Post Methods
     /**
      * Post a new DataResult with:
-     * - data: null
+     * - data: received from parameter (Default: null)
      * - error: null
      * - status: LOADING
+     *
+     * @param data Value to be posted into the new DataResult
      */
-    fun postLoading() {
-        postValue(DataResult(null, null, LOADING))
+    fun postLoading(@Nullable data: T? = null) {
+        postValue(DataResult(data, null, LOADING))
     }
 
     /**
      * Post a new DataResult with:
-     * - data: null
+     * - data: received from parameter (Default: null)
      * - error: received from parameter
      * - status: LOADING
      *
+     * @param data Value to be posted into the new DataResult
      * @param error Value to be posted into the new DataResult
      */
-    fun postError(@NonNull error: Throwable) {
-        postValue(DataResult(null, error, ERROR))
+    fun postError(@NonNull error: Throwable, @Nullable data: T? = null) {
+        postValue(DataResult(data, error, ERROR))
     }
 
     /**
@@ -59,24 +63,27 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
     // region Set methods
     /**
      * Set a new DataResult with:
-     * - data: null
+     * - data: received from parameter
      * - error: null
      * - status: LOADING
+     *
+     * @param data Value to be posted into the new DataResult
      */
-    fun setLoading() {
-        value = DataResult(null, null, LOADING)
+    fun setLoading(@Nullable data: T? = null) {
+        value = DataResult(data, null, LOADING)
     }
 
     /**
      * Set a new DataResult with:
-     * - data: null
+     * - data: received from parameter (Default: null)
      * - error: received from parameter
      * - status: LOADING
      *
+     * @param data Value to be posted into the new DataResult
      * @param error Value to be seted into the new DataResult
      */
-    fun setError(@NonNull error: Throwable) {
-        value = DataResult(null, error, ERROR)
+    fun setError(@NonNull error: Throwable, @Nullable data: T? = null) {
+        value = DataResult(data, error, ERROR)
     }
 
     /**
