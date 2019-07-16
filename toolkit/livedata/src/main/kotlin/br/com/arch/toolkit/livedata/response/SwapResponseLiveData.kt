@@ -43,24 +43,58 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * Changes the actual DataSource, with transformation
      *
      * @param source The ResponseLiveData to replicate the value
+     * @param transformAsync Indicate swapSource will execute synchronously or asynchronously
      * @param transformation Receives the data of the source and change to T value
      *
      * @see SwapResponseLiveData.swapSource
      */
-    fun <R> swapSource(source: ResponseLiveData<R>, transformation: (R) -> T) {
+    fun <R> swapSource(
+            source: ResponseLiveData<R>,
+            transformAsync: Boolean,
+            transformation: (R) -> T
+    ) {
         clearSource()
         sourceLiveData.addSource(source) { data ->
-            async {
-                if (data == null) return@async
-                val newValue = when (data.status) {
-                    SUCCESS -> DataResult(data.data?.let(transformation), null, SUCCESS)
-                    ERROR -> DataResult<T>(null, data.error, ERROR)
-                    LOADING -> DataResult<T>(null, null, LOADING)
+            if (transformAsync) {
+                async {
+                    doTransformation(data, transformation) { postValue(it) }
                 }
-                if (value != newValue) postValue(newValue)
+            } else {
+                doTransformation(data, transformation) { value = it }
             }
         }
         lastSource = source
+    }
+
+    /**
+     * Synchronously changes the actual DataSource, with transformation
+     *
+     * @param source The ResponseLiveData to replicate the value
+     * @param transformation Receives the data of the source and change to T value
+     *
+     * @see SwapResponseLiveData.swapSource
+     */
+    fun <R> swapSource(
+            source: ResponseLiveData<R>,
+            transformation: (R) -> T
+    ) {
+        swapSource(source, false, transformation)
+    }
+
+    private inline fun <R> doTransformation(
+            data: DataResult<R>,
+            transformation: (R) -> T,
+            crossinline newValueListener: (DataResult<T>) -> Unit
+    ) {
+        val newValue = when (data.status) {
+            SUCCESS -> DataResult<T>(data.data?.let(transformation), null, SUCCESS)
+            ERROR -> DataResult<T>(null, data.error, ERROR)
+            LOADING -> DataResult<T>(null, null, LOADING)
+        }
+
+        if (value != newValue) {
+            newValueListener(newValue)
+        }
     }
 
     override fun onActive() {
