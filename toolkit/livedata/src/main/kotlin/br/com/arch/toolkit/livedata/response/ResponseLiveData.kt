@@ -299,7 +299,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
     //endregion
 
     /**
-     * Transform the actual type from T to R
+     * Transforms the actual type from T to R
      *
      * @param transformAsync Indicate swapSource will execute synchronously or asynchronously
      * @param transformation Receive the actual non null T value and return the transformed non null R value
@@ -315,6 +315,15 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
         return liveData
     }
 
+    /**
+     * Synchronously transforms the actual type from T to R
+     *
+     * @param transformation Receive the actual non null T value and return the transformed non null R value
+     *
+     * @return The ResponseLiveData<R>
+     *
+     * @see ResponseLiveData.onNext
+     */
     @NonNull
     fun <R> map(@NonNull transformation: ((T) -> R)): ResponseLiveData<R> {
         val liveData = SwapResponseLiveData<R>()
@@ -342,6 +351,17 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
         }
     }
 
+    /**
+     * Synchronously execute the function onNext before any observe set after this method be called
+     *
+     * On this method, you cannot change the entire instance of the T value, but you still can change some attributes
+     *
+     * @param onNext Receive the actual non null T value
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.map
+     */
     @NonNull
     fun onNext(@NonNull onNext: ((T) -> Unit)): ResponseLiveData<T> {
         return map(false) {

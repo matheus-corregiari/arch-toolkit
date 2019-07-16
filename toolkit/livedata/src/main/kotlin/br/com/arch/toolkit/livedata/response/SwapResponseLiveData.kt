@@ -38,6 +38,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         }
         lastSource = source
     }
+
     /**
      * Changes the actual DataSource, with transformation
      *
@@ -65,6 +66,14 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         lastSource = source
     }
 
+    /**
+     * Synchronously changes the actual DataSource, with transformation
+     *
+     * @param source The ResponseLiveData to replicate the value
+     * @param transformation Receives the data of the source and change to T value
+     *
+     * @see SwapResponseLiveData.swapSource
+     */
     fun <R> swapSource(
             source: ResponseLiveData<R>,
             transformation: (R) -> T
