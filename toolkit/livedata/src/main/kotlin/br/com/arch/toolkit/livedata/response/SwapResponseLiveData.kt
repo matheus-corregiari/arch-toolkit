@@ -84,7 +84,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
     private inline fun <R> doTransformation(
             data: DataResult<R>,
             transformation: (R) -> T,
-            newValueListener: (DataResult<T>) -> Unit
+            crossinline newValueListener: (DataResult<T>) -> Unit
     ) {
         val newValue = when (data.status) {
             SUCCESS -> DataResult<T>(data.data?.let(transformation), null, SUCCESS)
