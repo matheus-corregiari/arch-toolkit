@@ -55,9 +55,11 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         clearSource()
         sourceLiveData.addSource(source) { data ->
             if (transformAsync) {
-                async { doTransformation(data, transformation) }
+                async {
+                    doTransformation(data, transformation) { postValue(it) }
+                }
             } else {
-                doTransformation(data, transformation)
+                doTransformation(data, transformation) { value = it }
             }
         }
         lastSource = source
@@ -70,13 +72,20 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         swapSource(source, false, transformation)
     }
 
-    private fun <R> doTransformation(data: DataResult<R>, transformation: (R) -> T) {
+    private inline fun <R> doTransformation(
+            data: DataResult<R>,
+            transformation: (R) -> T,
+            newValueListener: (DataResult<T>) -> Unit
+    ) {
         val newValue = when (data.status) {
             SUCCESS -> DataResult<T>(data.data?.let(transformation), null, SUCCESS)
             ERROR -> DataResult<T>(null, data.error, ERROR)
             LOADING -> DataResult<T>(null, null, LOADING)
         }
-        if (value != newValue) value = newValue
+
+        if (value != newValue) {
+            newValueListener(newValue)
+        }
     }
 
     override fun onActive() {
