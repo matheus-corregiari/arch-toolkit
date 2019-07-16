@@ -49,9 +49,9 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * @see SwapResponseLiveData.swapSource
      */
     fun <R> swapSource(
-            source: ResponseLiveData<R>,
-            transformAsync: Boolean,
-            transformation: (R) -> T
+        source: ResponseLiveData<R>,
+        transformAsync: Boolean,
+        transformation: (R) -> T
     ) {
         clearSource()
         sourceLiveData.addSource(source) { data ->
@@ -74,27 +74,8 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      *
      * @see SwapResponseLiveData.swapSource
      */
-    fun <R> swapSource(
-            source: ResponseLiveData<R>,
-            transformation: (R) -> T
-    ) {
+    fun <R> swapSource(source: ResponseLiveData<R>, transformation: (R) -> T) {
         swapSource(source, false, transformation)
-    }
-
-    private inline fun <R> doTransformation(
-            data: DataResult<R>,
-            transformation: (R) -> T,
-            crossinline newValueListener: (DataResult<T>) -> Unit
-    ) {
-        val newValue = when (data.status) {
-            SUCCESS -> DataResult<T>(data.data?.let(transformation), null, SUCCESS)
-            ERROR -> DataResult<T>(null, data.error, ERROR)
-            LOADING -> DataResult<T>(null, null, LOADING)
-        }
-
-        if (value != newValue) {
-            newValueListener(newValue)
-        }
     }
 
     override fun onActive() {
@@ -110,5 +91,21 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
     private fun clearSource() {
         lastSource?.let { sourceLiveData.removeSource(it) }
         lastSource = null
+    }
+
+    private inline fun <R> doTransformation(
+        data: DataResult<R>,
+        transformation: (R) -> T,
+        crossinline newValueListener: (DataResult<T>) -> Unit
+    ) {
+        val newValue = when (data.status) {
+            SUCCESS -> DataResult<T>(data.data?.let(transformation), null, SUCCESS)
+            ERROR -> DataResult<T>(null, data.error, ERROR)
+            LOADING -> DataResult<T>(null, null, LOADING)
+        }
+
+        if (value != newValue) {
+            newValueListener(newValue)
+        }
     }
 }
