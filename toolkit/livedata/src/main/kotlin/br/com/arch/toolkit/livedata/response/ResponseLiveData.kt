@@ -301,6 +301,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
     /**
      * Transform the actual type from T to R
      *
+     * @param transformAsync Indicate swapSource will execute synchronously or asynchronously
      * @param transformation Receive the actual non null T value and return the transformed non null R value
      *
      * @return The ResponseLiveData<R>
@@ -308,9 +309,16 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.onNext
      */
     @NonNull
+    fun <R> map(transformAsync: Boolean, @NonNull transformation: ((T) -> R)): ResponseLiveData<R> {
+        val liveData = SwapResponseLiveData<R>()
+        liveData.swapSource(this, transformAsync, transformation)
+        return liveData
+    }
+
+    @NonNull
     fun <R> map(@NonNull transformation: ((T) -> R)): ResponseLiveData<R> {
         val liveData = SwapResponseLiveData<R>()
-        liveData.swapSource(this, transformation)
+        liveData.swapSource(this, false, transformation)
         return liveData
     }
 
@@ -319,6 +327,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      *
      * On this method, you cannot change the entire instance of the T value, but you still can change some attributes
      *
+     * @param transformAsync Indicate map will execute synchronously or asynchronously
      * @param onNext Receive the actual non null T value
      *
      * @return The ResponseLiveData<T>
@@ -326,8 +335,16 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.map
      */
     @NonNull
+    fun onNext(transformAsync: Boolean, @NonNull onNext: ((T) -> Unit)): ResponseLiveData<T> {
+        return map(transformAsync) {
+            onNext(it)
+            it
+        }
+    }
+
+    @NonNull
     fun onNext(@NonNull onNext: ((T) -> Unit)): ResponseLiveData<T> {
-        return map {
+        return map(false) {
             onNext(it)
             it
         }

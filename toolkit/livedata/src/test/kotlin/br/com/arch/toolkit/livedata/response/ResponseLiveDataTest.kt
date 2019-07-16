@@ -677,7 +677,32 @@ class ResponseLiveDataTest {
     // endregion
 
     @Test
-    fun whenMap_shouldTransformData() {
+    fun whenMap_withTransformAsync_shouldTransformDataStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedTransformer: (String) -> String = mock()
+        val mockedObserver: (String) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val mappedLiveData = liveData.map(true, mockedTransformer)
+
+        val data = "data"
+        Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(data)
+
+        liveData.setData(data)
+        mappedLiveData.observeData(owner, mockedObserver)
+
+        Assert.assertNotEquals(threadCount, Thread.activeCount())
+        Thread.sleep(5)
+
+        Mockito.verify(mockedObserver).invoke(data)
+        Mockito.verify(mockedTransformer).invoke(data)
+    }
+
+    @Test
+    fun whenMap_withoutTransformAsync_shouldTransformDataWithoutStartingThreads() {
+        val threadCount = Thread.activeCount()
+
         val mockedTransformer: (String) -> String = mock()
         val mockedObserver: (String) -> Unit = mock()
 
@@ -690,6 +715,7 @@ class ResponseLiveDataTest {
         liveData.setData(data)
         mappedLiveData.observeData(owner, mockedObserver)
 
+        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(5)
 
         Mockito.verify(mockedObserver).invoke(data)
@@ -697,7 +723,31 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun whenOnNext_shouldDeliverDataBeforeCallObserver() {
+    fun whenOnNext_withTransformAsync_shouldDeliverDataBeforeCallObserverStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedOnNext: (String) -> Unit = mock()
+        val mockedObserver: (String) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val onNextLiveData = liveData.onNext(true, mockedOnNext)
+
+        val data = "data"
+
+        liveData.setData(data)
+        onNextLiveData.observeData(owner, mockedObserver)
+
+        Assert.assertNotEquals(threadCount, Thread.activeCount())
+        Thread.sleep(10)
+
+        Mockito.verify(mockedObserver).invoke(data)
+        Mockito.verify(mockedOnNext).invoke(data)
+    }
+
+    @Test
+    fun whenOnNext_withoutTransformAsync_shouldDeliverDataBeforeCallObserverWithoutStartingThreads() {
+        val threadCount = Thread.activeCount()
+
         val mockedOnNext: (String) -> Unit = mock()
         val mockedObserver: (String) -> Unit = mock()
 
@@ -709,6 +759,7 @@ class ResponseLiveDataTest {
         liveData.setData(data)
         onNextLiveData.observeData(owner, mockedObserver)
 
+        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(10)
 
         Mockito.verify(mockedObserver).invoke(data)

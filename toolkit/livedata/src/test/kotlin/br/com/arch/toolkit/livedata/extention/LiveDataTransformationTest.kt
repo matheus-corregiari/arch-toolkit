@@ -9,6 +9,7 @@ import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.given
 import com.nhaarman.mockitokotlin2.mock
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -74,7 +75,27 @@ class LiveDataTransformationTest {
     }
 
     @Test
-    fun mapShouldTransformEachItemInPostedResponseData() {
+    fun map_withTransformAsync_shouldTransformEachItemInPostedResponseDataStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedObserver: (List<Int>) -> Unit = mock()
+        val liveData = MutableResponseLiveData<List<String>>()
+        val transformedLiveData = liveData.mapList(true, mockedTransformation)
+
+        transformedLiveData.observeData(owner, mockedObserver)
+
+        liveData.postData(listOf("ONE", "TWO"))
+        Assert.assertNotEquals(threadCount, Thread.activeCount())
+        Thread.sleep(5)
+
+        Mockito.verify(mockedTransformation, times(2)).invoke(any())
+        Mockito.verify(mockedObserver).invoke(any())
+    }
+
+    @Test
+    fun map_withoutTransformAsync_shouldTransformEachItemInPostedResponseDataWithoutStartingThreads() {
+        val threadCount = Thread.activeCount()
+
         val mockedObserver: (List<Int>) -> Unit = mock()
         val liveData = MutableResponseLiveData<List<String>>()
         val transformedLiveData = liveData.mapList(mockedTransformation)
@@ -82,6 +103,7 @@ class LiveDataTransformationTest {
         transformedLiveData.observeData(owner, mockedObserver)
 
         liveData.postData(listOf("ONE", "TWO"))
+        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(5)
 
         Mockito.verify(mockedTransformation, times(2)).invoke(any())
