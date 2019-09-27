@@ -18,7 +18,7 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
     /**
      * Current list displayed on adapter
      */
-    protected var items: List<MODEL>
+    var items: List<MODEL>
         get() = listDiffer.currentList
         private set(value) {
             listDiffer.submitList(value)
