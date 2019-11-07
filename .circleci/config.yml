@@ -1,9 +1,9 @@
-version: 2
+version: 3
 jobs:
   checkout-repo:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -22,7 +22,7 @@ jobs:
   ktLint:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     steps:
       - checkout
       - restore_cache:
@@ -39,7 +39,7 @@ jobs:
   lint:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     steps:
       - checkout
       - restore_cache:
@@ -56,7 +56,7 @@ jobs:
   jacoco-unified:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     steps:
       - checkout
       - restore_cache:
@@ -83,7 +83,7 @@ jobs:
   livedata:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     steps:
       - checkout
       - restore_cache:
@@ -106,7 +106,7 @@ jobs:
   recycler-adapter:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     steps:
       - checkout
       - restore_cache:
@@ -129,7 +129,7 @@ jobs:
   statemachine:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     steps:
       - checkout
       - restore_cache:
@@ -152,7 +152,7 @@ jobs:
   livedata-deploy:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     steps:
       - checkout
       - restore_cache:
@@ -165,7 +165,7 @@ jobs:
   recycler-adapter-deploy:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     steps:
       - checkout
       - restore_cache:
@@ -178,7 +178,7 @@ jobs:
   statemachine-deploy:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-29
     steps:
       - checkout
       - restore_cache:
