@@ -2,9 +2,7 @@ package br.com.arch.toolkit.livedata.response
 
 import androidx.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.livedata.ExecutorUtil.async
-import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
 import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
-import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS
 
 /**
  * A custom implementation of ResponseLiveData responsible for replicate a value from another ResponseLiveData
@@ -49,9 +47,9 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * @see SwapResponseLiveData.swapSource
      */
     fun <R> swapSource(
-        source: ResponseLiveData<R>,
-        transformAsync: Boolean,
-        transformation: (R) -> T
+            source: ResponseLiveData<R>,
+            transformAsync: Boolean,
+            transformation: (R) -> T
     ) {
         clearSource()
         sourceLiveData.addSource(source) { data ->
@@ -94,15 +92,11 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
     }
 
     private inline fun <R> doTransformation(
-        data: DataResult<R>,
-        transformation: (R) -> T,
-        crossinline newValueListener: (DataResult<T>) -> Unit
+            data: DataResult<R>,
+            transformation: (R) -> T,
+            crossinline newValueListener: (DataResult<T>) -> Unit
     ) {
-        val newValue = when (data.status) {
-            SUCCESS -> DataResult<T>(data.data?.let(transformation), null, SUCCESS)
-            ERROR -> DataResult<T>(null, data.error, ERROR)
-            LOADING -> DataResult<T>(null, null, LOADING)
-        }
+        val newValue = DataResult<T>(data.data?.let(transformation), data.error, data.status)
 
         if (value != newValue) {
             newValueListener(newValue)
