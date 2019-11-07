@@ -47,9 +47,9 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * @see SwapResponseLiveData.swapSource
      */
     fun <R> swapSource(
-            source: ResponseLiveData<R>,
-            transformAsync: Boolean,
-            transformation: (R) -> T
+        source: ResponseLiveData<R>,
+        transformAsync: Boolean,
+        transformation: (R) -> T
     ) {
         clearSource()
         sourceLiveData.addSource(source) { data ->
@@ -92,9 +92,9 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
     }
 
     private inline fun <R> doTransformation(
-            data: DataResult<R>,
-            transformation: (R) -> T,
-            crossinline newValueListener: (DataResult<T>) -> Unit
+        data: DataResult<R>,
+        transformation: (R) -> T,
+        crossinline newValueListener: (DataResult<T>) -> Unit
     ) {
         val newValue = DataResult<T>(data.data?.let(transformation), data.error, data.status)
 
