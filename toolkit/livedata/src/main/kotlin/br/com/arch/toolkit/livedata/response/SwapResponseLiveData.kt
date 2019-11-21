@@ -83,7 +83,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         lastSource?.let { sourceLiveData.removeSource(it) }
         lastSource = null
     }
-    
+
     override fun onActive() {
         super.onActive()
         if (!sourceLiveData.hasObservers()) sourceLiveData.observeForever(sourceObserver)
