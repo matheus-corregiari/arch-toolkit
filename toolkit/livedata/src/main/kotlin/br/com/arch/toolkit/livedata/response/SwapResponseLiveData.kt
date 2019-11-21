@@ -76,6 +76,14 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         swapSource(source, false, transformation)
     }
 
+    /**
+     * Removes source
+     */
+    fun clearSource() {
+        lastSource?.let { sourceLiveData.removeSource(it) }
+        lastSource = null
+    }
+    
     override fun onActive() {
         super.onActive()
         if (!sourceLiveData.hasObservers()) sourceLiveData.observeForever(sourceObserver)
@@ -84,11 +92,6 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
     override fun onInactive() {
         super.onInactive()
         sourceLiveData.removeObserver(sourceObserver)
-    }
-
-    private fun clearSource() {
-        lastSource?.let { sourceLiveData.removeSource(it) }
-        lastSource = null
     }
 
     private inline fun <R> doTransformation(
