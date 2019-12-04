@@ -26,7 +26,7 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
             listDiffer.submitList(value)
         }
 
-    private var recycler : RecyclerView? = null
+    private var recycler: RecyclerView? = null
     private var onItemClick: ((MODEL) -> Unit)? = null
 
     /**
