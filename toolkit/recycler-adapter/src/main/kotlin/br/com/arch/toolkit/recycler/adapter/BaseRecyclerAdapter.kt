@@ -6,14 +6,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import br.com.arch.toolkit.recycler.adapter.stickyheader.StickyHeaders
 
 /**
  * Basic implementation of RecyclerView.Adapter using AsyncListDiffer and CustomViews as items
  */
-abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> = DefaultItemDiffer()) : androidx.recyclerview.widget.RecyclerView.Adapter<BaseViewHolder>() {
+abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> = DefaultItemDiffer()) : RecyclerView.Adapter<BaseViewHolder>(), StickyHeaders {
 
     @Suppress("LeakingThis")
     private val listDiffer = AsyncListDiffer<MODEL>(this, differ)
+    private val clickMap = hashMapOf<Int, (MODEL) -> Unit>()
 
     /**
      * Current list displayed on adapter
@@ -24,8 +26,8 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
             listDiffer.submitList(value)
         }
 
+    private var recycler: RecyclerView? = null
     private var onItemClick: ((MODEL) -> Unit)? = null
-    private val clickMap = hashMapOf<Int, (MODEL) -> Unit>()
 
     /**
      * @param context Android Context
@@ -97,6 +99,19 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
         this.clickMap[itemType] = onItemClick
         return this
     }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recycler = recyclerView
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        this.recycler = null
+    }
+
+    override fun isStickyHeader(position: Int) =
+            this.recycler?.findViewHolderForAdapterPosition(position) is StickyViewBinder<*>
 
     /**
      * Remove the first item in the list

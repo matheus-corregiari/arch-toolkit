@@ -6,3 +6,9 @@ package br.com.arch.toolkit.recycler.adapter
 interface ViewBinder<in MODEL> {
     fun bind(model: MODEL)
 }
+
+/**
+ * Sticky implementation of ViewBinder
+ * Use it in pair with StickyHeaders
+ */
+interface StickyViewBinder<in MODEL> : ViewBinder<MODEL>
