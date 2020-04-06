@@ -834,7 +834,6 @@ class ResponseLiveDataTest {
         Mockito.verify(mockedOnError).invoke(error)
     }
 
-
     @Test
     fun whenOnError_withoutTransformAsync_shouldDeliverErrorBeforeCallObserverWithoutStartingThreads() {
         val threadCount = Thread.activeCount()
