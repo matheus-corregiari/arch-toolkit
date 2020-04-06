@@ -45,6 +45,8 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * @param source The ResponseLiveData to replicate the value
      * @param transformAsync Indicate swapSource will execute synchronously or asynchronously
      * @param transformation Receives the data of the source and change to T value
+     * @param errorTransformer Receives the error of the source and change to another Throwable value
+     * @param onErrorReturn Receives the error of the source and change to T value
      *
      * @see SwapResponseLiveData.swapSource
      */
