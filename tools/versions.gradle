@@ -20,7 +20,7 @@ ext.versions = [
         ],
 
         // KtLint
-        ktLint        : '0.36.0',
+        ktLint        : '0.31.0',
 
         // Test
         espresso      : '3.1.1',
