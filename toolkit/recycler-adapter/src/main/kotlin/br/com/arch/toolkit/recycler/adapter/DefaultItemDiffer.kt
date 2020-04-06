@@ -1,5 +1,6 @@
 package br.com.arch.toolkit.recycler.adapter
 
+import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil
 
 /**
@@ -10,6 +11,7 @@ class DefaultItemDiffer<MODEL> : DiffUtil.ItemCallback<MODEL>() {
         return newItem == oldItem
     }
 
+    @SuppressLint("DiffUtilEquals")
     override fun areContentsTheSame(oldItem: MODEL, newItem: MODEL): Boolean {
         return newItem == oldItem
     }
