@@ -723,6 +723,52 @@ class ResponseLiveDataTest {
     }
 
     @Test
+    fun whenMapError_withTransformAsync_shouldTransformErrorStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedTransformer: (Throwable) -> Throwable = mock()
+        val mockedObserver: (Throwable) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val mappedLiveData = liveData.mapError(true, mockedTransformer)
+
+        val error = IllegalStateException("error")
+        Mockito.`when`(mockedTransformer.invoke(error)).thenReturn(error)
+
+        liveData.setError(error)
+        mappedLiveData.observeError(owner, mockedObserver)
+
+        Assert.assertNotEquals(threadCount, Thread.activeCount())
+        Thread.sleep(5)
+
+        Mockito.verify(mockedObserver).invoke(error)
+        Mockito.verify(mockedTransformer).invoke(error)
+    }
+
+    @Test
+    fun whenMapError_withoutTransformAsync_shouldTransformErrorWithoutStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedTransformer: (Throwable) -> Throwable = mock()
+        val mockedObserver: (Throwable) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val mappedLiveData = liveData.mapError(mockedTransformer)
+
+        val error = IllegalStateException("error")
+        Mockito.`when`(mockedTransformer.invoke(error)).thenReturn(error)
+
+        liveData.setError(error)
+        mappedLiveData.observeError(owner, mockedObserver)
+
+        Assert.assertEquals(threadCount, Thread.activeCount())
+        Thread.sleep(5)
+
+        Mockito.verify(mockedObserver).invoke(error)
+        Mockito.verify(mockedTransformer).invoke(error)
+    }
+
+    @Test
     fun whenOnNext_withTransformAsync_shouldDeliverDataBeforeCallObserverStartingThreads() {
         val threadCount = Thread.activeCount()
 
@@ -764,5 +810,102 @@ class ResponseLiveDataTest {
 
         Mockito.verify(mockedObserver).invoke(data)
         Mockito.verify(mockedOnNext).invoke(data)
+    }
+
+    @Test
+    fun whenOnError_withTransformAsync_shouldDeliverErrorBeforeCallObserverStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedOnError: (Throwable) -> Unit = mock()
+        val mockedObserver: (Throwable) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val onErrorLiveData = liveData.onError(true, mockedOnError)
+
+        val error = IllegalStateException("error")
+
+        liveData.setError(error)
+        onErrorLiveData.observeError(owner, mockedObserver)
+
+        Assert.assertNotEquals(threadCount, Thread.activeCount())
+        Thread.sleep(10)
+
+        Mockito.verify(mockedObserver).invoke(error)
+        Mockito.verify(mockedOnError).invoke(error)
+    }
+
+
+    @Test
+    fun whenOnError_withoutTransformAsync_shouldDeliverErrorBeforeCallObserverWithoutStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedOnError: (Throwable) -> Unit = mock()
+        val mockedObserver: (Throwable) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val onErrorLiveData = liveData.onError(mockedOnError)
+
+        val error = IllegalStateException("error")
+
+        liveData.setError(error)
+        onErrorLiveData.observeError(owner, mockedObserver)
+
+        Assert.assertEquals(threadCount, Thread.activeCount())
+        Thread.sleep(10)
+
+        Mockito.verify(mockedObserver).invoke(error)
+        Mockito.verify(mockedOnError).invoke(error)
+    }
+
+    @Test
+    fun whenOnErrorReturn_withTransformAsync_shouldDeliverTransformedDataBeforeCallObserverStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedOnErrorReturn: (Throwable) -> String = mock()
+        val mockedObserver: (Throwable) -> Unit = mock()
+        val mockedDataObserver: (String) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val onErrorLiveData = liveData.onErrorReturn(true, mockedOnErrorReturn)
+
+        val error = IllegalStateException("error")
+        Mockito.`when`(mockedOnErrorReturn.invoke(error)).thenReturn("error")
+
+        liveData.setError(error)
+        onErrorLiveData.observeError(owner, mockedObserver)
+        onErrorLiveData.observeData(owner, mockedDataObserver)
+
+        Assert.assertNotEquals(threadCount, Thread.activeCount())
+        Thread.sleep(10)
+
+        Mockito.verifyNoInteractions(mockedObserver)
+        Mockito.verify(mockedOnErrorReturn).invoke(error)
+        Mockito.verify(mockedDataObserver).invoke("error")
+    }
+
+    @Test
+    fun whenOnErrorReturn_withoutTransformAsync_shouldDeliverTransformedDataBeforeCallObserverWithoutStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedOnErrorReturn: (Throwable) -> String = mock()
+        val mockedObserver: (Throwable) -> Unit = mock()
+        val mockedDataObserver: (String) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val onErrorLiveData = liveData.onErrorReturn(mockedOnErrorReturn)
+
+        val error = IllegalStateException("error")
+        Mockito.`when`(mockedOnErrorReturn.invoke(error)).thenReturn("error")
+
+        liveData.setError(error)
+        onErrorLiveData.observeError(owner, mockedObserver)
+        onErrorLiveData.observeData(owner, mockedDataObserver)
+
+        Assert.assertEquals(threadCount, Thread.activeCount())
+        Thread.sleep(10)
+
+        Mockito.verifyNoInteractions(mockedObserver)
+        Mockito.verify(mockedOnErrorReturn).invoke(error)
+        Mockito.verify(mockedDataObserver).invoke("error")
     }
 }
