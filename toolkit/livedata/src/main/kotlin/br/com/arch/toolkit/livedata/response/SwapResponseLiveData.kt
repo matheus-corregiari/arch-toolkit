@@ -2,7 +2,9 @@ package br.com.arch.toolkit.livedata.response
 
 import androidx.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.livedata.ExecutorUtil.async
+import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
 import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
+import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS
 
 /**
  * A custom implementation of ResponseLiveData responsible for replicate a value from another ResponseLiveData
@@ -47,18 +49,35 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * @see SwapResponseLiveData.swapSource
      */
     fun <R> swapSource(
-        source: ResponseLiveData<R>,
-        transformAsync: Boolean,
-        transformation: (R) -> T
+            source: ResponseLiveData<R>,
+            transformAsync: Boolean,
+            transformation: (R) -> T,
+            errorTransformer: ((Throwable) -> Throwable)? = null,
+            onErrorReturn: ((Throwable) -> T)? = null
     ) {
         clearSource()
         sourceLiveData.addSource(source) { data ->
-            if (transformAsync) {
-                async {
-                    doTransformation(data, transformation) { postValue(it) }
+
+            val block: () -> DataResult<T>? = {
+                val status = data.status
+                val errorData = data.error?.let { onErrorReturn?.invoke(it) }
+                if (status == ERROR && errorData != null) {
+                    DataResult<T>(errorData, null, SUCCESS)
+                } else {
+                    val newError = data.error?.let { errorTransformer?.invoke(it) ?: data.error }
+                    val newValue = DataResult(data.data?.let(transformation), newError, data.status)
+                    if (value != newValue) {
+                        newValue
+                    } else {
+                        null
+                    }
                 }
+            }
+
+            if (transformAsync) {
+                async { block.invoke()?.let(::postValue) }
             } else {
-                doTransformation(data, transformation) { value = it }
+                block.invoke()?.let(::setValue)
             }
         }
         lastSource = source
@@ -84,6 +103,13 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         lastSource = null
     }
 
+    /**
+     * Returns true if does not have data source or if the status is equal to DataResultStatus.ERROR
+     */
+    fun needsRefresh(): Boolean {
+        return hasDataSource.not() || status == ERROR
+    }
+
     override fun onActive() {
         super.onActive()
         if (!sourceLiveData.hasObservers()) sourceLiveData.observeForever(sourceObserver)
@@ -92,17 +118,5 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
     override fun onInactive() {
         super.onInactive()
         sourceLiveData.removeObserver(sourceObserver)
-    }
-
-    private inline fun <R> doTransformation(
-        data: DataResult<R>,
-        transformation: (R) -> T,
-        crossinline newValueListener: (DataResult<T>) -> Unit
-    ) {
-        val newValue = DataResult<T>(data.data?.let(transformation), data.error, data.status)
-
-        if (value != newValue) {
-            newValueListener(newValue)
-        }
     }
 }
