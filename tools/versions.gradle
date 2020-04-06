@@ -1,37 +1,37 @@
 ext.versions = [
 
-        kotlin         : '1.3.21',
-        android_plugin : '3.3.2',
-        jacoco         : '0.8.3',
-        dexcount       : '0.8.2',
-        bintray_plugin : '1.8.4',
-        maven_plugin   : '2.1',
+        kotlin        : '1.3.71',
+        android_plugin: '3.6.0',
+        jacoco        : '0.8.5',
+        dexcount      : '1.0.2',
+        bintray_plugin: '1.8.4',
+        maven_plugin  : '2.1',
 
         // Android
-        androidx       : [
-                appcompat  : '1.0.0',
-                annotation  : '1.0.0',
-                recyclerview: '1.0.0',
+        androidx      : [
+                appcompat   : '1.1.0',
+                annotation  : '1.1.0',
+                recyclerview: '1.1.0',
                 lifecycle   : [
-                        livedata: '2.2.0-rc01',
-                        runtime : '2.0.0-rc01',
-                        testing : '2.0.0-rc01',
+                        livedata: '2.2.0',
+                        runtime : '2.2.0',
+                        testing : '2.1.0',
                 ],
         ],
 
         // KtLint
-        ktLint         : '0.31.0',
+        ktLint        : '0.36.0',
 
         // Test
-        espresso       : '3.0.2',
-        mockito        : '2.11.0',
-        mockito_kotlin : '2.0.0-RC1',
-        robolectric    : '4.0-alpha-3',
-        hamcrest       : '1.3',
-        junit          : '4.12',
-        rules          : '1.0.2',
-        runner         : '1.0.2',
-        kappuccino     : '1.2.0',
-        mirror         : '1.6',
-        uiAutomator    : '2.1.3'
+        espresso      : '3.1.1',
+        mockito       : '3.3.3',
+        mockito_kotlin: '2.2.0',
+        robolectric   : '4.3.1',
+        hamcrest      : '1.3',
+        junit         : '4.13',
+        rules         : '1.0.2',
+        runner        : '1.0.2',
+        kappuccino    : '1.2.0',
+        mirror        : '1.6.1',
+        uiAutomator   : '2.2.0'
 ]
