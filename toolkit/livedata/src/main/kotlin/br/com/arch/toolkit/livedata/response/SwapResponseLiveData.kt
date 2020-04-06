@@ -51,11 +51,11 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * @see SwapResponseLiveData.swapSource
      */
     fun <R> swapSource(
-            source: ResponseLiveData<R>,
-            transformAsync: Boolean,
-            transformation: (R) -> T,
-            errorTransformer: ((Throwable) -> Throwable)? = null,
-            onErrorReturn: ((Throwable) -> T)? = null
+        source: ResponseLiveData<R>,
+        transformAsync: Boolean,
+        transformation: (R) -> T,
+        errorTransformer: ((Throwable) -> Throwable)? = null,
+        onErrorReturn: ((Throwable) -> T)? = null
     ) {
         clearSource()
         sourceLiveData.addSource(source) { data ->
