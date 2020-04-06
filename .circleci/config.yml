@@ -1,4 +1,4 @@
-version: 3
+version: 4
 jobs:
   checkout-repo:
     working_directory: ~/arch-toolkit
@@ -52,33 +52,6 @@ jobs:
       - store_artifacts:
           path: build/reports/lint
           destination: reports/lint
-
-  jacoco-unified:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-            - jacoco-files-{{ checksum "toolkit/livedata/build.gradle" }}
-      - restore_cache:
-          keys:
-            - jacoco-files-{{ checksum "toolkit/livedata/build.gradle" }}
-      - restore_cache:
-          keys:
-            - jacoco-files-{{ checksum "toolkit/recycler-adapter/build.gradle" }}
-      - restore_cache:
-          keys:
-            - jacoco-files-{{ checksum "toolkit/statemachine/build.gradle" }}
-      - run:
-          name: Generate Unified Jacoco Coverage Report
-          command: ./gradlew jacocoTestReport-unified
-
-      - store_artifacts:
-          path: build/reports/jacoco/
-          destination: reports/coverage
 
   livedata:
     working_directory: ~/arch-toolkit
@@ -211,26 +184,21 @@ workflows:
           requires:
             - lint
             - ktLint
-      - jacoco-unified:
-          requires:
-            - livedata
-            - recycler-adapter
-            - statemachine
       - livedata-deploy:
           requires:
-            - jacoco-unified
+            - livedata
           filters:
             branches:
               only: master
       - recycler-adapter-deploy:
           requires:
-            - jacoco-unified
+            - recycler-adapter
           filters:
             branches:
               only: master
       - statemachine-deploy:
           requires:
-            - jacoco-unified
+            - statemachine
           filters:
             branches:
               only: master
