@@ -2,9 +2,8 @@ package br.com.arch.toolkit.livedata.response
 
 import androidx.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.livedata.ExecutorUtil.async
-import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
-import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
-import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS
+import br.com.arch.toolkit.livedata.exception.DataTransformationException
+import br.com.arch.toolkit.livedata.response.DataResultStatus.*
 
 /**
  * A custom implementation of ResponseLiveData responsible for replicate a value from another ResponseLiveData
@@ -51,11 +50,11 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * @see SwapResponseLiveData.swapSource
      */
     fun <R> swapSource(
-        source: ResponseLiveData<R>,
-        transformAsync: Boolean,
-        transformation: (R) -> T,
-        errorTransformer: ((Throwable) -> Throwable)? = null,
-        onErrorReturn: ((Throwable) -> T)? = null
+            source: ResponseLiveData<R>,
+            transformAsync: Boolean,
+            transformation: (R) -> T,
+            errorTransformer: ((Throwable) -> Throwable)? = null,
+            onErrorReturn: ((Throwable) -> T)? = null
     ) {
         clearSource()
         sourceLiveData.addSource(source) { data ->
@@ -77,9 +76,21 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
             }
 
             if (transformAsync) {
-                async { block.invoke()?.let(::postValue) }
+                async {
+                    block.runCatching { invoke() }
+                            .onSuccess { it?.let(::postValue) }
+                            .onFailure {
+                                val error = DataTransformationException("Error performing swapSource, please check your transformations", it);
+                                postValue(DataResult(null, error, ERROR))
+                            }
+                }
             } else {
-                block.invoke()?.let(::setValue)
+                block.runCatching { invoke() }
+                        .onSuccess { it?.let(::setValue) }
+                        .onFailure {
+                            val error = DataTransformationException("Error performing swapSource, please check your transformations", it);
+                            setValue(DataResult(null, error, ERROR))
+                        }
             }
         }
         lastSource = source
