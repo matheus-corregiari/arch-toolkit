@@ -2,6 +2,7 @@ package br.com.arch.toolkit.livedata.response
 
 import androidx.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.livedata.ExecutorUtil.async
+import br.com.arch.toolkit.livedata.exception.DataTransformationException
 import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
 import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
 import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS
@@ -77,9 +78,21 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
             }
 
             if (transformAsync) {
-                async { block.invoke()?.let(::postValue) }
+                async {
+                    block.runCatching { invoke() }
+                            .onSuccess { it?.let(::postValue) }
+                            .onFailure {
+                                val error = DataTransformationException("Error performing swapSource, please check your transformations", it)
+                                postValue(DataResult(null, error, ERROR))
+                            }
+                }
             } else {
-                block.invoke()?.let(::setValue)
+                block.runCatching { invoke() }
+                        .onSuccess { it?.let(::setValue) }
+                        .onFailure {
+                            val error = DataTransformationException("Error performing swapSource, please check your transformations", it)
+                            setValue(DataResult(null, error, ERROR))
+                        }
             }
         }
         lastSource = source
