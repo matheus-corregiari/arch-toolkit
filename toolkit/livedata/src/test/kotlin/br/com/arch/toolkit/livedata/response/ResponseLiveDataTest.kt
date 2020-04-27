@@ -907,4 +907,70 @@ class ResponseLiveDataTest {
         Mockito.verify(mockedOnErrorReturn).invoke(error)
         Mockito.verify(mockedDataObserver).invoke("error")
     }
+
+    @Test
+    fun whenOnErrorReturn_whenReceiveErrorWithData_shouldNOTcallOnErrorReturnBlockAndDeliverTheOriginalData() {
+        val mockedOnErrorReturn: (Throwable) -> String = mock()
+        val mockedObserver: (Throwable) -> Unit = mock()
+        val mockedDataObserver: (String) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val onErrorLiveData = liveData.onErrorReturn(mockedOnErrorReturn)
+
+        val error = IllegalStateException("error")
+        liveData.setError(error, "data")
+
+        onErrorLiveData.observeError(owner, mockedObserver)
+        onErrorLiveData.observeData(owner, mockedDataObserver)
+
+        Mockito.verifyNoInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedOnErrorReturn)
+        Mockito.verify(mockedDataObserver, times(1)).invoke("data")
+    }
+
+    @Test
+    fun whenTransform_withoutAsync_shouldDeliverTransformedDataBeforeCallObserverWithoutStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedTransformation: (DataResult<String>) -> DataResult<Int> = mock()
+        val mockedDataObserver: (Int) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val transformedLiveData = liveData.transform(mockedTransformation)
+        transformedLiveData.observeData(owner, mockedDataObserver)
+
+        val data = DataResult("data", null, DataResultStatus.SUCCESS)
+        val result = DataResult(0, null, DataResultStatus.SUCCESS)
+        Mockito.`when`(mockedTransformation.invoke(data)).thenReturn(result)
+        liveData.setData("data")
+
+        Assert.assertEquals(threadCount, Thread.activeCount())
+        Thread.sleep(10)
+
+        Mockito.verify(mockedTransformation, times(1)).invoke(data)
+        Mockito.verify(mockedDataObserver, times(1)).invoke(0)
+    }
+
+    @Test
+    fun whenTransform_withAsync_shouldDeliverTransformedDataBeforeCallObserverWithoutStartingThreads() {
+        val threadCount = Thread.activeCount()
+
+        val mockedTransformation: (DataResult<String>) -> DataResult<Int> = mock()
+        val mockedDataObserver: (Int) -> Unit = mock()
+
+        val liveData = MutableResponseLiveData<String>()
+        val transformedLiveData = liveData.transform(true, mockedTransformation)
+        transformedLiveData.observeData(owner, mockedDataObserver)
+
+        val data = DataResult("data", null, DataResultStatus.SUCCESS)
+        val result = DataResult(0, null, DataResultStatus.SUCCESS)
+        Mockito.`when`(mockedTransformation.invoke(data)).thenReturn(result)
+        liveData.setData("data")
+
+        Assert.assertNotEquals(threadCount, Thread.activeCount())
+        Thread.sleep(10)
+
+        Mockito.verify(mockedTransformation, times(1)).invoke(data)
+        Mockito.verify(mockedDataObserver, times(1)).invoke(0)
+    }
 }
