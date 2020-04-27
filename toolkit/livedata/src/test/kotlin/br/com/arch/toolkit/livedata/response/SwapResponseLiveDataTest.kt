@@ -1,6 +1,5 @@
 package br.com.arch.toolkit.livedata.response
 
-import android.provider.ContactsContract
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -202,6 +201,7 @@ class SwapResponseLiveDataTest {
         Thread.sleep(15)
         Assert.assertEquals(DataResultStatus.ERROR, swapLiveData.status)
     }
+
     @Test
     fun whenSwapSource_withSynchronousTransformation_onError_shouldDeliverErrorResult() {
         val threadCount = Thread.activeCount()

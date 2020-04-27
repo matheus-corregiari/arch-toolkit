@@ -49,8 +49,8 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * @see SwapResponseLiveData.swapSource
      */
     fun <R> swapSource(
-            source: ResponseLiveData<R>,
-            dataTransformer: (R) -> T
+        source: ResponseLiveData<R>,
+        dataTransformer: (R) -> T
     ) = swapSource(source, false, dataTransformer)
 
     /**
@@ -65,11 +65,11 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * @see SwapResponseLiveData.swapSource
      */
     fun <R> swapSource(
-            source: ResponseLiveData<R>,
-            async: Boolean,
-            dataTransformer: (R) -> T,
-            errorTransformer: ((Throwable) -> Throwable)? = null,
-            onErrorReturn: ((Throwable) -> T)? = null
+        source: ResponseLiveData<R>,
+        async: Boolean,
+        dataTransformer: (R) -> T,
+        errorTransformer: ((Throwable) -> Throwable)? = null,
+        onErrorReturn: ((Throwable) -> T)? = null
     ) = executeSwap(source, async) { result ->
 
         var status = result.status
@@ -87,9 +87,9 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
     }
 
     fun <R> swapSource(
-            source: ResponseLiveData<R>,
-            async: Boolean,
-            transformation: (DataResult<R>) -> DataResult<T>
+        source: ResponseLiveData<R>,
+        async: Boolean,
+        transformation: (DataResult<R>) -> DataResult<T>
     ) = executeSwap(source, async, transformation)
 
     /**
@@ -118,9 +118,9 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
     }
 
     private fun <R> executeSwap(
-            source: ResponseLiveData<R>,
-            async: Boolean,
-            transformation: (DataResult<R>) -> DataResult<T>?
+        source: ResponseLiveData<R>,
+        async: Boolean,
+        transformation: (DataResult<R>) -> DataResult<T>?
     ) {
         clearSource()
         sourceLiveData.addSource(source) { data ->
