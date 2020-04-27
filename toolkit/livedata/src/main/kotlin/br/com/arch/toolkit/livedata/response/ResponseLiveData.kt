@@ -471,6 +471,37 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
     fun onError(@NonNull onError: ((Throwable) -> Unit)): ResponseLiveData<T> {
         return onError(false, onError)
     }
+
+    /**
+     * Synchronously execute the function transformation before any observe set after this method be called
+     *
+     * @param transformation With the entire data DataResult<T> and returns the new DataResult<R> value
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.transform
+     */
+    @NonNull
+    fun <R> transform(@NonNull transformation: (DataResult<T>) -> DataResult<R>): ResponseLiveData<R> {
+        return transform(false, transformation)
+    }
+
+    /**
+     * Execute the function transformation before any observe set after this method be called
+     *
+     * @param async Indicate map will execute synchronously or asynchronously
+     * @param transformation With the entire data DataResult<T> and returns the new DataResult<R> value
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.transform
+     */
+    @NonNull
+    fun <R> transform(async: Boolean, @NonNull transformation: (DataResult<T>) -> DataResult<R>): ResponseLiveData<R> {
+        val liveData = SwapResponseLiveData<R>()
+        liveData.swapSource(this, async, transformation)
+        return liveData
+    }
     //endregion
 
     /**

@@ -44,8 +44,21 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * Changes the actual DataSource, with transformation
      *
      * @param source The ResponseLiveData to replicate the value
-     * @param transformAsync Indicate swapSource will execute synchronously or asynchronously
-     * @param transformation Receives the data of the source and change to T value
+     * @param dataTransformer Receives the data of the source and change to T value
+     *
+     * @see SwapResponseLiveData.swapSource
+     */
+    fun <R> swapSource(
+        source: ResponseLiveData<R>,
+        dataTransformer: (R) -> T
+    ) = swapSource(source, false, dataTransformer)
+
+    /**
+     * Changes the actual DataSource, with transformation
+     *
+     * @param source The ResponseLiveData to replicate the value
+     * @param async Indicate swapSource will execute synchronously or asynchronously
+     * @param dataTransformer Receives the data of the source and change to T value
      * @param errorTransformer Receives the error of the source and change to another Throwable value
      * @param onErrorReturn Receives the error of the source and change to T value
      *
@@ -53,62 +66,31 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      */
     fun <R> swapSource(
         source: ResponseLiveData<R>,
-        transformAsync: Boolean,
-        transformation: (R) -> T,
+        async: Boolean,
+        dataTransformer: (R) -> T,
         errorTransformer: ((Throwable) -> Throwable)? = null,
         onErrorReturn: ((Throwable) -> T)? = null
-    ) {
-        clearSource()
-        sourceLiveData.addSource(source) { data ->
+    ) = executeSwap(source, async) { result ->
 
-            val block: () -> DataResult<T>? = {
-                val status = data.status
-                val errorData = data.error?.let { onErrorReturn?.invoke(it) }
-                if (status == ERROR && errorData != null) {
-                    DataResult<T>(errorData, null, SUCCESS)
-                } else {
-                    val newError = data.error?.let { errorTransformer?.invoke(it) ?: data.error }
-                    val newValue = DataResult(data.data?.let(transformation), newError, data.status)
-                    if (value != newValue) {
-                        newValue
-                    } else {
-                        null
-                    }
-                }
-            }
+        var status = result.status
+        val error = result.error?.let { errorTransformer?.invoke(it) ?: result.error }
+        var data = result.data?.let(dataTransformer)
 
-            if (transformAsync) {
-                async {
-                    block.runCatching { invoke() }
-                            .onSuccess { it?.let(::postValue) }
-                            .onFailure {
-                                val error = DataTransformationException("Error performing swapSource, please check your transformations", it)
-                                postValue(DataResult(null, error, ERROR))
-                            }
-                }
-            } else {
-                block.runCatching { invoke() }
-                        .onSuccess { it?.let(::setValue) }
-                        .onFailure {
-                            val error = DataTransformationException("Error performing swapSource, please check your transformations", it)
-                            setValue(DataResult(null, error, ERROR))
-                        }
-            }
+        if (data == null && onErrorReturn != null && error != null) {
+            data = error.let(onErrorReturn)
         }
-        lastSource = source
+        if (onErrorReturn != null && status == ERROR) {
+            status = SUCCESS
+        }
+        val newValue = DataResult<T>(data, error, status)
+        newValue.takeIf { value != newValue }
     }
 
-    /**
-     * Synchronously changes the actual DataSource, with transformation
-     *
-     * @param source The ResponseLiveData to replicate the value
-     * @param transformation Receives the data of the source and change to T value
-     *
-     * @see SwapResponseLiveData.swapSource
-     */
-    fun <R> swapSource(source: ResponseLiveData<R>, transformation: (R) -> T) {
-        swapSource(source, false, transformation)
-    }
+    fun <R> swapSource(
+        source: ResponseLiveData<R>,
+        async: Boolean,
+        transformation: (DataResult<R>) -> DataResult<T>
+    ) = executeSwap(source, async, transformation)
 
     /**
      * Removes source
@@ -133,5 +115,34 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
     override fun onInactive() {
         super.onInactive()
         sourceLiveData.removeObserver(sourceObserver)
+    }
+
+    private fun <R> executeSwap(
+        source: ResponseLiveData<R>,
+        async: Boolean,
+        transformation: (DataResult<R>) -> DataResult<T>?
+    ) {
+        clearSource()
+        sourceLiveData.addSource(source) { data ->
+
+            if (async) {
+                async {
+                    transformation.runCatching { invoke(data) }
+                            .onSuccess { it?.let(::postValue) }
+                            .onFailure {
+                                val error = DataTransformationException("Error performing swapSource, please check your transformations", it)
+                                postValue(DataResult(null, error, ERROR))
+                            }
+                }
+            } else {
+                transformation.runCatching { invoke(data) }
+                        .onSuccess { it?.let(::setValue) }
+                        .onFailure {
+                            val error = DataTransformationException("Error performing swapSource, please check your transformations", it)
+                            setValue(DataResult(null, error, ERROR))
+                        }
+            }
+        }
+        lastSource = source
     }
 }
