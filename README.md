@@ -17,6 +17,7 @@ This is the toolkit that I had used and improved across the projects I worked wi
 - **[Statemachine](toolkit/statemachine)** - A simple way to handle view change states
 - **[Recycler-Adapter](toolkit/recycler-adapter)** - A Recycler Adapter implementation using Custom Views and a "bind" interface
 - **[LiveData](toolkit/livedata)** - Some custom implementations of LiveData and some extensions
+- **[Delegate](toolkit/delegate)** - Some custom implementations for delegated properties
 
 ###### In progress:
 
@@ -24,12 +25,11 @@ This is the toolkit that I had used and improved across the projects I worked wi
 
 ###### Backlog:
 
-- **Delegates** - Some delegates to simplify Activity/Fragment/Views boilerplate code
 - **Extensions** - Some extensions to speed up your code
 
 I'm trying to publish everything on JCenter, but I'll only publish projects with javadoc and implemented samples. So if you want use something not published, feel free to copy and paste into your project.
 
-Take a look in the REAME files inside the project modules and give it a try. =P
+Take a look in the README files inside the project modules and give it a try. =P
 You'll find instructions to add them into your project and how to use them.
 
 ###### Have improvements?

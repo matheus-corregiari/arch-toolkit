@@ -1,0 +1,24 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply from: "$rootDir/tools/publish/publish.gradle"
+
+android {
+
+    defaultConfig {
+        consumerProguardFiles 'consumer-proguard-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+}
+
+dependencies {
+    compileOnly "androidx.annotation:annotation:$versions.androidx.annotation"
+    compileOnly "androidx.appcompat:appcompat:$versions.androidx.appcompat"
+    compileOnly "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+}

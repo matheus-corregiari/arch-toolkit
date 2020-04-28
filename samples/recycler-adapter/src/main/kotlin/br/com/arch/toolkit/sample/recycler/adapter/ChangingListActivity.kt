@@ -1,18 +1,19 @@
 package br.com.arch.toolkit.sample.recycler.adapter
 
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout.VERTICAL
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.view.View
-import android.widget.LinearLayout.VERTICAL
+import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.sample.recycler.adapter.adapter.MultipleViewTypesAdapter
 
 class ChangingListActivity : BaseActivity() {
 
-    private lateinit var recycler: androidx.recyclerview.widget.RecyclerView
-    private lateinit var restore: View
-    private lateinit var sortDescending: View
+    private val recycler: RecyclerView by viewProvider(R.id.recycler_view)
+    private val restore: View by viewProvider(R.id.restore)
+    private val sortDescending: View by viewProvider(R.id.sort_descending)
 
     private val adapter = MultipleViewTypesAdapter()
             .withListener(::onItemClick)
@@ -21,12 +22,9 @@ class ChangingListActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sorting_list)
-        recycler = findViewById(R.id.recycler_view)
-        restore = findViewById(R.id.restore)
-        sortDescending = findViewById(R.id.sort_descending)
 
-        recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        recycler.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(this, VERTICAL))
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.addItemDecoration(DividerItemDecoration(this, VERTICAL))
         recycler.adapter = adapter
 
         adapter.setList(generateStringList())

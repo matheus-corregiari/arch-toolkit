@@ -10,7 +10,7 @@ import br.com.arch.toolkit.sample.recycler.adapter.adapter.MultipleViewTypesAdap
 
 class MultipleViewTypesActivity : BaseActivity() {
 
-    private lateinit var recycler: androidx.recyclerview.widget.RecyclerView
+    private lateinit var recycler: RecyclerView
     private val adapter = MultipleViewTypesAdapter()
             .withListener(::onItemClick)
             .withListener(MultipleViewTypesAdapter.TYPE_TWO, ::onTypeTwoClick)
@@ -19,8 +19,8 @@ class MultipleViewTypesActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
         recycler = findViewById(R.id.recycler_view)
-        recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        recycler.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(this, VERTICAL))
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.addItemDecoration(DividerItemDecoration(this, VERTICAL))
         recycler.adapter = adapter
 
         adapter.setList(generateStringList())

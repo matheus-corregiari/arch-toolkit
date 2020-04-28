@@ -29,7 +29,7 @@ dependencies{
 ```
 
 ```groovy
-implementation "com.android.support:recyclerview-v7:$versions.android_support"
+implementation "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
 ```
 
 Then add the Recycler Adapter
@@ -51,7 +51,7 @@ api "br.com.arch.toolkit:recycler-adapter:$latest_version"
 ###### Creating a Item
 
 ```kotlin
-class YoutCustomViewClass : View, ViewBinder<YourModel>{
+class YourCustomViewClass : View, ViewBinder<YourModel>{
 
     // Your custom View stuff
 

@@ -122,6 +122,29 @@ jobs:
               - ~/toolkit/statemachine/build/outputs/code-coverage/connected
            key: jacoco-files-{{ checksum "toolkit/statemachine/build.gradle" }}
 
+  delegate:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-29
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Run Delegate test
+          command: ./gradlew :toolkit:delegate:jacocoTestReport
+
+      - store_artifacts:
+          path: toolkit/delegate/build/reports/jacoco/
+          destination: reports/delegate
+
+      - save_cache:
+           paths:
+              - ~/toolkit/delegate/build/jacoco
+              - ~/toolkit/delegate/build/outputs/code-coverage/connected
+           key: jacoco-files-{{ checksum "toolkit/delegate/build.gradle" }}
+
   livedata-deploy:
     working_directory: ~/arch-toolkit
     docker:
@@ -161,6 +184,19 @@ jobs:
           name: Deploy Statemachine
           command: ./gradlew :toolkit:statemachine:bintrayUpload
 
+  delegate-deploy:
+    working_directory: ~/arch-toolkit
+    docker:
+      - image: circleci/android:api-29
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Deploy Delegate
+          command: ./gradlew :toolkit:delegate:bintrayUpload
+
 workflows:
   version: 2
   lint-test-deploy:
@@ -184,6 +220,10 @@ workflows:
           requires:
             - lint
             - ktLint
+      - delegate:
+          requires:
+            - lint
+            - ktLint
       - livedata-deploy:
           requires:
             - livedata
@@ -199,6 +239,12 @@ workflows:
       - statemachine-deploy:
           requires:
             - statemachine
+          filters:
+            branches:
+              only: master
+      - delegate-deploy:
+          requires:
+            - delegate
           filters:
             branches:
               only: master

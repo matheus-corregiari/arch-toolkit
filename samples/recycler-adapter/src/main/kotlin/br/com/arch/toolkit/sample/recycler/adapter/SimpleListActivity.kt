@@ -6,20 +6,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.LinearLayout.VERTICAL
 import android.widget.Toast
+import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.recycler.adapter.SimpleAdapter
 import br.com.arch.toolkit.sample.recycler.adapter.itemView.SimpleItemView
 
 class SimpleListActivity : BaseActivity() {
 
-    private lateinit var recycler: androidx.recyclerview.widget.RecyclerView
+    private val recycler: RecyclerView by viewProvider(R.id.recycler_view)
     private val adapter = SimpleAdapter(::SimpleItemView).withListener(::onItemClick)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        recycler = findViewById(R.id.recycler_view)
-        recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        recycler.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(this, VERTICAL))
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.addItemDecoration(DividerItemDecoration(this, VERTICAL))
         recycler.adapter = adapter
 
         adapter.setList(generateStringList())
