@@ -21,5 +21,6 @@ dependencies {
     implementation "androidx.annotation:annotation:$versions.androidx.annotation"
     implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
 
+    implementation project(":toolkit:delegate")
     implementation project(":toolkit:statemachine")
 }

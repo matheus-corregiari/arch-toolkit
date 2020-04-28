@@ -22,4 +22,5 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
 
     implementation project(":toolkit:recycler-adapter")
+    implementation project(":toolkit:delegate")
 }

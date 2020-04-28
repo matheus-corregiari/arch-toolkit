@@ -6,6 +6,7 @@ import android.transition.Slide
 import android.view.Gravity
 import android.widget.Button
 import android.widget.FrameLayout
+import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.statemachine.SceneStateMachine
 import br.com.arch.toolkit.statemachine.config
 import br.com.arch.toolkit.statemachine.scene
@@ -13,18 +14,17 @@ import br.com.arch.toolkit.statemachine.state
 
 class SceneStateMachineExampleActivity : BaseActivity() {
 
-    private lateinit var stateContainer: FrameLayout
+    private val stateContainer: FrameLayout by viewProvider(R.id.state_container)
 
-    private lateinit var btStateOne: Button
-    private lateinit var btStateTwo: Button
-    private lateinit var btStateThree: Button
+    private val btStateOne: Button by viewProvider(R.id.bt_state_one)
+    private val btStateTwo: Button by viewProvider(R.id.bt_state_two)
+    private val btStateThree: Button by viewProvider(R.id.bt_state_three)
 
     private val stateMachine = SceneStateMachine()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scene_state_machine)
-        initViews()
         setupStateMachine(savedInstanceState?.getBundle(STATE_MACHINE_RESTORE_KEY))
         setupClickListeners()
     }
@@ -80,15 +80,5 @@ class SceneStateMachineExampleActivity : BaseActivity() {
         }
 
         start()
-    }
-
-    private fun initViews() {
-        // Container
-        stateContainer = findViewById(R.id.state_container)
-
-        // Buttons
-        btStateOne = findViewById(R.id.bt_state_one)
-        btStateTwo = findViewById(R.id.bt_state_two)
-        btStateThree = findViewById(R.id.bt_state_three)
     }
 }
