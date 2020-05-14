@@ -15,7 +15,7 @@ class StickyHeadersActivity : BaseActivity() {
 
     private val recycler by viewProvider<RecyclerView>(R.id.recycler_view)
     private val adapter = SimpleStickyAdapter(StickyItemView::Item, StickyItemView::Header)
-            .withListener(::onItemClick)
+        .withListener(::onItemClick)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class StickyHeadersActivity : BaseActivity() {
     }
 
     class StickyHeaderModelExample(
-            val title: String
+        val title: String
     ) : StickyHeaderModel {
         override var isSticky = false
     }

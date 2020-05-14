@@ -43,12 +43,12 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinder = viewCreator(parent.context, viewType)
         val itemView = viewBinder as? View
-                ?: throw IllegalStateException("The ViewBinder instance also must be a View")
+            ?: throw IllegalStateException("The ViewBinder instance also must be a View")
         return BaseViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) =
-            bindHolder(holder, items[position], clickMap[getItemViewType(position)] ?: onItemClick)
+        bindHolder(holder, items[position], clickMap[getItemViewType(position)] ?: onItemClick)
 
     override fun isStickyHeader(position: Int) = false
 
@@ -62,7 +62,7 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
     @Suppress("UNCHECKED_CAST")
     protected open fun <T> bindHolder(holder: BaseViewHolder, model: T, onItemClick: ((T) -> Unit)? = null) {
         val binder = (holder.itemView as? ViewBinder<T>)
-                ?: throw IllegalStateException("${holder.itemView::class} cannot be cast to ViewBinder<>")
+            ?: throw IllegalStateException("${holder.itemView::class} cannot be cast to ViewBinder<>")
         binder.bind(model)
 
         // Setup click listener

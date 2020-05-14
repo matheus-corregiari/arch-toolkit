@@ -10,13 +10,13 @@ import br.com.arch.toolkit.sample.recycler.adapter.StickyHeadersActivity
 
 sealed class StickyItemView {
     abstract class View(
-            context: Context,
-            attrs: AttributeSet?,
-            defStyleAttr: Int
+        context: Context,
+        attrs: AttributeSet?,
+        defStyleAttr: Int
     ) : AppCompatTextView(
-            context,
-            attrs,
-            defStyleAttr
+        context,
+        attrs,
+        defStyleAttr
     ), ViewBinder<StickyHeadersActivity.StickyHeaderModelExample> {
 
         init {
