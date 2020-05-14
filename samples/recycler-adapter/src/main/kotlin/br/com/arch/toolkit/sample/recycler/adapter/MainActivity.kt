@@ -10,6 +10,7 @@ class MainActivity : AppCompatActivity() {
 
     private val simpleListButton: Button by viewProvider(R.id.bt_simple_list_example)
     private val multipleViewButton: Button by viewProvider(R.id.bt_multiple_view_types_example)
+    private val stickyHeadersButton: Button by viewProvider(R.id.bt_sticky_headers_example)
     private val changingListButton: Button by viewProvider(R.id.bt_changing_list_example)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +23,10 @@ class MainActivity : AppCompatActivity() {
 
         multipleViewButton.setOnClickListener {
             startActivity(Intent(this, MultipleViewTypesActivity::class.java))
+        }
+
+        stickyHeadersButton.setOnClickListener {
+            startActivity(Intent(this, StickyHeadersActivity::class.java))
         }
 
         changingListButton.setOnClickListener {

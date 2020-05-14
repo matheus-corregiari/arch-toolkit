@@ -6,11 +6,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.LinearLayout.VERTICAL
 import android.widget.Toast
+import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.sample.recycler.adapter.adapter.MultipleViewTypesAdapter
 
 class MultipleViewTypesActivity : BaseActivity() {
 
-    private lateinit var recycler: RecyclerView
+    private val recycler by viewProvider<RecyclerView>(R.id.recycler_view)
     private val adapter = MultipleViewTypesAdapter()
             .withListener(::onItemClick)
             .withListener(MultipleViewTypesAdapter.TYPE_TWO, ::onTypeTwoClick)
@@ -18,7 +19,6 @@ class MultipleViewTypesActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        recycler = findViewById(R.id.recycler_view)
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.addItemDecoration(DividerItemDecoration(this, VERTICAL))
         recycler.adapter = adapter

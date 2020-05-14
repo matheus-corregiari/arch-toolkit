@@ -19,6 +19,12 @@
         android:text="Multipĺe View Types Example" />
 
     <Button
+        android:id="@+id/bt_sticky_headers_example"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sticky Headers Example" />
+
+    <Button
         android:id="@+id/bt_changing_list_example"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

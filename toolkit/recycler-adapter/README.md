@@ -68,12 +68,35 @@ class YourCustomViewClass : View, ViewBinder<YourModel>{
 class YourActivity : Activity {
 
     val recyclerView: RecyclerView
-    val adapter = SimpleAdapter(::YoutCustomViewClass) // Simple like that =)
+    val adapter = SimpleAdapter(::YourCustomViewClass) // Simple like that =)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Your code here
 
         recyclerView.adapter = adapter
+        adapter.setList(someList)
+    }
+
+}
+```
+
+###### For a sticky Header and a single ItemView adapter, use SimpleStickyAdapter
+
+```kotlin
+class YourStickyModel : StickyHeaderModel {
+    override var isSticky = false
+}
+
+class YourActivity : Activity {
+
+    val recyclerView: RecyclerView
+    val adapter = SimpleStickyAdapter(::YourCustomViewClass, ::YourCustomHeaderClass) // Simple like that =)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Your code here
+
+        recyclerView.adapter = adapter
+        recycler.layoutManager = StickyHeadersLinearLayoutManager<SimpleStickyAdapter<YourStickyModel, YourCustomViewClass, YourCustomHeaderClass>>(this)
         adapter.setList(someList)
     }
 
@@ -107,7 +130,7 @@ class CustomAdapter : BaseRecyclerAdapter<MODEL>() {
 ###### Click Listeners
 
 ```kotlin
-val adapter = SimpleAdapter(::YoutCustomViewClass)
+val adapter = SimpleAdapter(::YourCustomViewClass)
 
 adapter.withListener { model -> } // Default click listener
 adapter.withListener(VIEW_TYPE) { model -> } // For specific view types

@@ -1,6 +1,7 @@
 <resources>
 
     <attr name="simpleItemStyle" format="reference" />
+    <attr name="stickyItemStyle" format="reference" />
     <attr name="anotherSimpleItemStyle" format="reference" />
 
 </resources>

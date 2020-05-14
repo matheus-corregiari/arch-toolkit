@@ -1,11 +1,11 @@
 package br.com.arch.toolkit.recycler.adapter
 
 import android.content.Context
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import android.view.View
-import android.view.ViewGroup
 import br.com.arch.toolkit.recycler.adapter.stickyheader.StickyHeaders
 
 /**
@@ -26,12 +26,12 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
             listDiffer.submitList(value)
         }
 
-    private var recycler: RecyclerView? = null
     private var onItemClick: ((MODEL) -> Unit)? = null
 
     /**
      * @param context Android Context
-     * @param viewType View Type calculated on BaseRecyclerAdapter$getItemViewType
+     * @param viewType View Type calculated on BaseRecyclerAdapter$getItemViewType. If used along with
+     * StickyHeaders, defaults to DEFAULT_TYPE and STICKY_TYPE
      *
      * @return A new View instance to bind. The view must implement the ViewBinder interface
      * @throws IllegalStateException if the ViewBinder instance returned is not a View
@@ -43,12 +43,14 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinder = viewCreator(parent.context, viewType)
         val itemView = viewBinder as? View
-                ?: throw IllegalStateException("The ViewBinder instance also must be a View")
+            ?: throw IllegalStateException("The ViewBinder instance also must be a View")
         return BaseViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) =
-            bindHolder(holder, items[position], clickMap[getItemViewType(position)] ?: onItemClick)
+        bindHolder(holder, items[position], clickMap[getItemViewType(position)] ?: onItemClick)
+
+    override fun isStickyHeader(position: Int) = false
 
     /**
      * @param holder Holder holding the Custom View implementing the ViewBinder<>
@@ -60,7 +62,7 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
     @Suppress("UNCHECKED_CAST")
     protected open fun <T> bindHolder(holder: BaseViewHolder, model: T, onItemClick: ((T) -> Unit)? = null) {
         val binder = (holder.itemView as? ViewBinder<T>)
-                ?: throw IllegalStateException("${holder.itemView::class} cannot be cast to ViewBinder<>")
+            ?: throw IllegalStateException("${holder.itemView::class} cannot be cast to ViewBinder<>")
         binder.bind(model)
 
         // Setup click listener
@@ -99,19 +101,6 @@ abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> =
         this.clickMap[itemType] = onItemClick
         return this
     }
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        this.recycler = recyclerView
-    }
-
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-        this.recycler = null
-    }
-
-    override fun isStickyHeader(position: Int) =
-            this.recycler?.findViewHolderForAdapterPosition(position) is StickyViewBinder<*>
 
     /**
      * Remove the first item in the list

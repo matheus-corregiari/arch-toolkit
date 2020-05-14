@@ -19,19 +19,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".SimpleListActivity"
             android:label="Simple List Example" />
-
         <activity
             android:name=".MultipleViewTypesActivity"
             android:label="Multiple View Types Example" />
-
         <activity
             android:name=".ChangingListActivity"
             android:label="Changing List Example" />
-
+        <activity
+            android:name=".StickyHeadersActivity"
+            android:label="Sticky Headers List Example" />
     </application>
 
 </manifest>

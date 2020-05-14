@@ -1,14 +1,13 @@
 package br.com.arch.toolkit.recycler.adapter.stickyheader
 
+import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.recyclerview.widget.RecyclerView
-import android.content.Context
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlin.IllegalStateException
+import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
 import kotlin.math.min
 
@@ -217,7 +216,8 @@ class StickyHeadersLinearLayoutManager<T> : LinearLayoutManager where T : Recycl
                 if (isViewValidAnchor(child, params)) {
                     anchorView = child
                     anchorIndex = i
-                    anchorPos = params?.viewAdapterPosition ?: throw IllegalStateException("Unknown adapter position")
+                    anchorPos = params?.viewAdapterPosition
+                        ?: throw IllegalStateException("Unknown adapter position")
                     break
                 }
             }
@@ -232,8 +232,8 @@ class StickyHeadersLinearLayoutManager<T> : LinearLayoutManager where T : Recycl
                 // - It's on the edge or it's not the anchor view;
                 // - Isn't followed by another sticky header;
                 if (headerPos != -1 &&
-                        (headerPos != anchorPos || isViewOnBoundary(anchorView)) &&
-                        nextHeaderPos != headerPos + 1) {
+                    (headerPos != anchorPos || isViewOnBoundary(anchorView)) &&
+                    nextHeaderPos != headerPos + 1) {
                     // Ensure existing sticky header, if any, is of correct type.
                     if (mStickyHeader != null && mAdapter != null && getItemViewType(mStickyHeader!!) != mAdapter!!.getItemViewType(headerPos)) {
                         // A sticky header was shown before but is not of the correct type. Scrap it.
