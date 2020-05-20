@@ -1,8 +1,6 @@
 package br.com.arch.toolkit.recycler.adapter.stickyheader
 
 import android.content.Context
-import android.os.Parcel
-import android.os.Parcelable
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.annotation.NonNull
@@ -604,5 +602,4 @@ class StickyHeadersLinearLayoutManager<T> : LinearLayoutManager where T : Recycl
             }
         }
     }
-
 }
