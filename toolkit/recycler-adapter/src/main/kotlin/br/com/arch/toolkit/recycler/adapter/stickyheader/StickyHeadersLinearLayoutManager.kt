@@ -83,28 +83,6 @@ class StickyHeadersLinearLayoutManager<T> : LinearLayoutManager where T : Recycl
         }
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
-        val ss = SavedState()
-        ss.superState = super.onSaveInstanceState()
-        ss.pendingScrollPosition = mPendingScrollPosition
-        ss.pendingScrollOffset = mPendingScrollOffset
-        return ss
-    }
-
-    override fun onRestoreInstanceState(state: Parcelable?) {
-        var savedState = state
-        if (savedState is SavedState) {
-            val ss = savedState as SavedState?
-            ss?.let {
-                mPendingScrollPosition = it.pendingScrollPosition
-                mPendingScrollOffset = it.pendingScrollOffset
-                savedState = it.superState
-            }
-        }
-
-        super.onRestoreInstanceState(state)
-    }
-
     override fun scrollVerticallyBy(dy: Int, recycler: RecyclerView.Recycler?, state: RecyclerView.State?): Int {
         detachStickyHeader()
         val scrolled = super.scrollVerticallyBy(dy, recycler, state)
@@ -627,44 +605,4 @@ class StickyHeadersLinearLayoutManager<T> : LinearLayoutManager where T : Recycl
         }
     }
 
-    class SavedState : Parcelable {
-        var superState: Parcelable?
-        var pendingScrollPosition: Int
-        var pendingScrollOffset: Int
-
-        constructor() {
-            this.superState = null
-            this.pendingScrollPosition = 0
-            this.pendingScrollOffset = 0
-        }
-
-        constructor(`in`: Parcel) {
-            this.superState = `in`.readParcelable(SavedState::class.java.classLoader)
-            this.pendingScrollPosition = `in`.readInt()
-            this.pendingScrollOffset = `in`.readInt()
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-
-        override fun writeToParcel(@NonNull dest: Parcel, flags: Int) {
-            dest.writeParcelable(this.superState, flags)
-            dest.writeInt(this.pendingScrollPosition)
-            dest.writeInt(this.pendingScrollOffset)
-        }
-
-        companion object {
-            @JvmField
-            val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
-                override fun createFromParcel(`in`: Parcel): SavedState {
-                    return SavedState(`in`)
-                }
-
-                override fun newArray(size: Int): Array<SavedState?> {
-                    return arrayOfNulls(size)
-                }
-            }
-        }
-    }
 }
