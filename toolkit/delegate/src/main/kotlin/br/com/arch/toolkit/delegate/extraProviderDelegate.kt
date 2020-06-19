@@ -5,10 +5,10 @@ import androidx.fragment.app.Fragment
 import kotlin.reflect.KProperty
 
 class ExtraProviderDelegate<T>(
-    private val extraName: String,
-    private val keepState: Boolean,
-    private val type: ExtraType,
-    private val defaultValue: () -> T
+        private val extraName: String,
+        private val keepState: Boolean,
+        private val type: ExtraType,
+        private val defaultValue: () -> T
 ) {
 
     private var extra: T? = null
@@ -18,7 +18,7 @@ class ExtraProviderDelegate<T>(
             ExtraType.ARGUMENT -> getExtra(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.QUERY -> getQueryParameter(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.AUTO -> getExtra(extra, extraName, thisRef)
-                    ?: getQueryParameter(extra, extraName, thisRef)
+                    ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else defaultValue.invoke())
                     ?: defaultValue.invoke()
         }
 
@@ -34,7 +34,7 @@ class ExtraProviderDelegate<T>(
             ExtraType.ARGUMENT -> getExtra(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.QUERY -> getQueryParameter(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.AUTO -> getExtra(extra, extraName, thisRef)
-                    ?: getQueryParameter(extra, extraName, thisRef)
+                    ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else defaultValue.invoke())
                     ?: defaultValue.invoke()
         }
 
