@@ -18,7 +18,7 @@ class ExtraProviderDelegate<T>(
             ExtraType.ARGUMENT -> getExtra(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.QUERY -> getQueryParameter(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.AUTO -> getExtra(extra, extraName, thisRef)
-                    ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else defaultValue.invoke())
+                    ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else null)
                     ?: defaultValue.invoke()
         }
 
@@ -34,7 +34,7 @@ class ExtraProviderDelegate<T>(
             ExtraType.ARGUMENT -> getExtra(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.QUERY -> getQueryParameter(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.AUTO -> getExtra(extra, extraName, thisRef)
-                    ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else defaultValue.invoke())
+                    ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else null)
                     ?: defaultValue.invoke()
         }
 
