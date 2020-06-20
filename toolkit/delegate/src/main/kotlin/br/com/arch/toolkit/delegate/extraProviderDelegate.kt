@@ -5,10 +5,10 @@ import androidx.fragment.app.Fragment
 import kotlin.reflect.KProperty
 
 class ExtraProviderDelegate<T>(
-        private val extraName: String,
-        private val keepState: Boolean,
-        private val type: ExtraType,
-        private val defaultValue: () -> T
+    private val extraName: String,
+    private val keepState: Boolean,
+    private val type: ExtraType,
+    private val defaultValue: () -> T
 ) {
 
     private var extra: T? = null
