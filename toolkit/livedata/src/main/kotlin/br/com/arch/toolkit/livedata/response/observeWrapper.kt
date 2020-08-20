@@ -41,7 +41,7 @@ class ObserveWrapper<T> internal constructor(@NonNull private val liveData: Resp
      */
     @NonNull
     fun loading(@NonNull single: Boolean = false, @NonNull withData: Boolean, @NonNull observer: (Boolean) -> Unit): ObserveWrapper<T> {
-        eventList.add(LoadingEvent(observer, single, EventDataStatus.DOESNT_MATTER))
+        eventList.add(LoadingEvent(observer, single, getEventDataStatus(withData)))
         return this
     }
 
