@@ -51,7 +51,7 @@ class LiveDataTransformationTest {
 
         liveData.postValue(null)
 
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.postValue("ONE")
         Mockito.verify(mockedObserver).invoke(0)
@@ -67,7 +67,7 @@ class LiveDataTransformationTest {
 
         liveData.postValue(null)
 
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.postValue(listOf("ONE", "TWO"))
         Mockito.verify(mockedTransformation, times(2)).invoke(any())
@@ -86,7 +86,7 @@ class LiveDataTransformationTest {
 
         liveData.postData(listOf("ONE", "TWO"))
         Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(5)
+        Thread.sleep(50)
 
         Mockito.verify(mockedTransformation, times(2)).invoke(any())
         Mockito.verify(mockedObserver).invoke(any())
@@ -104,7 +104,7 @@ class LiveDataTransformationTest {
 
         liveData.postData(listOf("ONE", "TWO"))
         Assert.assertEquals(threadCount, Thread.activeCount())
-        Thread.sleep(5)
+        Thread.sleep(50)
 
         Mockito.verify(mockedTransformation, times(2)).invoke(any())
         Mockito.verify(mockedObserver).invoke(any())

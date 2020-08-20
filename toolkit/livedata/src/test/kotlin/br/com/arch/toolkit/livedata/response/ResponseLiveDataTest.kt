@@ -47,9 +47,9 @@ class ResponseLiveDataTest {
             it.invoke(liveData, nullObject)
         }
 
-        Mockito.verifyZeroInteractions(mockedObserver)
-        Mockito.verifyZeroInteractions(errorObserver)
-        Mockito.verifyZeroInteractions(emptyObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(errorObserver)
+        Mockito.verifyNoInteractions(emptyObserver)
 
         Assert.assertNull(liveData.value)
         Assert.assertNull(liveData.data)
@@ -97,7 +97,7 @@ class ResponseLiveDataTest {
         liveData.observeHideLoading(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke()
@@ -153,7 +153,7 @@ class ResponseLiveDataTest {
         liveData.observeSingleHideLoading(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke()
@@ -176,7 +176,7 @@ class ResponseLiveDataTest {
         liveData.observeError(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke()
@@ -195,7 +195,7 @@ class ResponseLiveDataTest {
         liveData.observeError(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val exception = IllegalStateException()
         liveData.setError(exception)
@@ -216,8 +216,8 @@ class ResponseLiveDataTest {
         liveData.observeError(owner, mockedTransformer, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedTransformer)
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedTransformer)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val exception = IllegalStateException()
         Mockito.`when`(mockedTransformer.invoke(exception)).thenReturn("")
@@ -241,7 +241,7 @@ class ResponseLiveDataTest {
         liveData.observeSingleError(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.setError(IllegalStateException())
         Mockito.verify(mockedObserver).invoke()
@@ -262,7 +262,7 @@ class ResponseLiveDataTest {
         liveData.observeSingleError(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val exception = IllegalStateException()
         liveData.setError(exception)
@@ -288,7 +288,7 @@ class ResponseLiveDataTest {
         liveData.observeSingleError(owner, mockedTransformer, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val exception = IllegalStateException()
         Mockito.`when`(mockedTransformer.invoke(exception)).thenReturn("")
@@ -321,7 +321,7 @@ class ResponseLiveDataTest {
         liveData.observeSuccess(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val data = "data"
         liveData.setData(data)
@@ -338,7 +338,7 @@ class ResponseLiveDataTest {
         liveData.observeSingleSuccess(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val data = "data"
         liveData.setData(data)
@@ -348,7 +348,7 @@ class ResponseLiveDataTest {
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         liveData.setData(data)
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
     }
@@ -362,7 +362,7 @@ class ResponseLiveDataTest {
         liveData.observeData(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val data = "data"
         liveData.setData(data)
@@ -398,7 +398,7 @@ class ResponseLiveDataTest {
         liveData.observeData(owner, mockedTransformer, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val data = "data"
         Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(0)
@@ -442,7 +442,7 @@ class ResponseLiveDataTest {
         liveData.observeSingleData(owner, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val data = "data"
         liveData.setData(data)
@@ -468,7 +468,7 @@ class ResponseLiveDataTest {
         liveData.observeSingleData(owner, mockedTransformer, mockedObserver)
 
         liveData.setLoading()
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         val data = "data"
         Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(0)
@@ -555,7 +555,7 @@ class ResponseLiveDataTest {
 
         val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
         Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
     }
@@ -576,8 +576,8 @@ class ResponseLiveDataTest {
         val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
         Mockito.`when`(mockedTransformer.invoke(result2)).thenReturn(1)
         Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
-        Mockito.verifyZeroInteractions(mockedTransformer)
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
     }
@@ -594,7 +594,7 @@ class ResponseLiveDataTest {
 
         val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
         Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
     }
@@ -648,7 +648,7 @@ class ResponseLiveDataTest {
 
         val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
         Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
     }
@@ -669,8 +669,8 @@ class ResponseLiveDataTest {
         val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
         Mockito.`when`(mockedTransformer.invoke(DataResultStatus.ERROR)).thenReturn(1)
         Mirror().on(liveData).invoke().method("setValue").withArgs(result2)
-        Mockito.verifyZeroInteractions(mockedTransformer)
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoMoreInteractions(mockedTransformer)
+        Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
     }
@@ -693,7 +693,7 @@ class ResponseLiveDataTest {
         mappedLiveData.observeData(owner, mockedObserver)
 
         Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(5)
+        Thread.sleep(50)
 
         Mockito.verify(mockedObserver).invoke(data)
         Mockito.verify(mockedTransformer).invoke(data)
@@ -716,7 +716,7 @@ class ResponseLiveDataTest {
         mappedLiveData.observeData(owner, mockedObserver)
 
         Assert.assertEquals(threadCount, Thread.activeCount())
-        Thread.sleep(5)
+        Thread.sleep(50)
 
         Mockito.verify(mockedObserver).invoke(data)
         Mockito.verify(mockedTransformer).invoke(data)
@@ -739,7 +739,7 @@ class ResponseLiveDataTest {
         mappedLiveData.observeError(owner, mockedObserver)
 
         Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(5)
+        Thread.sleep(50)
 
         Mockito.verify(mockedObserver).invoke(error)
         Mockito.verify(mockedTransformer).invoke(error)
@@ -762,7 +762,7 @@ class ResponseLiveDataTest {
         mappedLiveData.observeError(owner, mockedObserver)
 
         Assert.assertEquals(threadCount, Thread.activeCount())
-        Thread.sleep(5)
+        Thread.sleep(50)
 
         Mockito.verify(mockedObserver).invoke(error)
         Mockito.verify(mockedTransformer).invoke(error)
@@ -784,7 +784,7 @@ class ResponseLiveDataTest {
         onNextLiveData.observeData(owner, mockedObserver)
 
         Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(10)
+        Thread.sleep(50)
 
         Mockito.verify(mockedObserver).invoke(data)
         Mockito.verify(mockedOnNext).invoke(data)
@@ -806,7 +806,7 @@ class ResponseLiveDataTest {
         onNextLiveData.observeData(owner, mockedObserver)
 
         Assert.assertEquals(threadCount, Thread.activeCount())
-        Thread.sleep(10)
+        Thread.sleep(50)
 
         Mockito.verify(mockedObserver).invoke(data)
         Mockito.verify(mockedOnNext).invoke(data)
@@ -828,7 +828,7 @@ class ResponseLiveDataTest {
         onErrorLiveData.observeError(owner, mockedObserver)
 
         Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(10)
+        Thread.sleep(50)
 
         Mockito.verify(mockedObserver).invoke(error)
         Mockito.verify(mockedOnError).invoke(error)
@@ -850,7 +850,7 @@ class ResponseLiveDataTest {
         onErrorLiveData.observeError(owner, mockedObserver)
 
         Assert.assertEquals(threadCount, Thread.activeCount())
-        Thread.sleep(10)
+        Thread.sleep(50)
 
         Mockito.verify(mockedObserver).invoke(error)
         Mockito.verify(mockedOnError).invoke(error)
@@ -875,7 +875,7 @@ class ResponseLiveDataTest {
         onErrorLiveData.observeData(owner, mockedDataObserver)
 
         Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(10)
+        Thread.sleep(50)
 
         Mockito.verifyNoInteractions(mockedObserver)
         Mockito.verify(mockedOnErrorReturn).invoke(error)
@@ -901,7 +901,7 @@ class ResponseLiveDataTest {
         onErrorLiveData.observeData(owner, mockedDataObserver)
 
         Assert.assertEquals(threadCount, Thread.activeCount())
-        Thread.sleep(10)
+        Thread.sleep(50)
 
         Mockito.verifyNoInteractions(mockedObserver)
         Mockito.verify(mockedOnErrorReturn).invoke(error)
@@ -945,7 +945,7 @@ class ResponseLiveDataTest {
         liveData.setData("data")
 
         Assert.assertEquals(threadCount, Thread.activeCount())
-        Thread.sleep(10)
+        Thread.sleep(50)
 
         Mockito.verify(mockedTransformation, times(1)).invoke(data)
         Mockito.verify(mockedDataObserver, times(1)).invoke(0)
@@ -968,7 +968,7 @@ class ResponseLiveDataTest {
         liveData.setData("data")
 
         Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(10)
+        Thread.sleep(50)
 
         Mockito.verify(mockedTransformation, times(1)).invoke(data)
         Mockito.verify(mockedDataObserver, times(1)).invoke(0)
