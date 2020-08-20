@@ -47,14 +47,14 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        Mockito.verifyZeroInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(computeObserver)
+        Mockito.verifyNoInteractions(abortObserver)
 
         liveData.observe(owner, mockedObserver)
 
-        Thread.sleep(20)
+        Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(abortObserver)
     }
 
     @Test
@@ -64,19 +64,19 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        Mockito.verifyZeroInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(computeObserver)
+        Mockito.verifyNoInteractions(abortObserver)
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(20)
+        Thread.sleep(50)
 
         // Call again if have observers
         liveData.invalidate()
-        Thread.sleep(20)
+        Thread.sleep(50)
 
         Mockito.verify(computeObserver, times(2)).invoke()
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(abortObserver)
     }
 
     @Test
@@ -86,12 +86,12 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        Mockito.verifyZeroInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(computeObserver)
+        Mockito.verifyNoInteractions(abortObserver)
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(20)
+        Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
 
         liveData.removeObservers(owner)
@@ -101,7 +101,7 @@ class ComputableLiveDataTest {
         liveData.invalidate()
         Assert.assertFalse(liveData.hasComputed())
         Mockito.verifyNoMoreInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(abortObserver)
     }
 
     @Test
@@ -114,13 +114,13 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        Mockito.verifyZeroInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(computeObserver)
+        Mockito.verifyNoInteractions(abortObserver)
         Assert.assertFalse(liveData.isRunningOrHasComputed)
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(20)
+        Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
 
         // Call again if have observers
@@ -128,7 +128,7 @@ class ComputableLiveDataTest {
         Assert.assertTrue(liveData.isRunning)
         Assert.assertTrue(liveData.isRunningOrHasComputed)
         Mockito.verifyNoMoreInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(abortObserver)
     }
 
     @Test
@@ -141,16 +141,16 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        Mockito.verifyZeroInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(computeObserver)
+        Mockito.verifyNoInteractions(abortObserver)
 
         // Call when become active
         liveData.observe(owner, mockedObserver)
-        Thread.sleep(20)
+        Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
         Assert.assertFalse(liveData.isRunning)
         Assert.assertFalse(liveData.hasComputed())
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(abortObserver)
     }
 
     @Test
@@ -160,20 +160,20 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        Mockito.verifyZeroInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(computeObserver)
+        Mockito.verifyNoInteractions(abortObserver)
 
         // Call when become active
         liveData.observeSingle(owner, mockedObserver)
-        Thread.sleep(20)
+        Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
         Assert.assertFalse(liveData.isRunning)
         Assert.assertTrue(liveData.hasComputed())
 
         liveData.observeSingle(owner, mockedObserver)
-        Thread.sleep(20)
+        Thread.sleep(50)
         Mockito.verifyNoMoreInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(abortObserver)
     }
 
     @Test
@@ -183,15 +183,15 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        Mockito.verifyZeroInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(computeObserver)
+        Mockito.verifyNoInteractions(abortObserver)
 
         liveData.interrupt()
         Mockito.verify(abortObserver).invoke()
         Assert.assertFalse(liveData.isRunning)
         Assert.assertFalse(liveData.hasComputed())
 
-        Mockito.verifyZeroInteractions(computeObserver)
+        Mockito.verifyNoInteractions(computeObserver)
     }
 
     @Test
@@ -201,11 +201,11 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        Mockito.verifyZeroInteractions(computeObserver)
-        Mockito.verifyZeroInteractions(abortObserver)
+        Mockito.verifyNoInteractions(computeObserver)
+        Mockito.verifyNoInteractions(abortObserver)
 
         liveData.observeSingle(owner, mockedObserver)
-        Thread.sleep(15)
+        Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
         Assert.assertTrue(liveData.isRunningOrHasComputed)
 
@@ -214,6 +214,6 @@ class ComputableLiveDataTest {
         Assert.assertFalse(liveData.isRunning)
         Assert.assertFalse(liveData.hasComputed())
 
-        Mockito.verifyZeroInteractions(computeObserver)
+        Mockito.verifyNoMoreInteractions(computeObserver)
     }
 }

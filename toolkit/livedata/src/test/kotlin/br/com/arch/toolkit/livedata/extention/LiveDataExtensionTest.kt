@@ -36,7 +36,7 @@ class LiveDataExtensionTest {
 
         liveData.postValue(null)
 
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.postValue("nonNullData")
         Mockito.verify(mockedObserver).invoke("nonNullData")
@@ -52,7 +52,7 @@ class LiveDataExtensionTest {
 
         liveData.postValue(null)
 
-        Mockito.verifyZeroInteractions(mockedObserver)
+        Mockito.verifyNoInteractions(mockedObserver)
         Assert.assertTrue(liveData.hasObservers())
 
         liveData.postValue("nonNullData")

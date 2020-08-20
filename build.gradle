@@ -113,6 +113,11 @@ allprojects {
                 from javadoc.destinationDir
             }
 
+            tasks.withType(Test) {
+                jacoco.includeNoLocationClasses = true
+                jacoco.excludes = ['jdk.internal.*']
+            }
+
             task publishRelease(group: "publishing",
                     dependsOn: ["clean", "build", "install", "bintrayUpload"])
 

@@ -145,7 +145,7 @@ class StateMachineTest {
 
         machine.changeState(0, true)
 
-        Mockito.verifyZeroInteractions(onExit)
+        Mockito.verifyNoInteractions(onExit)
         Mockito.verify(onEnter, times(2)).invoke()
         Mockito.verify(changeState, times(2)).onChangeState(0)
     }
