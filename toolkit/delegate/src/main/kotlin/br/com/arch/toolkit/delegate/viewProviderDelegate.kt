@@ -84,7 +84,7 @@ class ViewProviderDelegate<out T>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun inflateIfIsViewStub(view: View?) = if(view is ViewStub) view.inflate() else view
+    private fun inflateIfIsViewStub(view: View?) = if (view is ViewStub) view.inflate() else view
 
     @Suppress("UNCHECKED_CAST")
     private inline fun findView(property: KProperty<*>, crossinline initializer: () -> View?): T {
