@@ -24,3 +24,7 @@ dependencies {
     testImplementation "androidx.lifecycle:lifecycle-runtime:$versions.androidx.lifecycle.runtime"
     testImplementation "androidx.arch.core:core-testing:$versions.androidx.lifecycle.testing"
 }
+
+tasks.withType(Javadoc).all {
+    enabled = false
+}
