@@ -2,6 +2,7 @@ package br.com.arch.toolkit.delegate
 
 import android.view.View
 import android.view.View.NO_ID
+import android.view.ViewStub
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -9,16 +10,27 @@ import androidx.recyclerview.widget.RecyclerView
 import java.lang.ref.WeakReference
 import kotlin.reflect.KProperty
 
-fun <T : View> viewProvider(@IdRes idRes: Int, @IdRes parentRes: Int = NO_ID) =
-        ViewProviderDelegate<T>(parentRes = parentRes, idRes = idRes, required = true)
+fun <T : View> viewProvider(@IdRes idRes: Int, @IdRes parentRes: Int = NO_ID, viewStubAutoInflate: Boolean = false) =
+        ViewProviderDelegate<T>(
+                parentRes = parentRes,
+                idRes = idRes,
+                required = true,
+                viewStubAutoInflate = viewStubAutoInflate
+        )
 
-fun <T : View?> optionalViewProvider(@IdRes idRes: Int, @IdRes parentRes: Int = NO_ID) =
-        ViewProviderDelegate<T?>(parentRes = parentRes, idRes = idRes, required = false)
+fun <T : View?> optionalViewProvider(@IdRes idRes: Int, @IdRes parentRes: Int = NO_ID, viewStubAutoInflate: Boolean = false) =
+        ViewProviderDelegate<T?>(
+                parentRes = parentRes,
+                idRes = idRes,
+                required = false,
+                viewStubAutoInflate = viewStubAutoInflate
+        )
 
 class ViewProviderDelegate<out T>(
     @IdRes private val parentRes: Int = NO_ID,
     @IdRes private val idRes: Int,
-    private val required: Boolean
+    private val required: Boolean,
+    private val viewStubAutoInflate: Boolean = false
 ) {
 
     private var weakView: WeakReference<View>? = null
@@ -72,8 +84,12 @@ class ViewProviderDelegate<out T>(
     }
 
     @Suppress("UNCHECKED_CAST")
+    private fun inflateIfIsViewStub(view: View?) = if(view is ViewStub) view.inflate() else view
+
+    @Suppress("UNCHECKED_CAST")
     private inline fun findView(property: KProperty<*>, crossinline initializer: () -> View?): T {
-        view = (view ?: initializer.invoke())
+        view = if (viewStubAutoInflate) inflateIfIsViewStub(view ?: initializer.invoke())
+            else view ?: initializer.invoke()
         if (required && view == null) {
             throw IllegalStateException("View ID $idRes for '${property.name}' not found.")
         }
