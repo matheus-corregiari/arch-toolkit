@@ -9,13 +9,14 @@ ext.versions = [
 
         // Android
         androidx      : [
-                appcompat   : '1.1.0',
-                annotation  : '1.1.0',
-                recyclerview: '1.1.0',
-                lifecycle   : [
-                        livedata: '2.2.0',
-                        runtime : '2.2.0',
-                        testing : '2.1.0',
+                constraintLayout: '2.0.4',
+                appcompat       : '1.1.0',
+                annotation      : '1.1.0',
+                recyclerview    : '1.1.0',
+                lifecycle       : [
+                            livedata: '2.2.0',
+                            runtime : '2.2.0',
+                            testing : '2.1.0',
                 ],
         ],
 

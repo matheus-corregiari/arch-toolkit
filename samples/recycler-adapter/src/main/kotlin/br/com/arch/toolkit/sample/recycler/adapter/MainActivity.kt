@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import br.com.arch.toolkit.delegate.viewProvider
+import br.com.arch.toolkit.sample.recycler.adapter.paginating.PaginatingActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,6 +13,7 @@ class MainActivity : AppCompatActivity() {
     private val multipleViewButton: Button by viewProvider(R.id.bt_multiple_view_types_example)
     private val stickyHeadersButton: Button by viewProvider(R.id.bt_sticky_headers_example)
     private val changingListButton: Button by viewProvider(R.id.bt_changing_list_example)
+    private val paginatingListButton: Button by viewProvider(R.id.bt_paginating_list_example)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +33,10 @@ class MainActivity : AppCompatActivity() {
 
         changingListButton.setOnClickListener {
             startActivity(Intent(this, ChangingListActivity::class.java))
+        }
+
+        paginatingListButton.setOnClickListener {
+            startActivity(Intent(this, PaginatingActivity::class.java))
         }
     }
 }

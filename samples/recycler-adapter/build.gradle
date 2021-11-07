@@ -19,6 +19,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
     implementation "androidx.annotation:annotation:$versions.androidx.annotation"
+    implementation "androidx.constraintlayout:constraintlayout:$versions.androidx.constraintLayout"
     implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
 
     implementation project(":toolkit:recycler-adapter")

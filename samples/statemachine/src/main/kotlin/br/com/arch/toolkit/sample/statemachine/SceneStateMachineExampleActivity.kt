@@ -38,9 +38,9 @@ class SceneStateMachineExampleActivity : BaseActivity() {
         btStateOne.setOnClickListener { stateMachine.changeState(STATE_ONE, true) }
 
         btStateTwo.setOnClickListener {
-            stateMachine.changeState(STATE_TWO, { newActiveStateKey ->
+            stateMachine.changeState(STATE_TWO) { newActiveStateKey ->
                 displayToast("Custom Listener: $newActiveStateKey")
-            })
+            }
         }
 
         btStateThree.setOnClickListener { stateMachine.changeState(STATE_THREE) }

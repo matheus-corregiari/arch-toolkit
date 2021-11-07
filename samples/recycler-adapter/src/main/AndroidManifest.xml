@@ -23,6 +23,9 @@
             android:name=".SimpleListActivity"
             android:label="Simple List Example" />
         <activity
+            android:name=".paginating.PaginatingActivity"
+            android:label="Paginating List Example" />
+        <activity
             android:name=".MultipleViewTypesActivity"
             android:label="Multiple View Types Example" />
         <activity

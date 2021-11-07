@@ -30,4 +30,10 @@
         android:layout_height="wrap_content"
         android:text="Changing List Example" />
 
+    <Button
+        android:id="@+id/bt_paginating_list_example"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Paginating List Example" />
+
 </LinearLayout>
