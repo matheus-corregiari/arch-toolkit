@@ -19,6 +19,7 @@ android {
 dependencies {
     compileOnly "androidx.lifecycle:lifecycle-livedata:$versions.androidx.lifecycle.livedata"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutine"
 
     testImplementation "androidx.lifecycle:lifecycle-livedata:$versions.androidx.lifecycle.livedata"
     testImplementation "androidx.lifecycle:lifecycle-runtime:$versions.androidx.lifecycle.runtime"
