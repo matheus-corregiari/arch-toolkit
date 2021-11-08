@@ -97,8 +97,8 @@ class MyActivity: AppCompatActivity() {
                 // called when error change value
             }
             
-            // You can set the error or loading/showLoading to only be called when data is null
-            // this is useful because you might not want to show loading or error when you already have data
+            // When withData is false, the function only will be called when data is null
+            // This is useful because you might not want to show loading or error state when you already have data
             showLoading(withData = false) {
                 
             }
@@ -109,7 +109,7 @@ class MyActivity: AppCompatActivity() {
 
             }
             
-            // you can pass single = true to the function only be executed one time
+            // When single is true, the function only will be executed one time
             status(single = true) { }
             success(single = true) { }
             data(single = true) { }
