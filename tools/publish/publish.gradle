@@ -1,52 +1,52 @@
-final Properties localConfig = new Properties()
-
-if (file("$rootDir/local.properties").exists())
-    localConfig.load(file("$rootDir/local.properties").newDataInputStream())
-
-def bintrayUserEnv = System.getenv('BINTRAY_USER')
-def bintrayApiKeyEnv = System.getenv('BINTRAY_API_KEY')
-
-apply from: "$rootDir/tools/publish/maven-config.gradle"
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
-
-group = GROUP
-version = VERSION
-
-bintray {
-
-    if (bintrayUserEnv == null || bintrayUserEnv.isEmpty())
-        user = localConfig.getProperty('bintray.user')
-    else
-        user = bintrayUserEnv
-
-    if (bintrayApiKeyEnv == null || bintrayApiKeyEnv.isEmpty())
-        key = localConfig.getProperty('bintray.apikey')
-    else
-        key = bintrayApiKeyEnv
-
-    configurations = ['archives']
-    pkg {
-        repo = BINTRAY_REPOSITORY
-        name = project.name
-        userOrg = ORGANIZATION
-        desc = DESCRIPTION
-
-        // Urls
-        websiteUrl = REPO_URL
-        vcsUrl = REPO_GIT_URL
-        issueTrackerUrl = REPO_ISSUE_TRACKER
-
-        licenses = ["Apache-2.0"]
-        publish = true
-        publicDownloadNumbers = true
-        version {
-            desc = DESCRIPTION
-            gpg {
-                sign = true //Determines whether to GPG sign the files. The default is false
-                passphrase = localConfig.getProperty('bintray.gpg.password')
-            }
-        }
-
-    }
-}
+//final Properties localConfig = new Properties()
+//
+//if (file("$rootDir/local.properties").exists())
+//    localConfig.load(file("$rootDir/local.properties").newDataInputStream())
+//
+//def bintrayUserEnv = System.getenv('BINTRAY_USER')
+//def bintrayApiKeyEnv = System.getenv('BINTRAY_API_KEY')
+//
+//apply from: "$rootDir/tools/publish/maven-config.gradle"
+//apply plugin: 'maven-publish'
+//apply plugin: 'com.jfrog.bintray'
+//
+//group = GROUP
+//version = VERSION
+//
+//bintray {
+//
+//    if (bintrayUserEnv == null || bintrayUserEnv.isEmpty())
+//        user = localConfig.getProperty('bintray.user')
+//    else
+//        user = bintrayUserEnv
+//
+//    if (bintrayApiKeyEnv == null || bintrayApiKeyEnv.isEmpty())
+//        key = localConfig.getProperty('bintray.apikey')
+//    else
+//        key = bintrayApiKeyEnv
+//
+//    configurations = ['archives']
+//    pkg {
+//        repo = BINTRAY_REPOSITORY
+//        name = project.name
+//        userOrg = ORGANIZATION
+//        desc = DESCRIPTION
+//
+//        // Urls
+//        websiteUrl = REPO_URL
+//        vcsUrl = REPO_GIT_URL
+//        issueTrackerUrl = REPO_ISSUE_TRACKER
+//
+//        licenses = ["Apache-2.0"]
+//        publish = true
+//        publicDownloadNumbers = true
+//        version {
+//            desc = DESCRIPTION
+//            gpg {
+//                sign = true //Determines whether to GPG sign the files. The default is false
+//                passphrase = localConfig.getProperty('bintray.gpg.password')
+//            }
+//        }
+//
+//    }
+//}

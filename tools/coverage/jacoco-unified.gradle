@@ -45,9 +45,9 @@ afterEvaluate {
                             html.enabled = true
                         }
 
-                        sourceDirectories = files(sourceDirectoriesList)
-                        classDirectories = files(classDirectoriesList)
-                        executionData = files(coverageFilesList)
+//                        sourceDirectories = files(sourceDirectoriesList)
+//                        classDirectories = files(classDirectoriesList)
+//                        executionData = files(coverageFilesList)
 
                         doLast {
                             println "Coverage report path -> file://${reports.html.destination}/index.html\n"
@@ -73,9 +73,9 @@ afterEvaluate {
                             }
                         }
 
-                        sourceDirectories = files(sourceDirectoriesList)
-                        classDirectories = files(classDirectoriesList)
-                        executionData = files(coverageFilesList)
+//                        sourceDirectories = files(sourceDirectoriesList)
+//                        classDirectories = files(classDirectoriesList)
+//                        executionData = files(coverageFilesList)
                     }
                 }
             }

@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,15 +23,19 @@
         </activity>
         <activity
             android:name=".SimpleListActivity"
+            android:exported="false"
             android:label="Simple List Example" />
         <activity
             android:name=".MultipleViewTypesActivity"
+            android:exported="false"
             android:label="Multiple View Types Example" />
         <activity
             android:name=".ChangingListActivity"
+            android:exported="false"
             android:label="Changing List Example" />
         <activity
             android:name=".StickyHeadersActivity"
+            android:exported="false"
             android:label="Sticky Headers List Example" />
     </application>
 

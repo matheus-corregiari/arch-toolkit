@@ -11,10 +11,10 @@ import br.com.arch.toolkit.recycler.adapter.stickyheader.StickyHeaders
 /**
  * Basic implementation of RecyclerView.Adapter using AsyncListDiffer and CustomViews as items
  */
-abstract class BaseRecyclerAdapter<MODEL>(differ: DiffUtil.ItemCallback<MODEL> = DefaultItemDiffer()) : RecyclerView.Adapter<BaseViewHolder>(), StickyHeaders {
+abstract class BaseRecyclerAdapter<MODEL: Any>(differ: DiffUtil.ItemCallback<MODEL> = DefaultItemDiffer()) : RecyclerView.Adapter<BaseViewHolder>(), StickyHeaders {
 
     @Suppress("LeakingThis")
-    private val listDiffer = AsyncListDiffer<MODEL>(this, differ)
+    private val listDiffer = AsyncListDiffer(this, differ)
     private val clickMap = hashMapOf<Int, (MODEL) -> Unit>()
 
     /**

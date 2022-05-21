@@ -5,6 +5,7 @@
         <activity
             android:name="br.com.arch.toolkit.test.TestActivity"
             android:label="Test Activity"
+            android:exported="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

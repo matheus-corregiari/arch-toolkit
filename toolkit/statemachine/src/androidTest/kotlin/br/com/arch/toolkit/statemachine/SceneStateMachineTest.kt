@@ -1,13 +1,12 @@
 package br.com.arch.toolkit.statemachine
 
 import android.content.Intent
-import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.runner.AndroidJUnit4
 import android.transition.Fade
 import android.transition.Scene
 import android.widget.FrameLayout
+import androidx.test.espresso.intent.rule.IntentsTestRule
+import androidx.test.runner.AndroidJUnit4
 import br.com.arch.toolkit.test.TestActivity
-import br.com.concretesolutions.kappuccino.utils.doWait
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -28,7 +27,7 @@ class SceneStateMachineTest {
             container = FrameLayout(it)
             container
         }
-        doWait()
+        Thread.sleep(300L)
 
         val machine = SceneStateMachine()
         machine.setup {
@@ -49,7 +48,7 @@ class SceneStateMachineTest {
         rule.activity.runOnUiThread {
             machine.changeState(0)
         }
-        doWait(1000L)
+        Thread.sleep(1000L)
 
         Assert.assertEquals(0, machine.currentStateKey)
         Assert.assertNotNull(rule.activity.findViewById(android.R.id.icon))
@@ -58,7 +57,7 @@ class SceneStateMachineTest {
         rule.activity.runOnUiThread {
             machine.changeState(1)
         }
-        doWait(1000L)
+        Thread.sleep(1000L)
 
         Assert.assertEquals(1, machine.currentStateKey)
         Assert.assertNotNull(rule.activity.findViewById(android.R.id.title))

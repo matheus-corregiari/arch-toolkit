@@ -3,7 +3,6 @@ package br.com.arch.toolkit.test
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.FrameLayout

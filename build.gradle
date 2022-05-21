@@ -3,7 +3,7 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.android_plugin"
@@ -12,15 +12,15 @@ buildscript {
         classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:$versions.dexcount"
 
         // Necessary to publish
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$versions.bintray_plugin"
-        classpath "com.github.dcendents:android-maven-gradle-plugin:$versions.maven_plugin"
+//        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$versions.bintray_plugin"
+//        classpath "com.github.dcendents:android-maven-gradle-plugin:$versions.maven_plugin"
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     apply from: "$rootDir/tools/dependencies/unit-test.gradle"
@@ -32,12 +32,12 @@ allprojects {
 
         android {
 
-            compileSdkVersion 28
-            buildToolsVersion "28.0.3"
+            compileSdkVersion 32
+            buildToolsVersion "32.0.0"
 
             defaultConfig {
-                minSdkVersion 21
-                targetSdkVersion 28
+                minSdkVersion 23
+                targetSdkVersion 32
 
                 versionCode 1
                 versionName "1.0"

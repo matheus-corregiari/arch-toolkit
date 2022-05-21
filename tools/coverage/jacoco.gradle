@@ -39,9 +39,9 @@ afterEvaluate {
                 html.enabled = true
             }
 
-            sourceDirectories = files(findSourceDirectories(project, flavorName))
-            classDirectories = files(findClassDirectories(project, flavorName))
-            executionData = fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName))
+//            sourceDirectories = files(findSourceDirectories(project, flavorName))
+//            classDirectories = files(findClassDirectories(project, flavorName))
+//            executionData = fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName))
 
             doFirst {
                 println files(findClassDirectories(project, flavorName)).files
@@ -72,9 +72,9 @@ afterEvaluate {
                 }
             }
 
-            sourceDirectories = files(findSourceDirectories(project, flavorName))
-            classDirectories = files(findClassDirectories(project, flavorName))
-            executionData = fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName))
+//            sourceDirectories = files(findSourceDirectories(project, flavorName))
+//            classDirectories = files(findClassDirectories(project, flavorName))
+//            executionData = fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName))
         }
     }
 }

@@ -12,11 +12,8 @@ afterEvaluate {
             androidTestImplementation "org.mockito:mockito-core:$versions.mockito"
             androidTestImplementation "org.mockito:mockito-android:$versions.mockito"
 
-            androidTestImplementation "com.android.support:support-annotations:$versions.android_support"
-            androidTestImplementation "com.android.support:appcompat-v7:$versions.android_support"
-            androidTestImplementation "com.android.support:design:$versions.android_support"
-            androidTestImplementation "com.android.support:support-v4:$versions.android_support"
-            androidTestImplementation "com.android.support:cardview-v7:$versions.android_support"
+            androidTestImplementation "androidx.annotation:annotation:$versions.androidx.annotation"
+            androidTestImplementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
 
             androidTestImplementation "com.android.support.test:runner:$versions.runner"
             androidTestImplementation "com.android.support.test:rules:$versions.rules"
@@ -25,7 +22,6 @@ afterEvaluate {
             androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$versions.espresso"
             androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:$versions.uiAutomator"
 
-            androidTestImplementation "br.com.concretesolutions:kappuccino:$versions.kappuccino"
             androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
 
             androidTestImplementation "org.hamcrest:hamcrest-core:$versions.hamcrest"

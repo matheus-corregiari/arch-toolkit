@@ -1,35 +1,35 @@
-apply plugin: 'com.github.dcendents.android-maven'
-
-ext.mavenConfig = {
-
-    pom.whenConfigured { pom ->
-        pom.project {
-            groupId GROUP
-            name NAME
-            description DESCRIPTION
-            inceptionYear INCEPTION_YEAR
-
-            scm {
-                url REPO_URL
-                connection REPO_GIT_URL
-            }
-
-            developers {
-                developer {
-                    id DEVELOPER_ID
-                    name DEVELOPER_NAME
-                }
-            }
-
-            licenses {
-                license {
-                    name LICENCE_NAME
-                    url LICENCE_URL
-                    distribution LICENCE_DIST
-                }
-            }
-        }
-    }
-}
-install.repositories.mavenInstaller mavenConfig
-//bintrayUpload.repositories.mavenDeployer mavenConfig
+//apply plugin: 'com.github.dcendents.android-maven'
+//
+//ext.mavenConfig = {
+//
+//    pom.whenConfigured { pom ->
+//        pom.project {
+//            groupId GROUP
+//            name NAME
+//            description DESCRIPTION
+//            inceptionYear INCEPTION_YEAR
+//
+//            scm {
+//                url REPO_URL
+//                connection REPO_GIT_URL
+//            }
+//
+//            developers {
+//                developer {
+//                    id DEVELOPER_ID
+//                    name DEVELOPER_NAME
+//                }
+//            }
+//
+//            licenses {
+//                license {
+//                    name LICENCE_NAME
+//                    url LICENCE_URL
+//                    distribution LICENCE_DIST
+//                }
+//            }
+//        }
+//    }
+//}
+//install.repositories.mavenInstaller mavenConfig
+////bintrayUpload.repositories.mavenDeployer mavenConfig
