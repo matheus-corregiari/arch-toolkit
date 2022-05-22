@@ -14,14 +14,13 @@ import org.mockito.Mockito
 class LiveDataExtensionTest {
 
     @Rule
-    @get:Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
         override fun getLifecycle(): Lifecycle {
-            registry.markState(Lifecycle.State.RESUMED)
+            registry.currentState = Lifecycle.State.RESUMED
             return registry
         }
     }
@@ -32,7 +31,7 @@ class LiveDataExtensionTest {
         val liveData = MutableLiveData<Any>()
         Assert.assertNull(liveData.value)
 
-        liveData.observe(owner, mockedObserver)
+        liveData.observeNotNull(owner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -40,6 +39,22 @@ class LiveDataExtensionTest {
 
         liveData.postValue("nonNullData")
         Mockito.verify(mockedObserver).invoke("nonNullData")
+    }
+
+    @Test
+    fun observeShouldHandleOnlyNullObjects() {
+        val mockedObserver: () -> Unit = mock()
+        val liveData = MutableLiveData<Any>()
+        Assert.assertNull(liveData.value)
+
+        liveData.observeNull(owner, mockedObserver)
+
+        liveData.postValue(null)
+
+        Mockito.verify(mockedObserver).invoke()
+
+        liveData.postValue("nonNullData")
+        Mockito.verifyNoMoreInteractions(mockedObserver)
     }
 
     @Test

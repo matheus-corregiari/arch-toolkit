@@ -9,6 +9,8 @@ import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.given
 import com.nhaarman.mockitokotlin2.mock
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -16,10 +18,10 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.times
 
+@DelicateCoroutinesApi
 class LiveDataTransformationTest {
 
     @Rule
-    @get:Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -28,7 +30,7 @@ class LiveDataTransformationTest {
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
         override fun getLifecycle(): Lifecycle {
-            registry.markState(Lifecycle.State.RESUMED)
+            registry.currentState = Lifecycle.State.RESUMED
             return registry
         }
     }
@@ -47,7 +49,7 @@ class LiveDataTransformationTest {
         val liveData = MutableLiveData<String>()
         val transformedLiveData = liveData.map(mockedTransformation)
 
-        transformedLiveData.observe(owner, mockedObserver)
+        transformedLiveData.observeNotNull(owner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -63,7 +65,7 @@ class LiveDataTransformationTest {
         val liveData = MutableLiveData<List<String>>()
         val transformedLiveData = liveData.mapList(mockedTransformation)
 
-        transformedLiveData.observe(owner, mockedObserver)
+        transformedLiveData.observeNotNull(owner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -80,7 +82,8 @@ class LiveDataTransformationTest {
 
         val mockedObserver: (List<Int>) -> Unit = mock()
         val liveData = MutableResponseLiveData<List<String>>()
-        val transformedLiveData = liveData.mapList(true, mockedTransformation)
+        liveData.scope(GlobalScope)
+        val transformedLiveData = liveData.mapList(mockedTransformation)
 
         transformedLiveData.observeData(owner, mockedObserver)
 

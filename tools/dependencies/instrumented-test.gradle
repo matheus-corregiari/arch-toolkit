@@ -5,7 +5,7 @@ afterEvaluate {
         dependencies {
 
             androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-            androidTestImplementation "android.arch.core:core-testing:$versions.arch"
+            androidTestImplementation "androidx.arch.core:core-testing:$versions.androidx.lifecycle.testing"
 
             androidTestImplementation "junit:junit:$versions.junit"
 

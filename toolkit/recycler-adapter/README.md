@@ -117,13 +117,6 @@ class CustomAdapter : BaseRecyclerAdapter<MODEL>() {
         // Your logic for custom itemView
     }
 
-    // Optional
-    override fun <T> bindHolder(holder: BaseViewHolder, model: T, onItemClick: ((T) -> Unit)?) {
-        super.bindHolder(holder, model, onItemClick)
-
-        // If you want a custom implementation to bind your view
-    }
-
 }
 ```
 

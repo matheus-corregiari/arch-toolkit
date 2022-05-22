@@ -15,7 +15,7 @@ public final class ExecutorUtil {
      * @return The executing Thread instance
      */
     @NonNull
-    public static Thread async(@NonNull final Runnable block) {
+    public static Thread runOnNewThread(@NonNull final Runnable block) {
         final Thread thread = new Thread(block);
         thread.start();
         return thread;

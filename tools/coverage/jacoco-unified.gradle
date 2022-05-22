@@ -41,16 +41,16 @@ afterEvaluate {
                      */
                     task(jacocoTestReportTaskName, type: JacocoReport, group: "coverage-report") {
                         reports {
-                            xml.enabled = true
-                            html.enabled = true
+                            xml.required.set(true)
+                            html.required.set(true)
                         }
 
-//                        sourceDirectories = files(sourceDirectoriesList)
-//                        classDirectories = files(classDirectoriesList)
-//                        executionData = files(coverageFilesList)
+                        getSourceDirectories().from(files(sourceDirectoriesList))
+                        getClassDirectories().from(files(classDirectoriesList))
+                        getExecutionData().from(files(coverageFilesList))
 
                         doLast {
-                            println "Coverage report path -> file://${reports.html.destination}/index.html\n"
+                            println "Coverage report path -> file://${reports.html.outputLocation.toString()}/index.html\n"
                         }
                     }
                 }
@@ -73,9 +73,9 @@ afterEvaluate {
                             }
                         }
 
-//                        sourceDirectories = files(sourceDirectoriesList)
-//                        classDirectories = files(classDirectoriesList)
-//                        executionData = files(coverageFilesList)
+                        getSourceDirectories().from(files(sourceDirectoriesList))
+                        getClassDirectories().from(files(classDirectoriesList))
+                        getExecutionData().from(files(coverageFilesList))
                     }
                 }
             }

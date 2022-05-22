@@ -11,7 +11,8 @@ import br.com.arch.toolkit.recycler.adapter.stickyheader.StickyHeaders
 /**
  * Basic implementation of RecyclerView.Adapter using AsyncListDiffer and CustomViews as items
  */
-abstract class BaseRecyclerAdapter<MODEL: Any>(differ: DiffUtil.ItemCallback<MODEL> = DefaultItemDiffer()) : RecyclerView.Adapter<BaseViewHolder>(), StickyHeaders {
+abstract class BaseRecyclerAdapter<MODEL : Any>(differ: DiffUtil.ItemCallback<MODEL> = DefaultItemDiffer()) :
+    RecyclerView.Adapter<BaseViewHolder>(), StickyHeaders {
 
     @Suppress("LeakingThis")
     private val listDiffer = AsyncListDiffer(this, differ)
@@ -60,7 +61,11 @@ abstract class BaseRecyclerAdapter<MODEL: Any>(differ: DiffUtil.ItemCallback<MOD
      * @throws IllegalStateException if the Holder View doesn't implement ViewBinder
      */
     @Suppress("UNCHECKED_CAST")
-    protected open fun <T> bindHolder(holder: BaseViewHolder, model: T, onItemClick: ((T) -> Unit)? = null) {
+    protected open fun <T> bindHolder(
+        holder: BaseViewHolder,
+        model: T,
+        onItemClick: ((T) -> Unit)? = null
+    ) {
         val binder = (holder.itemView as? ViewBinder<T>)
             ?: throw IllegalStateException("${holder.itemView::class} cannot be cast to ViewBinder<>")
         binder.bind(model)
@@ -97,7 +102,10 @@ abstract class BaseRecyclerAdapter<MODEL: Any>(differ: DiffUtil.ItemCallback<MOD
      *
      * @param onItemClick The Item listener with the Model attached into the View
      */
-    fun withListener(itemType: Int, onItemClick: (model: MODEL) -> Unit): BaseRecyclerAdapter<MODEL> {
+    fun withListener(
+        itemType: Int,
+        onItemClick: (model: MODEL) -> Unit
+    ): BaseRecyclerAdapter<MODEL> {
         this.clickMap[itemType] = onItemClick
         return this
     }

@@ -78,13 +78,15 @@ stateMachine.changeState(YOUR_INT_CONSTANT, true, stateKey -> { ... });
 ##### Save and Restore State
 
 ###### Save
+
 ```kotlin
-outState.putBundle("YOUR_STATE_KEY", stateMachine.saveInstanceState());
+outState.putBundle("YOUR_STATE_KEY", stateMachine.saveInstanceState())
 ```
 
 ###### Restore
+
 ```kotlin
-stateMachine.restoreInstanceState(savedInstanceState.getBundle("YOUR_STATE_KEY"));
+stateMachine.restoreInstanceState(savedInstanceState.getBundle("YOUR_STATE_KEY"))
 ```
 
 ##### Config

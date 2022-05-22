@@ -17,11 +17,12 @@ android {
 }
 
 dependencies {
-    compileOnly "androidx.lifecycle:lifecycle-livedata:$versions.androidx.lifecycle.livedata"
+    compileOnly "androidx.lifecycle:lifecycle-livedata-ktx:$versions.androidx.lifecycle.livedata"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines"
 
-    testImplementation "androidx.lifecycle:lifecycle-livedata:$versions.androidx.lifecycle.livedata"
-    testImplementation "androidx.lifecycle:lifecycle-runtime:$versions.androidx.lifecycle.runtime"
+    testImplementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.androidx.lifecycle.livedata"
+    testImplementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
     testImplementation "androidx.arch.core:core-testing:$versions.androidx.lifecycle.testing"
 }
 

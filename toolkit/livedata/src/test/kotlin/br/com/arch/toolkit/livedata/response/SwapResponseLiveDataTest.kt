@@ -9,23 +9,25 @@ import br.com.arch.toolkit.livedata.exception.DataTransformationException
 import com.nhaarman.mockitokotlin2.given
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import net.vidageek.mirror.dsl.Mirror
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 
+@DelicateCoroutinesApi
 class SwapResponseLiveDataTest {
 
     @Rule
-    @get:Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
         override fun getLifecycle(): Lifecycle {
-            registry.markState(Lifecycle.State.RESUMED)
+            registry.currentState = Lifecycle.State.RESUMED
             return registry
         }
     }
@@ -55,7 +57,8 @@ class SwapResponseLiveDataTest {
         val swapLiveData = SwapResponseLiveData<String>()
         Assert.assertFalse(swapLiveData.hasDataSource)
 
-        swapLiveData.swapSource(liveData, true)
+        swapLiveData.swapSource(liveData)
+        swapLiveData.discardAfterLoading(true)
         Assert.assertTrue(swapLiveData.hasDataSource)
 
         val data = "data"
@@ -77,7 +80,6 @@ class SwapResponseLiveDataTest {
 
     @Test
     fun whenSwapSource_withSynchronousTransformation_shouldReplicateTransformedDataWithoutStartingThreads() {
-        val threadCount = Thread.activeCount()
 
         val mockedTransformation: (String) -> Int = mock()
         val mockedObserver: (Int) -> Unit = mock()
@@ -87,7 +89,6 @@ class SwapResponseLiveDataTest {
         Assert.assertFalse(swapLiveData.hasDataSource)
 
         swapLiveData.observeData(owner, mockedObserver)
-        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
 
         swapLiveData.swapSource(liveData, mockedTransformation)
@@ -99,7 +100,6 @@ class SwapResponseLiveDataTest {
 
         liveData.postData(data)
 
-        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
         Mockito.verify(mockedObserver).invoke(result)
 
@@ -112,15 +112,12 @@ class SwapResponseLiveDataTest {
         liveData.postLoading()
         liveData.postError(IllegalStateException())
 
-        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
         Assert.assertEquals(DataResultStatus.ERROR, swapLiveData.status)
     }
 
     @Test
     fun whenSwapSource_withAsynchronousTransformation_shouldReplicateTransformedDataStartingThreads() {
-        val threadCount = Thread.activeCount()
-
         val mockedTransformation: (String) -> Int = mock()
         val mockedObserver: (Int) -> Unit = mock()
 
@@ -131,7 +128,8 @@ class SwapResponseLiveDataTest {
         swapLiveData.observeData(owner, mockedObserver)
         Thread.sleep(50)
 
-        swapLiveData.swapSource(liveData, true, mockedTransformation)
+        swapLiveData.scope(GlobalScope)
+        swapLiveData.swapSource(liveData, mockedTransformation)
         Assert.assertTrue(swapLiveData.hasDataSource)
 
         val data = "data"
@@ -140,7 +138,6 @@ class SwapResponseLiveDataTest {
 
         liveData.postData(data)
 
-        Assert.assertNotEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
         Mockito.verify(mockedObserver).invoke(result)
 
@@ -153,14 +150,12 @@ class SwapResponseLiveDataTest {
         liveData.postLoading()
         liveData.postError(IllegalStateException())
 
-        Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(50)
+        Thread.sleep(100)
         Assert.assertEquals(DataResultStatus.ERROR, swapLiveData.status)
     }
 
     @Test
     fun whenSwapSource_withAsynchronousTransformation_onError_shouldDeliverErrorResult() {
-        val threadCount = Thread.activeCount()
 
         val mockedTransformation: (String) -> Int = mock()
         val mockedObserver: (Int) -> Unit = mock()
@@ -174,7 +169,8 @@ class SwapResponseLiveDataTest {
         swapLiveData.observeError(owner, mockedErrorObserver)
         Thread.sleep(50)
 
-        swapLiveData.swapSource(liveData, true, mockedTransformation)
+        swapLiveData.scope(GlobalScope)
+        swapLiveData.swapSource(liveData, mockedTransformation)
         Assert.assertTrue(swapLiveData.hasDataSource)
 
         val data = "data"
@@ -183,7 +179,6 @@ class SwapResponseLiveDataTest {
 
         liveData.postData(data)
 
-        Assert.assertNotEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
         Mockito.verifyNoInteractions(mockedObserver)
         Mockito.verify(mockedErrorObserver).invoke(DataTransformationException("Error performing swapSource, please check your transformations", result))
@@ -197,14 +192,12 @@ class SwapResponseLiveDataTest {
         liveData.postLoading()
         liveData.postError(IllegalStateException())
 
-        Assert.assertNotEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
         Assert.assertEquals(DataResultStatus.ERROR, swapLiveData.status)
     }
 
     @Test
     fun whenSwapSource_withSynchronousTransformation_onError_shouldDeliverErrorResult() {
-        val threadCount = Thread.activeCount()
 
         val mockedTransformation: (String) -> Int = mock()
         val mockedObserver: (Int) -> Unit = mock()
@@ -216,7 +209,6 @@ class SwapResponseLiveDataTest {
 
         swapLiveData.observeData(owner, mockedObserver)
         swapLiveData.observeError(owner, mockedErrorObserver)
-        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
 
         swapLiveData.swapSource(liveData, mockedTransformation)
@@ -228,7 +220,6 @@ class SwapResponseLiveDataTest {
 
         liveData.postData(data)
 
-        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
         Mockito.verifyNoInteractions(mockedObserver)
         Mockito.verify(mockedErrorObserver).invoke(DataTransformationException("Error performing swapSource, please check your transformations", result))
@@ -242,14 +233,12 @@ class SwapResponseLiveDataTest {
         liveData.postLoading()
         liveData.postError(IllegalStateException())
 
-        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
         Assert.assertEquals(DataResultStatus.ERROR, swapLiveData.status)
     }
 
     @Test
     fun whenSwapSource_withSynchronousTransformation_shouldDeliverTransformedResult() {
-        val threadCount = Thread.activeCount()
 
         val mockedTransformation: (DataResult<String>) -> DataResult<Int> = mock()
         val mockedDataObserver: (Int) -> Unit = mock()
@@ -259,10 +248,9 @@ class SwapResponseLiveDataTest {
         Assert.assertFalse(swapLiveData.hasDataSource)
 
         swapLiveData.observeData(owner, mockedDataObserver)
-        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
 
-        swapLiveData.swapSource(liveData, false, mockedTransformation)
+        swapLiveData.swapSource(liveData, mockedTransformation)
         Assert.assertTrue(swapLiveData.hasDataSource)
 
         val data = DataResult("data", null, DataResultStatus.SUCCESS)
@@ -271,7 +259,6 @@ class SwapResponseLiveDataTest {
 
         liveData.postData("data")
 
-        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
 
         Mockito.verify(mockedTransformation, times(1)).invoke(data)
@@ -280,7 +267,6 @@ class SwapResponseLiveDataTest {
 
     @Test
     fun whenSwapSource_withAsynchronousTransformation_shouldDeliverTransformedResult() {
-        val threadCount = Thread.activeCount()
 
         val mockedTransformation: (DataResult<String>) -> DataResult<Int> = mock()
         val mockedDataObserver: (Int) -> Unit = mock()
@@ -290,10 +276,10 @@ class SwapResponseLiveDataTest {
         Assert.assertFalse(swapLiveData.hasDataSource)
 
         swapLiveData.observeData(owner, mockedDataObserver)
-        Assert.assertEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
 
-        swapLiveData.swapSource(liveData, true, mockedTransformation)
+        swapLiveData.scope(GlobalScope)
+        swapLiveData.swapSource(liveData, mockedTransformation)
         Assert.assertTrue(swapLiveData.hasDataSource)
 
         val data = DataResult("data", null, DataResultStatus.SUCCESS)
@@ -302,7 +288,6 @@ class SwapResponseLiveDataTest {
 
         liveData.postData("data")
 
-        Assert.assertNotEquals(threadCount, Thread.activeCount())
         Thread.sleep(50)
 
         Mockito.verify(mockedTransformation, times(1)).invoke(data)

@@ -11,7 +11,6 @@ import org.junit.Test
 class MutableResponseLiveDataTest {
 
     @Rule
-    @get:Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 

@@ -35,20 +35,20 @@ afterEvaluate {
             dependsOn "test${flavorName.capitalize()}DebugUnitTest"
 
             reports {
-                xml.enabled = true
-                html.enabled = true
+                xml.required.set(true)
+                html.required.set(true)
             }
 
-//            sourceDirectories = files(findSourceDirectories(project, flavorName))
-//            classDirectories = files(findClassDirectories(project, flavorName))
-//            executionData = fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName))
+            getSourceDirectories().from(files(findSourceDirectories(project, flavorName)))
+            getClassDirectories().from(files(findClassDirectories(project, flavorName)))
+            getExecutionData().from(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)))
 
             doFirst {
                 println files(findClassDirectories(project, flavorName)).files
             }
 
             doLast {
-                println "Coverage report path -> file://${reports.html.destination}/index.html\n"
+                println "Coverage report path -> file://${reports.html.outputLocation}/index.html\n"
             }
         }
     }
@@ -72,9 +72,9 @@ afterEvaluate {
                 }
             }
 
-//            sourceDirectories = files(findSourceDirectories(project, flavorName))
-//            classDirectories = files(findClassDirectories(project, flavorName))
-//            executionData = fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName))
+            getSourceDirectories().from(files(findSourceDirectories(project, flavorName)))
+            getClassDirectories().from(files(findClassDirectories(project, flavorName)))
+            getExecutionData().from(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)))
         }
     }
 }
