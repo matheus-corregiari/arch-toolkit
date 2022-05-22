@@ -74,45 +74,6 @@ jobs:
       - store_artifacts:
           path: ~/benchmarks
 
-  benchmarks-ftl:
-    executor:
-      name: android/android
-      sdk-version: "30"
-      variant: node
-    steps:
-      - checkout
-      - android/restore-gradle-cache
-      - android/restore-build-cache
-      - run:
-          name: Build app and test app
-          command: ./gradlew app:assembleRelease macrobenchmark:assemble
-      - gcp-cli/initialize:
-          gcloud-service-key: GCP_SA_KEY
-          google-project-id: GCP_PROJECT_ID
-      - run:
-          name: run on FTL
-          command: |
-            gcloud firebase test android run \
-              --type instrumentation \
-              --app app/build/outputs/apk/release/app-release.apk \
-              --test macrobenchmark/build/outputs/apk/release/macrobenchmark-release.apk \
-              --device model=redfin,version=30,locale=en,orientation=portrait \
-              --directories-to-pull /sdcard/Download \
-              --results-bucket gs://android-sample-benchmarks \
-              --results-dir macrobenchmark \
-              --environment-variables clearPackageData=true,additionalTestOutputDir=/sdcard/Download,no-isolated-storage=true
-      - run:
-          name: Download benchmark data
-          command: |
-            mkdir ~/benchmarks
-            gsutil cp -r 'gs://android-sample-benchmarks/macrobenchmark/**/artifacts/sdcard/Download/*'  ~/benchmarks
-            gsutil rm -r gs://android-sample-benchmarks/macrobenchmark
-      - store_artifacts:
-          path: ~/benchmarks
-      - run:
-          name: Evaluate benchmark results
-          command: node scripts/eval_startup_benchmark_output.js
-
   release-build:
     executor:
       name: android/android-machine
@@ -154,13 +115,11 @@ workflows:
             branches:
               ignore: main # Commits to main branch
       - benchmarks-emulator
-      - benchmarks-ftl
       - release-build:
           requires:
             - unit-test
             - android-test-all
             - benchmarks-emulator
-            - benchmarks-ftl
           filters:
             branches:
               ignore: main # Commits to main branch
