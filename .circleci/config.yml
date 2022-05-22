@@ -3,8 +3,7 @@ jobs:
   checkout-repo:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
-    environment:
+      - image: cimg/android:2022.04
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
