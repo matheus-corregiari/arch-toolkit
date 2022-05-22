@@ -4,7 +4,6 @@ jobs:
     working_directory: ~/arch-toolkit
     docker:
       - image: cimg/android:2022.04
-      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
       - restore_cache:
@@ -21,7 +20,7 @@ jobs:
   ktLint:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
@@ -38,7 +37,7 @@ jobs:
   lint:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
@@ -55,7 +54,7 @@ jobs:
   livedata:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
@@ -78,7 +77,7 @@ jobs:
   recycler-adapter:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
@@ -101,7 +100,7 @@ jobs:
   statemachine:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
@@ -124,7 +123,7 @@ jobs:
   delegate:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
@@ -147,7 +146,7 @@ jobs:
   livedata-deploy:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
@@ -160,7 +159,7 @@ jobs:
   recycler-adapter-deploy:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
@@ -173,7 +172,7 @@ jobs:
   statemachine-deploy:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
@@ -186,7 +185,7 @@ jobs:
   delegate-deploy:
     working_directory: ~/arch-toolkit
     docker:
-      - image: circleci/android:api-32
+      - image: cimg/android:2022.04
     steps:
       - checkout
       - restore_cache:
