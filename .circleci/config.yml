@@ -1,248 +1,196 @@
-version: 4
-jobs:
-  checkout-repo:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
-      - save_cache:
-           paths:
-              - ~/.gradle
-           key: gradle-{{ checksum "build.gradle" }}
+  Skip to content
+    Search or jump to…
+    Pull requests
+    Issues
+    Marketplace
+    Explore
 
-  ktLint:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run KtLint
-          command: ./gradlew ktLint
+    @matheus-corregiari
+    CircleCI-Public
+    /
+    android-testing-circleci-examples
+    Public
+    forked from googlecodelabs/android-testing
+    Code
+    Pull requests
+    1
+    Actions
+    Projects
+    Wiki
+    Security
+    Insights
+    android-testing-circleci-examples/.circleci/config.yml
+    @zmarkan
+    zmarkan update ftl perf test device version
+    Latest commit 6bdf1e7 on 8 Dec 2021
+    History
+    2 contributors
+    @zmarkan@JoseAlcerreca
+    167 lines (158 sloc)  5.66 KB
 
-      - store_artifacts:
-          path: build/reports/ktlint
-          destination: reports/ktlint
+  version: 2.1
 
-  lint:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Lint
-          command: ./gradlew lintDebug
+  orbs:
+    android: circleci/android@1.0.3
+    gcp-cli: circleci/gcp-cli@2.2.0
 
-      - store_artifacts:
-          path: build/reports/lint
-          destination: reports/lint
+  jobs:
+    unit-test:
+      executor:
+        name: android/android-machine
+        resource-class: xlarge
+      steps:
+        - checkout
+        - android/restore-gradle-cache
+        - android/restore-build-cache
+        - android/run-tests:
+            test-command: ./gradlew testDebug
+        - android/save-gradle-cache
+        - android/save-build-cache
+        - run:
+            name: Save test results
+            command: |
+              mkdir -p ~/test-results/junit/
+              find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+            when: always
+        - store_test_results:
+            path: ~/test-results
+        - store_artifacts:
+            path: ~/test-results/junit
 
-  livedata:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Livedata test
-          command: ./gradlew :toolkit:livedata:jacocoTestReport
+    android-test:
+      parameters:
+        system-image:
+          type: string
+          default: system-images;android-30;google_apis;x86
+      executor:
+        name: android/android-machine
+        resource-class: xlarge
+      steps:
+        - checkout
+        - android/start-emulator-and-run-tests:
+            test-command: ./gradlew connectedDebugAndroidTest
+            system-image: << parameters.system-image >>
+        - run:
+            name: Save test results
+            command: |
+              mkdir -p ~/test-results/junit/
+              find . -type f -regex ".*/build/outputs/androidTest-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+            when: always
+        - store_test_results:
+            path: ~/test-results
+        - store_artifacts:
+            path: ~/test-results/junit
 
-      - store_artifacts:
-          path: toolkit/livedata/build/reports/jacoco/
-          destination: reports/livedata
+    benchmarks-emulator:
+      executor:
+        name: android/android-machine
+        resource-class: xlarge
 
-      - save_cache:
-           paths:
-              - ~/toolkit/livedata/build/jacoco
-              - ~/toolkit/livedata/build/outputs/code-coverage/connected
-           key: jacoco-files-{{ checksum "toolkit/livedata/build.gradle" }}
+      steps:
+        - checkout
+        - android/start-emulator-and-run-tests:
+            test-command: adb shell am instrument -w -m -e androidx.benchmark.suppressErrors EMULATOR -e debug false -e androidx.benchmark.output.enable true com.circleci.samples.todoapp.macrobenchmark/androidx.test.runner.AndroidJUnitRunner
+            system-image: system-images;android-30;google_apis;x86
+            post-emulator-launch-assemble-command: ./gradlew app:assembleRelease macrobenchmark:assemble
+            post-emulator-wait-steps:
+              - run: ./gradlew app:installRelease macrobenchmark:installRelease
+            kill-emulators: false
+        - run:
+            name: Pull benchmark data from emulator
+            command: |
+              mkdir ~/benchmarks
+              adb pull /storage/emulated/0/Android/media/com.circleci.samples.todoapp.macrobenchmark ~/benchmarks
+        - store_artifacts:
+            path: ~/benchmarks
 
-  recycler-adapter:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Recycler Adapter test
-          command: ./gradlew :toolkit:recycler-adapter:jacocoTestReport
+    benchmarks-ftl:
+      executor:
+        name: android/android
+        sdk-version: "30"
+        variant: node
+      steps:
+        - checkout
+        - android/restore-gradle-cache
+        - android/restore-build-cache
+        - run:
+            name: Build app and test app
+            command: ./gradlew app:assembleRelease macrobenchmark:assemble
+        - gcp-cli/initialize:
+            gcloud-service-key: GCP_SA_KEY
+            google-project-id: GCP_PROJECT_ID
+        - run:
+            name: run on FTL
+            command: |
+              gcloud firebase test android run \
+                --type instrumentation \
+                --app app/build/outputs/apk/release/app-release.apk \
+                --test macrobenchmark/build/outputs/apk/release/macrobenchmark-release.apk \
+                --device model=redfin,version=30,locale=en,orientation=portrait \
+                --directories-to-pull /sdcard/Download \
+                --results-bucket gs://android-sample-benchmarks \
+                --results-dir macrobenchmark \
+                --environment-variables clearPackageData=true,additionalTestOutputDir=/sdcard/Download,no-isolated-storage=true
+        - run:
+            name: Download benchmark data
+            command: |
+              mkdir ~/benchmarks
+              gsutil cp -r 'gs://android-sample-benchmarks/macrobenchmark/**/artifacts/sdcard/Download/*'  ~/benchmarks
+              gsutil rm -r gs://android-sample-benchmarks/macrobenchmark
+        - store_artifacts:
+            path: ~/benchmarks
+        - run:
+            name: Evaluate benchmark results
+            command: node scripts/eval_startup_benchmark_output.js
 
-      - store_artifacts:
-          path: toolkit/recycler-adapter/build/reports/jacoco/
-          destination: reports/recycler-adapter
+    release-build:
+      executor:
+        name: android/android-machine
+        resource-class: xlarge
+      steps:
+        - checkout
+        - android/restore-gradle-cache
+        - android/restore-build-cache
+        - run:
+            name: Assemble release build
+            command: |
+              ./gradlew assembleRelease
+        - store_artifacts:
+            path: app/build/outputs/apk/release/app-release-unsigned.apk
 
-      - save_cache:
-           paths:
-              - ~/toolkit/recycler-adapter/build/jacoco
-              - ~/toolkit/recycler-adapter/build/outputs/code-coverage/connected
-           key: jacoco-files-{{ checksum "toolkit/recycler-adapter/build.gradle" }}
-
-  statemachine:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Statemachine test
-          command: ./gradlew :toolkit:statemachine:jacocoTestReport
-
-      - store_artifacts:
-          path: toolkit/statemachine/build/reports/jacoco/
-          destination: reports/statemachine
-
-      - save_cache:
-           paths:
-              - ~/toolkit/statemachine/build/jacoco
-              - ~/toolkit/statemachine/build/outputs/code-coverage/connected
-           key: jacoco-files-{{ checksum "toolkit/statemachine/build.gradle" }}
-
-  delegate:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Delegate test
-          command: ./gradlew :toolkit:delegate:jacocoTestReport
-
-      - store_artifacts:
-          path: toolkit/delegate/build/reports/jacoco/
-          destination: reports/delegate
-
-      - save_cache:
-           paths:
-              - ~/toolkit/delegate/build/jacoco
-              - ~/toolkit/delegate/build/outputs/code-coverage/connected
-           key: jacoco-files-{{ checksum "toolkit/delegate/build.gradle" }}
-
-  livedata-deploy:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Deploy Livedata
-          command: ./gradlew :toolkit:livedata:bintrayUpload
-
-  recycler-adapter-deploy:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Deploy Recycler Adapter
-          command: ./gradlew :toolkit:recycler-adapter:bintrayUpload
-
-  statemachine-deploy:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Deploy Statemachine
-          command: ./gradlew :toolkit:statemachine:bintrayUpload
-
-  delegate-deploy:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: cimg/android:2022.04
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Deploy Delegate
-          command: ./gradlew :toolkit:delegate:bintrayUpload
-
-workflows:
-  version: 2
-  lint-test-deploy:
-    jobs:
-      - checkout-repo
-      - ktLint:
-          requires:
-            - checkout-repo
-      - lint:
-          requires:
-            - checkout-repo
-      - livedata:
-          requires:
-            - lint
-            - ktLint
-      - recycler-adapter:
-          requires:
-            - lint
-            - ktLint
-      - statemachine:
-          requires:
-            - lint
-            - ktLint
-      - delegate:
-          requires:
-            - lint
-            - ktLint
-      - livedata-deploy:
-          requires:
-            - livedata
-          filters:
-            branches:
-              only: master
-      - recycler-adapter-deploy:
-          requires:
-            - recycler-adapter
-          filters:
-            branches:
-              only: master
-      - statemachine-deploy:
-          requires:
-            - statemachine
-          filters:
-            branches:
-              only: master
-      - delegate-deploy:
-          requires:
-            - delegate
-          filters:
-            branches:
-              only: master
+  workflows:
+    test-and-build:
+      jobs:
+        - unit-test
+        - android/run-ui-tests:
+            filters:
+              branches:
+                ignore: main # regular commits
+        - android-test:
+            matrix:
+              alias: android-test-all
+              parameters:
+                system-image:
+                  - system-images;android-30;google_apis;x86
+                  - system-images;android-29;google_apis;x86
+                  - system-images;android-28;google_apis;x86
+                  - system-images;android-27;google_apis;x86
+                  - system-images;android-26;google_apis;x86
+                  - system-images;android-25;google_apis;x86
+                  - system-images;android-24;google_apis;x86
+                  - system-images;android-23;google_apis;x86
+            name: android-test-<<matrix.system-image>>
+            filters:
+              branches:
+                ignore: main # Commits to main branch
+        - benchmarks-emulator
+        - benchmarks-ftl
+        - release-build:
+            requires:
+              - unit-test
+              - android-test-all
+              - benchmarks-emulator
+              - benchmarks-ftl
+            filters:
+              branches:
+                ignore: main # Commits to main branch
