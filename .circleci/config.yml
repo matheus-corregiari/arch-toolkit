@@ -5,6 +5,19 @@ orbs:
   gcp-cli: circleci/gcp-cli@2.2.0
 
 jobs:
+  lint:
+    executor:
+      name: android/android-machine
+      resource-class: xlarge
+    steps:
+      - checkout
+      - android/restore-gradle-cache
+      - android/restore-build-cache
+      - android/run-lint:
+          test-command: ./gradlew ktLint lint
+      - android/save-gradle-cache
+      - android/save-build-cache
+
   unit-test:
     executor:
       name: android/android-machine
@@ -52,28 +65,6 @@ jobs:
       - store_artifacts:
           path: ~/test-results/junit
 
-  benchmarks-emulator:
-    executor:
-      name: android/android-machine
-      resource-class: xlarge
-
-    steps:
-      - checkout
-      - android/start-emulator-and-run-tests:
-          test-command: adb shell am instrument -w -m -e androidx.benchmark.suppressErrors EMULATOR -e debug false -e androidx.benchmark.output.enable true com.circleci.samples.todoapp.macrobenchmark/androidx.test.runner.AndroidJUnitRunner
-          system-image: system-images;android-30;google_apis;x86
-          post-emulator-launch-assemble-command: ./gradlew app:assembleRelease macrobenchmark:assemble
-          post-emulator-wait-steps:
-            - run: ./gradlew app:installRelease macrobenchmark:installRelease
-          kill-emulators: false
-      - run:
-          name: Pull benchmark data from emulator
-          command: |
-            mkdir ~/benchmarks
-            adb pull /storage/emulated/0/Android/media/com.circleci.samples.todoapp.macrobenchmark ~/benchmarks
-      - store_artifacts:
-          path: ~/benchmarks
-
   release-build:
     executor:
       name: android/android-machine
@@ -92,6 +83,7 @@ jobs:
 workflows:
   test-and-build:
     jobs:
+      - lint
       - unit-test
       - android/run-ui-tests:
           filters:
@@ -102,19 +94,11 @@ workflows:
             alias: android-test-all
             parameters:
               system-image:
-                - system-images;android-30;google_apis;x86
-                - system-images;android-29;google_apis;x86
-                - system-images;android-28;google_apis;x86
-                - system-images;android-27;google_apis;x86
-                - system-images;android-26;google_apis;x86
-                - system-images;android-25;google_apis;x86
-                - system-images;android-24;google_apis;x86
-                - system-images;android-23;google_apis;x86
+                - system-images;android-32;google_apis;x86
           name: android-test-<<matrix.system-image>>
           filters:
             branches:
               ignore: main # Commits to main branch
-      - benchmarks-emulator
       - release-build:
           requires:
             - unit-test
