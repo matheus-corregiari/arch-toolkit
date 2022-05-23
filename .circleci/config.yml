@@ -1,16 +1,21 @@
 version: 2.1
 
-commands: # a reusable command with parameters
+commands:
+  default:
+    steps:
+      - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}
+
   lint-module:
     parameters:
       module:
         default: ""
         type: string
     steps:
-      - checkout
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}
+      - default
       - run: ./gradlew <<parameters.module>>:lint
+      - run: ./gradlew <<parameters.module>>:ktLint
 
   test-module:
     parameters:
@@ -18,9 +23,7 @@ commands: # a reusable command with parameters
         default: ""
         type: string
     steps:
-      - checkout
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}
+      - default
       - run: ./gradlew <<parameters.module>>:testDebugUnitTest
 
 jobs:
@@ -30,9 +33,7 @@ jobs:
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
-      - checkout
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}
+      - default
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
@@ -40,78 +41,6 @@ jobs:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}
-
-  # Delegate Jobs
-  lint-delegate:
-    docker:
-      - image: cimg/android:2022.04
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - lint-module:
-          module: ":toolkit:delegate"
-  test-delegate:
-    docker:
-      - image: cimg/android:2022.04
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - test-module:
-          module: ":toolkit:delegate"
-
-  # LiveData Jobs
-  lint-livedata:
-    docker:
-      - image: cimg/android:2022.04
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - lint-module:
-          module: ":toolkit:livedata"
-  test-livedata:
-    docker:
-      - image: cimg/android:2022.04
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - test-module:
-          module: ":toolkit:livedata"
-
-  # Recycler Adapter Jobs
-  lint-recycler-adapter:
-    docker:
-      - image: cimg/android:2022.04
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - lint-module:
-          module: ":toolkit:recycler-adapter"
-  test-recycler-adapter:
-    docker:
-      - image: cimg/android:2022.04
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - test-module:
-          module: ":toolkit:recycler-adapter"
-
-  # StateMachine Jobs
-  lint-statemachine:
-    docker:
-      - image: cimg/android:2022.04
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - lint-module:
-          module: ":toolkit:statemachine"
-  test-statemachine:
-    docker:
-      - image: cimg/android:2022.04
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - test-module:
-          module: ":toolkit:statemachine"
 
   # Maldade Jobs
   lint:
@@ -125,7 +54,7 @@ jobs:
         type: string
     steps:
       - lint-module:
-         module: <<parameters.module>>
+          module: <<parameters.module>>
 
   test:
     docker:
@@ -143,8 +72,10 @@ jobs:
 workflows:
   pull_request:
     jobs:
+      # Builds Project and saves build cache
       - build
 
+      # Runs android lint and KtLint
       - lint:
           matrix:
             alias: lint-all-modules
@@ -157,9 +88,11 @@ workflows:
           name: lint-<<matrix.module>>
           requires:
             - build
+
+      # Runs Unit tests
       - test:
           matrix:
-            alias: test-all-modules
+            alias: unit-test-all-modules
             parameters:
               module:
                 - :toolkit:delegate
@@ -169,35 +102,3 @@ workflows:
           name: test-<<matrix.module>>
           requires:
             - lint-<<matrix.module>>
-
-      # Delegate Flow
-      - lint-delegate:
-          requires:
-            - build
-      - test-delegate:
-          requires:
-            - lint-delegate
-
-      # LiveData Flow
-      - lint-livedata:
-          requires:
-            - build
-      - test-livedata:
-          requires:
-            - lint-livedata
-
-      # Recycler Adapter Flow
-      - lint-recycler-adapter:
-          requires:
-            - build
-      - test-recycler-adapter:
-          requires:
-            - lint-recycler-adapter
-
-      # StateMachine Flow
-      - lint-statemachine:
-          requires:
-            - build
-      - test-statemachine:
-          requires:
-            - lint-statemachine
