@@ -7,7 +7,21 @@ commands: # a reusable command with parameters
         default: ""
         type: string
     steps:
+      - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}
       - run: ./gradlew <<parameters.module>>:lint
+
+  test-module:
+    parameters:
+      module:
+        default: ""
+        type: string
+    steps:
+      - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}
+      - run: ./gradlew <<parameters.module>>:testDebugUnitTest
 
 jobs:
   build:
@@ -18,35 +32,120 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}
 
-  lint:
+  # Delegate Jobs
+  lint-delegate:
     docker:
       - image: cimg/android:2022.04
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
-      - checkout
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - lint-module:
+          module: ":toolkit:delegate"
+  test-delegate:
+    docker:
+      - image: cimg/android:2022.04
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - test-module:
+          module: ":toolkit:delegate"
+
+  # LiveData Jobs
+  lint-livedata:
+    docker:
+      - image: cimg/android:2022.04
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
       - lint-module:
           module: ":toolkit:livedata"
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+  test-livedata:
+    docker:
+      - image: cimg/android:2022.04
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - test-module:
+          module: ":toolkit:livedata"
+
+  # Recycler Adapter Jobs
+  lint-recycler-adapter:
+    docker:
+      - image: cimg/android:2022.04
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - lint-module:
+          module: ":toolkit:recycler-adapter"
+  test-recycler-adapter:
+    docker:
+      - image: cimg/android:2022.04
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - test-module:
+          module: ":toolkit:recycler-adapter"
+
+  # StateMachine Jobs
+  lint-statemachine:
+    docker:
+      - image: cimg/android:2022.04
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - lint-module:
+          module: ":toolkit:statemachine"
+  test-statemachine:
+    docker:
+      - image: cimg/android:2022.04
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - test-module:
+          module: ":toolkit:statemachine"
 
 workflows:
-  build_and_test:
+  pull_request:
     jobs:
       - build
-      - lint:
+
+      # Delegate Flow
+      - lint-delegate:
           requires:
             - build
+      - test-delegate:
+          requires:
+            - lint-delegate
+
+      # LiveData Flow
+      - lint-livedata:
+          requires:
+            - build
+      - test-livedata:
+          requires:
+            - lint-livedata
+
+      # Recycler Adapter Flow
+      - lint-recycler-adapter:
+          requires:
+            - build
+      - test-recycler-adapter:
+          requires:
+            - lint-recycler-adapter
+
+      # StateMachine Flow
+      - lint-statemachine:
+          requires:
+            - build
+      - test-statemachine:
+          requires:
+            - lint-statemachine
