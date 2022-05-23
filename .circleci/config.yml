@@ -12,27 +12,6 @@ commands:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}
 
-  lint-module:
-    description: Runs Android Lint and KtLint
-    parameters:
-      module:
-        default: ""
-        type: string
-    steps:
-      - default
-      - run: ./gradlew :<<parameters.module>>:lint
-      - run: ./gradlew :<<parameters.module>>:ktLint
-
-  test-module:
-    description: Runs Unit Test
-    parameters:
-      module:
-        default: ""
-        type: string
-    steps:
-      - default
-      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest
-
 jobs:
   build:
     executor: android
@@ -58,8 +37,9 @@ jobs:
         default: ""
         type: string
     steps:
-      - lint-module:
-          module: <<parameters.module>>
+      - default
+      - run: ./gradlew :<<parameters.module>>:lint
+      - run: ./gradlew :<<parameters.module>>:ktLint
 
   test:
     executor: android
@@ -70,8 +50,20 @@ jobs:
         default: ""
         type: string
     steps:
-      - test-module:
-          module: <<parameters.module>>
+      - default
+      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest
+
+  deploy:
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx3200m
+    parameters:
+      module:
+        default: ""
+        type: string
+    steps:
+      - default
+      - run: ./gradlew :<<parameters.module>>:assembleRelease
 
 workflows:
   pull_request:
@@ -106,3 +98,29 @@ workflows:
           name: Test <<matrix.module>>
           requires:
             - Lint <<matrix.module>>
+
+      # Ask for approval to run deploy
+      - hold-deploy:
+          type: approval
+          requires:
+            - build
+            - lint-all-modules
+            - unit-test-all-modules
+#          filters:
+#            branches:
+#              only:
+#                - master
+
+      # Deploys all modules
+      - test:
+          matrix:
+            alias: deploy-all-modules
+            parameters:
+              module:
+                - toolkit:delegate
+                - toolkit:livedata
+                - toolkit:recycler-adapter
+                - toolkit:statemachine
+          name: Deploy <<matrix.module>>
+          requires:
+            - hold-deploy
