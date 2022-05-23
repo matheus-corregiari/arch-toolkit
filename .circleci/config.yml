@@ -89,7 +89,7 @@ workflows:
                 - toolkit:livedata
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
-          name: Lint_<<matrix.module>>
+          name: Lint <<matrix.module>>
           requires:
             - build
 
@@ -103,6 +103,6 @@ workflows:
                 - toolkit:livedata
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
-          name: Test_<<matrix.module>>
+          name: Test <<matrix.module>>
           requires:
-            - Lint_<<matrix.module>>
+            - Lint <<matrix.module>>
