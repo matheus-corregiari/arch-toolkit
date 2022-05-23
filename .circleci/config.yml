@@ -12,7 +12,7 @@ commands: # a reusable command with parameters
 jobs:
   build:
     docker:
-      - image: cimg/android:2024.04
+      - image: cimg/android:2022.04
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -29,7 +29,7 @@ jobs:
 
   lint:
     docker:
-      - image: cimg/android:2024.04
+      - image: cimg/android:2022.04
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
