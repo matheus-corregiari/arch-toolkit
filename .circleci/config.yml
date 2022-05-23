@@ -154,6 +154,7 @@ workflows:
                 - :toolkit:livedata
                 - :toolkit:recycler-adapter
                 - :toolkit:statemachine
+          name: lint-<<matrix.module>>
           requires:
             - build
       - test:
@@ -165,8 +166,9 @@ workflows:
                 - :toolkit:livedata
                 - :toolkit:recycler-adapter
                 - :toolkit:statemachine
+          name: test-<<matrix.module>>
           requires:
-            - lint-all-modules
+            - lint-<<matrix.module>>
 
       # Delegate Flow
       - lint-delegate:
