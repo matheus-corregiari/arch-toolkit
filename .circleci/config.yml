@@ -7,7 +7,7 @@ commands: # a reusable command with parameters
         default: ""
         type: string
     steps:
-      - run: ./gradlew parameters.module:lint
+      - run: ./gradlew <<parameters.module>>:lint
 
 jobs:
   build:
