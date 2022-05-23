@@ -113,10 +113,49 @@ jobs:
       - test-module:
           module: ":toolkit:statemachine"
 
+  # StateMachine Jobs
+  lint:
+    docker:
+      - image: cimg/android:2022.04
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - lint-module
+  test:
+    docker:
+      - image: cimg/android:2022.04
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - test-module
+
 workflows:
   pull_request:
     jobs:
       - build
+
+      - lint:
+          matrix:
+            alias: lint-all-modules
+            parameters:
+              module:
+                - :toolkit:delegate
+                - :toolkit:livedata
+                - :toolkit:recycler-adapter
+                - :toolkit:statemachine
+          requires:
+            - build
+      - test:
+          matrix:
+            alias: test-all-modules
+            parameters:
+              module:
+                - :toolkit:delegate
+                - :toolkit:livedata
+                - :toolkit:recycler-adapter
+                - :toolkit:statemachine
+          requires:
+            - lint
 
       # Delegate Flow
       - lint-delegate:
