@@ -103,13 +103,11 @@ workflows:
       - hold-deploy:
           type: approval
           requires:
-            - build
-            - lint-all-modules
             - unit-test-all-modules
-#          filters:
-#            branches:
-#              only:
-#                - master
+          filters:
+            branches:
+              only:
+                - master
 
       # Deploys all modules
       - test:
