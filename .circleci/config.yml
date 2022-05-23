@@ -166,7 +166,7 @@ workflows:
                 - :toolkit:recycler-adapter
                 - :toolkit:statemachine
           requires:
-            - lint
+            - lint-all-modules
 
       # Delegate Flow
       - lint-delegate:
