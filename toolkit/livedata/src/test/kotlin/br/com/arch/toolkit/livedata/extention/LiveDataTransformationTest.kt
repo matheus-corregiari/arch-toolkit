@@ -89,7 +89,7 @@ class LiveDataTransformationTest {
 
         liveData.postData(listOf("ONE", "TWO"))
         Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(50)
+        Thread.sleep(100)
 
         Mockito.verify(mockedTransformation, times(2)).invoke(any())
         Mockito.verify(mockedObserver).invoke(any())
