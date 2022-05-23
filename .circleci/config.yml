@@ -7,7 +7,7 @@ commands: # a reusable command with parameters
         default: ""
         type: string
     steps:
-      - run: ./gradlew :parameters.module:lint
+      - run: ./gradlew parameters.module:lint
 
 jobs:
   build:
@@ -36,9 +36,8 @@ jobs:
       - checkout
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      - run:
-          name: Download Dependencies
-          command: ./gradlew lint
+      - lint-module:
+          module: ":toolkit:livedata"
       - save_cache:
           paths:
             - ~/.gradle
