@@ -20,8 +20,8 @@ commands:
         type: string
     steps:
       - default
-      - run: ./gradlew <<parameters.module>>:lint
-      - run: ./gradlew <<parameters.module>>:ktLint
+      - run: ./gradlew :<<parameters.module>>:lint
+      - run: ./gradlew :<<parameters.module>>:ktLint
 
   test-module:
     description: Runs Unit Test
@@ -31,7 +31,7 @@ commands:
         type: string
     steps:
       - default
-      - run: ./gradlew <<parameters.module>>:testDebugUnitTest
+      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest
 
 jobs:
   build:
@@ -57,9 +57,6 @@ jobs:
       module:
         default: ""
         type: string
-      module-name:
-        default: ""
-        type: string
     steps:
       - lint-module:
           module: <<parameters.module>>
@@ -70,9 +67,6 @@ jobs:
       JVM_OPTS: -Xmx3200m
     parameters:
       module:
-        default: ""
-        type: string
-      module-name:
         default: ""
         type: string
     steps:
@@ -91,16 +85,11 @@ workflows:
             alias: lint-all-modules
             parameters:
               module:
-                - :toolkit:delegate
-                - :toolkit:livedata
-                - :toolkit:recycler-adapter
-                - :toolkit:statemachine
-              module-name:
-                - Delegate
-                - Livedata
-                - Recycler Adapter
-                - StateMachine
-          name: Lint <<matrix.module-name>>
+                - toolkit:delegate
+                - toolkit:livedata
+                - toolkit:recycler-adapter
+                - toolkit:statemachine
+          name: Lint_<<matrix.module>>
           requires:
             - build
 
@@ -110,15 +99,10 @@ workflows:
             alias: unit-test-all-modules
             parameters:
               module:
-                - :toolkit:delegate
-                - :toolkit:livedata
-                - :toolkit:recycler-adapter
-                - :toolkit:statemachine
-              module-name:
-                - Delegate
-                - Livedata
-                - Recycler Adapter
-                - StateMachine
-          name: Test <<matrix.module-name>>
+                - toolkit:delegate
+                - toolkit:livedata
+                - toolkit:recycler-adapter
+                - toolkit:statemachine
+          name: Test_<<matrix.module>>
           requires:
-            - Lint <<matrix.module-name>>
+            - Lint_<<matrix.module>>
