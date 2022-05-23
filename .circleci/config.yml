@@ -72,9 +72,9 @@ jobs:
       module:
         default: ""
         type: string
-    module-name:
-      default: ""
-      type: string
+      module-name:
+        default: ""
+        type: string
     steps:
       - test-module:
           module: <<parameters.module>>
