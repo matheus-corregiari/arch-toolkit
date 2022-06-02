@@ -6,7 +6,7 @@
 //def bintrayUserEnv = System.getenv('BINTRAY_USER')
 //def bintrayApiKeyEnv = System.getenv('BINTRAY_API_KEY')
 //
-//apply from: "$rootDir/tools/publish/maven-config.gradle"
+//apply from: "$rootDir/tools/publish/maven-publish.gradle"
 //apply plugin: 'maven-publish'
 //apply plugin: 'com.jfrog.bintray'
 //

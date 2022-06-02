@@ -119,7 +119,7 @@ allprojects {
             }
 
             task publishRelease(group: "publishing",
-                    dependsOn: ["clean", "build", "install", "bintrayUpload"])
+                    dependsOn: ["clean", "build", "install", "publish"])
 
             artifacts {
                 archives javadocJar

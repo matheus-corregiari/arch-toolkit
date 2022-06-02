@@ -1,0 +1,56 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+group = GROUP
+version = VERSION
+
+publishing {
+    repositories {
+        maven {
+            name = "maven"
+            url = version.endsWith("SNAPSHOT") ? MAVEN_SNAPSHOTS_URL : MAVEN_RELEASES_URL
+            credentials {
+                username = OSSRH_USERNAME
+                password = OSSRH_PASSWORD
+            }
+        }
+    }
+
+    publications {
+        library(MavenPublication) {
+            artifactId = project.name
+
+            pom {
+                name = project.name
+                description = DESCRIPTION
+                url = REPO_URL
+
+                scm {
+                    url = REPO_URL
+                    connection = REPO_GIT_URL
+                    developerConnection = REPO_GIT_URL
+                }
+
+                licenses {
+                    license {
+                        name = LICENCE_NAME
+                        url = LICENCE_URL
+                        distribution = LICENCE_DIST
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = DEVELOPER_ID
+                        name = DEVELOPER_NAME
+                        email = DEVELOPER_EMAIL
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.library
+}
