@@ -27,7 +27,6 @@ allprojects {
     apply from: "$rootDir/tools/dependencies/instrumented-test.gradle"
 
     afterEvaluate {
-
         if (!project.hasProperty("android")) return
 
         android {
@@ -86,7 +85,6 @@ allprojects {
                 targetCompatibility JavaVersion.VERSION_1_8
             }
 
-
             task sourcesJar(type: Jar) {
                 from android.sourceSets.main.java.srcDirs
                 classifier = 'sources'
@@ -118,8 +116,15 @@ allprojects {
                 jacoco.excludes = ['jdk.internal.*']
             }
 
-            task publishRelease(group: "publishing",
-                    dependsOn: ["clean", "build", "install", "publish"])
+            if (!project.path.contains("samples")) {
+                task publishRelease(group: "publishing") {
+                    dependsOn "clean"
+                    dependsOn "build"
+                    dependsOn "publish"
+                    tasks.findByName("build").mustRunAfter "clean"
+                    tasks.findByName("publish").mustRunAfter "build"
+                }
+            }
 
             artifacts {
                 archives javadocJar
