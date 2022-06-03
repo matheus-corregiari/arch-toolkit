@@ -10,10 +10,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
         classpath "org.jacoco:org.jacoco.core:$versions.jacoco"
         classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:$versions.dexcount"
-
-        // Necessary to publish
-//        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$versions.bintray_plugin"
-//        classpath "com.github.dcendents:android-maven-gradle-plugin:$versions.maven_plugin"
     }
 }
 

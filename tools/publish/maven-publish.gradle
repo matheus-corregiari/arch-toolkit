@@ -51,6 +51,28 @@ publishing {
     }
 }
 
+android {
+    hidePublishingTasks()
+}
+
 signing {
     sign publishing.publications.library
+}
+
+def hideTasks(String... taskList) {
+    taskList.each {
+        tasks.findByName(it).group = null
+    }
+}
+
+def hidePublishingTasks() {
+    hideTasks(
+            "generateMetadataFileForLibraryPublication",
+            "generatePomFileForLibraryPublication",
+            "publish",
+            "publishAllPublicationsToMavenRepository",
+            "publishLibraryPublicationToMavenLocal",
+            "publishLibraryPublicationToMavenRepository",
+            "publishToMavenLocal"
+    )
 }

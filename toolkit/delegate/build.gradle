@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 apply from: "$rootDir/tools/publish/maven-publish.gradle"
 
 android {
-
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
     }
@@ -13,7 +12,6 @@ android {
             minifyEnabled false
         }
     }
-
 }
 
 dependencies {
