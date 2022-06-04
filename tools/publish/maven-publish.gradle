@@ -1,78 +1,22 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: 'io.github.pedro-bachiega.sonatype-maven-publish'
 
 group = GROUP
 version = VERSION
 
-publishing {
-    repositories {
-        maven {
-            name = "maven"
-            url = version.endsWith("SNAPSHOT") ? MAVEN_SNAPSHOTS_URL : MAVEN_RELEASES_URL
-            credentials {
-                username = OSSRH_USERNAME
-                password = OSSRH_PASSWORD
-            }
-        }
-    }
-
-    publications {
-        library(MavenPublication) {
-            artifactId = project.name
-
-            pom {
-                name = project.name
-                description = DESCRIPTION
-                url = REPO_URL
-
-                scm {
-                    url = REPO_URL
-                    connection = REPO_GIT_URL
-                    developerConnection = REPO_GIT_URL
-                }
-
-                licenses {
-                    license {
-                        name = LICENCE_NAME
-                        url = LICENCE_URL
-                        distribution = LICENCE_DIST
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = DEVELOPER_ID
-                        name = DEVELOPER_NAME
-                        email = DEVELOPER_EMAIL
-                    }
-                }
-            }
-        }
-    }
+sonatypePublishing {
+    artifactId = project.name
+    libName = NAME
+    libDescription = DESCRIPTION
+    repositoryUrl = REPO_URL
+    repositoryConnectionUrl = REPO_GIT_URL
+    licenseName = LICENCE_NAME
+    licenseUrl = LICENCE_URL
+    developerId = DEVELOPER_ID
+    developerName = DEVELOPER_NAME
+    developerEmail = DEVELOPER_EMAIL
+    username = OSSRH_USERNAME
+    password = OSSRH_PASSWORD
 }
 
-android {
-    hidePublishingTasks()
-}
-
-signing {
-    sign publishing.publications.library
-}
-
-def hideTasks(String... taskList) {
-    taskList.each {
-        tasks.findByName(it).group = null
-    }
-}
-
-def hidePublishingTasks() {
-    hideTasks(
-            "generateMetadataFileForLibraryPublication",
-            "generatePomFileForLibraryPublication",
-            "publish",
-            "publishAllPublicationsToMavenRepository",
-            "publishLibraryPublicationToMavenLocal",
-            "publishLibraryPublicationToMavenRepository",
-            "publishToMavenLocal"
-    )
-}
