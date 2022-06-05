@@ -1,14 +1,9 @@
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
 apply plugin: 'io.github.pedro-bachiega.sonatype-maven-publish'
 
 group = GROUP
 version = VERSION
 
 sonatypePublishing {
-    artifactId = project.name
-    libName = NAME
-    libDescription = DESCRIPTION
     repositoryUrl = REPO_URL
     repositoryConnectionUrl = REPO_GIT_URL
     licenseName = LICENCE_NAME
@@ -18,5 +13,13 @@ sonatypePublishing {
     developerEmail = DEVELOPER_EMAIL
     username = OSSRH_USERNAME
     password = OSSRH_PASSWORD
+}
+
+publications {
+    library {
+        artifactId = project.name
+        libName = NAME
+        libDescription = DESCRIPTION
+    }
 }
 
