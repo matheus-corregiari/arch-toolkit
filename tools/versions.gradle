@@ -4,8 +4,7 @@ ext.versions = [
         android_plugin: '7.2.0',
         jacoco        : '0.8.8',
         dexcount      : '3.1.0',
-        bintray_plugin: '1.8.4',
-        maven_plugin  : '2.1',
+        maven_plugin  : '0.0.1',
 
         coroutines    : '1.6.1',
 
