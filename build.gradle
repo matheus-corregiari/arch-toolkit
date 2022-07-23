@@ -4,6 +4,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 
     dependencies {
@@ -11,7 +14,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
         classpath "org.jacoco:org.jacoco.core:$versions.jacoco"
         classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:$versions.dexcount"
-        classpath "io.github.pedro-bachiega:sonatype-maven-publish:$versions.maven_plugin"
+        classpath "io.github.pedro-bachiega:SonatypeMavenPublishPlugin:$versions.maven_plugin"
     }
 }
 
