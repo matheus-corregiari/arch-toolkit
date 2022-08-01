@@ -16,5 +16,4 @@ internal open class ResponseFlow<T> : StateFlow<DataResult<T>> {
 
     override val value: DataResult<T>
         get() = TODO("Not yet implemented")
-
 }

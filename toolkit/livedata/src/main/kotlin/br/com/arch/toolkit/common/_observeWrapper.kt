@@ -707,7 +707,7 @@ private class SuccessEvent(
 private class DataEvent<T>(
     @NonNull wrapper: WrapObserver<T, *>,
     @NonNull single: Boolean,
-    @NonNull async: Boolean,
+    @NonNull async: Boolean
 ) :
     ObserveEvent<T>(wrapper, single, async, EventDataStatus.DOESNT_MATTER)
 
