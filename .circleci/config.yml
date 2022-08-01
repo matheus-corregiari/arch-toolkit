@@ -21,7 +21,7 @@ jobs:
       - default
       - run:
           name: Download Dependencies
-          command: ./gradlew androidDependencies -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+          command: ./gradlew androidDependencies -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD -Psigning.secretKeyRingFile=$PWD/
       - save_cache:
           paths:
             - ~/.gradle
