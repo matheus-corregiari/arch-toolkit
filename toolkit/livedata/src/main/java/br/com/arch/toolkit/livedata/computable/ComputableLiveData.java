@@ -7,7 +7,7 @@ import androidx.annotation.WorkerThread;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static br.com.arch.toolkit.livedata.ExecutorUtil.async;
+import static br.com.arch.toolkit.livedata.ExecutorUtil.runOnNewThread;
 
 /**
  * Implementation of {@link LiveData} to make it possible compute something on the WorkerThread, and abort or invalidate if needed
@@ -70,7 +70,7 @@ public abstract class ComputableLiveData<T> extends LiveData<T> {
         if (!hasObservers() && computed.get()) computed.set(false);
         else if (!computing.get()) {
             computed.set(false);
-            lastThread = new WeakReference<>(async(this::executeRunnable));
+            lastThread = new WeakReference<>(runOnNewThread(this::executeRunnable));
         }
     }
 

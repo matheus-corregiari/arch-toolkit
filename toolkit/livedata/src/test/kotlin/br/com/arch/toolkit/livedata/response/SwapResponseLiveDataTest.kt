@@ -5,7 +5,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
-import br.com.arch.toolkit.livedata.exception.DataTransformationException
+import br.com.arch.toolkit.common.DataResult
+import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.common.exception.DataTransformationException
 import com.nhaarman.mockitokotlin2.given
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
@@ -25,7 +27,7 @@ class SwapResponseLiveDataTest {
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
         override fun getLifecycle(): Lifecycle {
-            registry.markState(Lifecycle.State.RESUMED)
+            registry.currentState = Lifecycle.State.RESUMED
             return registry
         }
     }

@@ -1,7 +1,11 @@
 package br.com.arch.toolkit.statemachine;
 
-import androidx.annotation.NonNull;
 import android.view.View;
+import android.view.ViewStub;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,26 +52,84 @@ public final class ViewStateMachine extends StateMachine<ViewStateMachine.State>
             if (view == null) continue;
             view.setEnabled(false);
         }
+
+        // Handle view references
+        final View rootView = state.rootView;
+        if (rootView != null) {
+            // Visibility
+            for (@IdRes final Integer viewId : state.goneReferences) {
+                final View view = rootView.findViewById(viewId);
+                if (view == null) continue;
+                view.setVisibility(View.GONE);
+            }
+            for (@IdRes final Integer viewId : state.visibleReferences) {
+                final View view = rootView.findViewById(viewId);
+                if (view == null) continue;
+                if (view instanceof ViewStub) {
+                    ((ViewStub) view).inflate();
+                }
+                view.setVisibility(View.VISIBLE);
+            }
+            for (@IdRes final Integer viewId : state.invisibleReferences) {
+                final View view = rootView.findViewById(viewId);
+                if (view == null) continue;
+                view.setVisibility(View.INVISIBLE);
+            }
+
+            // Enable
+            for (@IdRes final Integer viewId : state.enableReferences) {
+                final View view = rootView.findViewById(viewId);
+                if (view == null) continue;
+                view.setEnabled(true);
+            }
+
+            for (@IdRes final Integer viewId : state.disableReferences) {
+                final View view = rootView.findViewById(viewId);
+                if (view == null) continue;
+                view.setEnabled(false);
+            }
+        }
     }
 
     public static final class State extends StateMachine.State {
 
-        private State() {
-        }
-
         @NonNull
         private final List<View> visibles = new ArrayList<>();
         @NonNull
+        private final List<Integer> visibleReferences = new ArrayList<>();
+        @NonNull
         private final List<View> gones = new ArrayList<>();
+        @NonNull
+        private final List<Integer> goneReferences = new ArrayList<>();
         @NonNull
         private final List<View> invisibles = new ArrayList<>();
         @NonNull
+        private final List<Integer> invisibleReferences = new ArrayList<>();
+        @NonNull
         private final List<View> enables = new ArrayList<>();
         @NonNull
+        private final List<Integer> enableReferences = new ArrayList<>();
+        @NonNull
         private final List<View> disables = new ArrayList<>();
+        @NonNull
+        private final List<Integer> disableReferences = new ArrayList<>();
+        @Nullable
+        private View rootView = null;
+        private State() {
+        }
+
+        public final State root(@NonNull final View view) {
+            rootView = view;
+            return this;
+        }
 
         public final State visibles(@NonNull final View... views) {
             visibles.addAll(Arrays.asList(views));
+            return this;
+        }
+
+        public final State visibles(@NonNull @IdRes final Integer... ids) {
+            visibleReferences.addAll(Arrays.asList(ids));
             return this;
         }
 
@@ -76,8 +138,18 @@ public final class ViewStateMachine extends StateMachine<ViewStateMachine.State>
             return this;
         }
 
+        public final State invisibles(@NonNull @IdRes final Integer... ids) {
+            goneReferences.addAll(Arrays.asList(ids));
+            return this;
+        }
+
         public final State gones(@NonNull final View... views) {
             gones.addAll(Arrays.asList(views));
+            return this;
+        }
+
+        public final State gones(@NonNull @IdRes final Integer... ids) {
+            invisibleReferences.addAll(Arrays.asList(ids));
             return this;
         }
 
@@ -86,8 +158,18 @@ public final class ViewStateMachine extends StateMachine<ViewStateMachine.State>
             return this;
         }
 
+        public final State enables(@NonNull @IdRes final Integer... ids) {
+            enableReferences.addAll(Arrays.asList(ids));
+            return this;
+        }
+
         public final State disables(@NonNull final View... views) {
             disables.addAll(Arrays.asList(views));
+            return this;
+        }
+
+        public final State disables(@NonNull @IdRes final Integer... ids) {
+            disableReferences.addAll(Arrays.asList(ids));
             return this;
         }
 

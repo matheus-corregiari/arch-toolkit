@@ -1,9 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply from: "$rootDir/tools/publish/publish.gradle"
 
 android {
-
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
     }
@@ -13,7 +11,6 @@ android {
             minifyEnabled false
         }
     }
-
 }
 
 dependencies {

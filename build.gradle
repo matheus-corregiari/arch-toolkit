@@ -3,41 +3,44 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
+
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.android_plugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
         classpath "org.jacoco:org.jacoco.core:$versions.jacoco"
         classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:$versions.dexcount"
-
-        // Necessary to publish
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$versions.bintray_plugin"
-        classpath "com.github.dcendents:android-maven-gradle-plugin:$versions.maven_plugin"
+        classpath "io.github.pedro-bachiega:SonatypeMavenPublishPlugin:$versions.maven_plugin"
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     apply from: "$rootDir/tools/dependencies/unit-test.gradle"
     apply from: "$rootDir/tools/dependencies/instrumented-test.gradle"
+    if (!project.path.contains("sample")) {
+        apply from: "$rootDir/tools/publish/maven-publish.gradle"
+    }
 
     afterEvaluate {
-
         if (!project.hasProperty("android")) return
 
         android {
 
-            compileSdkVersion 28
-            buildToolsVersion "28.0.3"
+            compileSdkVersion 32
+            buildToolsVersion "32.0.0"
 
             defaultConfig {
-                minSdkVersion 21
-                targetSdkVersion 28
+                minSdkVersion 23
+                targetSdkVersion 32
 
                 versionCode 1
                 versionName "1.0"
@@ -86,7 +89,6 @@ allprojects {
                 targetCompatibility JavaVersion.VERSION_1_8
             }
 
-
             task sourcesJar(type: Jar) {
                 from android.sourceSets.main.java.srcDirs
                 classifier = 'sources'
@@ -118,8 +120,11 @@ allprojects {
                 jacoco.excludes = ['jdk.internal.*']
             }
 
-            task publishRelease(group: "publishing",
-                    dependsOn: ["clean", "build", "install", "bintrayUpload"])
+            if (!project.path.contains("samples")) {
+                task publishRelease(group: "publishing") {
+                    dependsOn "publish"
+                }
+            }
 
             artifacts {
                 archives javadocJar
@@ -136,8 +141,4 @@ allprojects {
     apply from: "$rootDir/tools/ktlint.gradle"
     apply from: "$rootDir/tools/coverage/jacoco.gradle"
     apply from: "$rootDir/tools/coverage/jacoco-unified.gradle"
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }

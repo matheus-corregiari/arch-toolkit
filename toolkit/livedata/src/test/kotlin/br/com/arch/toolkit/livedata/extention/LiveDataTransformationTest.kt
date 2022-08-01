@@ -19,7 +19,6 @@ import org.mockito.Mockito.times
 class LiveDataTransformationTest {
 
     @Rule
-    @get:Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -28,7 +27,7 @@ class LiveDataTransformationTest {
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
         override fun getLifecycle(): Lifecycle {
-            registry.markState(Lifecycle.State.RESUMED)
+            registry.currentState = Lifecycle.State.RESUMED
             return registry
         }
     }

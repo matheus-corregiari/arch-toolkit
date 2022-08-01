@@ -1,250 +1,125 @@
-version: 4
-jobs:
-  checkout-repo:
-    working_directory: ~/arch-toolkit
+version: 2.1
+
+executors:
+  android:
     docker:
-      - image: circleci/android:api-29
+      - image: cimg/android:2022.06
+
+commands:
+  default:
+    steps:
+      - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}
+
+jobs:
+  build:
+    executor: android
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
+      - default
       - run:
           name: Download Dependencies
-          command: ./gradlew androidDependencies
+          command: ./gradlew androidDependencies -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
       - save_cache:
-           paths:
-              - ~/.gradle
-           key: gradle-{{ checksum "build.gradle" }}
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}
 
-  ktLint:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run KtLint
-          command: ./gradlew ktLint
-
-      - store_artifacts:
-          path: build/reports/ktlint
-          destination: reports/ktlint
-
+  # Maldade Jobs
   lint:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx3200m
+    parameters:
+      module:
+        default: ""
+        type: string
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Lint
-          command: ./gradlew lintDebug
+      - default
+      - run: ./gradlew :<<parameters.module>>:lint -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:ktLint -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
-      - store_artifacts:
-          path: build/reports/lint
-          destination: reports/lint
-
-  livedata:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
+  test:
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx3200m
+    parameters:
+      module:
+        default: ""
+        type: string
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Livedata test
-          command: ./gradlew :toolkit:livedata:jacocoTestReport
+      - default
+      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
-      - store_artifacts:
-          path: toolkit/livedata/build/reports/jacoco/
-          destination: reports/livedata
-
-      - save_cache:
-           paths:
-              - ~/toolkit/livedata/build/jacoco
-              - ~/toolkit/livedata/build/outputs/code-coverage/connected
-           key: jacoco-files-{{ checksum "toolkit/livedata/build.gradle" }}
-
-  recycler-adapter:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
+  deploy:
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx3200m
+    parameters:
+      module:
+        default: ""
+        type: string
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Recycler Adapter test
-          command: ./gradlew :toolkit:recycler-adapter:jacocoTestReport
-
-      - store_artifacts:
-          path: toolkit/recycler-adapter/build/reports/jacoco/
-          destination: reports/recycler-adapter
-
-      - save_cache:
-           paths:
-              - ~/toolkit/recycler-adapter/build/jacoco
-              - ~/toolkit/recycler-adapter/build/outputs/code-coverage/connected
-           key: jacoco-files-{{ checksum "toolkit/recycler-adapter/build.gradle" }}
-
-  statemachine:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Statemachine test
-          command: ./gradlew :toolkit:statemachine:jacocoTestReport
-
-      - store_artifacts:
-          path: toolkit/statemachine/build/reports/jacoco/
-          destination: reports/statemachine
-
-      - save_cache:
-           paths:
-              - ~/toolkit/statemachine/build/jacoco
-              - ~/toolkit/statemachine/build/outputs/code-coverage/connected
-           key: jacoco-files-{{ checksum "toolkit/statemachine/build.gradle" }}
-
-  delegate:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Run Delegate test
-          command: ./gradlew :toolkit:delegate:jacocoTestReport
-
-      - store_artifacts:
-          path: toolkit/delegate/build/reports/jacoco/
-          destination: reports/delegate
-
-      - save_cache:
-           paths:
-              - ~/toolkit/delegate/build/jacoco
-              - ~/toolkit/delegate/build/outputs/code-coverage/connected
-           key: jacoco-files-{{ checksum "toolkit/delegate/build.gradle" }}
-
-  livedata-deploy:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Deploy Livedata
-          command: ./gradlew :toolkit:livedata:bintrayUpload
-
-  recycler-adapter-deploy:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Deploy Recycler Adapter
-          command: ./gradlew :toolkit:recycler-adapter:bintrayUpload
-
-  statemachine-deploy:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Deploy Statemachine
-          command: ./gradlew :toolkit:statemachine:bintrayUpload
-
-  delegate-deploy:
-    working_directory: ~/arch-toolkit
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Deploy Delegate
-          command: ./gradlew :toolkit:delegate:bintrayUpload
+      - default
+      - run: ./gradlew :<<parameters.module>>:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
 workflows:
-  version: 2
-  lint-test-deploy:
+  pull_request:
     jobs:
-      - checkout-repo
-      - ktLint:
-          requires:
-            - checkout-repo
+      # Builds Project and saves build cache
+      - build
+
+      # Runs android lint and KtLint
       - lint:
+          matrix:
+            alias: lint-all-modules
+            parameters:
+              module:
+                - toolkit:delegate
+                - toolkit:livedata
+                - toolkit:recycler-adapter
+                - toolkit:statemachine
+          name: Lint <<matrix.module>>
           requires:
-            - checkout-repo
-      - livedata:
+            - build
+
+      # Runs Unit tests
+      - test:
+          matrix:
+            alias: unit-test-all-modules
+            parameters:
+              module:
+                - toolkit:delegate
+                - toolkit:livedata
+                - toolkit:recycler-adapter
+                - toolkit:statemachine
+          name: Test <<matrix.module>>
           requires:
-            - lint
-            - ktLint
-      - recycler-adapter:
+            - Lint <<matrix.module>>
+
+      # Ask for approval to run deploy
+      - hold-deploy:
+          type: approval
           requires:
-            - lint
-            - ktLint
-      - statemachine:
-          requires:
-            - lint
-            - ktLint
-      - delegate:
-          requires:
-            - lint
-            - ktLint
-      - livedata-deploy:
-          requires:
-            - livedata
+            - unit-test-all-modules
           filters:
             branches:
-              only: master
-      - recycler-adapter-deploy:
+              only:
+                - master
+
+      # Deploys all modules
+      - deploy:
+          matrix:
+            alias: deploy-all-modules
+            parameters:
+              module:
+                - toolkit:delegate
+                - toolkit:livedata
+                - toolkit:recycler-adapter
+                - toolkit:statemachine
+          name: Deploy <<matrix.module>>
           requires:
-            - recycler-adapter
-          filters:
-            branches:
-              only: master
-      - statemachine-deploy:
-          requires:
-            - statemachine
-          filters:
-            branches:
-              only: master
-      - delegate-deploy:
-          requires:
-            - delegate
-          filters:
-            branches:
-              only: master
+            - hold-deploy

@@ -4,6 +4,9 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import br.com.arch.toolkit.common.DataResult
+import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.common.ObserveWrapper
 
 /**
  * Custom implementation of LiveData made to help the data handling with needs the interpretation of:
@@ -44,7 +47,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeLoading(@NonNull owner: LifecycleOwner, @NonNull observer: (Boolean) -> Unit): ResponseLiveData<T> {
+    fun observeLoading(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: (Boolean) -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { loading(observer = observer) }
     }
 
@@ -57,7 +63,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeShowLoading(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    fun observeShowLoading(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: () -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { showLoading(observer = observer) }
     }
 
@@ -70,7 +79,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeHideLoading(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    fun observeHideLoading(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: () -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { hideLoading(observer = observer) }
     }
 
@@ -85,7 +97,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeLoading
      */
     @NonNull
-    fun observeSingleLoading(@NonNull owner: LifecycleOwner, @NonNull observer: (Boolean) -> Unit): ResponseLiveData<T> {
+    fun observeSingleLoading(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: (Boolean) -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { loading(single = true, observer = observer) }
     }
 
@@ -100,7 +115,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeShowLoading
      */
     @NonNull
-    fun observeSingleShowLoading(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    fun observeSingleShowLoading(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: () -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { showLoading(single = true, observer = observer) }
     }
 
@@ -115,7 +133,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeHideLoading
      */
     @NonNull
-    fun observeSingleHideLoading(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    fun observeSingleHideLoading(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: () -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { hideLoading(single = true, observer = observer) }
     }
     // endregion
@@ -130,7 +151,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeError(@NonNull owner: LifecycleOwner, @NonNull observer: (Throwable) -> Unit): ResponseLiveData<T> {
+    fun observeError(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: (Throwable) -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { error(observer = observer) }
     }
 
@@ -143,7 +167,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeError(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    fun observeError(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: () -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { error(observer = observer) }
     }
 
@@ -157,7 +184,11 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun <R> observeError(@NonNull owner: LifecycleOwner, @NonNull transformer: (Throwable) -> R, @NonNull observer: (R) -> Unit): ResponseLiveData<T> {
+    fun <R> observeError(
+        @NonNull owner: LifecycleOwner,
+        @NonNull transformer: (Throwable) -> R,
+        @NonNull observer: (R) -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { error(transformer = transformer, observer = observer) }
     }
 
@@ -172,7 +203,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeError
      */
     @NonNull
-    fun observeSingleError(@NonNull owner: LifecycleOwner, @NonNull observer: (Throwable) -> Unit): ResponseLiveData<T> {
+    fun observeSingleError(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: (Throwable) -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { error(single = true, observer = observer) }
     }
 
@@ -188,8 +222,18 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeError
      */
     @NonNull
-    fun <R> observeSingleError(@NonNull owner: LifecycleOwner, @NonNull transformer: (Throwable) -> R, @NonNull observer: (R) -> Unit): ResponseLiveData<T> {
-        return observe(owner) { error(single = true, transformer = transformer, observer = observer) }
+    fun <R> observeSingleError(
+        @NonNull owner: LifecycleOwner,
+        @NonNull transformer: (Throwable) -> R,
+        @NonNull observer: (R) -> Unit
+    ): ResponseLiveData<T> {
+        return observe(owner) {
+            error(
+                single = true,
+                transformer = transformer,
+                observer = observer
+            )
+        }
     }
 
     /**
@@ -203,7 +247,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeError
      */
     @NonNull
-    fun observeSingleError(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    fun observeSingleError(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: () -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { error(single = true, observer = observer) }
     }
     // endregion
@@ -218,7 +265,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeSuccess(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    fun observeSuccess(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: () -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { success(observer = observer) }
     }
 
@@ -233,7 +283,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeSuccess
      */
     @NonNull
-    fun observeSingleSuccess(@NonNull owner: LifecycleOwner, @NonNull observer: () -> Unit): ResponseLiveData<T> {
+    fun observeSingleSuccess(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: () -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { success(single = true, observer = observer) }
     }
     // endregion
@@ -248,7 +301,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun observeData(@NonNull owner: LifecycleOwner, @NonNull observer: (T) -> Unit): ResponseLiveData<T> {
+    fun observeData(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: (T) -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { data(observer = observer) }
     }
 
@@ -262,7 +318,11 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    fun <R> observeData(@NonNull owner: LifecycleOwner, @NonNull transformer: (T) -> R, @NonNull observer: (R) -> Unit): ResponseLiveData<T> {
+    fun <R> observeData(
+        @NonNull owner: LifecycleOwner,
+        @NonNull transformer: (T) -> R,
+        @NonNull observer: (R) -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { data(transformer = transformer, observer = observer) }
     }
 
@@ -277,7 +337,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeData
      */
     @NonNull
-    fun observeSingleData(@NonNull owner: LifecycleOwner, @NonNull observer: (T) -> Unit): ResponseLiveData<T> {
+    fun observeSingleData(
+        @NonNull owner: LifecycleOwner,
+        @NonNull observer: (T) -> Unit
+    ): ResponseLiveData<T> {
         return observe(owner) { data(single = true, observer = observer) }
     }
 
@@ -293,8 +356,18 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.observeData
      */
     @NonNull
-    fun <R> observeSingleData(@NonNull owner: LifecycleOwner, @NonNull transformer: (T) -> R, @NonNull observer: (R) -> Unit): ResponseLiveData<T> {
-        return observe(owner) { data(single = true, transformer = transformer, observer = observer) }
+    fun <R> observeSingleData(
+        @NonNull owner: LifecycleOwner,
+        @NonNull transformer: (T) -> R,
+        @NonNull observer: (R) -> Unit
+    ): ResponseLiveData<T> {
+        return observe(owner) {
+            data(
+                single = true,
+                transformer = transformer,
+                observer = observer
+            )
+        }
     }
     //endregion
 
@@ -341,7 +414,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.onError
      */
     @NonNull
-    fun mapError(async: Boolean, @NonNull transformation: (Throwable) -> Throwable): ResponseLiveData<T> {
+    fun mapError(
+        async: Boolean,
+        @NonNull transformation: (Throwable) -> Throwable
+    ): ResponseLiveData<T> {
         val liveData = SwapResponseLiveData<T>()
         liveData.swapSource(this, async, { it }, transformation)
         return liveData
@@ -375,7 +451,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.onErrorReturn
      */
     @NonNull
-    fun onErrorReturn(async: Boolean, @NonNull onErrorReturn: ((Throwable) -> T)): ResponseLiveData<T> {
+    fun onErrorReturn(
+        async: Boolean,
+        @NonNull onErrorReturn: ((Throwable) -> T)
+    ): ResponseLiveData<T> {
         val liveData = SwapResponseLiveData<T>()
         liveData.swapSource(this, async, { it }, null, onErrorReturn)
         return liveData
@@ -497,7 +576,10 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @see ResponseLiveData.transform
      */
     @NonNull
-    fun <R> transform(async: Boolean, @NonNull transformation: (DataResult<T>) -> DataResult<R>): ResponseLiveData<R> {
+    fun <R> transform(
+        async: Boolean,
+        @NonNull transformation: (DataResult<T>) -> DataResult<R>
+    ): ResponseLiveData<R> {
         val liveData = SwapResponseLiveData<R>()
         liveData.swapSource(this, async, transformation)
         return liveData
@@ -513,13 +595,16 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    inline fun observe(@NonNull owner: LifecycleOwner, @NonNull crossinline wrapperConfig: ObserveWrapper<T>.() -> Unit): ResponseLiveData<T> {
-        return newWrapper().apply(wrapperConfig).observeOn(owner)
+    fun observe(
+        @NonNull owner: LifecycleOwner,
+        @NonNull wrapperConfig: ObserveWrapper<T>.() -> Unit
+    ): ResponseLiveData<T> {
+        return newWrapper().apply(wrapperConfig).attachTo(this, owner)
     }
 
     /**
      * @return A new instance of ObserveWrapper<T>
      */
     @NonNull
-    fun newWrapper() = ObserveWrapper(this)
+    private fun newWrapper() = ObserveWrapper<T>()
 }

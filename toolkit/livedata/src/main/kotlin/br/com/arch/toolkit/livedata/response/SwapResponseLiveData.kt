@@ -1,11 +1,10 @@
 package br.com.arch.toolkit.livedata.response
 
 import androidx.lifecycle.MediatorLiveData
-import br.com.arch.toolkit.livedata.ExecutorUtil.async
-import br.com.arch.toolkit.livedata.exception.DataTransformationException
-import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
-import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
-import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS
+import br.com.arch.toolkit.common.DataResult
+import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.common.exception.DataTransformationException
+import br.com.arch.toolkit.livedata.ExecutorUtil.runOnNewThread
 
 /**
  * A custom implementation of ResponseLiveData responsible for replicate a value from another ResponseLiveData
@@ -35,7 +34,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         clearSource()
         sourceLiveData.addSource(source) {
             value = it
-            if (it?.status != LOADING && discardAfterLoading) value = null
+            if (it?.status != DataResultStatus.LOADING && discardAfterLoading) value = null
         }
         lastSource = source
     }
@@ -79,8 +78,8 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         if (data == null && onErrorReturn != null && error != null) {
             data = error.let(onErrorReturn)
         }
-        if (onErrorReturn != null && status == ERROR) {
-            status = SUCCESS
+        if (onErrorReturn != null && status == DataResultStatus.ERROR) {
+            status = DataResultStatus.SUCCESS
         }
         val newValue = DataResult<T>(data, error, status)
         newValue.takeIf { value != newValue }
@@ -104,7 +103,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
      * Returns true if does not have data source or if the status is equal to DataResultStatus.ERROR
      */
     fun needsRefresh(): Boolean {
-        return hasDataSource.not() || status == ERROR
+        return hasDataSource.not() || status == DataResultStatus.ERROR
     }
 
     override fun onActive() {
@@ -126,21 +125,27 @@ class SwapResponseLiveData<T> : ResponseLiveData<T>() {
         sourceLiveData.addSource(source) { data ->
 
             if (async) {
-                async {
+                runOnNewThread {
                     transformation.runCatching { invoke(data) }
-                            .onSuccess { it?.let(::postValue) }
-                            .onFailure {
-                                val error = DataTransformationException("Error performing swapSource, please check your transformations", it)
-                                postValue(DataResult(null, error, ERROR))
-                            }
+                        .onSuccess { it?.let(::postValue) }
+                        .onFailure {
+                            val error = DataTransformationException(
+                                "Error performing swapSource, please check your transformations",
+                                it
+                            )
+                            postValue(DataResult(null, error, DataResultStatus.ERROR))
+                        }
                 }
             } else {
                 transformation.runCatching { invoke(data) }
-                        .onSuccess { it?.let(::setValue) }
-                        .onFailure {
-                            val error = DataTransformationException("Error performing swapSource, please check your transformations", it)
-                            setValue(DataResult(null, error, ERROR))
-                        }
+                    .onSuccess { it?.let(::setValue) }
+                    .onFailure {
+                        val error = DataTransformationException(
+                            "Error performing swapSource, please check your transformations",
+                            it
+                        )
+                        setValue(DataResult(null, error, DataResultStatus.ERROR))
+                    }
             }
         }
         lastSource = source

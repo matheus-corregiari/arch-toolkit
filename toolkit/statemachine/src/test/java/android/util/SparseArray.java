@@ -7,7 +7,7 @@ import java.util.HashMap;
  */
 public class SparseArray<E> {
 
-    private HashMap<Integer, E> mHashMap;
+    private final HashMap<Integer, E> mHashMap;
 
     public SparseArray() {
         mHashMap = new HashMap<>();

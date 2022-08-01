@@ -5,6 +5,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
+import br.com.arch.toolkit.common.DataResult
+import br.com.arch.toolkit.common.DataResultStatus
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
@@ -23,7 +25,7 @@ class ResponseLiveDataTest {
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
         override fun getLifecycle(): Lifecycle {
-            registry.markState(Lifecycle.State.RESUMED)
+            registry.currentState = Lifecycle.State.RESUMED
             return registry
         }
     }
