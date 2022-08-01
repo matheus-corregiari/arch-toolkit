@@ -11,6 +11,10 @@ commands:
       - checkout
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}
+          
+dependencies:
+   pre:
+    - source environmentSetup.sh && copyEnvVarsToGradleProperties
 
 jobs:
   build:
@@ -21,7 +25,7 @@ jobs:
       - default
       - run:
           name: Download Dependencies
-          command: ./gradlew androidDependencies -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD
+          command: ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
@@ -38,8 +42,8 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:lint -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD
-      - run: ./gradlew :<<parameters.module>>:ktLint -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:lint
+      - run: ./gradlew :<<parameters.module>>:ktLint
 
   test:
     executor: android
@@ -51,7 +55,7 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest
 
   deploy:
     executor: android
@@ -63,8 +67,8 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:assembleRelease -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD
-      - run: ./gradlew :<<parameters.module>>:publishRelease -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:assembleRelease
+      - run: ./gradlew :<<parameters.module>>:publishRelease
 
 workflows:
   pull_request:
