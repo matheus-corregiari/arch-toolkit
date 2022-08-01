@@ -21,7 +21,7 @@ jobs:
       - default
       - run:
           name: Download Dependencies
-          command: ./gradlew androidDependencies -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+          command: ./gradlew androidDependencies -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
       - save_cache:
           paths:
             - ~/.gradle
@@ -38,8 +38,8 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:lint -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-      - run: ./gradlew :<<parameters.module>>:ktLint -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:lint -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:ktLint -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
   test:
     executor: android
@@ -51,7 +51,7 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
   deploy:
     executor: android
@@ -63,8 +63,8 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:assembleRelease -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-      - run: ./gradlew :<<parameters.module>>:publishRelease -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
 workflows:
   pull_request:
