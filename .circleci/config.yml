@@ -21,7 +21,7 @@ jobs:
       - default
       - run:
           name: Download Dependencies
-          command: ./gradlew androidDependencies
+          command: ./gradlew androidDependencies -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
       - save_cache:
           paths:
             - ~/.gradle
@@ -38,8 +38,8 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:lint
-      - run: ./gradlew :<<parameters.module>>:ktLint
+      - run: ./gradlew :<<parameters.module>>:lint -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:ktLint -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
   test:
     executor: android
@@ -51,7 +51,7 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest
+      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
   deploy:
     executor: android
@@ -63,8 +63,8 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:assembleRelease
-      - run: ./gradlew :<<parameters.module>>:publishRelease
+      - run: ./gradlew :<<parameters.module>>:assembleRelease -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:publishRelease -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
 workflows:
   pull_request:
