@@ -21,23 +21,16 @@
 #!/usr/bin/env bash
 
 function copyEnvVarsToGradleProperties {
-    GRADLE_PROPERTIES=$HOME"/.gradle/gradle.properties"
+    GRADLE_PROPERTIES=$HOME"/gradle.properties"
     export GRADLE_PROPERTIES
     echo "Gradle Properties should exist at $GRADLE_PROPERTIES"
 
-    if [ ! -f "$GRADLE_PROPERTIES" ]; then
-        echo "Gradle Properties does not exist"
+    echo "Writing DEVELOPER_EMAIL to gradle.properties..."
+    echo "DEVELOPER_EMAIL=$DEVELOPER_EMAIL" >> $GRADLE_PROPERTIES
 
-        echo "Creating Gradle Properties file..."
-        touch $GRADLE_PROPERTIES
+    echo "Writing OSSRH_USERNAME to gradle.properties..."
+    echo "OSSRH_USERNAME=$OSSRH_USERNAME" >> $GRADLE_PROPERTIES
 
-        echo "Writing DEVELOPER_EMAIL to gradle.properties..."
-        echo "DEVELOPER_EMAIL=$DEVELOPER_EMAIL" >> $GRADLE_PROPERTIES
-
-        echo "Writing OSSRH_USERNAME to gradle.properties..."
-        echo "OSSRH_USERNAME=$OSSRH_USERNAME" >> $GRADLE_PROPERTIES
-
-        echo "Writing OSSRH_PASSWORD to gradle.properties..."
-        echo "OSSRH_PASSWORD=$OSSRH_PASSWORD" >> $GRADLE_PROPERTIES
-    fi
+    echo "Writing OSSRH_PASSWORD to gradle.properties..."
+    echo "OSSRH_PASSWORD=$OSSRH_PASSWORD" >> $GRADLE_PROPERTIES
 }
