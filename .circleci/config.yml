@@ -9,9 +9,6 @@ commands:
   default:
     steps:
       - checkout
-      - run:
-          name: Setup Environment
-          command: source environmentSetup.sh && copyEnvVarsToGradleProperties
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}
 
