@@ -8,11 +8,11 @@ sonatypePublishing {
     repositoryConnectionUrl = REPO_GIT_URL
     licenseName = LICENCE_NAME
     licenseUrl = LICENCE_URL
-    developerId = System.getenv("DEVELOPER_ID") ? System.getenv("DEVELOPER_ID") : DEVELOPER_ID
-    developerName = System.getenv("DEVELOPER_NAME") ? System.getenv("DEVELOPER_NAME") : DEVELOPER_NAME
-    developerEmail = System.getenv("DEVELOPER_EMAIL") ? System.getenv("DEVELOPER_EMAIL") : DEVELOPER_EMAIL
-    username = System.getenv("OSSRH_USERNAME") ? System.getenv("OSSRH_USERNAME") : OSSRH_USERNAME
-    password = System.getenv("OSSRH_PASSWORD") ? System.getenv("OSSRH_PASSWORD") : OSSRH_PASSWORD
+    developerId = System.env.DEVELOPER_ID ? System.env.DEVELOPER_ID : DEVELOPER_ID
+    developerName = System.env.DEVELOPER_NAME ? System.env.DEVELOPER_NAME : DEVELOPER_NAME
+    developerEmail = System.env.DEVELOPER_EMAIL ? System.env.DEVELOPER_EMAIL : DEVELOPER_EMAIL
+    username = System.env.OSSRH_USERNAME ? System.env.OSSRH_USERNAME : OSSRH_USERNAME
+    password = System.env.OSSRH_PASSWORD ? System.env.OSSRH_PASSWORD : OSSRH_PASSWORD
 }
 
 signing {
