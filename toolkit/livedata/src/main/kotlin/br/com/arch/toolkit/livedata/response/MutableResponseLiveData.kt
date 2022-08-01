@@ -2,9 +2,8 @@ package br.com.arch.toolkit.livedata.response
 
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
-import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
-import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
-import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS
+import br.com.arch.toolkit.common.DataResult
+import br.com.arch.toolkit.common.DataResultStatus
 
 /**
  * A custom implementation of ResponseLiveData with methods to post new values
@@ -21,7 +20,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
      * @param data Value to be posted into the new DataResult
      */
     fun postLoading(@Nullable data: T? = null) {
-        postValue(DataResult(data, null, LOADING))
+        postValue(DataResult(data, null, DataResultStatus.LOADING))
     }
 
     /**
@@ -34,7 +33,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
      * @param error Value to be posted into the new DataResult
      */
     fun postError(@NonNull error: Throwable, @Nullable data: T? = null) {
-        postValue(DataResult(data, error, ERROR))
+        postValue(DataResult(data, error, DataResultStatus.ERROR))
     }
 
     /**
@@ -46,7 +45,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
      * @param data Value to be posted into the new DataResult
      */
     fun postData(@NonNull data: T) {
-        postValue(DataResult(data, null, SUCCESS))
+        postValue(DataResult(data, null, DataResultStatus.SUCCESS))
     }
 
     /**
@@ -56,7 +55,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
      * - status: SUCCESS
      */
     fun postSuccess() {
-        postValue(DataResult(null, null, SUCCESS))
+        postValue(DataResult(null, null, DataResultStatus.SUCCESS))
     }
     // endregion
 
@@ -70,7 +69,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
      * @param data Value to be posted into the new DataResult
      */
     fun setLoading(@Nullable data: T? = null) {
-        value = DataResult(data, null, LOADING)
+        value = DataResult(data, null, DataResultStatus.LOADING)
     }
 
     /**
@@ -83,7 +82,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
      * @param error Value to be seted into the new DataResult
      */
     fun setError(@NonNull error: Throwable, @Nullable data: T? = null) {
-        value = DataResult(data, error, ERROR)
+        value = DataResult(data, error, DataResultStatus.ERROR)
     }
 
     /**
@@ -95,7 +94,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
      * @param data Value to be seted into the new DataResult
      */
     fun setData(@NonNull data: T) {
-        value = DataResult(data, null, SUCCESS)
+        value = DataResult(data, null, DataResultStatus.SUCCESS)
     }
 
     /**
@@ -105,7 +104,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T>() {
      * - status: SUCCESS
      */
     fun setSuccess() {
-        value = DataResult(null, null, SUCCESS)
+        value = DataResult(null, null, DataResultStatus.SUCCESS)
     }
     // endregion
 }

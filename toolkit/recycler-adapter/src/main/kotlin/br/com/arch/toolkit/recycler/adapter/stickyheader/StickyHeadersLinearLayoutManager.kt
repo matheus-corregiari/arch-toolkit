@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.annotation.NonNull
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
@@ -13,12 +14,21 @@ import kotlin.math.min
  * Adds sticky headers capabilities to your [RecyclerView.Adapter]. It must implement [StickyHeaders] to
  * indicate which items are headers.
  */
+@Suppress(
+    "ReturnCount",
+    "UnusedPrivateMember",
+    "SameParameterValue",
+    "NestedBlockDepth",
+    "ComplexMethod",
+    "TooManyFunctions"
+)
 class StickyHeadersLinearLayoutManager<T> :
     LinearLayoutManager where T : RecyclerView.Adapter<*>, T : StickyHeaders {
     private var mAdapter: T? = null
 
     private var mTranslationX: Float = 0.toFloat()
     private var mTranslationY: Float = 0.toFloat()
+    private var stickyHeaderEvaluation: (View) -> Boolean = { true }
 
     // Header positions for the currently displayed list and their observer.
     private val mHeaderPositions = ArrayList<Int>(0)
@@ -56,6 +66,14 @@ class StickyHeadersLinearLayoutManager<T> :
     }
 
     /**
+     * Offsets the horizontal location of the sticky header relative to the its default position.
+     */
+    fun setStickyHeaderEvaluation(evaluation: (View) -> Boolean) {
+        stickyHeaderEvaluation = evaluation
+        requestLayout()
+    }
+
+    /**
      * Returns true if `view` is the current sticky header.
      */
     fun isStickyHeader(view: View): Boolean {
@@ -79,12 +97,16 @@ class StickyHeadersLinearLayoutManager<T> :
     private fun setAdapter(adapter: RecyclerView.Adapter<*>?) {
         mAdapter?.unregisterAdapterDataObserver(mHeaderPositionsObserver)
 
-        if (adapter is StickyHeaders) {
-            mAdapter = adapter as T?
+        mAdapter = when (adapter) {
+            is StickyHeaders -> adapter as T?
+            is ConcatAdapter -> adapter.adapters.find { it is StickyHeaders } as? T?
+            else -> null
+        }
+
+        if (mAdapter != null) {
             mAdapter?.registerAdapterDataObserver(mHeaderPositionsObserver)
             mHeaderPositionsObserver.onChanged()
         } else {
-            mAdapter = null
             mHeaderPositions.clear()
         }
     }
@@ -245,8 +267,14 @@ class StickyHeadersLinearLayoutManager<T> :
                     // Ensure sticky header is created, if absent, or bound, if being laid out or the position changed.
                     if (mStickyHeader == null) {
                         createStickyHeader(recycler, headerPos)
+                    } else {
+                        if (isStickyHeader(mStickyHeader!!).not()) {
+                            updateStickyHeader(recycler, true)
+                        }
                     }
-                    if (layout || getPosition(mStickyHeader!!) != headerPos) {
+
+                    val mStickyHeader = mStickyHeader ?: return
+                    if (layout || getPosition(mStickyHeader) != headerPos) {
                         bindStickyHeader(recycler!!, headerPos)
                     }
 
@@ -260,8 +288,8 @@ class StickyHeadersLinearLayoutManager<T> :
                             nextHeaderView = null
                         }
                     }
-                    mStickyHeader!!.translationX = getX(mStickyHeader!!, nextHeaderView)
-                    mStickyHeader!!.translationY = getY(mStickyHeader!!, nextHeaderView)
+                    mStickyHeader.translationX = getX(mStickyHeader, nextHeaderView)
+                    mStickyHeader.translationY = getY(mStickyHeader, nextHeaderView)
                     return
                 }
             }
@@ -285,14 +313,20 @@ class StickyHeadersLinearLayoutManager<T> :
 
         // Add sticky header as a child view, to be detached / reattached whenever LinearLayoutManager#fill() is called,
         // which happens on layout and scroll (see overrides).
-        addView(stickyHeader)
-        measureAndLayout(stickyHeader)
+        if (mAdapter?.isStickyHeader(position) == true) {
+            if (stickyHeaderEvaluation.invoke(stickyHeader)) {
+                addView(stickyHeader)
+                measureAndLayout(stickyHeader)
 
-        // Ignore sticky header, as it's fully managed by this LayoutManager.
-        ignoreView(stickyHeader)
+                // Ignore sticky header, as it's fully managed by this LayoutManager.
+                ignoreView(stickyHeader)
 
-        mStickyHeader = stickyHeader
-        mStickyHeaderPosition = position
+                mStickyHeader = stickyHeader
+                mStickyHeaderPosition = position
+            } else {
+                detachStickyHeader()
+            }
+        }
     }
 
     /**
@@ -344,20 +378,22 @@ class StickyHeadersLinearLayoutManager<T> :
         mStickyHeaderPosition = RecyclerView.NO_POSITION
 
         // Revert translation values.
-        stickyHeader!!.translationX = 0f
-        stickyHeader.translationY = 0f
+        stickyHeader?.let {
+            stickyHeader.translationX = 0f
+            stickyHeader.translationY = 0f
 
-        // Teardown holder if the adapter requires it.
-        if (mAdapter is StickyHeaders.ViewSetup) {
-            (mAdapter as StickyHeaders.ViewSetup).teardownStickyHeaderView(stickyHeader)
+            // Teardown holder if the adapter requires it.
+            if (mAdapter is StickyHeaders.ViewSetup) {
+                (mAdapter as StickyHeaders.ViewSetup).teardownStickyHeaderView(stickyHeader)
+            }
+
+            // Stop ignoring sticky header so that it can be recycled.
+            stopIgnoringView(stickyHeader)
+
+            // Remove and recycle sticky header.
+            removeView(stickyHeader)
+            recycler?.recycleView(stickyHeader)
         }
-
-        // Stop ignoring sticky header so that it can be recycled.
-        stopIgnoringView(stickyHeader)
-
-        // Remove and recycle sticky header.
-        removeView(stickyHeader)
-        recycler?.recycleView(stickyHeader)
     }
 
     /**
@@ -540,7 +576,7 @@ class StickyHeadersLinearLayoutManager<T> :
 
             // Add new headers.
             for (i in positionStart until positionStart + itemCount) {
-                if (mAdapter?.isStickyHeader(i) == true) {
+                if ((mAdapter?.itemCount ?: 0) > i && mAdapter?.isStickyHeader(i) == true) {
                     val headerIndex = findHeaderIndexOrNext(i)
                     if (headerIndex != -1) {
                         mHeaderPositions.add(headerIndex, i)

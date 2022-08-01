@@ -1,9 +1,7 @@
 package br.com.arch.toolkit.livedata.response
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import br.com.arch.toolkit.livedata.response.DataResultStatus.ERROR
-import br.com.arch.toolkit.livedata.response.DataResultStatus.LOADING
-import br.com.arch.toolkit.livedata.response.DataResultStatus.SUCCESS
+import br.com.arch.toolkit.common.DataResultStatus
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -11,6 +9,7 @@ import org.junit.Test
 class MutableResponseLiveDataTest {
 
     @Rule
+    @get:Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -22,7 +21,7 @@ class MutableResponseLiveDataTest {
         Assert.assertNotNull(liveData.value)
         Assert.assertNull(liveData.error)
         Assert.assertNull(liveData.data)
-        Assert.assertEquals(LOADING, liveData.status)
+        Assert.assertEquals(DataResultStatus.LOADING, liveData.status)
     }
 
     @Test
@@ -34,7 +33,7 @@ class MutableResponseLiveDataTest {
         Assert.assertNotNull(liveData.value)
         Assert.assertEquals(error, liveData.error)
         Assert.assertNull(liveData.data)
-        Assert.assertEquals(ERROR, liveData.status)
+        Assert.assertEquals(DataResultStatus.ERROR, liveData.status)
     }
 
     @Test
@@ -46,7 +45,7 @@ class MutableResponseLiveDataTest {
         Assert.assertNotNull(liveData.value)
         Assert.assertNull(liveData.error)
         Assert.assertEquals(data, liveData.data)
-        Assert.assertEquals(SUCCESS, liveData.status)
+        Assert.assertEquals(DataResultStatus.SUCCESS, liveData.status)
     }
 
     @Test
@@ -57,7 +56,7 @@ class MutableResponseLiveDataTest {
         Assert.assertNotNull(liveData.value)
         Assert.assertNull(liveData.error)
         Assert.assertNull(liveData.data)
-        Assert.assertEquals(SUCCESS, liveData.status)
+        Assert.assertEquals(DataResultStatus.SUCCESS, liveData.status)
     }
 
     @Test
@@ -68,7 +67,7 @@ class MutableResponseLiveDataTest {
         Assert.assertNotNull(liveData.value)
         Assert.assertNull(liveData.error)
         Assert.assertNull(liveData.data)
-        Assert.assertEquals(LOADING, liveData.status)
+        Assert.assertEquals(DataResultStatus.LOADING, liveData.status)
     }
 
     @Test
@@ -80,7 +79,7 @@ class MutableResponseLiveDataTest {
         Assert.assertNotNull(liveData.value)
         Assert.assertEquals(error, liveData.error)
         Assert.assertNull(liveData.data)
-        Assert.assertEquals(ERROR, liveData.status)
+        Assert.assertEquals(DataResultStatus.ERROR, liveData.status)
     }
 
     @Test
@@ -92,7 +91,7 @@ class MutableResponseLiveDataTest {
         Assert.assertNotNull(liveData.value)
         Assert.assertNull(liveData.error)
         Assert.assertEquals(data, liveData.data)
-        Assert.assertEquals(SUCCESS, liveData.status)
+        Assert.assertEquals(DataResultStatus.SUCCESS, liveData.status)
     }
 
     @Test
@@ -103,6 +102,6 @@ class MutableResponseLiveDataTest {
         Assert.assertNotNull(liveData.value)
         Assert.assertNull(liveData.error)
         Assert.assertNull(liveData.data)
-        Assert.assertEquals(SUCCESS, liveData.status)
+        Assert.assertEquals(DataResultStatus.SUCCESS, liveData.status)
     }
 }

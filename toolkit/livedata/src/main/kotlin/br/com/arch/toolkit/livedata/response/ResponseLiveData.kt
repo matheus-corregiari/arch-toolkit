@@ -4,7 +4,9 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import kotlinx.coroutines.CoroutineScope
+import br.com.arch.toolkit.common.DataResult
+import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.common.ObserveWrapper
 
 /**
  * Custom implementation of LiveData made to help the data handling with needs the interpretation of:
@@ -34,11 +36,6 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      */
     val data: T?
         @Nullable get() = value?.data
-
-    /**
-     * @return The Coroutine Context to run async executions
-     */
-    protected var scope: CoroutineScope? = null
 
     // region Loading observer methods
     /**
@@ -378,6 +375,23 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
     /**
      * Transforms the actual type from T to R
      *
+     * @param async Indicate swapSource will execute synchronously or asynchronously
+     * @param transformation Receive the actual non null T value and return the transformed non null R value
+     *
+     * @return The ResponseLiveData<R>
+     *
+     * @see ResponseLiveData.onNext
+     */
+    @NonNull
+    fun <R> map(async: Boolean, @NonNull transformation: ((T) -> R)): ResponseLiveData<R> {
+        val liveData = SwapResponseLiveData<R>()
+        liveData.swapSource(this, async, transformation)
+        return liveData
+    }
+
+    /**
+     * Synchronously transforms the actual type from T to R
+     *
      * @param transformation Receive the actual non null T value and return the transformed non null R value
      *
      * @return The ResponseLiveData<R>
@@ -386,14 +400,31 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      */
     @NonNull
     fun <R> map(@NonNull transformation: ((T) -> R)): ResponseLiveData<R> {
-        val liveData = SwapResponseLiveData<R>()
-        scope?.let(liveData::scope)
-        liveData.swapSource(this, transformation)
-        return liveData
+        return map(false, transformation)
     }
 
     /**
      * Transforms the Error into another type of Error
+     *
+     * @param async Indicate swapSource will execute synchronously or asynchronously
+     * @param transformation Receive the actual non null Error value and return the transformed non null Error value
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.onError
+     */
+    @NonNull
+    fun mapError(
+        async: Boolean,
+        @NonNull transformation: (Throwable) -> Throwable
+    ): ResponseLiveData<T> {
+        val liveData = SwapResponseLiveData<T>()
+        liveData.swapSource(this, async, { it }, transformation)
+        return liveData
+    }
+
+    /**
+     * Synchronously transforms the Error into another type of Error
      *
      * @param transformation Receive the actual non null Error value and return the transformed non null Error value
      *
@@ -403,14 +434,34 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      */
     @NonNull
     fun mapError(@NonNull transformation: (Throwable) -> Throwable): ResponseLiveData<T> {
-        val liveData = SwapResponseLiveData<T>()
-        scope?.let(liveData::scope)
-        liveData.swapSource(this, { it }, transformation)
-        return liveData
+        return mapError(false, transformation)
     }
 
     /**
      * Transforms the Error into a T value
+     *
+     * This block will execute the transformation ONLY when the Error is non null and with the DataResultStatus equal to ERROR
+     * After this, the DataResult will be transformed into a DataResultStatus.SUCCESS and with a non null data
+     *
+     * @param async Indicate swapSource will execute synchronously or asynchronously
+     * @param onErrorReturn Receive the actual non null Error value and return the transformed non null T value
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.onErrorReturn
+     */
+    @NonNull
+    fun onErrorReturn(
+        async: Boolean,
+        @NonNull onErrorReturn: ((Throwable) -> T)
+    ): ResponseLiveData<T> {
+        val liveData = SwapResponseLiveData<T>()
+        liveData.swapSource(this, async, { it }, null, onErrorReturn)
+        return liveData
+    }
+
+    /**
+     * Synchronously transforms the Error into a T value
      *
      * This block will execute the transformation ONLY when the Error is non null and with the DataResultStatus equal to ERROR
      * After this, the DataResult will be transformed into a DataResultStatus.SUCCESS and with a non null data
@@ -423,16 +474,33 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      */
     @NonNull
     fun onErrorReturn(@NonNull onErrorReturn: ((Throwable) -> T)): ResponseLiveData<T> {
-        val liveData = SwapResponseLiveData<T>()
-        scope?.let(liveData::scope)
-        liveData.swapSource(this, { it }, null, onErrorReturn)
-        return liveData
+        return onErrorReturn(false, onErrorReturn)
     }
     //endregion
 
     //region Observability
     /**
      * Execute the function onNext before any observe set after this method be called
+     *
+     * On this method, you cannot change the entire instance of the T value, but you still can change some attributes
+     *
+     * @param async Indicate map will execute synchronously or asynchronously
+     * @param onNext Receive the actual non null T value
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.map
+     */
+    @NonNull
+    fun onNext(async: Boolean, @NonNull onNext: ((T) -> Unit)): ResponseLiveData<T> {
+        return map(async) {
+            onNext(it)
+            it
+        }
+    }
+
+    /**
+     * Synchronously execute the function onNext before any observe set after this method be called
      *
      * On this method, you cannot change the entire instance of the T value, but you still can change some attributes
      *
@@ -444,14 +512,31 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      */
     @NonNull
     fun onNext(@NonNull onNext: ((T) -> Unit)): ResponseLiveData<T> {
-        return map {
-            onNext(it)
+        return onNext(false, onNext)
+    }
+
+    /**
+     * Execute the function onError before any observe set after this method be called
+     *
+     * On this method, you cannot change the entire instance of the Error, but you still can change some attributes
+     *
+     * @param async Indicate map will execute synchronously or asynchronously
+     * @param onError Receive the actual non null error value
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.mapError
+     */
+    @NonNull
+    fun onError(async: Boolean, @NonNull onError: ((Throwable) -> Unit)): ResponseLiveData<T> {
+        return mapError(async) {
+            onError(it)
             it
         }
     }
 
     /**
-     * Execute the function onError before any observe set after this method be called
+     * Synchronously execute the function onError before any observe set after this method be called
      *
      * On this method, you cannot change the entire instance of the Error, but you still can change some attributes
      *
@@ -463,14 +548,11 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      */
     @NonNull
     fun onError(@NonNull onError: ((Throwable) -> Unit)): ResponseLiveData<T> {
-        return mapError {
-            onError(it)
-            it
-        }
+        return onError(false, onError)
     }
 
     /**
-     * Execute the function transformation before any observe set after this method be called
+     * Synchronously execute the function transformation before any observe set after this method be called
      *
      * @param transformation With the entire data DataResult<T> and returns the new DataResult<R> value
      *
@@ -480,9 +562,26 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      */
     @NonNull
     fun <R> transform(@NonNull transformation: (DataResult<T>) -> DataResult<R>): ResponseLiveData<R> {
+        return transform(false, transformation)
+    }
+
+    /**
+     * Execute the function transformation before any observe set after this method be called
+     *
+     * @param async Indicate map will execute synchronously or asynchronously
+     * @param transformation With the entire data DataResult<T> and returns the new DataResult<R> value
+     *
+     * @return The ResponseLiveData<T>
+     *
+     * @see ResponseLiveData.transform
+     */
+    @NonNull
+    fun <R> transform(
+        async: Boolean,
+        @NonNull transformation: (DataResult<T>) -> DataResult<R>
+    ): ResponseLiveData<R> {
         val liveData = SwapResponseLiveData<R>()
-        scope?.let(liveData::scope)
-        liveData.swapSource(this, transformation)
+        liveData.swapSource(this, async, transformation)
         return liveData
     }
     //endregion
@@ -496,25 +595,16 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      * @return The ResponseLiveData<T>
      */
     @NonNull
-    inline fun observe(
+    fun observe(
         @NonNull owner: LifecycleOwner,
-        @NonNull crossinline wrapperConfig: ObserveWrapper<T>.() -> Unit
+        @NonNull wrapperConfig: ObserveWrapper<T>.() -> Unit
     ): ResponseLiveData<T> {
-        return newWrapper().apply(wrapperConfig).observeOn(owner)
+        return newWrapper().apply(wrapperConfig).attachTo(this, owner)
     }
 
     /**
-     * @return A new instance of ObserveWrapper<T>°
+     * @return A new instance of ObserveWrapper<T>
      */
     @NonNull
-    fun newWrapper() = ObserveWrapper(this)
-
-    /**
-     * @param scope The coroutine Scope to indicate if the transformations must run on another scope
-     */
-    @NonNull
-    fun scope(@NonNull scope: CoroutineScope): ResponseLiveData<T> {
-        this.scope = scope
-        return this
-    }
+    private fun newWrapper() = ObserveWrapper<T>()
 }

@@ -9,8 +9,6 @@ import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.given
 import com.nhaarman.mockitokotlin2.mock
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -18,7 +16,6 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.times
 
-@DelicateCoroutinesApi
 class LiveDataTransformationTest {
 
     @Rule
@@ -49,7 +46,7 @@ class LiveDataTransformationTest {
         val liveData = MutableLiveData<String>()
         val transformedLiveData = liveData.map(mockedTransformation)
 
-        transformedLiveData.observeNotNull(owner, mockedObserver)
+        transformedLiveData.observe(owner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -65,7 +62,7 @@ class LiveDataTransformationTest {
         val liveData = MutableLiveData<List<String>>()
         val transformedLiveData = liveData.mapList(mockedTransformation)
 
-        transformedLiveData.observeNotNull(owner, mockedObserver)
+        transformedLiveData.observe(owner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -82,14 +79,13 @@ class LiveDataTransformationTest {
 
         val mockedObserver: (List<Int>) -> Unit = mock()
         val liveData = MutableResponseLiveData<List<String>>()
-        liveData.scope(GlobalScope)
-        val transformedLiveData = liveData.mapList(mockedTransformation)
+        val transformedLiveData = liveData.mapList(true, mockedTransformation)
 
         transformedLiveData.observeData(owner, mockedObserver)
 
         liveData.postData(listOf("ONE", "TWO"))
         Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(100)
+        Thread.sleep(50)
 
         Mockito.verify(mockedTransformation, times(2)).invoke(any())
         Mockito.verify(mockedObserver).invoke(any())

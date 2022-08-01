@@ -4,18 +4,18 @@ ext.versions = [
         android_plugin: '7.2.0',
         jacoco        : '0.8.8',
         dexcount      : '3.1.0',
-        maven_plugin  : '0.0.2',
+        maven_plugin  : '0.0.1',
 
         coroutines    : '1.6.1',
 
         // Android
         androidx      : [
                 appcompat   : '1.4.1',
-                annotation  : '1.3.0',
+                annotation  : '1.4.0',
                 recyclerview: '1.2.1',
                 lifecycle   : [
-                        livedata: '2.5.0-rc01',
-                        runtime : '2.5.0-rc01',
+                        livedata: '2.6.0-alpha01',
+                        runtime : '2.6.0-alpha01',
                         testing : '2.1.0',
                 ],
         ],
