@@ -21,7 +21,7 @@ jobs:
       - default
       - run:
           name: Download Dependencies
-          command: ./gradlew androidDependencies
+          command: ./gradlew androidDependencies -DDEVELOPER_EMAIL=$DEVELOPER_EMAIL -DOSSRH_USERNAME=$OSSRH_USERNAME -DOSSRH_PASSWORD=$OSSRH_PASSWORD
       - save_cache:
           paths:
             - ~/.gradle
@@ -38,8 +38,8 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:lint
-      - run: ./gradlew :<<parameters.module>>:ktLint
+      - run: ./gradlew :<<parameters.module>>:lint -DDEVELOPER_EMAIL=$DEVELOPER_EMAIL -DOSSRH_USERNAME=$OSSRH_USERNAME -DOSSRH_PASSWORD=$OSSRH_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:ktLint -DDEVELOPER_EMAIL=$DEVELOPER_EMAIL -DOSSRH_USERNAME=$OSSRH_USERNAME -DOSSRH_PASSWORD=$OSSRH_PASSWORD
 
   test:
     executor: android
@@ -51,7 +51,7 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest
+      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest -DDEVELOPER_EMAIL=$DEVELOPER_EMAIL -DOSSRH_USERNAME=$OSSRH_USERNAME -DOSSRH_PASSWORD=$OSSRH_PASSWORD
 
   deploy:
     executor: android
@@ -63,8 +63,8 @@ jobs:
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:assembleRelease
-      - run: ./gradlew :<<parameters.module>>:publishRelease
+      - run: ./gradlew :<<parameters.module>>:assembleRelease -DDEVELOPER_EMAIL=$DEVELOPER_EMAIL -DOSSRH_USERNAME=$OSSRH_USERNAME -DOSSRH_PASSWORD=$OSSRH_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:publishRelease -DDEVELOPER_EMAIL=$DEVELOPER_EMAIL -DOSSRH_USERNAME=$OSSRH_USERNAME -DOSSRH_PASSWORD=$OSSRH_PASSWORD
 
 workflows:
   pull_request:
