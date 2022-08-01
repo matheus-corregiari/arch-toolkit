@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: cimg/android:2022.04
+      - image: cimg/android:2022.06
 
 commands:
   default:
@@ -64,6 +64,7 @@ jobs:
     steps:
       - default
       - run: ./gradlew :<<parameters.module>>:assembleRelease
+      - run: ./gradlew :<<parameters.module>>:publishRelease
 
 workflows:
   pull_request:
