@@ -53,6 +53,7 @@ jobs:
       - default
       - run: ./gradlew :<<parameters.module>>:testDebugUnitTest -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
+  # FIXME Run all module in parallel is a problem to sonatype =(
   deploy:
     executor: android
     environment:
@@ -65,6 +66,43 @@ jobs:
       - default
       - run: ./gradlew :<<parameters.module>>:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
       - run: ./gradlew :<<parameters.module>>:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+
+  # Deploys each modules
+  deploy-delegate:
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - default
+      - run: ./gradlew :toolkit:delegate:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :toolkit:delegate:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+
+  deploy-livedata:
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - default
+      - run: ./gradlew :toolkit:livedata:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :toolkit:livedata:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+
+  deploy-recycler-adapter:
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - default
+      - run: ./gradlew :toolkit:recycler-adapter:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :toolkit:recycler-adapter:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+
+  deploy-statemachine:
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - default
+      - run: ./gradlew :toolkit:statemachine:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :toolkit:statemachine:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
 workflows:
   pull_request:
@@ -110,16 +148,31 @@ workflows:
               only:
                 - master
 
-      # Deploys all modules
-      - deploy:
-          matrix:
-            alias: deploy-all-modules
-            parameters:
-              module:
-                - toolkit:delegate
-                - toolkit:livedata
-                - toolkit:recycler-adapter
-                - toolkit:statemachine
-          name: Deploy <<matrix.module>>
+      # FIXME Run all module in parallel is a problem to sonatype =(
+      #      # Deploys all modules
+      #      - deploy:
+      #          matrix:
+      #            alias: deploy-all-modules
+      #            parameters:
+      #              module:
+      #                - toolkit:delegate
+      #                - toolkit:livedata
+      #                - toolkit:recycler-adapter
+      #                - toolkit:statemachine
+      #          name: Deploy <<matrix.module>>
+      #          requires:
+      #            - hold-deploy
+
+      # Deploys each modules
+      - deploy-delegate:
           requires:
             - hold-deploy
+      - deploy-livedata:
+          requires:
+            - deploy-delegate
+      - deploy-recycler-adapter:
+          requires:
+            - deploy-livedata
+      - deploy-statemachine:
+          requires:
+            - deploy-recycler-adapter
