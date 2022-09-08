@@ -18,6 +18,8 @@ This is the toolkit that I had used and improved across the projects I worked wi
 - **[Recycler-Adapter](toolkit/recycler-adapter)** - A Recycler Adapter implementation using Custom Views and a "bind" interface
 - **[LiveData](toolkit/livedata)** - Some custom implementations of LiveData and some extensions
 - **[Delegate](toolkit/delegate)** - Some custom implementations for delegated properties
+- **[Foldable - Core](toolkit/foldable/core)** - Extensions to facilitate handling foldable state changes
+- **[Foldable - ConstraintLayout](toolkit/foldable/constraintlayout)** - Extensions to facilitate handling foldable state changes on ConstraintLayout. MotionLayout uses constraints ;)
 
 ###### In progress:
 

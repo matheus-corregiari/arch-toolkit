@@ -1,5 +1,4 @@
 ext.versions = [
-
         kotlin        : '1.7.0',
         android_plugin: '7.2.1',
         jacoco        : '0.8.8',
@@ -10,14 +9,16 @@ ext.versions = [
 
         // Android
         androidx      : [
-                appcompat   : '1.4.2',
-                annotation  : '1.4.0',
-                recyclerview: '1.2.1',
-                lifecycle   : [
+                appcompat       : '1.4.2',
+                annotation      : '1.4.0',
+                constraintlayout: '2.1.4',
+                recyclerview    : '1.2.1',
+                lifecycle       : [
                         livedata: '2.6.0-alpha01',
                         runtime : '2.6.0-alpha01',
                         testing : '2.1.0',
                 ],
+                window          : '1.0.0',
         ],
 
         // KtLint
