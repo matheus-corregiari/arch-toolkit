@@ -1,8 +1,6 @@
 include ':toolkit:delegate'
 include ':toolkit:livedata'
 
-include ':toolkit:foldable:core'
-include ':toolkit:foldable:constraintlayout'
-
 include ':toolkit:recycler-adapter', ':samples:recycler-adapter'
 include ':toolkit:statemachine', ':samples:statemachine'
+include ':toolkit:foldable', ':samples:foldable'

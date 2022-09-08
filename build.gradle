@@ -11,7 +11,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.android_plugin"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
         classpath "org.jacoco:org.jacoco.core:$versions.jacoco"
         classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:$versions.dexcount"
         classpath "io.github.pedro-bachiega:SonatypeMavenPublishPlugin:$versions.maven_plugin"
@@ -35,12 +35,12 @@ allprojects {
 
         android {
 
-            compileSdkVersion 32
+            compileSdkVersion 33
             buildToolsVersion "32.0.0"
 
             defaultConfig {
                 minSdkVersion 23
-                targetSdkVersion 32
+                targetSdkVersion 33
 
                 versionCode 1
                 versionName "1.0"
