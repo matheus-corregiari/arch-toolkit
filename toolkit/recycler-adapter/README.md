@@ -1,4 +1,4 @@
-[ ![Download](https://api.bintray.com/packages/methe/arch-toolkit/recycler-adapter/images/download.svg) ](https://bintray.com/methe/arch-toolkit/recycler-adapter/_latestVersion)
+[Download](https://search.maven.org/artifact/io.github.matheus-corregiari/recycler-adapter)
 [![CircleCI](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master.svg?style=svg)](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master)
 
 # Recycler Adapter

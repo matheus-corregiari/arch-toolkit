@@ -8,6 +8,7 @@ afterEvaluate {
             androidTestImplementation "androidx.arch.core:core-testing:$versions.androidx.lifecycle.testing"
 
             androidTestImplementation "junit:junit:$versions.junit"
+            androidTestImplementation "androidx.test.ext:junit:$versions.androidx_junit"
 
             androidTestImplementation "org.mockito:mockito-core:$versions.mockito"
             androidTestImplementation "org.mockito:mockito-android:$versions.mockito"

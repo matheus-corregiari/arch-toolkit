@@ -12,7 +12,7 @@ import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.foldable.R
 import br.com.arch.toolkit.foldable.extension.handleFoldableStateChange
 
-open class FoldableActivity : AppCompatActivity(R.layout.activity_foldable) {
+abstract class FoldableActivity : AppCompatActivity(R.layout.activity_foldable) {
 
     protected open val orientation: FoldingFeature.Orientation = FoldingFeature.Orientation.VERTICAL
 

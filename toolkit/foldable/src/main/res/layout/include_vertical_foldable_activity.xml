@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_end="0dp"
-        app:reactiveGuide_animateChange="true"
+        app:reactiveGuide_animateChange="false"
         app:reactiveGuide_applyToAllConstraintSets="true"
         app:reactiveGuide_valueId="@+id/fold_guide" />
 

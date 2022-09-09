@@ -1,11 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.com.arch.toolkit.foldable">
-
-    <application>
-        <activity
-            android:name=".FoldableActivity"
-            android:exported="false" />
-    </application>
-
-</manifest>
+<manifest package="br.com.arch.toolkit.foldable" />

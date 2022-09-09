@@ -11,7 +11,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.android_plugin"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
         classpath "org.jacoco:org.jacoco.core:$versions.jacoco"
         classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:$versions.dexcount"
         classpath "io.github.pedro-bachiega:SonatypeMavenPublishPlugin:$versions.maven_plugin"
@@ -24,9 +24,9 @@ allprojects {
         mavenCentral()
     }
 
-    apply from: "$rootDir/tools/dependencies/unit-test.gradle"
-    apply from: "$rootDir/tools/dependencies/instrumented-test.gradle"
     if (!project.path.contains("sample")) {
+        apply from: "$rootDir/tools/dependencies/unit-test.gradle"
+        apply from: "$rootDir/tools/dependencies/instrumented-test.gradle"
         apply from: "$rootDir/tools/publish/maven-publish.gradle"
     }
 
