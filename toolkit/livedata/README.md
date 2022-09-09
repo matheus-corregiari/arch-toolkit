@@ -1,4 +1,4 @@
-[ ![Download](https://api.bintray.com/packages/methe/arch-toolkit/livedata/images/download.svg) ](https://bintray.com/methe/arch-toolkit/livedata/_latestVersion)
+[Download](https://search.maven.org/artifact/io.github.matheus-corregiari/livedata)
 [![CircleCI](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master.svg?style=svg)](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master)
 
 # Livedata
@@ -20,7 +20,7 @@ implementation "android.arch.lifecycle:livedata:$versions.arch"
 Then add the Livedata implementation from arch-toolkit
 
 ```groovy
-implementation "br.com.arch.toolkit:livedata:$latest_version"
+implementation "io.github.matheus-corregiari:livedata:$latest_version"
 ```
 
 #### How to use

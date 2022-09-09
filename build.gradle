@@ -24,9 +24,9 @@ allprojects {
         mavenCentral()
     }
 
-    apply from: "$rootDir/tools/dependencies/unit-test.gradle"
-    apply from: "$rootDir/tools/dependencies/instrumented-test.gradle"
     if (!project.path.contains("sample")) {
+        apply from: "$rootDir/tools/dependencies/unit-test.gradle"
+        apply from: "$rootDir/tools/dependencies/instrumented-test.gradle"
         apply from: "$rootDir/tools/publish/maven-publish.gradle"
     }
 
@@ -35,12 +35,12 @@ allprojects {
 
         android {
 
-            compileSdkVersion 32
+            compileSdkVersion 33
             buildToolsVersion "32.0.0"
 
             defaultConfig {
                 minSdkVersion 23
-                targetSdkVersion 32
+                targetSdkVersion 33
 
                 versionCode 1
                 versionName "1.0"

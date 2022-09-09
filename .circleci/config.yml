@@ -53,7 +53,6 @@ jobs:
       - default
       - run: ./gradlew :<<parameters.module>>:testDebugUnitTest -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
-  # FIXME Run all module in parallel is a problem to sonatype =(
   deploy:
     executor: android
     environment:
@@ -66,43 +65,6 @@ jobs:
       - default
       - run: ./gradlew :<<parameters.module>>:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
       - run: ./gradlew :<<parameters.module>>:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-
-  # Deploys each modules
-  deploy-delegate:
-    executor: android
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - default
-      - run: ./gradlew :toolkit:delegate:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-      - run: ./gradlew :toolkit:delegate:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-
-  deploy-livedata:
-    executor: android
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - default
-      - run: ./gradlew :toolkit:livedata:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-      - run: ./gradlew :toolkit:livedata:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-
-  deploy-recycler-adapter:
-    executor: android
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - default
-      - run: ./gradlew :toolkit:recycler-adapter:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-      - run: ./gradlew :toolkit:recycler-adapter:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-
-  deploy-statemachine:
-    executor: android
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - default
-      - run: ./gradlew :toolkit:statemachine:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-      - run: ./gradlew :toolkit:statemachine:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
 workflows:
   pull_request:
@@ -117,6 +79,7 @@ workflows:
             parameters:
               module:
                 - toolkit:delegate
+                - toolkit:foldable
                 - toolkit:livedata
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
@@ -131,6 +94,7 @@ workflows:
             parameters:
               module:
                 - toolkit:delegate
+                - toolkit:foldable
                 - toolkit:livedata
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
@@ -156,23 +120,58 @@ workflows:
       #            parameters:
       #              module:
       #                - toolkit:delegate
+      #                - toolkit:foldable
       #                - toolkit:livedata
       #                - toolkit:recycler-adapter
       #                - toolkit:statemachine
+      #                - toolkit:foldable
       #          name: Deploy <<matrix.module>>
       #          requires:
       #            - hold-deploy
 
       # Deploys each modules
-      - deploy-delegate:
+      - deploy:
+          matrix:
+            alias: deploy-delegate
+            parameters:
+              module:
+                - toolkit:delegate
+          name: Deploy <<matrix.module>>
           requires:
             - hold-deploy
-      - deploy-livedata:
+      - deploy:
+          matrix:
+            alias: deploy-livedata
+            parameters:
+              module:
+                - toolkit:delegate
+          name: Deploy <<matrix.module>>
           requires:
             - deploy-delegate
-      - deploy-recycler-adapter:
+      - deploy:
+          matrix:
+            alias: deploy-recycler-adapter
+            parameters:
+              module:
+                - toolkit:delegate
+          name: Deploy <<matrix.module>>
           requires:
             - deploy-livedata
-      - deploy-statemachine:
+      - deploy:
+          matrix:
+            alias: deploy-statemachine
+            parameters:
+              module:
+                - toolkit:delegate
+          name: Deploy <<matrix.module>>
           requires:
             - deploy-recycler-adapter
+      - deploy:
+          matrix:
+            alias: deploy-foldable
+            parameters:
+              module:
+                - toolkit:delegate
+          name: Deploy <<matrix.module>>
+          requires:
+            - deploy-statemachine
