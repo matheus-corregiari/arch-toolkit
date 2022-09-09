@@ -130,7 +130,7 @@ workflows:
       #            - hold-deploy
 
       # Deploys each modules
-      - deploy-delegate:
+      - deploy:
           matrix:
             alias: deploy-delegate
             parameters:
@@ -139,7 +139,7 @@ workflows:
           name: Deploy <<matrix.module>>
           requires:
             - hold-deploy
-      - deploy-livedata:
+      - deploy:
           matrix:
             alias: deploy-livedata
             parameters:
@@ -148,7 +148,7 @@ workflows:
           name: Deploy <<matrix.module>>
           requires:
             - deploy-delegate
-      - deploy-recycler-adapter:
+      - deploy:
           matrix:
             alias: deploy-recycler-adapter
             parameters:
@@ -157,7 +157,7 @@ workflows:
           name: Deploy <<matrix.module>>
           requires:
             - deploy-livedata
-      - deploy-statemachine:
+      - deploy:
           matrix:
             alias: deploy-statemachine
             parameters:
@@ -166,7 +166,7 @@ workflows:
           name: Deploy <<matrix.module>>
           requires:
             - deploy-recycler-adapter
-      - deploy-foldable:
+      - deploy:
           matrix:
             alias: deploy-foldable
             parameters:
