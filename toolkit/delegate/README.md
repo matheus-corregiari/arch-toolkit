@@ -35,13 +35,13 @@ dependencies{
 Then add the Delegate dependency
 
 ```groovy
-implementation "br.com.arch.toolkit:delegate:$latest_version"
+implementation "io.github.matheus-corregiari:delegate:$latest_version"
 ```
 
 or
 
 ```groovy
-api "br.com.arch.toolkit:delegate:$latest_version"
+api "io.github.matheus-corregiari:delegate:$latest_version"
 ```
 
 #### How to use

@@ -12,13 +12,13 @@ Abstract implementation to handle view states changes based on some key (represe
 ###### Module -> build.gradle
 
 ```groovy
-implementation "br.com.arch.toolkit:statemachine:$latest_version"
+implementation "io.github.matheus-corregiari:statemachine:$latest_version"
 ```
 
 or
 
 ```groovy
-api "br.com.arch.toolkit:statemachine:$latest_version"
+api "io.github.matheus-corregiari:statemachine:$latest_version"
 ```
 
 ### How to use

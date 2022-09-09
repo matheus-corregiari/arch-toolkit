@@ -15,13 +15,45 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 interface OnFoldableStateChangeListener {
+    /**
+     * Called whenever there is a state change
+     *
+     * @param isFolded Whether the device is folded or not
+     */
     fun onChangeState(isFolded: Boolean) {}
+
+    /**
+     * Called whenever the device changes to fully open state
+     *
+     * @param foldPosition The position where the screen is divided (x if orientation is VERTICAL or y if orientation is HORIZONTAL)
+     * @param orientation The orientation of the device
+     */
     fun onOpenFlat(foldPosition: Int, orientation: FoldingFeature.Orientation) {}
+
+    /**
+     * Called whenever the device changes to half open state
+     *
+     * @param foldPosition The position where the screen is divided (x if orientation is VERTICAL or y if orientation is HORIZONTAL)
+     * @param orientation The orientation of the device
+     */
     fun onHalfOpen(foldPosition: Int, orientation: FoldingFeature.Orientation) {}
+
+    /**
+     * Called whenever the device changes to closed state
+     */
     fun onClosed() {}
+
+    /**
+     * Called whenever the device changes to the unwanted orientation
+     */
     fun onWrongOrientation() {}
 }
 
+/**
+ * Observes the activity and notifies on device state changes
+ *
+ * @param func Will be called whenever there is a change
+ */
 fun ComponentActivity.onNewLayoutInfo(func: (WindowLayoutInfo) -> Unit) =
     lifecycleScope.launch(Dispatchers.Main) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -31,6 +63,13 @@ fun ComponentActivity.onNewLayoutInfo(func: (WindowLayoutInfo) -> Unit) =
         }
     }
 
+/**
+ * Observes the activity and notifies on device state changes
+ *
+ * @param layout The layout to be used for reference - needed whenever calculating the fold's position on screen
+ * @param orientation The desired orientation - needed whenever calculating the fold's position on screen
+ * @param listener Will receive a call to the correct function whenever there is a change
+ */
 fun ComponentActivity.observeFoldableStateChanges(
     layout: ViewGroup,
     orientation: FoldingFeature.Orientation,
@@ -61,6 +100,13 @@ fun ComponentActivity.observeFoldableStateChanges(
     }
 }
 
+/**
+ * Observes the activity and handles device state changes
+ *
+ * @param layout The layout to be used for reference - needed whenever calculating the fold's position on screen
+ * @param reactiveGuideId The ReactiveGuide's id - needed for dividing screen
+ * @param orientation The desired orientation - needed whenever calculating the fold's position on screen
+ */
 fun FragmentActivity.handleFoldableStateChange(
     layout: ViewGroup,
     @IdRes reactiveGuideId: Int,
@@ -72,6 +118,14 @@ fun FragmentActivity.handleFoldableStateChange(
     null
 )
 
+/**
+ * Observes the activity and handles device state changes
+ *
+ * @param layout The layout to be used for reference - needed whenever calculating the fold's position on screen
+ * @param reactiveGuideId The ReactiveGuide's id - needed for dividing screen
+ * @param orientation The desired orientation - needed whenever calculating the fold's position on screen
+ * @param onChangeState Called whenever there is a state change
+ */
 fun FragmentActivity.handleFoldableStateChange(
     layout: ViewGroup,
     @IdRes reactiveGuideId: Int,
@@ -85,6 +139,15 @@ fun FragmentActivity.handleFoldableStateChange(
     null
 )
 
+/**
+ * Observes the activity and handles device state changes
+ *
+ * @param layout The layout to be used for reference - needed whenever calculating the fold's position on screen
+ * @param reactiveGuideId The ReactiveGuide's id - needed for dividing screen
+ * @param orientation The desired orientation - needed whenever calculating the fold's position on screen
+ * @param onChangeState Called whenever there is a state change
+ * @param onWrongOrientation Called whenever the device changes to the unwanted orientation
+ */
 fun FragmentActivity.handleFoldableStateChange(
     layout: ViewGroup,
     @IdRes reactiveGuideId: Int,
@@ -100,6 +163,16 @@ fun FragmentActivity.handleFoldableStateChange(
     null
 )
 
+/**
+ * Observes the activity and handles device state changes
+ *
+ * @param layout The layout to be used for reference - needed whenever calculating the fold's position on screen
+ * @param reactiveGuideId The ReactiveGuide's id - needed for dividing screen
+ * @param orientation The desired orientation - needed whenever calculating the fold's position on screen
+ * @param onChangeState Called whenever there is a state change
+ * @param onWrongOrientation Called whenever the device changes to the unwanted orientation
+ * @param onOpenFlat Called whenever the device changes to fully open state
+ */
 fun FragmentActivity.handleFoldableStateChange(
     layout: ViewGroup,
     @IdRes reactiveGuideId: Int,
@@ -117,6 +190,17 @@ fun FragmentActivity.handleFoldableStateChange(
     null
 )
 
+/**
+ * Observes the activity and handles device state changes
+ *
+ * @param layout The layout to be used for reference - needed whenever calculating the fold's position on screen
+ * @param reactiveGuideId The ReactiveGuide's id - needed for dividing screen
+ * @param orientation The desired orientation - needed whenever calculating the fold's position on screen
+ * @param onChangeState Called whenever there is a state change
+ * @param onWrongOrientation Called whenever the device changes to the unwanted orientation
+ * @param onOpenFlat Called whenever the device changes to fully open state
+ * @param onHalfOpen Called whenever the device changes to half open state
+ */
 fun FragmentActivity.handleFoldableStateChange(
     layout: ViewGroup,
     @IdRes reactiveGuideId: Int,
@@ -136,6 +220,18 @@ fun FragmentActivity.handleFoldableStateChange(
     null
 )
 
+/**
+ * Observes the activity and handles device state changes
+ *
+ * @param layout The layout to be used for reference - needed whenever calculating the fold's position on screen
+ * @param reactiveGuideId The ReactiveGuide's id - needed for dividing screen
+ * @param orientation The desired orientation - needed whenever calculating the fold's position on screen
+ * @param onChangeState Called whenever there is a state change
+ * @param onWrongOrientation Called whenever the device changes to the unwanted orientation
+ * @param onOpenFlat Called whenever the device changes to fully open state
+ * @param onHalfOpen Called whenever the device changes to half open state
+ * @param onClosed Called whenever the device changes to closed state
+ */
 fun FragmentActivity.handleFoldableStateChange(
     layout: ViewGroup,
     @IdRes reactiveGuideId: Int,

@@ -35,13 +35,13 @@ implementation "androidx.recyclerview:recyclerview:$versions.androidx.recyclervi
 Then add the Recycler Adapter
 
 ```groovy
-implementation "br.com.arch.toolkit:recycler-adapter:$latest_version"
+implementation "io.github.matheus-corregiari:recycler-adapter:$latest_version"
 ```
 
 or
 
 ```groovy
-api "br.com.arch.toolkit:recycler-adapter:$latest_version"
+api "io.github.matheus-corregiari:recycler-adapter:$latest_version"
 ```
 
 #### How to use
