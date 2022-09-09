@@ -77,6 +77,15 @@ jobs:
       - run: ./gradlew :toolkit:delegate:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
       - run: ./gradlew :toolkit:delegate:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
 
+  deploy-foldable:
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - default
+      - run: ./gradlew :toolkit:foldable:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :toolkit:foldable:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+
   deploy-livedata:
     executor: android
     environment:
@@ -117,6 +126,7 @@ workflows:
             parameters:
               module:
                 - toolkit:delegate
+                - toolkit:foldable
                 - toolkit:livedata
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
@@ -131,6 +141,7 @@ workflows:
             parameters:
               module:
                 - toolkit:delegate
+                - toolkit:foldable
                 - toolkit:livedata
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
@@ -156,6 +167,7 @@ workflows:
       #            parameters:
       #              module:
       #                - toolkit:delegate
+      #                - toolkit:foldable
       #                - toolkit:livedata
       #                - toolkit:recycler-adapter
       #                - toolkit:statemachine
