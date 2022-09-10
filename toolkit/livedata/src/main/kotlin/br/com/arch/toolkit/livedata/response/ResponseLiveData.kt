@@ -17,7 +17,7 @@ import br.com.arch.toolkit.common.ObserveWrapper
  * This model of interpretation was based on Google Architecture Components Example
  * @see <a href="https://github.com/googlesamples/android-architecture-components">Google's github repository</a>
  */
-open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
+open class ResponseLiveData<T> : LiveData<DataResult<T>> {
 
     /**
      * @return The actual Error value
@@ -36,6 +36,22 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>>() {
      */
     val data: T?
         @Nullable get() = value?.data
+
+    /**
+     * Empty constructor when initializing with a value is not needed
+     *
+     * @return An empty ResponseLiveData<T> instance
+     */
+    constructor() : super()
+
+    /**
+     * Constructor for initializing with a value
+     *
+     * @param value The initial value for this ResponseLiveData
+     *
+     * @return An instance of ResponseLiveData<T> with a default value set
+     */
+    constructor(value: DataResult<T>) : super(value)
 
     // region Loading observer methods
     /**

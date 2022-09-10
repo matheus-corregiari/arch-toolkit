@@ -1241,4 +1241,22 @@ class ResponseLiveDataTest {
         Mockito.verify(mockedTransformation, times(1)).invoke(data)
         Mockito.verify(mockedDataObserver, times(1)).invoke(0)
     }
+
+    @Test
+    fun whenInitialize_withoutValue_shouldReturnAnInstanceWithEmptyValue() {
+        val liveData = ResponseLiveData<Any>()
+        Assert.assertNull(liveData.data)
+        Assert.assertNull(liveData.status)
+        Assert.assertNull(liveData.error)
+    }
+
+    @Test
+    fun whenInitialize_withValue_shouldReturnAnInstanceWithADefaultValue() {
+        val liveData = ResponseLiveData(
+            DataResult("value", null, DataResultStatus.SUCCESS)
+        )
+        Assert.assertTrue(liveData.data == "value")
+        Assert.assertTrue(liveData.status == DataResultStatus.SUCCESS)
+        Assert.assertNull(liveData.error)
+    }
 }

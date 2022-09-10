@@ -5,6 +5,11 @@ package br.com.arch.toolkit.livedata.extention
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import br.com.arch.toolkit.common.DataResult
+import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
+import br.com.arch.toolkit.livedata.response.ResponseLiveData
+import br.com.arch.toolkit.livedata.response.SwapResponseLiveData
 
 /**
  * Observes a LiveData<T> with non null values
@@ -54,3 +59,66 @@ fun <T> LiveData<T>.observeUntil(owner: LifecycleOwner, observer: ((T?) -> Boole
             if (data.let(observer)) removeObserver(this)
         }
     })
+
+/**
+ * Returns an instance of a ResponseLiveData<T> with the desired value
+ *
+ * @param value The default value set
+ * @param status The default status set
+ *
+ * @return An instance of ResponseLiveData<T> with a default value set
+ */
+fun <T> responseLiveDataOf(value: T, status: DataResultStatus = DataResultStatus.SUCCESS) =
+    ResponseLiveData(DataResult(value, null, status))
+
+/**
+ * Returns an instance of a ResponseLiveData<T> with an error
+ *
+ * @param error The default error set
+ *
+ * @return An instance of ResponseLiveData<T> with an error set
+ */
+fun <T> responseLiveDataOf(error: Throwable) =
+    ResponseLiveData(DataResult(null, error, DataResultStatus.ERROR))
+
+/**
+ * Returns an instance of a MutableResponseLiveData<T> with the desired value
+ *
+ * @param value The default value set
+ * @param status The default status set
+ *
+ * @return An instance of MutableResponseLiveData<T> with a default value set
+ */
+fun <T> mutableResponseLiveDataOf(value: T, status: DataResultStatus = DataResultStatus.SUCCESS) =
+    MutableResponseLiveData(DataResult(value, null, status))
+
+/**
+ * Returns an instance of a MutableResponseLiveData<T> with an error
+ *
+ * @param error The default error set
+ *
+ * @return An instance of MutableResponseLiveData<T> with an error set
+ */
+fun <T> mutableResponseLiveDataOf(error: Throwable) =
+    MutableResponseLiveData(DataResult(null, error, DataResultStatus.ERROR))
+
+/**
+ * Returns an instance of a SwapResponseLiveData<T> with the desired value
+ *
+ * @param value The default value set
+ * @param status The default status set
+ *
+ * @return An instance of SwapResponseLiveData<T> with a default value set
+ */
+fun <T> swapResponseLiveDataOf(value: T, status: DataResultStatus = DataResultStatus.SUCCESS) =
+    SwapResponseLiveData(DataResult(value, null, status))
+
+/**
+ * Returns an instance of a SwapResponseLiveData<T> with an error
+ *
+ * @param error The default error set
+ *
+ * @return An instance of SwapResponseLiveData<T> with an error set
+ */
+fun <T> swapResponseLiveDataOf(error: Throwable) =
+    SwapResponseLiveData(DataResult(null, error, DataResultStatus.ERROR))
