@@ -9,11 +9,27 @@ import br.com.arch.toolkit.livedata.ExecutorUtil.runOnNewThread
 /**
  * A custom implementation of ResponseLiveData responsible for replicate a value from another ResponseLiveData
  */
-class SwapResponseLiveData<T> : ResponseLiveData<T>() {
+class SwapResponseLiveData<T> : ResponseLiveData<T> {
 
     private val sourceLiveData = MediatorLiveData<Any>()
     private val sourceObserver: (Any?) -> Unit = {}
     private var lastSource: ResponseLiveData<*>? = null
+
+    /**
+     * Empty constructor when initializing with a value is not needed
+     *
+     * @return An empty SwapResponseLiveData<T> instance
+     */
+    constructor() : super()
+
+    /**
+     * Constructor for initializing with a value
+     *
+     * @param value The initial value for this SwapResponseLiveData
+     *
+     * @return An instance of SwapResponseLiveData<T> with a default value set
+     */
+    constructor(value: DataResult<T>) : super(value)
 
     /**
      * @return True if has some DataSource set, false otherwise

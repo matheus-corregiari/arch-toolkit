@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
+import br.com.arch.toolkit.common.DataResultStatus
 import com.nhaarman.mockitokotlin2.mock
 import org.junit.Assert
 import org.junit.Rule
@@ -98,5 +99,59 @@ class LiveDataExtensionTest {
         liveData.postValue("TRUE")
         Mockito.verify(mockedObserver).invoke("TRUE")
         Assert.assertFalse(liveData.hasObservers())
+    }
+
+    @Test
+    fun responseLiveDataOfValueShouldReturnAnInstanceWithTheValueAlreadySet() {
+        val liveData = responseLiveDataOf("value")
+
+        Assert.assertTrue(liveData.data == "value")
+        Assert.assertTrue(liveData.status == DataResultStatus.SUCCESS)
+        Assert.assertNull(liveData.error)
+    }
+
+    @Test
+    fun responseLiveDataOfErrorShouldReturnAnInstanceWithTheThrowableAlreadySet() {
+        val liveData = responseLiveDataOf<Any>(Throwable())
+
+        Assert.assertNull(liveData.data)
+        Assert.assertTrue(liveData.status == DataResultStatus.ERROR)
+        Assert.assertNotNull(liveData.error)
+    }
+
+    @Test
+    fun mutableResponseLiveDataOfValueShouldReturnAnInstanceWithTheValueAlreadySet() {
+        val liveData = mutableResponseLiveDataOf("value")
+
+        Assert.assertTrue(liveData.data == "value")
+        Assert.assertTrue(liveData.status == DataResultStatus.SUCCESS)
+        Assert.assertNull(liveData.error)
+    }
+
+    @Test
+    fun mutableResponseLiveDataOfErrorShouldReturnAnInstanceWithTheThrowableAlreadySet() {
+        val liveData = mutableResponseLiveDataOf<Any>(Throwable())
+
+        Assert.assertNull(liveData.data)
+        Assert.assertTrue(liveData.status == DataResultStatus.ERROR)
+        Assert.assertNotNull(liveData.error)
+    }
+
+    @Test
+    fun swapResponseLiveDataOfValueShouldReturnAnInstanceWithTheValueAlreadySet() {
+        val liveData = swapResponseLiveDataOf("value")
+
+        Assert.assertTrue(liveData.data == "value")
+        Assert.assertTrue(liveData.status == DataResultStatus.SUCCESS)
+        Assert.assertNull(liveData.error)
+    }
+
+    @Test
+    fun swapResponseLiveDataOfErrorShouldReturnAnInstanceWithTheThrowableAlreadySet() {
+        val liveData = swapResponseLiveDataOf<Any>(Throwable())
+
+        Assert.assertNull(liveData.data)
+        Assert.assertTrue(liveData.status == DataResultStatus.ERROR)
+        Assert.assertNotNull(liveData.error)
     }
 }

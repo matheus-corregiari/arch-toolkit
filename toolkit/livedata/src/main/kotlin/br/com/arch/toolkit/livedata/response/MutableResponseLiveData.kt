@@ -8,7 +8,23 @@ import br.com.arch.toolkit.common.DataResultStatus
 /**
  * A custom implementation of ResponseLiveData with methods to post new values
  */
-class MutableResponseLiveData<T> : ResponseLiveData<T>() {
+class MutableResponseLiveData<T> : ResponseLiveData<T> {
+
+    /**
+     * Empty constructor when initializing with a value is not needed
+     *
+     * @return An empty MutableResponseLiveData<T> instance
+     */
+    constructor() : super()
+
+    /**
+     * Constructor for initializing with a value
+     *
+     * @param value The initial value for this MutableResponseLiveData
+     *
+     * @return An instance of MutableResponseLiveData<T> with a default value set
+     */
+    constructor(value: DataResult<T>) : super(value)
 
     // region Post Methods
     /**

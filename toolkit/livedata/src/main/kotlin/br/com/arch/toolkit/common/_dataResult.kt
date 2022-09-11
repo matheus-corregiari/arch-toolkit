@@ -6,7 +6,7 @@ package br.com.arch.toolkit.common
  * This model of interpretation was based on Google Architecture Components Example
  * @see <a href="https://github.com/googlesamples/android-architecture-components">Google's github repository</a>
  * @see DataResultStatus
- * @see ResponseLiveData
+ * @see br.com.arch.toolkit.livedata.response.ResponseLiveData
  */
 data class DataResult<T>(
     val data: T?,

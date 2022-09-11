@@ -1,6 +1,7 @@
 package br.com.arch.toolkit.livedata.response
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import br.com.arch.toolkit.common.DataResult
 import br.com.arch.toolkit.common.DataResultStatus
 import org.junit.Assert
 import org.junit.Rule
@@ -103,5 +104,23 @@ class MutableResponseLiveDataTest {
         Assert.assertNull(liveData.error)
         Assert.assertNull(liveData.data)
         Assert.assertEquals(DataResultStatus.SUCCESS, liveData.status)
+    }
+
+    @Test
+    fun whenInitialize_withoutValue_shouldReturnAnInstanceWithEmptyValue() {
+        val liveData = MutableResponseLiveData<Any>()
+        Assert.assertNull(liveData.data)
+        Assert.assertNull(liveData.status)
+        Assert.assertNull(liveData.error)
+    }
+
+    @Test
+    fun whenInitialize_withValue_shouldReturnAnInstanceWithADefaultValue() {
+        val liveData = MutableResponseLiveData(
+            DataResult("value", null, DataResultStatus.SUCCESS)
+        )
+        Assert.assertTrue(liveData.data == "value")
+        Assert.assertTrue(liveData.status == DataResultStatus.SUCCESS)
+        Assert.assertNull(liveData.error)
     }
 }
