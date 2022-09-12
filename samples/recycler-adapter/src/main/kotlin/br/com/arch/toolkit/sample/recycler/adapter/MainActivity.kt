@@ -2,8 +2,8 @@ package br.com.arch.toolkit.sample.recycler.adapter
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import br.com.arch.toolkit.delegate.viewProvider
 
 class MainActivity : AppCompatActivity() {

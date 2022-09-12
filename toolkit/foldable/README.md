@@ -3,7 +3,8 @@
 
 # Foldable
 
-Some extensions to help developing a foldable compatible application and a FoldableActivity for simple cases
+Some extensions to help developing a foldable compatible application and a FoldableActivity for
+simple cases
 
 ### Usage
 

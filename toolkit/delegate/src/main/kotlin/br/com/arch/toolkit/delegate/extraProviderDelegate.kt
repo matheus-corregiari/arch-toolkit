@@ -18,8 +18,8 @@ class ExtraProviderDelegate<T>(
             ExtraType.ARGUMENT -> getExtra(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.QUERY -> getQueryParameter(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.AUTO -> getExtra(extra, extraName, thisRef)
-                    ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else null)
-                    ?: defaultValue.invoke()
+                ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else null)
+                ?: defaultValue.invoke()
         }
 
         if (keepState) {
@@ -34,8 +34,8 @@ class ExtraProviderDelegate<T>(
             ExtraType.ARGUMENT -> getExtra(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.QUERY -> getQueryParameter(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.AUTO -> getExtra(extra, extraName, thisRef)
-                    ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else null)
-                    ?: defaultValue.invoke()
+                ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else null)
+                ?: defaultValue.invoke()
         }
 
         if (keepState) {
@@ -56,7 +56,7 @@ class ExtraProviderDelegate<T>(
     //region AppCompatActivity methods
     @Suppress("UNCHECKED_CAST")
     private fun <T> getExtra(oldExtra: T?, extraName: String, thisRef: AppCompatActivity): T? =
-            oldExtra ?: thisRef.intent?.extras?.get(extraName) as T?
+        oldExtra ?: thisRef.intent?.extras?.get(extraName) as T?
 
     @Suppress("UNCHECKED_CAST")
     private fun getQueryParameter(oldExtra: T?, extraName: String, thisRef: AppCompatActivity): T? {
@@ -72,7 +72,7 @@ class ExtraProviderDelegate<T>(
     //region Fragment methods
     @Suppress("UNCHECKED_CAST")
     private fun <T> getExtra(oldExtra: T?, extraName: String, thisRef: Fragment): T? =
-            oldExtra ?: thisRef.arguments?.get(extraName) as T?
+        oldExtra ?: thisRef.arguments?.get(extraName) as T?
 
     @Suppress("UNCHECKED_CAST")
     private fun getQueryParameter(oldExtra: T?, extraName: String, thisRef: Fragment): T? {
@@ -93,12 +93,18 @@ enum class ExtraType {
 fun <T> extraProvider(extra: String) = extraProvider<T?>(extra, true)
 fun <T> extraProvider(extra: String, keepState: Boolean) = extraProvider<T?>(extra, keepState, null)
 fun <T> extraProvider(extra: String, default: T) = extraProvider(extra, true, default)
-fun <T> extraProvider(extra: String, keepState: Boolean, default: T) = extraProvider(extra, keepState, ExtraType.AUTO) { default }
+fun <T> extraProvider(extra: String, keepState: Boolean, default: T) =
+    extraProvider(extra, keepState, ExtraType.AUTO) { default }
 
 fun <T> extraProvider(extra: String, type: ExtraType) = extraProvider<T?>(extra, true, type)
-fun <T> extraProvider(extra: String, keepState: Boolean, type: ExtraType) = extraProvider<T?>(extra, keepState, type, null)
-fun <T> extraProvider(extra: String, type: ExtraType, default: T) = extraProvider(extra, true, type, default)
-fun <T> extraProvider(extra: String, keepState: Boolean, type: ExtraType, default: T) = extraProvider(extra, keepState, type) { default }
+fun <T> extraProvider(extra: String, keepState: Boolean, type: ExtraType) =
+    extraProvider<T?>(extra, keepState, type, null)
+
+fun <T> extraProvider(extra: String, type: ExtraType, default: T) =
+    extraProvider(extra, true, type, default)
+
+fun <T> extraProvider(extra: String, keepState: Boolean, type: ExtraType, default: T) =
+    extraProvider(extra, keepState, type) { default }
 
 fun <T> extraProvider(extra: String, keepState: Boolean, type: ExtraType, default: () -> T) =
-        ExtraProviderDelegate(extra, keepState, type, default)
+    ExtraProviderDelegate(extra, keepState, type, default)

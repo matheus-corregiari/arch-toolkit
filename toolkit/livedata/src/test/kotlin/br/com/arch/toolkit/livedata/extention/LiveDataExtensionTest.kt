@@ -7,11 +7,19 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
 import br.com.arch.toolkit.common.DataResultStatus
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verifyBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class LiveDataExtensionTest {
 
     @Rule
@@ -26,8 +34,12 @@ class LiveDataExtensionTest {
         }
     }
 
+    init {
+        Dispatchers.setMain(StandardTestDispatcher())
+    }
+
     @Test
-    fun observeShouldHandleOnlyNonNullObjects() {
+    fun observeShouldHandleOnlyNonNullObjects() = runTest {
         val mockedObserver: (Any) -> Unit = mock()
         val liveData = MutableLiveData<Any>()
         Assert.assertNull(liveData.value)
@@ -39,11 +51,12 @@ class LiveDataExtensionTest {
         Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.postValue("nonNullData")
-        Mockito.verify(mockedObserver).invoke("nonNullData")
+        advanceUntilIdle()
+        verifyBlocking(mockedObserver) { invoke("nonNullData") }
     }
 
     @Test
-    fun observeShouldHandleOnlyNullObjects() {
+    fun observeShouldHandleOnlyNullObjects() = runTest {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableLiveData<Any>()
         Assert.assertNull(liveData.value)
@@ -52,14 +65,15 @@ class LiveDataExtensionTest {
 
         liveData.postValue(null)
 
-        Mockito.verify(mockedObserver).invoke()
+        advanceUntilIdle()
+        verifyBlocking(mockedObserver) { invoke() }
 
         liveData.postValue("nonNullData")
         Mockito.verifyNoMoreInteractions(mockedObserver)
     }
 
     @Test
-    fun observeSingleShouldHandleOnlyNonNullObjectOnce() {
+    fun observeSingleShouldHandleOnlyNonNullObjectOnce() = runTest {
         val mockedObserver: (Any) -> Unit = mock()
         val liveData = MutableLiveData<Any>()
         Assert.assertNull(liveData.value)
@@ -72,12 +86,13 @@ class LiveDataExtensionTest {
         Assert.assertTrue(liveData.hasObservers())
 
         liveData.postValue("nonNullData")
-        Mockito.verify(mockedObserver).invoke("nonNullData")
+        advanceUntilIdle()
+        verifyBlocking(mockedObserver) { invoke("nonNullData") }
         Assert.assertFalse(liveData.hasObservers())
     }
 
     @Test
-    fun observeUntilShouldHandleObjectsUntilReturnTrue() {
+    fun observeUntilShouldHandleObjectsUntilReturnTrue() = runTest {
         val mockedObserver: (Any?) -> Boolean = mock()
         Mockito.`when`(mockedObserver.invoke(null)).thenReturn(false)
         Mockito.`when`(mockedObserver.invoke("FALSE")).thenReturn(false)
@@ -90,19 +105,22 @@ class LiveDataExtensionTest {
 
         liveData.postValue(null)
         Assert.assertTrue(liveData.hasObservers())
-        Mockito.verify(mockedObserver).invoke(null)
+        advanceUntilIdle()
+        verifyBlocking(mockedObserver) { invoke(null) }
 
         liveData.postValue("FALSE")
         Assert.assertTrue(liveData.hasObservers())
-        Mockito.verify(mockedObserver).invoke("FALSE")
+        advanceUntilIdle()
+        verifyBlocking(mockedObserver) { invoke("FALSE") }
 
         liveData.postValue("TRUE")
-        Mockito.verify(mockedObserver).invoke("TRUE")
+        advanceUntilIdle()
+        verifyBlocking(mockedObserver) { invoke("TRUE") }
         Assert.assertFalse(liveData.hasObservers())
     }
 
     @Test
-    fun responseLiveDataOfValueShouldReturnAnInstanceWithTheValueAlreadySet() {
+    fun responseLiveDataOfValueShouldReturnAnInstanceWithTheValueAlreadySet() = runTest {
         val liveData = responseLiveDataOf("value")
 
         Assert.assertTrue(liveData.data == "value")
@@ -111,7 +129,7 @@ class LiveDataExtensionTest {
     }
 
     @Test
-    fun responseLiveDataOfErrorShouldReturnAnInstanceWithTheThrowableAlreadySet() {
+    fun responseLiveDataOfErrorShouldReturnAnInstanceWithTheThrowableAlreadySet() = runTest {
         val liveData = responseLiveDataOf<Any>(Throwable())
 
         Assert.assertNull(liveData.data)
@@ -120,7 +138,7 @@ class LiveDataExtensionTest {
     }
 
     @Test
-    fun mutableResponseLiveDataOfValueShouldReturnAnInstanceWithTheValueAlreadySet() {
+    fun mutableResponseLiveDataOfValueShouldReturnAnInstanceWithTheValueAlreadySet() = runTest {
         val liveData = mutableResponseLiveDataOf("value")
 
         Assert.assertTrue(liveData.data == "value")
@@ -129,7 +147,7 @@ class LiveDataExtensionTest {
     }
 
     @Test
-    fun mutableResponseLiveDataOfErrorShouldReturnAnInstanceWithTheThrowableAlreadySet() {
+    fun mutableResponseLiveDataOfErrorShouldReturnAnInstanceWithTheThrowableAlreadySet() = runTest {
         val liveData = mutableResponseLiveDataOf<Any>(Throwable())
 
         Assert.assertNull(liveData.data)
@@ -138,7 +156,7 @@ class LiveDataExtensionTest {
     }
 
     @Test
-    fun swapResponseLiveDataOfValueShouldReturnAnInstanceWithTheValueAlreadySet() {
+    fun swapResponseLiveDataOfValueShouldReturnAnInstanceWithTheValueAlreadySet() = runTest {
         val liveData = swapResponseLiveDataOf("value")
 
         Assert.assertTrue(liveData.data == "value")
@@ -147,7 +165,7 @@ class LiveDataExtensionTest {
     }
 
     @Test
-    fun swapResponseLiveDataOfErrorShouldReturnAnInstanceWithTheThrowableAlreadySet() {
+    fun swapResponseLiveDataOfErrorShouldReturnAnInstanceWithTheThrowableAlreadySet() = runTest {
         val liveData = swapResponseLiveDataOf<Any>(Throwable())
 
         Assert.assertNull(liveData.data)

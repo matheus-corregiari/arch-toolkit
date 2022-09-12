@@ -3,9 +3,9 @@ package br.com.arch.toolkit.test
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
 
 class TestActivity : AppCompatActivity() {
 
@@ -20,7 +20,8 @@ class TestActivity : AppCompatActivity() {
     }
 
     fun setFragment(fragment: androidx.fragment.app.Fragment) {
-        supportFragmentManager.beginTransaction().add(android.R.id.content, fragment, "TAG").commit()
+        supportFragmentManager.beginTransaction().add(android.R.id.content, fragment, "TAG")
+            .commit()
     }
 
     fun setView(view: (Context) -> View) = runOnUiThread {

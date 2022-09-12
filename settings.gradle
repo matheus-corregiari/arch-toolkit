@@ -1,6 +1,6 @@
 include ':toolkit:delegate'
-include ':toolkit:livedata'
 
+include ':toolkit:livedata', ':samples:livedata'
 include ':toolkit:recycler-adapter', ':samples:recycler-adapter'
 include ':toolkit:statemachine', ':samples:statemachine'
 include ':toolkit:foldable', ':samples:foldable'

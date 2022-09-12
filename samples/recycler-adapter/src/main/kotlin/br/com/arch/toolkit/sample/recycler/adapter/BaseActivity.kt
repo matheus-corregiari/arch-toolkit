@@ -1,8 +1,8 @@
 package br.com.arch.toolkit.sample.recycler.adapter
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 
 abstract class BaseActivity : AppCompatActivity() {
 

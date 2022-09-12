@@ -1,11 +1,11 @@
 package br.com.arch.toolkit.sample.recycler.adapter
 
 import android.os.Bundle
+import android.widget.LinearLayout.VERTICAL
+import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.widget.LinearLayout.VERTICAL
-import android.widget.Toast
 import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.recycler.adapter.SimpleAdapter
 import br.com.arch.toolkit.sample.recycler.adapter.itemView.SimpleItemView

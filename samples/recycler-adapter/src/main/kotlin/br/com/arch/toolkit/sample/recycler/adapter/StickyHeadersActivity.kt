@@ -20,7 +20,10 @@ class StickyHeadersActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        recycler.layoutManager = StickyHeadersLinearLayoutManager<SimpleStickyAdapter<StickyHeaderModelExample, StickyItemView.Item, StickyItemView.Header>>(this)
+        recycler.layoutManager =
+            StickyHeadersLinearLayoutManager<SimpleStickyAdapter<StickyHeaderModelExample, StickyItemView.Item, StickyItemView.Header>>(
+                this
+            )
         recycler.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
         recycler.adapter = adapter
 

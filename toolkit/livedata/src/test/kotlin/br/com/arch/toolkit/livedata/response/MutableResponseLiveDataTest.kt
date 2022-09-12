@@ -3,10 +3,16 @@ package br.com.arch.toolkit.livedata.response
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import br.com.arch.toolkit.common.DataResult
 import br.com.arch.toolkit.common.DataResultStatus
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MutableResponseLiveDataTest {
 
     @Rule
@@ -14,8 +20,12 @@ class MutableResponseLiveDataTest {
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    init {
+        Dispatchers.setMain(StandardTestDispatcher())
+    }
+
     @Test
-    fun whenPostLoading_shouldHaveLoadingStatus_nullError_nullData() {
+    fun whenPostLoading_shouldHaveLoadingStatus_nullError_nullData() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.postLoading()
 
@@ -26,7 +36,7 @@ class MutableResponseLiveDataTest {
     }
 
     @Test
-    fun whenPostError_shouldHaveErrorStatus_notNullError_nullData() {
+    fun whenPostError_shouldHaveErrorStatus_notNullError_nullData() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         val error = IllegalStateException()
         liveData.postError(error)
@@ -38,7 +48,7 @@ class MutableResponseLiveDataTest {
     }
 
     @Test
-    fun whenPostData_shouldHaveSuccessStatus_nullError_notNullData() {
+    fun whenPostData_shouldHaveSuccessStatus_nullError_notNullData() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         val data = "data"
         liveData.postData(data)
@@ -50,7 +60,7 @@ class MutableResponseLiveDataTest {
     }
 
     @Test
-    fun whenPostSuccess_shouldHaveSuccessStatus_nullError_nullData() {
+    fun whenPostSuccess_shouldHaveSuccessStatus_nullError_nullData() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.postSuccess()
 
@@ -61,7 +71,7 @@ class MutableResponseLiveDataTest {
     }
 
     @Test
-    fun whenSetLoading_shouldHaveLoadingStatus_nullError_nullData() {
+    fun whenSetLoading_shouldHaveLoadingStatus_nullError_nullData() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.setLoading()
 
@@ -72,7 +82,7 @@ class MutableResponseLiveDataTest {
     }
 
     @Test
-    fun whenSetError_shouldHaveErrorStatus_notNullError_nullData() {
+    fun whenSetError_shouldHaveErrorStatus_notNullError_nullData() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         val error = IllegalStateException()
         liveData.setError(error)
@@ -84,7 +94,7 @@ class MutableResponseLiveDataTest {
     }
 
     @Test
-    fun whenSetData_shouldHaveSuccessStatus_nullError_notNullData() {
+    fun whenSetData_shouldHaveSuccessStatus_nullError_notNullData() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         val data = "data"
         liveData.setData(data)
@@ -96,7 +106,7 @@ class MutableResponseLiveDataTest {
     }
 
     @Test
-    fun whenSetSuccess_shouldHaveSuccessStatus_nullError_nullData() {
+    fun whenSetSuccess_shouldHaveSuccessStatus_nullError_nullData() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         liveData.setSuccess()
 
@@ -107,7 +117,7 @@ class MutableResponseLiveDataTest {
     }
 
     @Test
-    fun whenInitialize_withoutValue_shouldReturnAnInstanceWithEmptyValue() {
+    fun whenInitialize_withoutValue_shouldReturnAnInstanceWithEmptyValue() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         Assert.assertNull(liveData.data)
         Assert.assertNull(liveData.status)
@@ -115,7 +125,7 @@ class MutableResponseLiveDataTest {
     }
 
     @Test
-    fun whenInitialize_withValue_shouldReturnAnInstanceWithADefaultValue() {
+    fun whenInitialize_withValue_shouldReturnAnInstanceWithADefaultValue() = runTest {
         val liveData = MutableResponseLiveData(
             DataResult("value", null, DataResultStatus.SUCCESS)
         )

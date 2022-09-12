@@ -68,9 +68,12 @@ class YourView : Fragment()
 class YourView : View()
 class YourView : RecyclerView.ViewHolder()
 ```
+
 ###### BIG NOTE: like another strategies to use some view binding, you need to use the references below the layout inflate... otherwise your app will crash
+
 - AppCompatActivity -> after the inflate
-- Fragment -> It's recommend to call your view on any method after onCreateView and before onDestroyView ... also after the inflate
+- Fragment -> It's recommend to call your view on any method after onCreateView and before
+  onDestroyView ... also after the inflate
 - View -> after the inflate
 - RecyclerView.ViewHolder -> after the inflate
 

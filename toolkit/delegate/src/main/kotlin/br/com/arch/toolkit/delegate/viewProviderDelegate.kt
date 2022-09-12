@@ -10,21 +10,29 @@ import androidx.recyclerview.widget.RecyclerView
 import java.lang.ref.WeakReference
 import kotlin.reflect.KProperty
 
-fun <T : View> viewProvider(@IdRes idRes: Int, @IdRes parentRes: Int = NO_ID, viewStubAutoInflate: Boolean = false) =
-        ViewProviderDelegate<T>(
-                parentRes = parentRes,
-                idRes = idRes,
-                required = true,
-                viewStubAutoInflate = viewStubAutoInflate
-        )
+fun <T : View> viewProvider(
+    @IdRes idRes: Int,
+    @IdRes parentRes: Int = NO_ID,
+    viewStubAutoInflate: Boolean = false
+) =
+    ViewProviderDelegate<T>(
+        parentRes = parentRes,
+        idRes = idRes,
+        required = true,
+        viewStubAutoInflate = viewStubAutoInflate
+    )
 
-fun <T : View?> optionalViewProvider(@IdRes idRes: Int, @IdRes parentRes: Int = NO_ID, viewStubAutoInflate: Boolean = false) =
-        ViewProviderDelegate<T?>(
-                parentRes = parentRes,
-                idRes = idRes,
-                required = false,
-                viewStubAutoInflate = viewStubAutoInflate
-        )
+fun <T : View?> optionalViewProvider(
+    @IdRes idRes: Int,
+    @IdRes parentRes: Int = NO_ID,
+    viewStubAutoInflate: Boolean = false
+) =
+    ViewProviderDelegate<T?>(
+        parentRes = parentRes,
+        idRes = idRes,
+        required = false,
+        viewStubAutoInflate = viewStubAutoInflate
+    )
 
 class ViewProviderDelegate<out T>(
     @IdRes private val parentRes: Int = NO_ID,
@@ -89,7 +97,7 @@ class ViewProviderDelegate<out T>(
     @Suppress("UNCHECKED_CAST")
     private inline fun findView(property: KProperty<*>, crossinline initializer: () -> View?): T {
         view = if (viewStubAutoInflate) inflateIfIsViewStub(view ?: initializer.invoke())
-            else view ?: initializer.invoke()
+        else view ?: initializer.invoke()
         if (required && view == null) {
             throw IllegalStateException("View ID $idRes for '${property.name}' not found.")
         }
