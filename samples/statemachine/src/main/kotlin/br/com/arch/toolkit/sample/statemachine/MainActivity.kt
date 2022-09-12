@@ -14,7 +14,11 @@ class MainActivity : AppCompatActivity() {
     private val viewStateMachineExampleButton: Button by viewProvider(R.id.bt_view_state_machine_example)
     private val sceneStateMachineExampleButton: Button by viewProvider(R.id.bt_scene_state_machine_example)
 
-    private val extra: String by extraProvider("teste", default = "padraozaoo", type = ExtraType.QUERY)
+    private val extra: String by extraProvider(
+        "teste",
+        default = "padraozaoo",
+        type = ExtraType.QUERY
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

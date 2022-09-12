@@ -20,7 +20,10 @@ sealed class StickyItemView {
     ), ViewBinder<StickyHeadersActivity.StickyHeaderModelExample> {
 
         init {
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
         }
 
         override fun bind(model: StickyHeadersActivity.StickyHeaderModelExample) {
@@ -30,13 +33,31 @@ sealed class StickyItemView {
 
     class Header : View {
         constructor(context: Context) : this(context, null)
-        constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, R.attr.stickyItemStyle)
-        constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+        constructor(context: Context, attrs: AttributeSet?) : this(
+            context,
+            attrs,
+            R.attr.stickyItemStyle
+        )
+
+        constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+            context,
+            attrs,
+            defStyleAttr
+        )
     }
 
     class Item : View {
         constructor(context: Context) : this(context, null)
-        constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, R.attr.simpleItemStyle)
-        constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+        constructor(context: Context, attrs: AttributeSet?) : this(
+            context,
+            attrs,
+            R.attr.simpleItemStyle
+        )
+
+        constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+            context,
+            attrs,
+            defStyleAttr
+        )
     }
 }

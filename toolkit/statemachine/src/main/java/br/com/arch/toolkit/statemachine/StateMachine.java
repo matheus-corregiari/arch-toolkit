@@ -1,9 +1,10 @@
 package br.com.arch.toolkit.statemachine;
 
 import android.os.Bundle;
+import android.util.SparseArray;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.SparseArray;
 
 /**
  * Simple State machine implementation.
@@ -132,7 +133,8 @@ public abstract class StateMachine<STATE extends StateMachine.State> {
         // On change state
         if (onChangeState != null) onChangeState.onChangeState(stateKey);
 
-        if (stateKey != getCurrentStateKey() && currentState != null && currentState.getExit() != null) currentState.getExit().invoke();
+        if (stateKey != getCurrentStateKey() && currentState != null && currentState.getExit() != null)
+            currentState.getExit().invoke();
         performChangeState(state);
         if (state.getEnter() != null) state.getEnter().invoke();
 

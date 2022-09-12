@@ -115,6 +115,7 @@ public final class ViewStateMachine extends StateMachine<ViewStateMachine.State>
         private final List<Integer> disableReferences = new ArrayList<>();
         @Nullable
         private View rootView = null;
+
         private State() {
         }
 

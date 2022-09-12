@@ -662,13 +662,13 @@ private class WrapObserver<T, V>(
         withContext(dispatcher) {
             transformer.runCatching { invoke(data) }
         }.onSuccess {
-                transformerObserver.invoke(it)
-            }.onFailure {
-                throw DataTransformationException(
-                    "Error performing swapSource, please check your transformations",
-                    it
-                )
-            }
+            transformerObserver.invoke(it)
+        }.onFailure {
+            throw DataTransformationException(
+                "Error performing swapSource, please check your transformations",
+                it
+            )
+        }
     }
 }
 

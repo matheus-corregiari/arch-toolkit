@@ -15,7 +15,7 @@ private static void addPathIfExists(List<String> paths,
 }
 
 private static void addFileTreeIfExists(Project project, List<FileTree> fileTrees,
-                                 String directoryPath, List<String> excludeFilter = []) {
+                                        String directoryPath, List<String> excludeFilter = []) {
     if (new File(directoryPath).exists())
         fileTrees.add(project.fileTree(dir: directoryPath, excludes: excludeFilter))
 }

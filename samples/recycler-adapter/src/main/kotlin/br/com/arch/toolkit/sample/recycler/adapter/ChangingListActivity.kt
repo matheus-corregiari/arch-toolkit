@@ -16,8 +16,8 @@ class ChangingListActivity : BaseActivity() {
     private val sortDescending: View by viewProvider(R.id.sort_descending)
 
     private val adapter = MultipleViewTypesAdapter()
-            .withListener(::onItemClick)
-            .withListener(MultipleViewTypesAdapter.TYPE_TWO, ::onTypeTwoClick)
+        .withListener(::onItemClick)
+        .withListener(MultipleViewTypesAdapter.TYPE_TWO, ::onTypeTwoClick)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

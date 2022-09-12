@@ -1,12 +1,13 @@
 package br.com.arch.toolkit.statemachine;
 
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.transition.Scene;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.view.ViewGroup;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Implementation of [StateMachine]

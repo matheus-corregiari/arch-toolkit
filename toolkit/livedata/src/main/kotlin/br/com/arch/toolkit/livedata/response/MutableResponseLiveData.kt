@@ -129,6 +129,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T> {
     override fun scope(scope: CoroutineScope): MutableResponseLiveData<T> {
         return super.scope(scope) as MutableResponseLiveData<T>
     }
+
     override fun transformDispatcher(dispatcher: CoroutineDispatcher): MutableResponseLiveData<T> {
         return super.transformDispatcher(dispatcher) as MutableResponseLiveData<T>
     }

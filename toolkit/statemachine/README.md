@@ -26,6 +26,7 @@ api "io.github.matheus-corregiari:statemachine:$latest_version"
 ##### Setup
 
 ###### Kotlin
+
 ```kotlin
 stateMachine.setup {
     config { ... } // Optional configuration for initial setup
@@ -41,6 +42,7 @@ stateMachine.setup {
 ```
 
 ###### Java
+
 ```java
 final Config config = stateMachine.getConfig();
 
@@ -92,6 +94,7 @@ stateMachine.restoreInstanceState(savedInstanceState.getBundle("YOUR_STATE_KEY")
 ##### Config
 
 ###### Kotlin
+
 ```kotlin
 stateMachine.config {
     initialState = INITIAL_STATE_KEY
@@ -100,6 +103,7 @@ stateMachine.config {
 ```
 
 ###### Java
+
 ```java
 final Config config = stateMachine.getConfig();
 
@@ -107,15 +111,15 @@ config.setInitialState(INITIAL_STATE_KEY);
 config.setOnChangeState(stateKey -> { ... }); // Handler called whenever state becomes active
 ```
 
-
 ### ViewStateMachine
 
-Implementation based on visibility changes on views.
-To use this, all views must be already in the layout.
+Implementation based on visibility changes on views. To use this, all views must be already in the
+layout.
 
 ##### Simple Usage
 
 ###### Kotlin
+
 ```kotlin
 stateMachine.state(YOUR_INT_CONSTANT) {
 
@@ -132,6 +136,7 @@ stateMachine.state(YOUR_INT_CONSTANT) {
 ```
 
 ###### Java
+
 ```java
 final State state = stateMachine.newStateInstance();
 
@@ -150,12 +155,13 @@ stateMachine.addState(YOUR_INT_CONSTANT, state);
 
 ### SceneStateMachine
 
-Implementation based on Transition Scenes framework to change a layout content.
-To use this, you must have a layout container to put a custom layout on it.
+Implementation based on Transition Scenes framework to change a layout content. To use this, you
+must have a layout container to put a custom layout on it.
 
 ##### Usage
 
 ###### Kotlin
+
 ```kotlin
 stateMachine.state(YOUR_INT_CONSTANT) {
 
@@ -166,6 +172,7 @@ stateMachine.state(YOUR_INT_CONSTANT) {
 ```
 
 ###### Java
+
 ```java
 final State state = stateMachine.newStateInstance();
 
@@ -178,7 +185,8 @@ stateMachine.addState(YOUR_INT_CONSTANT, state);
 
 ##### AVOID CRASHES AND LEAKS
 
-If your Statemachine instance persists configuration changes, or view lifecycle. Don't forget to call the 'shutdown' method
+If your Statemachine instance persists configuration changes, or view lifecycle. Don't forget to
+call the 'shutdown' method
 
 ```kotlin
 stateMachine.shutdown()
@@ -188,7 +196,9 @@ This will erase all current references and states of the machine. =)
 
 ##### PROGUARD RULES
 
-If you are not using Kotlin(and you should), you need to add this into your proguard-rules.pro file. Because if you are not using Kotlin, the shrinker will become angry with you, telling that some classes cannot be found.
+If you are not using Kotlin(and you should), you need to add this into your proguard-rules.pro file.
+Because if you are not using Kotlin, the shrinker will become angry with you, telling that some
+classes cannot be found.
 
 ```
 # State Machine (only if you don't use Kotlin)

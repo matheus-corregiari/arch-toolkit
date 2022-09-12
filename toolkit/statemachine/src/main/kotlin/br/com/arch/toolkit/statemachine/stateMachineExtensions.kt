@@ -11,7 +11,8 @@ inline fun <STATE : StateMachine.State> StateMachine<STATE>.setup(func: StateMac
 /**
  * Change the default configuration
  */
-inline fun <STATE : StateMachine.State> StateMachine<STATE>.config(configuration: StateMachine.Config.() -> Unit) = config.run(configuration)
+inline fun <STATE : StateMachine.State> StateMachine<STATE>.config(configuration: StateMachine.Config.() -> Unit) =
+    config.run(configuration)
 
 /**
  * Add a new state
@@ -20,6 +21,9 @@ inline fun <STATE : StateMachine.State> StateMachine<STATE>.config(configuration
  * @throws IllegalStateException If the key is < 0
  * @see [StateMachine.addState]
  */
-inline fun <STATE : StateMachine.State> StateMachine<STATE>.state(key: Int, stateConfig: STATE.() -> Unit) {
+inline fun <STATE : StateMachine.State> StateMachine<STATE>.state(
+    key: Int,
+    stateConfig: STATE.() -> Unit
+) {
     addState(key, newStateInstance().apply(stateConfig))
 }
