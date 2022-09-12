@@ -1,29 +1,29 @@
 package br.com.arch.toolkit.flow
 
 import br.com.arch.toolkit.common.DataResult
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import br.com.arch.toolkit.common.DataResultStatus
 
-/* TODO Missing implementation =( */
-internal class MutableResponseFlow<T> : MutableStateFlow<DataResult<T>>, ResponseFlow<T>() {
-    override val subscriptionCount: StateFlow<Int>
-        get() = TODO("Not yet implemented")
+class MutableResponseFlow<T> : ResponseFlow<T> {
 
-    override suspend fun emit(value: DataResult<T>) {
-        TODO("Not yet implemented")
-    }
+    /**
+     * Empty constructor when initializing with a value is not needed
+     *
+     * @return An empty ResponseFlow<T> instance
+     */
+    constructor() : this(DataResult(null, null, DataResultStatus.LOADING))
 
-    @ExperimentalCoroutinesApi
-    override fun resetReplayCache() {
-        TODO("Not yet implemented")
-    }
+    /**
+     * Constructor for initializing with a value
+     *
+     * @param value The initial value for this MutableResponseLiveData
+     *
+     * @return An instance of ResponseFlow<T> with a default value set
+     */
+    constructor(value: DataResult<T>) : super(value)
 
-    override fun tryEmit(value: DataResult<T>): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun compareAndSet(expect: DataResult<T>, update: DataResult<T>): Boolean {
-        TODO("Not yet implemented")
-    }
+    override var value: DataResult<T>
+        get() = super.value
+        public set(value) {
+            super.value = value
+        }
 }

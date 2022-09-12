@@ -4,6 +4,8 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import br.com.arch.toolkit.common.DataResult
 import br.com.arch.toolkit.common.DataResultStatus
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * A custom implementation of ResponseLiveData with methods to post new values
@@ -123,4 +125,19 @@ class MutableResponseLiveData<T> : ResponseLiveData<T> {
         value = DataResult(null, null, DataResultStatus.SUCCESS)
     }
     // endregion
+
+    override fun scope(scope: CoroutineScope): MutableResponseLiveData<T> {
+        return super.scope(scope) as MutableResponseLiveData<T>
+    }
+    override fun transformDispatcher(dispatcher: CoroutineDispatcher): MutableResponseLiveData<T> {
+        return super.transformDispatcher(dispatcher) as MutableResponseLiveData<T>
+    }
+
+    public override fun setValue(value: DataResult<T>?) {
+        super.setValue(value)
+    }
+
+    public override fun postValue(value: DataResult<T>?) {
+        super.postValue(value)
+    }
 }

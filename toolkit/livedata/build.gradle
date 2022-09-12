@@ -24,6 +24,7 @@ dependencies {
     testImplementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.androidx.lifecycle.livedata"
     testImplementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
     testImplementation "androidx.arch.core:core-testing:$versions.androidx.lifecycle.testing"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.coroutines"
 }
 
 tasks.withType(Javadoc).all {

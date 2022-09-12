@@ -9,13 +9,20 @@ import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.given
 import com.nhaarman.mockitokotlin2.mock
-import org.junit.Assert
+import com.nhaarman.mockitokotlin2.verifyBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.times
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class LiveDataTransformationTest {
 
     @Rule
@@ -32,8 +39,12 @@ class LiveDataTransformationTest {
         }
     }
 
+    init {
+        Dispatchers.setMain(StandardTestDispatcher())
+    }
+
     @Before
-    fun setup() {
+    fun setup() = runTest {
         mockedTransformation = mock()
 
         given(mockedTransformation.invoke("ONE")).willReturn(0)
@@ -41,7 +52,7 @@ class LiveDataTransformationTest {
     }
 
     @Test
-    fun mapShouldTransformThePostedData() {
+    fun mapShouldTransformThePostedData() = runTest {
         val mockedObserver: (Int) -> Unit = mock()
         val liveData = MutableLiveData<String>()
         val transformedLiveData = liveData.map(mockedTransformation)
@@ -53,11 +64,12 @@ class LiveDataTransformationTest {
         Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.postValue("ONE")
-        Mockito.verify(mockedObserver).invoke(0)
+        advanceUntilIdle()
+        verifyBlocking(mockedObserver) { invoke(0) }
     }
 
     @Test
-    fun mapShouldTransformEachItemInPostedData() {
+    fun mapShouldTransformEachItemInPostedData() = runTest {
         val mockedObserver: (List<Int>) -> Unit = mock()
         val liveData = MutableLiveData<List<String>>()
         val transformedLiveData = liveData.mapList(mockedTransformation)
@@ -69,43 +81,47 @@ class LiveDataTransformationTest {
         Mockito.verifyNoInteractions(mockedObserver)
 
         liveData.postValue(listOf("ONE", "TWO"))
-        Mockito.verify(mockedTransformation, times(2)).invoke(any())
-        Mockito.verify(mockedObserver).invoke(any())
+        advanceUntilIdle()
+        verifyBlocking(mockedTransformation, times(2)) { invoke(any()) }
+        advanceUntilIdle()
+        verifyBlocking(mockedObserver) { invoke(any()) }
     }
 
     @Test
-    fun map_withTransformAsync_shouldTransformEachItemInPostedResponseDataStartingThreads() {
-        val threadCount = Thread.activeCount()
+    fun map_withTransformAsync_shouldTransformEachItemInPostedResponseDataStartingThreads() =
+        runTest {
 
-        val mockedObserver: (List<Int>) -> Unit = mock()
-        val liveData = MutableResponseLiveData<List<String>>()
-        val transformedLiveData = liveData.mapList(true, mockedTransformation)
+            val mockedObserver: (List<Int>) -> Unit = mock()
+            val liveData = MutableResponseLiveData<List<String>>()
+                .transformDispatcher(Dispatchers.Main)
+            val transformedLiveData = liveData.mapList(mockedTransformation)
 
-        transformedLiveData.observeData(owner, mockedObserver)
+            transformedLiveData.observeData(owner, mockedObserver)
 
-        liveData.postData(listOf("ONE", "TWO"))
-        Assert.assertNotEquals(threadCount, Thread.activeCount())
-        Thread.sleep(50)
+            liveData.postData(listOf("ONE", "TWO"))
 
-        Mockito.verify(mockedTransformation, times(2)).invoke(any())
-        Mockito.verify(mockedObserver).invoke(any())
-    }
+            advanceUntilIdle()
+            verifyBlocking(mockedTransformation, times(2)) { invoke(any()) }
+            advanceUntilIdle()
+            verifyBlocking(mockedObserver) { invoke(any()) }
+        }
 
     @Test
-    fun map_withoutTransformAsync_shouldTransformEachItemInPostedResponseDataWithoutStartingThreads() {
-        val threadCount = Thread.activeCount()
+    fun map_withoutTransformAsync_shouldTransformEachItemInPostedResponseDataWithoutStartingThreads() =
+        runTest {
 
-        val mockedObserver: (List<Int>) -> Unit = mock()
-        val liveData = MutableResponseLiveData<List<String>>()
-        val transformedLiveData = liveData.mapList(mockedTransformation)
+            val mockedObserver: (List<Int>) -> Unit = mock()
+            val liveData = MutableResponseLiveData<List<String>>()
+                .transformDispatcher(Dispatchers.Main)
+            val transformedLiveData = liveData.mapList(mockedTransformation)
 
-        transformedLiveData.observeData(owner, mockedObserver)
+            transformedLiveData.observeData(owner, mockedObserver)
 
-        liveData.postData(listOf("ONE", "TWO"))
-        Assert.assertEquals(threadCount, Thread.activeCount())
-        Thread.sleep(50)
+            liveData.postData(listOf("ONE", "TWO"))
 
-        Mockito.verify(mockedTransformation, times(2)).invoke(any())
-        Mockito.verify(mockedObserver).invoke(any())
-    }
+            advanceUntilIdle()
+            verifyBlocking(mockedTransformation, times(2)) { invoke(any()) }
+            advanceUntilIdle()
+            verifyBlocking(mockedObserver) { invoke(any()) }
+        }
 }
