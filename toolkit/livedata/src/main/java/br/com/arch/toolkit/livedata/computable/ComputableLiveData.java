@@ -1,13 +1,13 @@
 package br.com.arch.toolkit.livedata.computable;
 
-import androidx.lifecycle.LiveData;
+import static br.com.arch.toolkit.livedata.ExecutorUtil.runOnNewThread;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.lifecycle.LiveData;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static br.com.arch.toolkit.livedata.ExecutorUtil.runOnNewThread;
 
 /**
  * Implementation of {@link LiveData} to make it possible compute something on the WorkerThread, and abort or invalidate if needed

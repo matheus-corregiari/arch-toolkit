@@ -2,7 +2,6 @@ package br.com.arch.toolkit.flow
 
 import androidx.annotation.NonNull
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.asLiveData
 import br.com.arch.toolkit.common.DataResult
 import br.com.arch.toolkit.common.DataResultStatus
 import br.com.arch.toolkit.common.ObserveWrapper
@@ -10,8 +9,6 @@ import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
 import br.com.arch.toolkit.livedata.response.ResponseLiveData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 
 open class ResponseFlow<T> {
 
