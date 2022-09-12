@@ -1,26 +1,39 @@
 package br.com.arch.toolkit.flow
 
 import androidx.annotation.NonNull
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.asLiveData
 import br.com.arch.toolkit.common.DataResult
 import br.com.arch.toolkit.common.DataResultStatus
 import br.com.arch.toolkit.common.ObserveWrapper
+import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
+import br.com.arch.toolkit.livedata.response.ResponseLiveData
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 open class ResponseFlow<T> {
 
-    private val flow: MutableStateFlow<DataResult<T>>
+    private val _flow: MutableStateFlow<DataResult<T>>
+    val flow: Flow<DataResult<T>> get() = _flow
+
+    private val _liveData: MutableResponseLiveData<T>
+    val liveData: ResponseLiveData<T> get() = _liveData
+
     open var value: DataResult<T>
-        get() = flow.value
+        get() = _flow.value
         protected set(value) {
-            flow.value = value
+            _flow.value = value
+            _liveData.value = value
         }
 
     val status: DataResultStatus
-        get() = flow.value.status
+        get() = _flow.value.status
     val error: Throwable?
-        get() = flow.value.error
+        get() = _flow.value.error
     val data: T?
-        get() = flow.value.data
+        get() = _flow.value.data
 
     /**
      * Empty constructor when initializing with a value is not needed
@@ -37,14 +50,26 @@ open class ResponseFlow<T> {
      * @return An instance of ResponseFlow<T> with a default value set
      */
     constructor(value: DataResult<T>) {
-        flow = MutableStateFlow(value)
+        _flow = MutableStateFlow(value)
+        _liveData = MutableResponseLiveData(value)
     }
 
     /**
      *
      */
     suspend fun collect(collector: suspend ObserveWrapper<T>.() -> Unit) {
-        newWrapper().apply { collector.invoke(this) }.attachTo(flow)
+        newWrapper().apply { collector.invoke(this) }.attachTo(_flow)
+    }
+
+    /**
+     *
+     */
+    @NonNull
+    fun observe(
+        @NonNull owner: LifecycleOwner,
+        @NonNull wrapperConfig: ObserveWrapper<T>.() -> Unit
+    ): ResponseLiveData<T> {
+        return liveData.observe(owner, wrapperConfig)
     }
 
     /**

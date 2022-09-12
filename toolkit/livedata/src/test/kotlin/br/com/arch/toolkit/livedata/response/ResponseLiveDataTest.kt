@@ -1107,7 +1107,6 @@ class ResponseLiveDataTest {
         liveData.setData(data)
         mappedLiveData.observeData(owner, mockedObserver)
 
-
         advanceUntilIdle()
         verifyBlocking(mockedObserver) { invoke(data) }
         advanceUntilIdle()
@@ -1128,7 +1127,6 @@ class ResponseLiveDataTest {
 
         liveData.setData(data)
         mappedLiveData.observeData(owner, mockedObserver)
-
 
         advanceUntilIdle()
         verifyBlocking(mockedObserver) { invoke(data) }
@@ -1151,7 +1149,6 @@ class ResponseLiveDataTest {
         liveData.setError(error)
         mappedLiveData.observeError(owner, mockedObserver)
 
-
         advanceUntilIdle()
         verifyBlocking(mockedObserver) { invoke(error) }
         advanceUntilIdle()
@@ -1172,7 +1169,6 @@ class ResponseLiveDataTest {
 
         liveData.setError(error)
         mappedLiveData.observeError(owner, mockedObserver)
-
 
         advanceUntilIdle()
         verifyBlocking(mockedObserver) { invoke(error) }
@@ -1195,7 +1191,6 @@ class ResponseLiveDataTest {
             liveData.setData(data)
             onNextLiveData.observeData(owner, mockedObserver)
 
-
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(data) }
             advanceUntilIdle()
@@ -1216,7 +1211,6 @@ class ResponseLiveDataTest {
 
             liveData.setData(data)
             onNextLiveData.observeData(owner, mockedObserver)
-
 
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(data) }
@@ -1239,7 +1233,6 @@ class ResponseLiveDataTest {
             liveData.setError(error)
             onErrorLiveData.observeError(owner, mockedObserver)
 
-
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(error) }
             advanceUntilIdle()
@@ -1260,7 +1253,6 @@ class ResponseLiveDataTest {
 
             liveData.setError(error)
             onErrorLiveData.observeError(owner, mockedObserver)
-
 
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(error) }
@@ -1286,7 +1278,6 @@ class ResponseLiveDataTest {
             onErrorLiveData.observeError(owner, mockedObserver)
             onErrorLiveData.observeData(owner, mockedDataObserver)
 
-
             Mockito.verifyNoInteractions(mockedObserver)
             advanceUntilIdle()
             verifyBlocking(mockedOnErrorReturn) { invoke(error) }
@@ -1311,7 +1302,6 @@ class ResponseLiveDataTest {
             liveData.setError(error)
             onErrorLiveData.observeError(owner, mockedObserver)
             onErrorLiveData.observeData(owner, mockedDataObserver)
-
 
             Mockito.verifyNoInteractions(mockedObserver)
             advanceUntilIdle()
@@ -1358,7 +1348,6 @@ class ResponseLiveDataTest {
             Mockito.`when`(mockedTransformation.invoke(data)).thenReturn(result)
             liveData.setData("data")
 
-
             advanceUntilIdle()
             verifyBlocking(mockedTransformation, times(1)) { invoke(data) }
             advanceUntilIdle()
@@ -1380,7 +1369,6 @@ class ResponseLiveDataTest {
             val result = DataResult(0, null, DataResultStatus.SUCCESS)
             Mockito.`when`(mockedTransformation.invoke(data)).thenReturn(result)
             liveData.setData("data")
-
 
             advanceUntilIdle()
             verifyBlocking(mockedTransformation, times(1)) { invoke(data) }
