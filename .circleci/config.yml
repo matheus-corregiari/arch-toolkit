@@ -144,7 +144,7 @@ workflows:
             alias: deploy-livedata
             parameters:
               module:
-                - toolkit:delegate
+                - toolkit:livedata
           name: Deploy <<matrix.module>>
           requires:
             - deploy-delegate
@@ -153,7 +153,7 @@ workflows:
             alias: deploy-recycler-adapter
             parameters:
               module:
-                - toolkit:delegate
+                - toolkit:recycler-adapter
           name: Deploy <<matrix.module>>
           requires:
             - deploy-livedata
@@ -162,7 +162,7 @@ workflows:
             alias: deploy-statemachine
             parameters:
               module:
-                - toolkit:delegate
+                - toolkit:statemachine
           name: Deploy <<matrix.module>>
           requires:
             - deploy-recycler-adapter
@@ -171,7 +171,7 @@ workflows:
             alias: deploy-foldable
             parameters:
               module:
-                - toolkit:delegate
+                - toolkit:foldable
           name: Deploy <<matrix.module>>
           requires:
             - deploy-statemachine
