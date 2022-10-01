@@ -17,14 +17,6 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
-    implementation "androidx.annotation:annotation:$versions.androidx.annotation"
-    implementation "androidx.constraintlayout:constraintlayout:$versions.androidx.constraintlayout"
+    implementation "com.google.android.gms:play-services-wearable:$versions.wearable"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
-    implementation "androidx.window:window:$versions.androidx.window"
-
-    implementation project(":toolkit:delegate")
-    implementation "com.google.android.material:material:$versions.material"
-
-    androidTestImplementation "androidx.window:window-testing:$versions.androidx.window"
 }

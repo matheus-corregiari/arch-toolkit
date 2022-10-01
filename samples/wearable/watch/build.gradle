@@ -1,0 +1,29 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
+
+android {
+    defaultConfig {
+        applicationId "br.com.arch.toolkit.sample.wearable"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+    implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
+    implementation "androidx.constraintlayout:constraintlayout:$versions.androidx.constraintlayout"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
+    implementation "androidx.wear:wear:$versions.wear"
+    implementation "com.google.android.gms:play-services-wearable:$versions.wearable"
+
+    implementation project(":toolkit:delegate")
+    implementation project(":toolkit:wearable")
+}
+

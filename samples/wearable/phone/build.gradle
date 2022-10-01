@@ -1,30 +1,30 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
     defaultConfig {
-        consumerProguardFiles 'consumer-proguard-rules.pro'
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildTypes.debug.testCoverageEnabled false
+        applicationId "br.com.arch.toolkit.sample.wearable"
     }
 
     buildTypes {
         release {
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
     implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
-    implementation "androidx.annotation:annotation:$versions.androidx.annotation"
     implementation "androidx.constraintlayout:constraintlayout:$versions.androidx.constraintlayout"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
-    implementation "androidx.window:window:$versions.androidx.window"
+    implementation "com.google.android.gms:play-services-wearable:$versions.wearable"
+
+    implementation 'com.google.zxing:core:3.3.0'
 
     implementation project(":toolkit:delegate")
-    implementation "com.google.android.material:material:$versions.material"
-
-    androidTestImplementation "androidx.window:window-testing:$versions.androidx.window"
+    implementation project(":toolkit:wearable")
 }
+
