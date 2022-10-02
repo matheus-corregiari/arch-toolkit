@@ -4,17 +4,16 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.wearable.extension.listenToWearableRequests
 import br.com.arch.toolkit.wearable.extension.registerCapability
 import br.com.arch.toolkit.wearable.extension.removeCapability
 import br.com.arch.toolkit.wearable.extension.requestDataFromWearable
-import br.com.arch.toolkit.wearable.extension.sendDataToWearable
 import br.com.arch.toolkit.wearable.extension.stopListeningToWearableRequests
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wearable.MessageClient
-import com.google.android.gms.wearable.Wearable
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), MessageClient.RpcService {
 
@@ -22,37 +21,28 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), MessageClient.Rp
     private val buttonQRCodeSample: View by viewProvider(R.id.bt_qrcode_example)
     private val buttonRequestSample: View by viewProvider(R.id.bt_request_example)
 
-    private val viewModel = MainViewModel()
+    private val viewModel by lazy { ViewModelProvider(this)[MainViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        buttonTextSample.setOnClickListener {
-            it.context.sendDataToWearable(
-                "Message sent from phone :)".toByteArray(),
-                Capabilities.TEXT.name,
-                lifecycleScope,
-                onSuccessListener = ::onSuccess,
-                onErrorListener = ::onError
-            )
+        buttonTextSample.setOnClickListener { viewModel.sendText(it.context) }
+        buttonQRCodeSample.setOnClickListener { viewModel.sendQrCode(it.context) }
+        buttonRequestSample.setOnClickListener { viewModel.requestData(it.context) }
+
+        viewModel.textLiveData.observe(this) {
+            success(observer = ::onSuccess)
+            error(observer = ::onError)
         }
 
-        buttonQRCodeSample.setOnClickListener {
-            it.context.sendDataToWearable(
-                viewModel.generateQRCode(),
-                Capabilities.QRCODE.name,
-                lifecycleScope,
-                onSuccessListener = ::onSuccess,
-                onErrorListener = ::onError
-            )
+        viewModel.qrCodeLiveData.observe(this) {
+            success(observer = ::onSuccess)
+            error(observer = ::onError)
         }
 
-        buttonRequestSample.setOnClickListener {
-            it.context.requestDataFromWearable(
-                "Your fun data".toByteArray(),
-                Capabilities.REQUEST.name,
-                lifecycleScope
-            )
+        viewModel.requestLiveData.observe(this) {
+            success(observer = ::onSuccess)
+            error(observer = ::onError)
         }
     }
 

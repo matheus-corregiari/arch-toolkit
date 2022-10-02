@@ -7,7 +7,7 @@ import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.wearable.extension.listenToWearableRequests
 import br.com.arch.toolkit.wearable.extension.registerCapability
 import br.com.arch.toolkit.wearable.extension.removeCapability
-import br.com.arch.toolkit.wearable.extension.replyRequest
+import br.com.arch.toolkit.wearable.extension.sendRequestToWearable
 import br.com.arch.toolkit.wearable.extension.stopListeningToWearableRequests
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wearable.MessageClient
@@ -35,6 +35,6 @@ class RequestActivity : Activity(), MessageClient.RpcService {
 
     override fun onRequest(nodeId: String, path: String, data: ByteArray): Task<ByteArray> {
         textView.text = String(data)
-        return replyRequest(nodeId, path, "Sent from wearable :)".toByteArray())
+        return sendRequestToWearable(nodeId, path, "Sent from wearable :)".toByteArray())
     }
 }

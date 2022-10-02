@@ -79,7 +79,7 @@ fun <T> responseLiveDataOf(value: T, status: DataResultStatus = DataResultStatus
  * @return An instance of ResponseLiveData<T> with an error set
  */
 fun <T> responseLiveDataOf(error: Throwable) =
-    ResponseLiveData(DataResult(null, error, DataResultStatus.ERROR))
+    ResponseLiveData<T>(DataResult(null, error, DataResultStatus.ERROR))
 
 /**
  * Returns an instance of a MutableResponseLiveData<T> with the desired value
@@ -100,7 +100,7 @@ fun <T> mutableResponseLiveDataOf(value: T, status: DataResultStatus = DataResul
  * @return An instance of MutableResponseLiveData<T> with an error set
  */
 fun <T> mutableResponseLiveDataOf(error: Throwable) =
-    MutableResponseLiveData(DataResult(null, error, DataResultStatus.ERROR))
+    MutableResponseLiveData<T>(DataResult(null, error, DataResultStatus.ERROR))
 
 /**
  * Returns an instance of a SwapResponseLiveData<T> with the desired value
@@ -121,4 +121,4 @@ fun <T> swapResponseLiveDataOf(value: T, status: DataResultStatus = DataResultSt
  * @return An instance of SwapResponseLiveData<T> with an error set
  */
 fun <T> swapResponseLiveDataOf(error: Throwable) =
-    SwapResponseLiveData(DataResult(null, error, DataResultStatus.ERROR))
+    SwapResponseLiveData<T>(DataResult(null, error, DataResultStatus.ERROR))

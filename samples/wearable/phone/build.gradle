@@ -20,11 +20,13 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$versions.androidx.constraintlayout"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx.lifecycle.viewmodel"
     implementation "com.google.android.gms:play-services-wearable:$versions.wearable"
 
     implementation 'com.google.zxing:core:3.3.0'
 
     implementation project(":toolkit:delegate")
+    implementation project(":toolkit:livedata")
     implementation project(":toolkit:wearable")
 }
 

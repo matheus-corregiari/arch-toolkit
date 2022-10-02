@@ -17,9 +17,10 @@ ext.versions = [
                 constraintlayout: '2.1.4',
                 recyclerview    : '1.2.1',
                 lifecycle       : [
-                        livedata: '2.6.0-alpha02',
-                        runtime : '2.6.0-alpha02',
-                        testing : '2.1.0',
+                        livedata : '2.6.0-alpha02',
+                        runtime  : '2.6.0-alpha02',
+                        viewmodel: '2.6.0-alpha02',
+                        testing  : '2.1.0',
                 ],
                 window          : '1.0.0',
         ],
