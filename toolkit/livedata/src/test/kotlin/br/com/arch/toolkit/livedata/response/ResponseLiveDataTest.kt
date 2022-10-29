@@ -7,10 +7,13 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import br.com.arch.toolkit.common.DataResult
 import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.livedata.extention.mutableResponseLiveDataOf
+import br.com.arch.toolkit.livedata.extention.responseLiveDataOf
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verifyBlocking
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -168,6 +171,300 @@ class ResponseLiveDataTest {
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
         Assert.assertFalse(liveData.hasObservers())
+    }
+
+    @Test
+    fun validateMergeNullValues() = runTest {
+        val first = MutableResponseLiveData<String>()
+        val second = MutableResponseLiveData<String>()
+        val combination = first.mergeWith(second)
+
+        Assert.assertNull(combination.data)
+    }
+
+    @Test
+    fun validateMergeSingleFirstValue() = runTest {
+        val first = responseLiveDataOf("first")
+        val second = MutableResponseLiveData<String>()
+        val combination = first.mergeWith(second)
+
+        Assert.assertNull(combination.data)
+        Assert.assertTrue(combination.status == DataResultStatus.LOADING)
+    }
+
+    @Test
+    fun validateMergeSingleSecondValue() = runTest {
+        val first = responseLiveDataOf("first")
+        val second = MutableResponseLiveData<String>()
+        val combination = first.mergeWith(second)
+
+        Assert.assertNull(combination.data)
+        Assert.assertTrue(combination.status == DataResultStatus.LOADING)
+    }
+
+    @Test
+    fun validateMergeBothValues() = runTest {
+        val first = responseLiveDataOf("first")
+        val second = responseLiveDataOf("second")
+        val combination = first.mergeWith(second)
+
+        Assert.assertTrue(combination.data == (first.data to second.data))
+    }
+
+    @Test
+    fun validateMergeSingleFirstError() = runTest {
+        val firstThrowable = Throwable("first")
+        val first = responseLiveDataOf<String>(firstThrowable)
+        val second = MutableResponseLiveData<String>()
+        val combination = first.mergeWith(second)
+
+        Assert.assertTrue(combination.error == first.error)
+    }
+
+    @Test
+    fun validateMergeSingleSecondError() = runTest {
+        val first = MutableResponseLiveData<String>()
+        val secondThrowable = Throwable("second")
+        val second = responseLiveDataOf<String>(secondThrowable)
+        val combination = first.mergeWith(second)
+
+        Assert.assertTrue(combination.error == second.error)
+    }
+
+    @Test
+    fun validateMergeBothError() = runTest {
+        val firstThrowable = Throwable("first")
+        val first = responseLiveDataOf<String>(firstThrowable)
+        val secondThrowable = Throwable("second")
+        val second = responseLiveDataOf<String>(secondThrowable)
+
+        val combination = first.mergeWith(second)
+
+        Assert.assertTrue(combination.error == first.error)
+    }
+
+    @Test
+    fun validateObservePostMerge() = runTest {
+        val mockedDataObserver: (Pair<String, String>) -> Unit = mock()
+        val mockedLoadingObserver: (Boolean) -> Unit = mock()
+        val mockedErrorObserver: (Throwable) -> Unit = mock()
+
+        val first = MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
+        val second = MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
+
+        val combination = first.mergeWith(second)
+        combination.observe(owner) {
+            loading(observer = mockedLoadingObserver)
+            error(observer = mockedErrorObserver)
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(true) }
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(true) }
+
+        second.setData("second_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedLoadingObserver) { invoke(false) }
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedDataObserver) { invoke("first_set" to "second_set") }
+    }
+
+    @Test
+    fun validateObserveWithInitialValuePostMerge() = runTest {
+        val mockedDataObserver: (Pair<String, String>) -> Unit = mock()
+        val mockedLoadingObserver: (Boolean) -> Unit = mock()
+        val mockedErrorObserver: (Throwable) -> Unit = mock()
+
+        val first = mutableResponseLiveDataOf("first")
+            .transformDispatcher(Dispatchers.Main)
+        val second = mutableResponseLiveDataOf("second")
+
+        val combination = first.mergeWith(second)
+        combination.observe(owner) {
+            loading(observer = mockedLoadingObserver)
+            error(observer = mockedErrorObserver)
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke("first" to "second") }
+        verifyNoMoreInteractions(mockedErrorObserver)
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke("first_set" to "second") }
+        verifyNoMoreInteractions(mockedErrorObserver)
+
+        second.setData("second_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke("first_set" to "second_set") }
+        verifyNoMoreInteractions(mockedErrorObserver)
+    }
+
+    @Test
+    fun validateObservePostMultipleStepMerge() = runTest {
+        val mockedDataObserver: (Pair<Pair<String, String>, String>) -> Unit = mock()
+
+        val first = mutableResponseLiveDataOf("first")
+            .transformDispatcher(Dispatchers.Main)
+        val second = mutableResponseLiveDataOf("second")
+            .transformDispatcher(Dispatchers.Main)
+        val third = mutableResponseLiveDataOf("third")
+            .transformDispatcher(Dispatchers.Main)
+
+        val firstCombination = first.mergeWith(second)
+        val secondCombination = firstCombination.mergeWith(third)
+        secondCombination.observe(owner) {
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke(("first" to "second") to "third") }
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke(("first_set" to "second") to "third") }
+
+        second.setData("second_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke(("first_set" to "second_set") to "third") }
+
+        third.setData("third_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke(("first_set" to "second_set") to "third_set") }
+    }
+
+    @Test
+    fun validateObservePostMultipleMerges() = runTest {
+        val mockedDataObserver: (Map<String, *>) -> Unit = mock()
+        val mockedLoadingObserver: (Boolean) -> Unit = mock()
+        val mockedErrorObserver: (Throwable) -> Unit = mock()
+
+        val first = MutableResponseLiveData<String>()
+            .transformDispatcher(Dispatchers.Main)
+        val second = MutableResponseLiveData<String>()
+        val third = MutableResponseLiveData<String>()
+
+        val combination = first.mergeWith("first", "second" to second, "third" to third)
+        combination.observe(owner) {
+            loading(observer = mockedLoadingObserver)
+            error(observer = mockedErrorObserver)
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(true) }
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyNoMoreInteractions(mockedLoadingObserver)
+
+        second.setData("second_set")
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyNoMoreInteractions(mockedLoadingObserver)
+
+        third.setData("third_set")
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(false) }
+        verifyBlocking(mockedDataObserver) {
+            invoke(mapOf("first" to "first_set", "second" to "second_set", "third" to "third_set"))
+        }
+    }
+
+    @Test
+    fun validateObserveErrorPostMultipleMerges() = runTest {
+        val mockedDataObserver: (Map<String, *>) -> Unit = mock()
+        val mockedLoadingObserver: (Boolean) -> Unit = mock()
+        val mockedErrorObserver: (Throwable) -> Unit = mock()
+
+        val first = MutableResponseLiveData<String>()
+            .transformDispatcher(Dispatchers.Main)
+        val second = MutableResponseLiveData<String>()
+        val third = MutableResponseLiveData<String>()
+
+        val combination = first.mergeWith("first", "second" to second, "third" to third)
+        combination.observe(owner) {
+            loading(observer = mockedLoadingObserver)
+            error(observer = mockedErrorObserver)
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(true) }
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyNoMoreInteractions(mockedLoadingObserver)
+
+        second.setData("second_set")
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyNoMoreInteractions(mockedLoadingObserver)
+
+        val error = Throwable("third")
+        third.setError(error)
+        advanceUntilIdle()
+        verifyBlocking(mockedErrorObserver) { invoke(error) }
+        verifyBlocking(mockedLoadingObserver) { invoke(false) }
+        verifyNoMoreInteractions(mockedDataObserver)
+    }
+
+    @Test
+    fun validateObservePostMultipleMergesWithInitialValue() = runTest {
+        val mockedDataObserver: (Map<String, *>) -> Unit = mock()
+
+        val first = mutableResponseLiveDataOf("first")
+            .transformDispatcher(Dispatchers.Main)
+        val second = mutableResponseLiveDataOf("second")
+        val third = mutableResponseLiveDataOf("third")
+
+        val combination = first.mergeWith("first", "second" to second, "third" to third)
+        combination.observe(owner) {
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) {
+            invoke(mapOf("first" to "first", "second" to "second", "third" to "third"))
+        }
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) {
+            invoke(mapOf("first" to "first_set", "second" to "second", "third" to "third"))
+        }
+
+        second.setData("second_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) {
+            invoke(mapOf("first" to "first_set", "second" to "second_set", "third" to "third"))
+        }
+
+        third.setData("third_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) {
+            invoke(mapOf("first" to "first_set", "second" to "second_set", "third" to "third_set"))
+        }
     }
 
     @Test
