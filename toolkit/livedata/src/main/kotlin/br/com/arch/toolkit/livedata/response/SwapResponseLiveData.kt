@@ -42,6 +42,11 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
         get() = lastSource != null
 
     /**
+     * Flag to set whether we're notifying on every change or only on distinct values
+     */
+    var notifyOnlyOnDistinct: Boolean = false
+
+    /**
      * Changes the actual DataSource
      *
      * @param source The ResponseLiveData to replicate the value
@@ -50,14 +55,8 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
      *
      * @see SwapResponseLiveData.swapSource
      */
-    fun swapSource(source: ResponseLiveData<T>, discardAfterLoading: Boolean = false) {
-        clearSource()
-        sourceLiveData.addSource(source) {
-            value = it
-            if (it?.status != DataResultStatus.LOADING && discardAfterLoading) value = null
-        }
-        lastSource = source
-    }
+    fun swapSource(source: ResponseLiveData<T>, discardAfterLoading: Boolean = false) =
+        executeSwap(source, discardAfterLoading) { it }
 
     /**
      * Changes the actual DataSource, with transformation
@@ -70,13 +69,12 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
     fun <R> swapSource(
         source: ResponseLiveData<R>,
         transformation: (DataResult<R>) -> DataResult<T>
-    ) = executeSwap(source, transformation)
+    ) = executeSwap(source, false, transformation)
 
     /**
      * Changes the actual DataSource, with transformation
      *
      * @param source The ResponseLiveData to replicate the value
-     * @param async Indicate swapSource will execute synchronously or asynchronously
      * @param dataTransformer Receives the data of the source and change to T value
      * @param errorTransformer Receives the error of the source and change to another Throwable value
      * @param onErrorReturn Receives the error of the source and change to T value
@@ -88,7 +86,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
         dataTransformer: (R) -> T,
         errorTransformer: ((Throwable) -> Throwable)? = null,
         onErrorReturn: ((Throwable) -> T)? = null
-    ) = executeSwap(source) { result ->
+    ) = executeSwap(source, false) { result ->
 
         var status = result.status
         val error = result.error?.let { errorTransformer?.invoke(it) ?: result.error }
@@ -139,6 +137,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
 
     private fun <R> executeSwap(
         source: ResponseLiveData<R>,
+        discardAfterLoading: Boolean,
         transformation: (DataResult<R>) -> DataResult<T>?
     ) {
         clearSource()
@@ -151,17 +150,25 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
                         "Error performing swapSource, please check your transformations",
                         it
                     )
+
+                    val result = DataResult<T>(null, error, DataResultStatus.ERROR)
+                    if (value == result) return@onFailure
+
                     if (Looper.getMainLooper()?.isCurrentThread == true) {
-                        setValue(DataResult(null, error, DataResultStatus.ERROR))
+                        value = result
                     } else {
-                        postValue(DataResult(null, error, DataResultStatus.ERROR))
+                        postValue(result)
                     }
-                }.getOrNull()?.let {
+                }.getOrNull().let {
+                    if (value == it) return@let
+
                     if (Looper.getMainLooper()?.isCurrentThread == true) {
-                        setValue(it)
+                        value = it
                     } else {
                         postValue(it)
                     }
+
+                    if (it?.status != DataResultStatus.LOADING && discardAfterLoading) value = null
                 }
             }
         }

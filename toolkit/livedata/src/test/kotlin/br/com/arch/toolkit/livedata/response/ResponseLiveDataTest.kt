@@ -287,7 +287,7 @@ class ResponseLiveDataTest {
             .transformDispatcher(Dispatchers.Main)
         val second = mutableResponseLiveDataOf("second")
 
-        val combination = first.mergeWith(second)
+        val combination = first + second
         combination.observe(owner) {
             loading(observer = mockedLoadingObserver)
             error(observer = mockedErrorObserver)
@@ -465,6 +465,134 @@ class ResponseLiveDataTest {
         verifyBlocking(mockedDataObserver) {
             invoke(mapOf("first" to "first_set", "second" to "second_set", "third" to "third_set"))
         }
+    }
+
+    @Test
+    fun validateObserveOnFollowedBy() = runTest {
+        val mockedDataObserver: (Pair<String, String>) -> Unit = mock()
+        val mockedLoadingObserver: (Boolean) -> Unit = mock()
+        val mockedErrorObserver: (Throwable) -> Unit = mock()
+
+        val first = MutableResponseLiveData<String>()
+            .transformDispatcher(Dispatchers.Main)
+        val second = MutableResponseLiveData<String>()
+
+        val combination = first.followedBy { second }
+        combination.observe(owner) {
+            loading(observer = mockedLoadingObserver)
+            error(observer = mockedErrorObserver)
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(true) }
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyNoMoreInteractions(mockedLoadingObserver)
+
+        second.setData("second_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke("first_set" to "second_set") }
+        verifyBlocking(mockedLoadingObserver) { invoke(false) }
+        verifyNoMoreInteractions(mockedErrorObserver)
+    }
+
+    @Test
+    fun validateObserveOnFollowedByWithConditionMet() = runTest {
+        val mockedDataObserver: (Pair<String, String>) -> Unit = mock()
+        val mockedLoadingObserver: (Boolean) -> Unit = mock()
+        val mockedErrorObserver: (Throwable) -> Unit = mock()
+
+        val first = MutableResponseLiveData<String>()
+            .transformDispatcher(Dispatchers.Main)
+        val second = MutableResponseLiveData<String>()
+
+        val combination = first.followedBy({ second }, { it == "first_set" })
+        combination.observe(owner) {
+            loading(observer = mockedLoadingObserver)
+            error(observer = mockedErrorObserver)
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(true) }
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyNoMoreInteractions(mockedLoadingObserver)
+
+        second.setData("second_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke("first_set" to "second_set") }
+        verifyBlocking(mockedLoadingObserver) { invoke(false) }
+        verifyNoMoreInteractions(mockedErrorObserver)
+    }
+
+    @Test
+    fun validateObserveOnFollowedByWithConditionNotMet() = runTest {
+        val mockedDataObserver: (Pair<String, String>) -> Unit = mock()
+        val mockedLoadingObserver: (Boolean) -> Unit = mock()
+        val mockedErrorObserver: (Throwable) -> Unit = mock()
+
+        val first = MutableResponseLiveData<String>()
+            .transformDispatcher(Dispatchers.Main)
+        val second = MutableResponseLiveData<String>()
+
+        val combination = first.followedBy({ second }, { it == "first" })
+        combination.observe(owner) {
+            loading(observer = mockedLoadingObserver)
+            error(observer = mockedErrorObserver)
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(true) }
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(false) }
+        verifyBlocking(mockedErrorObserver) { invoke(any()) }
+    }
+
+    @Test
+    fun validateObserveOnFollowedByIgnoringConditionNotMet() = runTest {
+        val mockedDataObserver: (Pair<String, String?>) -> Unit = mock()
+        val mockedLoadingObserver: (Boolean) -> Unit = mock()
+        val mockedErrorObserver: (Throwable) -> Unit = mock()
+
+        val first = MutableResponseLiveData<String>()
+            .transformDispatcher(Dispatchers.Main)
+        val second = MutableResponseLiveData<String>()
+
+        val combination = first.followedBy({ second }, { it == "first" }, true)
+        combination.observe(owner) {
+            loading(observer = mockedLoadingObserver)
+            error(observer = mockedErrorObserver)
+            data(observer = mockedDataObserver)
+        }
+
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mockedDataObserver)
+        verifyNoMoreInteractions(mockedErrorObserver)
+        verifyBlocking(mockedLoadingObserver) { invoke(true) }
+
+        first.setData("first_set")
+        advanceUntilIdle()
+        verifyBlocking(mockedDataObserver) { invoke("first_set" to null) }
+        verifyBlocking(mockedLoadingObserver) { invoke(false) }
+        verifyNoMoreInteractions(mockedErrorObserver)
     }
 
     @Test
