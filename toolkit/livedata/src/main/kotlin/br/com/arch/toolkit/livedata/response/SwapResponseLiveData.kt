@@ -152,7 +152,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
                     )
 
                     val result = DataResult<T>(null, error, DataResultStatus.ERROR)
-                    if (value == result) return@onFailure
+                    if (value == result && notifyOnlyOnDistinct) return@onFailure
 
                     if (Looper.getMainLooper()?.isCurrentThread == true) {
                         value = result
@@ -160,7 +160,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
                         postValue(result)
                     }
                 }.getOrNull().let {
-                    if (value == it) return@let
+                    if (value == it && notifyOnlyOnDistinct) return@let
 
                     if (Looper.getMainLooper()?.isCurrentThread == true) {
                         value = it
