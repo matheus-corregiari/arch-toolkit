@@ -1,0 +1,24 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    defaultConfig {
+        consumerProguardFiles 'consumer-proguard-rules.pro'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildTypes.debug.testCoverageEnabled false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+    compileOnly "com.google.android.gms:play-services-wearable:$versions.wearable"
+    compileOnly "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
+
+    compileOnly project(":toolkit:livedata")
+}

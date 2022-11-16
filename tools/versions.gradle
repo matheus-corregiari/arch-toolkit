@@ -6,17 +6,21 @@ ext.versions = [
         maven_plugin  : '0.0.2',
 
         coroutines    : '1.6.1',
+        material      : '1.6.1',
+        wear          : '1.2.0',
+        wearable      : '18.0.0',
 
         // Android
         androidx      : [
                 appcompat       : '1.5.1',
-                annotation      : '1.4.0',
+                annotation      : '1.5.0',
                 constraintlayout: '2.1.4',
                 recyclerview    : '1.2.1',
                 lifecycle       : [
-                        livedata: '2.6.0-alpha02',
-                        runtime : '2.6.0-alpha02',
-                        testing : '2.1.0',
+                        livedata : '2.6.0-alpha02',
+                        runtime  : '2.6.0-alpha02',
+                        viewmodel: '2.6.0-alpha02',
+                        testing  : '2.1.0',
                 ],
                 window          : '1.0.0',
         ],

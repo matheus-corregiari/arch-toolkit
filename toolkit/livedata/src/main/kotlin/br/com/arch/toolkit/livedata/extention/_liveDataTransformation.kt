@@ -31,7 +31,6 @@ fun <T, R> LiveData<List<T>>.mapList(transformation: (T) -> R): LiveData<List<R>
 /**
  * Transforms a ResponseLiveData<List<T>> into a ResponseLiveData<List<R>>
  *
- * @param transformAsync Indicate map will execute synchronously or asynchronously
  * @param transformation Receive the actual non null T value and return the transformed non null R value
  */
 fun <T, R> ResponseLiveData<List<T>>.mapList(

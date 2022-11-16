@@ -1,5 +1,6 @@
 package br.com.arch.toolkit.delegate
 
+import android.app.Activity
 import android.view.View
 import android.view.View.NO_ID
 import android.view.ViewStub
@@ -48,6 +49,17 @@ class ViewProviderDelegate<out T>(
         set(value) {
             weakView = if (value == null) null else WeakReference(value)
         }
+
+    operator fun getValue(thisRef: Activity, property: KProperty<*>): T {
+        view?.let { if (!it.isAttachedToWindow) view = null }
+        return findView(property) {
+            if (parentRes != NO_ID) {
+                thisRef.findViewById<View>(parentRes).findViewById(idRes)
+            } else {
+                thisRef.findViewById(idRes)
+            }
+        }
+    }
 
     operator fun getValue(thisRef: AppCompatActivity, property: KProperty<*>): T {
         view?.let { if (!it.isAttachedToWindow) view = null }
