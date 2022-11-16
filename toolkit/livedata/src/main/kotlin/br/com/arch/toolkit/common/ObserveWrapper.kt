@@ -723,8 +723,7 @@ private class SuccessEvent(
 private class DataEvent<T>(
     @NonNull wrapper: WrapObserver<T, *>,
     @NonNull single: Boolean
-) :
-    ObserveEvent<T>(wrapper, single, EventDataStatus.DOESNT_MATTER)
+) : ObserveEvent<T>(wrapper, single, EventDataStatus.DOESNT_MATTER)
 
 private class ResultEvent<T>(
     @NonNull wrapper: WrapObserver<DataResult<T>, *>,

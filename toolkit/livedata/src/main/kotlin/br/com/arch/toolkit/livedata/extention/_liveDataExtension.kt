@@ -79,7 +79,7 @@ fun <T> responseLiveDataOf(value: T, status: DataResultStatus = DataResultStatus
  * @return An instance of ResponseLiveData<T> with an error set
  */
 fun <T> responseLiveDataOf(error: Throwable) =
-    ResponseLiveData(DataResult(null, error, DataResultStatus.ERROR))
+    ResponseLiveData<T>(DataResult(null, error, DataResultStatus.ERROR))
 
 /**
  * Returns an instance of a MutableResponseLiveData<T> with the desired value
