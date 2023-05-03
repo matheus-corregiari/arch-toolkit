@@ -2,6 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace 'br.com.arch.toolkit.delegate'
+
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
     }

@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace 'br.com.arch.toolkit.sample.statemachine'
+
     defaultConfig {
         applicationId "br.com.arch.toolkit.sample.statemachine"
     }

@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace 'br.com.arch.toolkit.sample.recycler.adapter'
+
     defaultConfig {
         applicationId "br.com.arch.toolkit.sample.recycler.adapter"
     }

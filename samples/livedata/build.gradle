@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
+    namespace 'br.com.arch.toolkit.sample.livedata'
+
     defaultConfig {
         applicationId "br.com.arch.toolkit.sample.livedata"
     }

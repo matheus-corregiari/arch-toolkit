@@ -1,9 +1,9 @@
 ext.versions = [
         kotlin        : '1.7.10',
-        android_plugin: '7.2.2',
+        android_plugin: '8.0.1',
         jacoco        : '0.8.8',
         dexcount      : '3.1.0',
-        maven_plugin  : '0.0.2',
+        maven_plugin  : '0.0.3',
 
         coroutines    : '1.6.1',
 
