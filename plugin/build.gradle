@@ -13,21 +13,21 @@ dependencies {
     implementation(kotlin("android-extensions"))
 }
 
-gradlePlugin {
-    plugins {
-        create("android-module") {
-            id = "android-module"
-            implementationClass = "AndroidModulePlugin"
-        }
-
-        create("kotlin-module") {
-            id = "kotlin-module"
-            implementationClass = "KotlinModulePlugin"
-        }
-
-        create("android-config-module") {
-            id = "android-config-module"
-            implementationClass = "AndroidConfigPlugin"
-        }
-    }
-}
+//gradlePlugin {
+//    plugins {
+//        create("android-module") {
+//            id = "android-module"
+//            implementationClass = "AndroidModulePlugin"
+//        }
+//
+//        create("kotlin-module") {
+//            id = "kotlin-module"
+//            implementationClass = "KotlinModulePlugin"
+//        }
+//
+//        create("android-config-module") {
+//            id = "android-config-module"
+//            implementationClass = "AndroidConfigPlugin"
+//        }
+//    }
+//}

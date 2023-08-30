@@ -1,0 +1,104 @@
+# ------------------------------------------------------------------------------------------------ #
+[versions]
+## --- Plugins and more general stuff --- ##
+android_plugin = "8.1.0"
+jacoco = "0.8.9"
+dexcount = "4.0.0"
+pedrinho_publish = "0.0.2"
+ktLint = "0.31.0"
+
+## --- Build Config and SDK --- ##
+build-version-name = "1.0.0"
+build-version-code = "1"
+build-sdk-min = "28"
+build-sdk-compile = "34"
+build-sdk-target = "34"
+build-tools = "34.0.0"
+
+## JetBrains
+jetbrains-kotlin = "1.8.20"
+jetbrains-coroutines = "1.6.4"
+
+## AndroidX
+androidx-appcompat = "1.6.1"
+androidx-annotation = "1.6.0"
+androidx-constraint = "2.1.4"
+androidx-recyclerview = "1.3.1"
+androidx-lifecycle-livedata = "2.6.1"
+androidx-lifecycle-runtime = "2.6.1"
+androidx-window = "1.1.0"
+androidx-test-core = "2.2.0"
+androidx-test-junit = "1.1.5"
+
+## Android
+android-test-runner = "1.0.2"
+android-test-rules = "1.0.2"
+android-test-espresso = "3.1.1"
+android-test-uiAutomator = "2.2.0"
+
+## Google
+google-material = "1.9.0"
+
+## Tools
+hamcrest = "1.3"
+mirror = "1.6.1"
+mockito = "3.3.3"
+mockito-kotlin = "3.3.3"
+junit = "4.13.2"
+robolectric = "4.8"
+
+# ------------------------------------------------------------------------------------------------ #
+[libraries]
+## JetBrains
+jetbrains-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "jetbrains-kotlin" }
+jetbrains-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "jetbrains-coroutines" }
+jetbrains-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "jetbrains-coroutines" }
+jetbrains-test-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "jetbrains-coroutines" }
+jetbrains-test-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "jetbrains-kotlin" }
+
+## Androidx
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-constraint = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraint" }
+androidx-recycler = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidx-recyclerview" }
+androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle-livedata" }
+androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle-runtime" }
+androidx-window = { group = "androidx.window", name = "window", version.ref = "androidx-window" }
+androidx-test-core = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-test-core" }
+androidx-test-window = { group = "androidx.window", name = "window-testing", version.ref = "androidx-window" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
+
+## Android (TODO tem update mudando pra androidx)
+android-test-runner = { group = "com.android.support.test", name = "runner", version.ref = "android-test-runner" }
+android-test-rules = { group = "com.android.support.test", name = "rules", version.ref = "android-test-rules" }
+android-test-espresso-intents = { group = "com.android.support.test", name = "espresso-intents", version.ref = "android-test-espresso" }
+android-test-espresso-core = { group = "com.android.support.test", name = "espresso-core", version.ref = "android-test-espresso" }
+android-test-espresso-contrib = { group = "com.android.support.test", name = "espresso-contrib", version.ref = "android-test-espresso" }
+android-test-uiAutomator = { group = "com.android.support.test", name = "uiautomator-v18", version.ref = "android-test-uiAutomator" }
+
+## Google
+google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
+
+## Tools
+hamcrest-test-core = { group = "org.hamcrest", name = "hamcrest-core", version.ref = "hamcrest" }
+hamcrest-test-library = { group = "org.hamcrest", name = "hamcrest-library", version.ref = "hamcrest" }
+mirror-test = { group = "net.vidageek", name = "mirror", version.ref = "mirror" }
+mockito-test-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-test-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito" }
+mockito-test-kotlin = { group = "com.nhaarman.mockitokotlin2", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
+junit-test = { group = "junit", name = "junit", version.ref = "junit" }
+robolectric-test = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+
+# ------------------------------------------------------------------------------------------------ #
+[plugins]
+
+## Android
+android-application = { id = "com.android.application", version.ref = "android_plugin" }
+android-library = { id = "com.android.library", version.ref = "android_plugin" }
+
+## JetBrains
+jetbrains-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrains-kotlin" }
+
+## Tools to make my life easier
+dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }
+pedrinho_publish = { id = "io.github.pedro-bachiega.sonatype-maven-publish", version.ref = "pedrinho_publish" }

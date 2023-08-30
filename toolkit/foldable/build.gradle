@@ -1,7 +1,10 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    alias libraries.plugins.android.library
+    alias libraries.plugins.jetbrains.kotlin
+}
 
 android {
+    namespace = "br.com.arch.toolkit.foldable"
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -16,15 +19,18 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
-    implementation "androidx.annotation:annotation:$versions.androidx.annotation"
-    implementation "androidx.constraintlayout:constraintlayout:$versions.androidx.constraintlayout"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
-    implementation "androidx.window:window:$versions.androidx.window"
-
+    // Other Modules
     implementation project(":toolkit:delegate")
-    implementation 'com.google.android.material:material:1.4.0'
 
-    androidTestImplementation "androidx.window:window-testing:$versions.androidx.window"
+    // Libraries
+    compileOnly libraries.jetbrains.stdlib.jdk8
+    compileOnly libraries.androidx.annotation
+    compileOnly libraries.androidx.appcompat
+    compileOnly libraries.androidx.constraint
+    compileOnly libraries.androidx.lifecycle.runtime
+    compileOnly libraries.androidx.window
+    compileOnly libraries.google.material
+
+    // Test Libraries
+    androidTestImplementation libraries.androidx.test.window
 }

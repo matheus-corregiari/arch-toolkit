@@ -1,4 +1,4 @@
-apply from: "$rootDir/tools/coverage/jacoco-common.gradle"
+//apply from: "$rootDir/tools/coverage/jacoco-common.gradle"
 
 afterEvaluate {
 

@@ -1,8 +1,10 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    alias libraries.plugins.android.library
+    alias libraries.plugins.jetbrains.kotlin
+}
 
 android {
-
+    namespace = "br.com.arch.toolkit.statemachine"
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -14,10 +16,9 @@ android {
             minifyEnabled false
         }
     }
-
 }
 
 dependencies {
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    compileOnly "androidx.annotation:annotation:$versions.androidx.annotation"
+    compileOnly libraries.jetbrains.stdlib.jdk8
+    compileOnly libraries.androidx.annotation
 }

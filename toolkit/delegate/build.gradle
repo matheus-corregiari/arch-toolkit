@@ -1,7 +1,10 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    alias libraries.plugins.android.library
+    alias libraries.plugins.jetbrains.kotlin
+}
 
 android {
+    namespace = "br.com.arch.toolkit.delegate"
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
     }
@@ -14,8 +17,9 @@ android {
 }
 
 dependencies {
-    compileOnly "androidx.annotation:annotation:$versions.androidx.annotation"
-    compileOnly "androidx.appcompat:appcompat:$versions.androidx.appcompat"
-    compileOnly "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+    // Libraries
+    compileOnly libraries.jetbrains.stdlib.jdk8
+    compileOnly libraries.androidx.annotation
+    compileOnly libraries.androidx.appcompat
+    compileOnly libraries.androidx.recycler
 }

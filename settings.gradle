@@ -1,6 +1,26 @@
-include ':toolkit:delegate'
+// Setting up all repository plugins
+pluginManagement {
+    apply from: "$rootDir/tools/repositories.gradle"
+    repositories(repositoryList)
+}
 
+dependencyResolutionManagement {
+    apply from: "$rootDir/tools/repositories.gradle"
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories(repositoryList)
+    versionCatalogs {
+        libraries {
+            from(files("$rootDir/tools/libs.versions.toml"))
+        }
+    }
+}
+
+// Root Project config
+rootProject.name = "Arch Toolkit"
+
+// Modules --> Libraries and Samples
+include ':toolkit:delegate'
+include ':toolkit:foldable', ':samples:foldable'
 include ':toolkit:livedata', ':samples:livedata'
 include ':toolkit:recycler-adapter', ':samples:recycler-adapter'
 include ':toolkit:statemachine', ':samples:statemachine'
-include ':toolkit:foldable', ':samples:foldable'

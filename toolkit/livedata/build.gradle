@@ -1,7 +1,10 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    alias libraries.plugins.android.library
+    alias libraries.plugins.jetbrains.kotlin
+}
 
 android {
+    namespace = "br.com.arch.toolkit.livedata"
 
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
@@ -12,21 +15,18 @@ android {
             minifyEnabled false
         }
     }
-
 }
 
 dependencies {
-    compileOnly "androidx.lifecycle:lifecycle-livedata-ktx:$versions.androidx.lifecycle.livedata"
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines"
-    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
+    // Libraries
+    compileOnly libraries.jetbrains.stdlib.jdk8
+    compileOnly libraries.jetbrains.coroutines.core
+    compileOnly libraries.jetbrains.coroutines.android
+    compileOnly libraries.androidx.lifecycle.livedata
 
-    testImplementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.androidx.lifecycle.livedata"
-    testImplementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
-    testImplementation "androidx.arch.core:core-testing:$versions.androidx.lifecycle.testing"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.coroutines"
-}
-
-tasks.withType(Javadoc).all {
-    enabled = false
+    // Test Libraries
+    testImplementation libraries.androidx.lifecycle.livedata
+    testImplementation libraries.androidx.lifecycle.runtime
+    testImplementation libraries.androidx.test.core
+    testImplementation libraries.jetbrains.test.coroutines
 }

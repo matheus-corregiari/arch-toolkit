@@ -1,33 +1,26 @@
+// TODO Remover quando tudo for pro catalog
 buildscript {
-    apply from: "$rootDir/tools/versions.gradle"
-
     repositories {
         google()
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-
-    dependencies {
-        classpath "com.android.tools.build:gradle:$versions.android_plugin"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
-        classpath "org.jacoco:org.jacoco.core:$versions.jacoco"
-        classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:$versions.dexcount"
-        classpath "io.github.pedro-bachiega:SonatypeMavenPublishPlugin:$versions.maven_plugin"
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
+plugins {
+    id 'jacoco'
 
+    alias(libraries.plugins.android.application) apply false
+    alias(libraries.plugins.android.library) apply false
+    alias(libraries.plugins.jetbrains.kotlin) apply false
+    alias(libraries.plugins.dexcount) apply false
+    //TODO Pedrinho, help me
+//    alias(libraries.plugins.pedrinho_publish) apply false
+}
+
+allprojects {
     if (!project.path.contains("sample")) {
-        apply from: "$rootDir/tools/dependencies/unit-test.gradle"
-        apply from: "$rootDir/tools/dependencies/instrumented-test.gradle"
-        apply from: "$rootDir/tools/publish/maven-publish.gradle"
+//        apply from: "$rootDir/tools/dependencies/unit-test.gradle"
+//        apply from: "$rootDir/tools/dependencies/instrumented-test.gradle"
+//        apply from: "$rootDir/tools/publish/maven-publish.gradle"
     }
 
     afterEvaluate {
@@ -35,15 +28,15 @@ allprojects {
 
         android {
 
-            compileSdkVersion 33
-            buildToolsVersion "32.0.0"
+            compileSdkVersion libraries.versions.build.sdk.compile.get().toInteger()
+            buildToolsVersion libraries.versions.build.tools.get()
 
             defaultConfig {
-                minSdkVersion 23
-                targetSdkVersion 33
+                minSdkVersion libraries.versions.build.sdk.min.get().toInteger()
+                targetSdkVersion libraries.versions.build.sdk.target.get().toInteger()
 
-                versionCode 1
-                versionName "1.0"
+                versionCode  libraries.versions.build.version.code.get().toInteger()
+                versionName libraries.versions.build.version.name.get()
 
                 resConfigs "en"
             }
@@ -85,60 +78,60 @@ allprojects {
             }
 
             compileOptions {
-                sourceCompatibility JavaVersion.VERSION_1_8
-                targetCompatibility JavaVersion.VERSION_1_8
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
             }
 
-            task sourcesJar(type: Jar) {
-                from android.sourceSets.main.java.srcDirs
-                classifier = 'sources'
-            }
-
-            tasks.withType(Javadoc) {
-                options.addStringOption('Xdoclint:none', '-quiet')
-                options.addStringOption('encoding', 'UTF-8')
-            }
-
-            configurations {
-                javadocDeps
-            }
-
-            task javadoc(type: Javadoc) {
-                excludes = ['**/*.kt']
-                source = android.sourceSets.main.java.srcDirs
-                classpath += configurations.javadocDeps
-                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-            }
-
-            task javadocJar(type: Jar, dependsOn: javadoc) {
-                classifier = 'javadoc'
-                from javadoc.destinationDir
-            }
-
-            tasks.withType(Test) {
-                jacoco.includeNoLocationClasses = true
-                jacoco.excludes = ['jdk.internal.*']
-            }
-
-            if (!project.path.contains("samples")) {
-                task publishRelease(group: "publishing") {
-                    dependsOn "publish"
-                }
-            }
-
-            artifacts {
-                archives javadocJar
-                archives sourcesJar
-            }
-
-            dependencies {
-                javadocDeps "com.android.support:support-annotations:$versions.android_support"
-                ktlint "com.github.shyiko:ktlint:$versions.ktLint"
-            }
+//            task sourcesJar(type: Jar) {
+//                from android.sourceSets.main.java.srcDirs
+//                classifier = 'sources'
+//            }
+//
+//            tasks.withType(Javadoc) {
+//                options.addStringOption('Xdoclint:none', '-quiet')
+//                options.addStringOption('encoding', 'UTF-8')
+//            }
+//
+//            configurations {
+//                javadocDeps
+//            }
+//
+//            task javadoc(type: Javadoc) {
+//                excludes = ['**/*.kt']
+//                source = android.sourceSets.main.java.srcDirs
+//                classpath += configurations.javadocDeps
+//                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//            }
+//
+//            task javadocJar(type: Jar, dependsOn: javadoc) {
+//                classifier = 'javadoc'
+//                from javadoc.destinationDir
+//            }
+//
+//            tasks.withType(Test) {
+//                jacoco.includeNoLocationClasses = true
+//                jacoco.excludes = ['jdk.internal.*']
+//            }
+//
+//            if (!project.path.contains("samples")) {
+//                task publishRelease(group: "publishing") {
+//                    dependsOn "publish"
+//                }
+//            }
+//
+//            artifacts {
+//                archives javadocJar
+//                archives sourcesJar
+//            }
+//
+//            dependencies {
+//                javadocDeps "com.android.support:support-annotations:$versions.android_support"
+//                ktlint "com.github.shyiko:ktlint:$versions.ktLint"
+//            }
         }
     }
 
-    apply from: "$rootDir/tools/ktlint.gradle"
-    apply from: "$rootDir/tools/coverage/jacoco.gradle"
-    apply from: "$rootDir/tools/coverage/jacoco-unified.gradle"
+//    apply from: "$rootDir/tools/ktlint.gradle"
+//    apply from: "$rootDir/tools/coverage/jacoco.gradle"
+//    apply from: "$rootDir/tools/coverage/jacoco-unified.gradle"
 }

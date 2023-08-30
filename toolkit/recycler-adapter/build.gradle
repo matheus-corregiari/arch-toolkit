@@ -1,7 +1,10 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    alias libraries.plugins.android.library
+    alias libraries.plugins.jetbrains.kotlin
+}
 
 android {
+    namespace = "br.com.arch.toolkit.recycler.adapter"
 
     defaultConfig {
         consumerProguardFiles 'consumer-proguard-rules.pro'
@@ -16,6 +19,6 @@ android {
 }
 
 dependencies {
-    compileOnly "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+    compileOnly libraries.jetbrains.stdlib.jdk8
+    compileOnly libraries.androidx.recycler
 }

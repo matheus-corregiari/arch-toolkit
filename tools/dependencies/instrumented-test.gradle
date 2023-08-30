@@ -4,31 +4,30 @@ afterEvaluate {
     android {
         dependencies {
 
-            androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-            androidTestImplementation "androidx.arch.core:core-testing:$versions.androidx.lifecycle.testing"
+            androidTestImplementation libraries.jetbrains.stdlib.jdk8
+            androidTestImplementation libraries.jetbrains.test.reflect
 
-            androidTestImplementation "junit:junit:$versions.junit"
-            androidTestImplementation "androidx.test.ext:junit:$versions.androidx_junit"
+            androidTestImplementation libraries.junit.test
 
-            androidTestImplementation "org.mockito:mockito-core:$versions.mockito"
-            androidTestImplementation "org.mockito:mockito-android:$versions.mockito"
+            androidTestImplementation libraries.mockito.test.core
+            androidTestImplementation libraries.mockito.test.android
 
-            androidTestImplementation "androidx.annotation:annotation:$versions.androidx.annotation"
-            androidTestImplementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
+            androidTestImplementation libraries.androidx.test.junit
+            androidTestImplementation libraries.androidx.test.core
+            androidTestImplementation libraries.androidx.annotation
+            androidTestImplementation libraries.androidx.appcompat
 
-            androidTestImplementation "com.android.support.test:runner:$versions.runner"
-            androidTestImplementation "com.android.support.test:rules:$versions.rules"
-            androidTestImplementation "com.android.support.test.espresso:espresso-intents:$versions.espresso"
-            androidTestImplementation "com.android.support.test.espresso:espresso-core:$versions.espresso"
-            androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$versions.espresso"
-            androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:$versions.uiAutomator"
+            androidTestImplementation libraries.android.test.runner
+            androidTestImplementation libraries.android.test.rules
+            androidTestImplementation libraries.android.test.espresso.core
+            androidTestImplementation libraries.android.test.espresso.contrib
+            androidTestImplementation libraries.android.test.espresso.intents
+            androidTestImplementation libraries.android.test.uiAutomator
 
-            androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
+            androidTestImplementation libraries.hamcrest.test.core
+            androidTestImplementation libraries.hamcrest.test.library
 
-            androidTestImplementation "org.hamcrest:hamcrest-core:$versions.hamcrest"
-            androidTestImplementation "org.hamcrest:hamcrest-library:$versions.hamcrest"
-
-            androidTestImplementation "net.vidageek:mirror:$versions.mirror"
+            androidTestImplementation libraries.mirror.test
         }
     }
 }

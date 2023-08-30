@@ -1,7 +1,10 @@
-apply plugin: 'com.android.application'
-apply plugin: 'org.jetbrains.kotlin.android'
+plugins {
+    alias libraries.plugins.android.application
+    alias libraries.plugins.jetbrains.kotlin
+}
 
 android {
+    namespace = "br.com.arch.toolkit.sample.livedata"
     defaultConfig {
         applicationId "br.com.arch.toolkit.sample.livedata"
     }
@@ -16,12 +19,12 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.androidx.lifecycle.livedata"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
-
+    // Other Modules
     implementation project(":toolkit:livedata")
-}
 
+    // Libraries
+    implementation libraries.jetbrains.stdlib.jdk8
+    implementation libraries.androidx.lifecycle.livedata
+    implementation libraries.jetbrains.coroutines.android
+    implementation libraries.jetbrains.coroutines.core
+}
