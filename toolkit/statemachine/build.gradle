@@ -1,12 +1,8 @@
-plugins {
-    alias libraries.plugins.android.library
-    alias libraries.plugins.jetbrains.kotlin
-}
+plugins { id "toolkit-library" }
 
 android {
     namespace = "br.com.arch.toolkit.statemachine"
     defaultConfig {
-        consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildTypes.debug.testCoverageEnabled false
     }

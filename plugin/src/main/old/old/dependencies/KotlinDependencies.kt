@@ -1,7 +1,7 @@
-package dependencies
+package old.dependencies
 
 import NeededDependencies
-import getCatalog
+import old.getCatalog
 import org.gradle.api.Project
 
 internal class KotlinDependencies : NeededDependencies {

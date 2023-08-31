@@ -1,4 +1,4 @@
-package dependencies
+package old.dependencies
 
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler

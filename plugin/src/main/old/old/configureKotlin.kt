@@ -1,3 +1,5 @@
+package old
+
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 

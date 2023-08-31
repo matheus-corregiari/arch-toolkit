@@ -18,6 +18,9 @@ dependencyResolutionManagement {
 // Root Project config
 rootProject.name = "Arch Toolkit"
 
+// Plugins --> The Dev just want to be happy
+includeBuild 'plugin'
+
 // Modules --> Libraries and Samples
 include ':toolkit:delegate'
 include ':toolkit:foldable', ':samples:foldable'

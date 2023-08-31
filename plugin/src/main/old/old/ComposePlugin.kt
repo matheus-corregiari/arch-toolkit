@@ -1,8 +1,11 @@
-import dependencies.KotlinDependencies
+package old
+
+import NeededDependencies
+import dependencies.ComposeDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-internal class AndroidModulePlugin : Plugin<Project>, NeededDependencies by KotlinDependencies() {
+internal class ComposePlugin : Plugin<Project>, NeededDependencies by ComposeDependencies() {
 
     private val androidProjectConfig by lazy { AndroidProjectConfig() }
 
@@ -16,11 +19,17 @@ internal class AndroidModulePlugin : Plugin<Project>, NeededDependencies by Kotl
     }
 
     private fun configureAndroid(target: Project) {
+        val composeVersion = target.getCatalog().findVersion(COMPOSE_CATALOG_NAME)
+
         androidProjectConfig.config(
             target = target,
-            buildBaseExtensionBlock = null
+            buildBaseExtensionBlock = {
+                composeOptions {
+                    kotlinCompilerExtensionVersion = composeVersion.get().requiredVersion
+                }
+            }
         ) { buildFeatures ->
-            buildFeatures.viewBinding = true
+            buildFeatures.compose = true
         }
     }
 }

@@ -1,4 +1,7 @@
-import dependencies.KotlinDependencies
+package old
+
+import NeededDependencies
+import old.dependencies.KotlinDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

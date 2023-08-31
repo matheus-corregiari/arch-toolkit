@@ -16,7 +16,7 @@ build-sdk-target = "34"
 build-tools = "34.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "1.8.20"
+jetbrains-kotlin = "1.9.10"
 jetbrains-coroutines = "1.6.4"
 
 ## AndroidX
