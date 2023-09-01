@@ -1,21 +1,7 @@
-plugins {
-    alias libraries.plugins.android.application
-    alias libraries.plugins.jetbrains.kotlin
-}
-android {
-    namespace = "br.com.arch.toolkit.sample.statemachine"
-    defaultConfig {
-        applicationId "br.com.arch.toolkit.sample.statemachine"
-    }
+plugins { id "toolkit-sample" }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-}
+android.namespace = "br.com.arch.toolkit.sample.statemachine"
+android.defaultConfig.applicationId "br.com.arch.toolkit.sample.statemachine"
 
 dependencies {
     // Other Modules

@@ -1,20 +1,6 @@
-plugins {
-    alias libraries.plugins.android.library
-    alias libraries.plugins.jetbrains.kotlin
-}
+plugins { id "toolkit-library" }
 
-android {
-    namespace = "br.com.arch.toolkit.delegate"
-    defaultConfig {
-        consumerProguardFiles 'consumer-proguard-rules.pro'
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-}
+android.namespace = "br.com.arch.toolkit.delegate"
 
 dependencies {
     // Libraries

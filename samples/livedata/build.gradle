@@ -1,22 +1,7 @@
-plugins {
-    alias libraries.plugins.android.application
-    alias libraries.plugins.jetbrains.kotlin
-}
+plugins { id "toolkit-sample" }
 
-android {
-    namespace = "br.com.arch.toolkit.sample.livedata"
-    defaultConfig {
-        applicationId "br.com.arch.toolkit.sample.livedata"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-}
+android.namespace = "br.com.arch.toolkit.sample.livedata"
+android.defaultConfig.applicationId "br.com.arch.toolkit.sample.livedata"
 
 dependencies {
     // Other Modules

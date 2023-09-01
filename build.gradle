@@ -1,10 +1,3 @@
-// TODO Remover quando tudo for pro catalog
-buildscript {
-    repositories {
-        google()
-    }
-}
-
 plugins {
     id 'jacoco'
 
@@ -27,19 +20,6 @@ allprojects {
         if (!project.hasProperty("android")) return
 
         android {
-
-            compileSdkVersion libraries.versions.build.sdk.compile.get().toInteger()
-            buildToolsVersion libraries.versions.build.tools.get()
-
-            defaultConfig {
-                minSdkVersion libraries.versions.build.sdk.min.get().toInteger()
-                targetSdkVersion libraries.versions.build.sdk.target.get().toInteger()
-
-                versionCode  libraries.versions.build.version.code.get().toInteger()
-                versionName libraries.versions.build.version.name.get()
-
-                resConfigs "en"
-            }
 
             lintOptions {
                 checkReleaseBuilds true

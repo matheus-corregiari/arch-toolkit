@@ -1,24 +1,9 @@
-plugins {
-    alias libraries.plugins.android.library
-    alias libraries.plugins.jetbrains.kotlin
-}
+plugins { id "toolkit-library" }
 
-android {
-    namespace = "br.com.arch.toolkit.recycler.adapter"
-
-    defaultConfig {
-        consumerProguardFiles 'consumer-proguard-rules.pro'
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-
-}
+android.namespace = "br.com.arch.toolkit.recycler.adapter"
 
 dependencies {
+    // Libraries
     compileOnly libraries.jetbrains.stdlib.jdk8
     compileOnly libraries.androidx.recycler
 }

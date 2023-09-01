@@ -1,20 +1,9 @@
 plugins { id "toolkit-library" }
 
-android {
-    namespace = "br.com.arch.toolkit.statemachine"
-    defaultConfig {
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildTypes.debug.testCoverageEnabled false
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-}
+android.namespace = "br.com.arch.toolkit.statemachine"
 
 dependencies {
+    // Libraries
     compileOnly libraries.jetbrains.stdlib.jdk8
     compileOnly libraries.androidx.annotation
 }

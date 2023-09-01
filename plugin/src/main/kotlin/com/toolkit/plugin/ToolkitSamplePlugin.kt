@@ -3,16 +3,15 @@ package com.toolkit.plugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-internal class ToolkitLibraryPlugin : Plugin<Project> {
+internal class ToolkitSamplePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        target.applyPlugins("android-library")
+        target.applyPlugins("android-application")
         target.plugins.apply("toolkit-base")
 
-        with(target.androidLibrary) {
+        with(target.androidApplication) {
 
             defaultConfig {
-                consumerProguardFiles("consumer-proguard-rules.pro")
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
 
@@ -21,7 +20,10 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
                 enableUnitTestCoverage = false
             }
 
-            buildTypes.maybeCreate("release").minifyEnabled(false)
+            buildTypes.maybeCreate("release").apply {
+                isMinifyEnabled = true
+                proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            }
         }
     }
 
