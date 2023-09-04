@@ -21,9 +21,16 @@ rootProject.name = "Arch Toolkit"
 // Plugins --> The Dev just want to be happy
 includeBuild 'plugin'
 
-// Modules --> Libraries and Samples
+// Toolkit Libraries
 include ':toolkit:delegate'
-include ':toolkit:foldable', ':samples:foldable'
-include ':toolkit:livedata', ':samples:livedata'
-include ':toolkit:recycler-adapter', ':samples:recycler-adapter'
-include ':toolkit:statemachine', ':samples:statemachine'
+include ':toolkit:foldable'
+include ':toolkit:livedata'
+include ':toolkit:recycler-adapter'
+include ':toolkit:statemachine'
+
+// Samples
+include ':samples:github-list-project'
+include ':samples:foldable'
+include ':samples:livedata'
+include ':samples:recycler-adapter'
+include ':samples:statemachine'

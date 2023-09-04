@@ -55,8 +55,8 @@ fun <T> LiveData<T>.observeSingle(owner: LifecycleOwner, observer: ((T) -> Unit)
  */
 fun <T> LiveData<T>.observeUntil(owner: LifecycleOwner, observer: ((T?) -> Boolean)) =
     observe(owner, object : Observer<T> {
-        override fun onChanged(data: T?) {
-            if (data.let(observer)) removeObserver(this)
+        override fun onChanged(value: T) {
+            if (value.let(observer)) removeObserver(this)
         }
     })
 
