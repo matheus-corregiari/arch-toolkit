@@ -1,5 +1,7 @@
 package com.toolkit.plugin
 
+import java.io.File
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -11,18 +13,15 @@ internal class ToolkitBasePlugin : Plugin<Project> {
         val libraries = target.libraries
         with(target.androidBase) {
 
-            compileSdkVersion = libraries.findVersion("build-sdk-compile").get().strictVersion
-            buildToolsVersion = libraries.findVersion("build-tools").get().strictVersion
+            compileSdkVersion(libraries.version("build-sdk-compile").toInt())
+            buildToolsVersion = libraries.version("build-tools")
 
             defaultConfig {
-                it.minSdkVersion(libraries.findVersion("build-sdk-min").get().strictVersion.toInt())
-                it.targetSdkVersion(
-                    libraries.findVersion("build-sdk-target").get().strictVersion.toInt()
-                )
+                it.minSdkVersion(libraries.version("build-sdk-min").toInt())
+                it.targetSdkVersion(libraries.version("build-sdk-target").toInt())
 
-                it.versionCode =
-                    libraries.findVersion("build-version-code").get().strictVersion.toInt()
-                it.versionName = libraries.findVersion("build-version-name").get().strictVersion
+                it.versionCode = libraries.version("build-version-code").toInt()
+                it.versionName = libraries.version("build-version-name")
 
                 it.resConfigs("en")
 
@@ -33,6 +32,49 @@ internal class ToolkitBasePlugin : Plugin<Project> {
                 enableAndroidTestCoverage = false
                 enableUnitTestCoverage = false
             }
+
+            aaptOptions {
+                it.cruncherEnabled = false
+            }
+
+            compileOptions {
+                it.sourceCompatibility(JavaVersion.VERSION_17)
+                it.targetCompatibility(JavaVersion.VERSION_17)
+            }
+
+            lintOptions {
+                it.isCheckReleaseBuilds = true
+
+                it.isAbortOnError = true
+                it.isIgnoreWarnings = false
+                it.isAbsolutePaths = false
+                it.isWarningsAsErrors = false
+
+                it.htmlOutput =
+                    File("${target.rootDir}/build/reports/lint/html/${target.name}-lint.html")
+                it.xmlOutput =
+                    File("${target.rootDir}/build/reports/lint/xml/${target.name}-lint.xml")
+            }
+
+            testOptions {
+                it.unitTests.isIncludeAndroidResources = true
+                it.unitTests.isReturnDefaultValues = true
+                it.animationsDisabled = true
+            }
+
+            packagingOptions {
+                it.exclude("META-INF/LICENSE")
+                it.pickFirst("protobuf.meta")
+                it.setDoNotStrip(setOf("*/mips/*.so", "*/mips64/*.so"))
+            }
+
+            sourceSets {
+                it.maybeCreate("main").java.srcDirs("src/main/kotlin")
+                it.maybeCreate("test").java.srcDirs("src/test/kotlin")
+                it.maybeCreate("androidTest").java.srcDirs("src/androidTest/kotlin")
+                it.maybeCreate("androidTest").resources.srcDirs("src/androidTest/res")
+            }
+
         }
     }
 
