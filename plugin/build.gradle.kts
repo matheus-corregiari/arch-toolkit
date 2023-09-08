@@ -4,9 +4,12 @@ repositories {
     gradlePluginPortal()
 }
 
+val androidBuildVersion: String = "8.1.0"
+val kotlinVersion: String = "1.9.10"
+
 plugins {
     id("java-gradle-plugin")
-    kotlin("jvm").version("1.9.10")
+    kotlin("jvm").version("1.9.10") // <-- Also Kotlin version!
 }
 
 kotlin { jvmToolchain(11) }
@@ -17,9 +20,9 @@ version = "1.0.0"
 dependencies {
     compileOnly(gradleApi())
 
-    implementation("com.android.tools.build:gradle:8.1.0")
-    implementation(kotlin("gradle-plugin", "1.9.10"))
-    implementation(kotlin("android-extensions", "1.9.10"))
+    implementation("com.android.tools.build:gradle:$androidBuildVersion")
+    implementation(kotlin("gradle-plugin", kotlinVersion))
+    implementation(kotlin("android-extensions", kotlinVersion))
 }
 
 sourceSets {
@@ -51,6 +54,13 @@ gradlePlugin {
             displayName = "Toolkit Base Plugin"
             description = "All default config"
             implementationClass = "com.toolkit.plugin.ToolkitBasePlugin"
+        }
+
+        create("toolkit-compose") {
+            id = "toolkit-compose"
+            displayName = "Toolkit Compose Plugin"
+            description = "Enables and configure compose for module"
+            implementationClass = "com.toolkit.plugin.ToolkitComposePlugin"
         }
     }
 }

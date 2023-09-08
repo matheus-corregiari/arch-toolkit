@@ -6,29 +6,46 @@ jacoco = "0.8.9"
 dexcount = "4.0.0"
 pedrinho_publish = "0.0.2"
 ktLint = "0.31.0"
+ksp = "1.8.10-1.0.9"
 
 ## --- Build Config and SDK --- ##
 build-version-name = "1.0.0"
 build-version-code = "1"
 build-sdk-min = "28"
-build-sdk-compile = "34"
-build-sdk-target = "34"
-build-tools = "34.0.0"
+build-sdk-compile = "33"
+build-sdk-target = "33"
+build-tools = "33.0.2"
 
 ## JetBrains
-jetbrains-kotlin = "1.9.10"
+jetbrains-kotlin = "1.8.10" # --> Cannot update because of compose
 jetbrains-coroutines = "1.6.4"
 
 ## AndroidX
 androidx-appcompat = "1.6.1"
-androidx-annotation = "1.6.0"
+androidx-annotation = "1.7.0"
 androidx-constraint = "2.1.4"
 androidx-recyclerview = "1.3.1"
-androidx-lifecycle-livedata = "2.6.1"
-androidx-lifecycle-runtime = "2.6.1"
+androidx-lifecycle-livedata = "2.6.2"
+androidx-lifecycle-runtime = "2.6.2"
 androidx-window = "1.1.0"
+androidx-splash = "1.0.1"
 androidx-test-core = "2.2.0"
 androidx-test-junit = "1.1.5"
+
+## AndroidX Compose
+androidx-compose-compiler = "1.4.3"
+androidx-compose-material = "1.5.0"
+androidx-compose-material3 = "1.1.1"
+androidx-compose-constraint = "1.0.1"
+androidx-compose-core = "1.5.0"
+androidx-compose-lifecycle = "2.6.2"
+androidx-compose-activity = "1.7.2"
+
+## SquareUp
+square-retrofit = "2.9.0"
+square-okhttp = "4.10.0"
+square-moshi = "1.14.0"
+square-timber = "5.0.1"
 
 ## Android
 android-test-runner = "1.0.2"
@@ -64,9 +81,22 @@ androidx-recycler = { group = "androidx.recyclerview", name = "recyclerview", ve
 androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle-livedata" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle-runtime" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "androidx-window" }
+androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splash" }
 androidx-test-core = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-test-core" }
 androidx-test-window = { group = "androidx.window", name = "window-testing", version.ref = "androidx-window" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
+
+## Androidx Compose
+androidx-compose-material-core = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "androidx-compose-material" }
+androidx-compose-material-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "androidx-compose-material" }
+androidx-compose-material3-core = { group = "androidx.compose.material3", name = "material3", version.ref = "androidx-compose-material3" }
+androidx-compose-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "androidx-compose-material3" }
+androidx-compose-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-compose-activity" }
+androidx-compose-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidx-compose-lifecycle" }
+androidx-compose-constraint = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidx-compose-constraint" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "androidx-compose-core" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidx-compose-core" }
+androidx-compose-ui-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidx-compose-core" }
 
 ## Android (TODO tem update mudando pra androidx)
 android-test-runner = { group = "com.android.support.test", name = "runner", version.ref = "android-test-runner" }
@@ -75,6 +105,15 @@ android-test-espresso-intents = { group = "com.android.support.test", name = "es
 android-test-espresso-core = { group = "com.android.support.test", name = "espresso-core", version.ref = "android-test-espresso" }
 android-test-espresso-contrib = { group = "com.android.support.test", name = "espresso-contrib", version.ref = "android-test-espresso" }
 android-test-uiAutomator = { group = "com.android.support.test", name = "uiautomator-v18", version.ref = "android-test-uiAutomator" }
+
+## SquareUp
+square-retrofit-main = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "square-retrofit" }
+square-retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "square-retrofit" }
+square-okhttp-core = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "square-okhttp" }
+square-okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "square-okhttp" }
+square-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "square-moshi" }
+square-moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "square-moshi" }
+square-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "square-timber" }
 
 ## Google
 google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
@@ -96,9 +135,31 @@ robolectric-test = { group = "org.robolectric", name = "robolectric", version.re
 android-application = { id = "com.android.application", version.ref = "android_plugin" }
 android-library = { id = "com.android.library", version.ref = "android_plugin" }
 
+## Android
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
 ## JetBrains
 jetbrains-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrains-kotlin" }
 
 ## Tools to make my life easier
 dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }
 pedrinho_publish = { id = "io.github.pedro-bachiega.sonatype-maven-publish", version.ref = "pedrinho_publish" }
+
+# ------------------------------------------------------------------------------------------------ #
+[bundles]
+
+## Androidx Compose
+androidx-compose-debug = [
+    "androidx-compose-ui-tooling"
+]
+androidx-compose-release = [
+    "androidx-compose-material-core",
+    "androidx-compose-material-extended",
+    "androidx-compose-material3-core",
+    "androidx-compose-material3-window",
+    "androidx-compose-activity",
+    "androidx-compose-lifecycle",
+    "androidx-compose-constraint",
+    "androidx-compose-runtime",
+    "androidx-compose-ui-preview",
+]

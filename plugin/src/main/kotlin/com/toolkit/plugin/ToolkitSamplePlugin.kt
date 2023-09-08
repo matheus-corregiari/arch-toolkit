@@ -15,11 +15,6 @@ internal class ToolkitSamplePlugin : Plugin<Project> {
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
 
-            buildTypes.maybeCreate("debug").apply {
-                enableAndroidTestCoverage = false
-                enableUnitTestCoverage = false
-            }
-
             buildTypes.maybeCreate("release").apply {
                 isMinifyEnabled = true
                 proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")

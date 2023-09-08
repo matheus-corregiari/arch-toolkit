@@ -16,11 +16,6 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
 
-            buildTypes.maybeCreate("debug").apply {
-                enableAndroidTestCoverage = false
-                enableUnitTestCoverage = false
-            }
-
             buildTypes.maybeCreate("release").minifyEnabled(false)
         }
     }

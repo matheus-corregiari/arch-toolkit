@@ -11,6 +11,17 @@ internal class ToolkitBasePlugin : Plugin<Project> {
         target.applyPlugins("jetbrains-kotlin")
 
         val libraries = target.libraries
+        val allDefinedLibraries = libraries.allDefinedDependencies
+
+        target.configurations.configureEach { config ->
+            config.resolutionStrategy { strategy ->
+                strategy.failOnVersionConflict()
+                strategy.preferProjectModules()
+
+                strategy.setForcedModules(allDefinedLibraries)
+            }
+        }
+
         with(target.androidBase) {
 
             compileSdkVersion(libraries.version("build-sdk-compile").toInt())
@@ -27,6 +38,8 @@ internal class ToolkitBasePlugin : Plugin<Project> {
 
                 it.testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
             }
+
+            buildFeatures.buildConfig = true
 
             buildTypes.maybeCreate("debug").apply {
                 enableAndroidTestCoverage = false

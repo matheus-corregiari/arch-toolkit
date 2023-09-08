@@ -22,6 +22,5 @@ class RepositoryListActivity : AppCompatActivity(R.layout.activity_repository_li
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /**/
     }
 }
