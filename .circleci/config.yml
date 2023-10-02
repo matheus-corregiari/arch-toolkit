@@ -80,7 +80,7 @@ workflows:
               module:
                 - toolkit:delegate
                 - toolkit:foldable
-                - toolkit:livedata
+                - toolkit:event-observer
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
           name: Lint <<matrix.module>>
@@ -95,7 +95,7 @@ workflows:
               module:
                 - toolkit:delegate
                 - toolkit:foldable
-                - toolkit:livedata
+                - toolkit:event-observer
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
           name: Test <<matrix.module>>
@@ -121,7 +121,7 @@ workflows:
       #              module:
       #                - toolkit:delegate
       #                - toolkit:foldable
-      #                - toolkit:livedata
+      #                - toolkit:event-observer
       #                - toolkit:recycler-adapter
       #                - toolkit:statemachine
       #                - toolkit:foldable
@@ -144,7 +144,7 @@ workflows:
             alias: deploy-livedata
             parameters:
               module:
-                - toolkit:livedata
+                - toolkit:event-observer
           name: Deploy <<matrix.module>>
           requires:
             - deploy-delegate

@@ -1,6 +1,6 @@
 plugins {
     id "toolkit-sample"
-    id "toolkit-compose"
+    // id "toolkit-compose" --> Commented until Compose finally work on API 34 -.-'
     alias(libraries.plugins.google.ksp)
 }
 
@@ -16,9 +16,10 @@ android {
 dependencies {
     // Other Modules
     implementation project(":toolkit:delegate")
-    implementation project(":toolkit:livedata")
+    implementation project(':toolkit:event-observer')
     implementation project(":toolkit:recycler-adapter")
     implementation project(":toolkit:statemachine")
+    implementation project(":toolkit:splinter")
 
     // Libraries
     implementation libraries.jetbrains.stdlib.jdk8

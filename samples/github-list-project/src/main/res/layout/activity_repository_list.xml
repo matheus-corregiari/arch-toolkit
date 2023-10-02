@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <View
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/success_view"
+        android:visibility="gone"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/loading_view"
         android:layout_width="match_parent"
+        android:text="Loading"
+        android:gravity="center"
+        android:visibility="gone"
         android:layout_height="match_parent" />
 
-    <View
-        android:id="@+id/success_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <View
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/error_view"
         android:layout_width="match_parent"
+        android:text="Error"
+        android:gravity="center"
+        android:visibility="gone"
         android:layout_height="match_parent" />
 
-    <View
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/empty_view"
+        android:text="Empty"
+        android:gravity="center"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

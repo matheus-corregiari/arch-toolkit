@@ -1,8 +1,12 @@
 package br.com.arch.toolkit.sample.github.data.remote.model
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 class PullRequestDTO(
-    val id: Long = 0,
-    val title: String = "",
-    val user: UserDTO = UserDTO(),
-    val body: String? = ""
+    @Json(name = "id") val id: Long,
+    @Json(name = "title") val title: String,
+    @Json(name = "user") val user: UserDTO,
+    @Json(name = "body") val body: String?,
 )

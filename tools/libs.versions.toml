@@ -12,9 +12,9 @@ ksp = "1.8.10-1.0.9"
 build-version-name = "1.0.0"
 build-version-code = "1"
 build-sdk-min = "28"
-build-sdk-compile = "33"
-build-sdk-target = "33"
-build-tools = "33.0.2"
+build-sdk-compile = "34"
+build-sdk-target = "34"
+build-tools = "34.0.0"
 
 ## JetBrains
 jetbrains-kotlin = "1.8.10" # --> Cannot update because of compose
@@ -34,10 +34,10 @@ androidx-test-junit = "1.1.5"
 
 ## AndroidX Compose
 androidx-compose-compiler = "1.4.3"
-androidx-compose-material = "1.5.0"
-androidx-compose-material3 = "1.1.1"
+androidx-compose-material = "1.5.2"
+androidx-compose-material3 = "1.1.2"
 androidx-compose-constraint = "1.0.1"
-androidx-compose-core = "1.5.0"
+androidx-compose-core = "1.5.2"
 androidx-compose-lifecycle = "2.6.2"
 androidx-compose-activity = "1.7.2"
 

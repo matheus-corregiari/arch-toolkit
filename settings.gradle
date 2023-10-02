@@ -39,9 +39,10 @@ includeBuild 'plugin'
 
 // Toolkit Libraries
 include ':toolkit:delegate'
+include ':toolkit:event-observer'
 include ':toolkit:foldable'
-include ':toolkit:livedata'
 include ':toolkit:recycler-adapter'
+include ':toolkit:splinter'
 include ':toolkit:statemachine'
 
 // Samples
