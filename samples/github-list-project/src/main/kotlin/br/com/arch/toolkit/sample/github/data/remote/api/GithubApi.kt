@@ -12,14 +12,14 @@ import retrofit2.http.Query
 internal interface GithubApi {
 
     @GET("search/repositories")
-    @SplinterConfig("Search Repositories")
+//    @SplinterConfig("Search Repositories")
     fun searchRepositories(
         @Query("q") query: String = "language:Java",
         @Query("sort") sort: String? = null,
         @Query("order") order: String? = null,
         @Query("page") page: Int,
         @Query("per_page") perPage: Int
-    ): ResponseLiveData<PageDTO<RepoDTO>>
+    ): ResponseLiveData<PageDTO>
 
     @GET("repos/{creator}/{repo}/pulls")
     suspend fun listPullRequest(

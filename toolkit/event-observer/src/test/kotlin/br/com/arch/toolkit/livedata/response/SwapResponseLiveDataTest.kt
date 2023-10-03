@@ -8,10 +8,6 @@ import androidx.lifecycle.LiveData
 import br.com.arch.toolkit.common.DataResult
 import br.com.arch.toolkit.common.DataResultStatus
 import br.com.arch.toolkit.common.exception.DataTransformationException
-import com.nhaarman.mockitokotlin2.given
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verifyBlocking
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -21,7 +17,10 @@ import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.BDDMockito.given
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.times
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SwapResponseLiveDataTest {
@@ -32,10 +31,11 @@ class SwapResponseLiveDataTest {
 
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
-        override fun getLifecycle(): Lifecycle {
-            registry.currentState = Lifecycle.State.RESUMED
-            return registry
-        }
+        override val lifecycle: Lifecycle
+            get() {
+                registry.currentState = Lifecycle.State.RESUMED
+                return registry
+            }
     }
 
     init {

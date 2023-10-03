@@ -33,10 +33,11 @@ class LiveDataTransformationTest {
 
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
-        override fun getLifecycle(): Lifecycle {
-            registry.currentState = Lifecycle.State.RESUMED
-            return registry
-        }
+        override val lifecycle: Lifecycle
+            get() {
+                registry.currentState = Lifecycle.State.RESUMED
+                return registry
+            }
     }
 
     init {

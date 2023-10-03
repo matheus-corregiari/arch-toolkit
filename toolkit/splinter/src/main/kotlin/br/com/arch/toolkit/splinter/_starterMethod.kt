@@ -8,7 +8,7 @@ package br.com.arch.toolkit.splinter
  *
  * @return A new Splinter
  */
-fun <T : Any> splinter(id: String, config: Splinter<T>.Config.() -> Unit) =
+fun <T : Any> splinter(id: String = "", config: Splinter<T>.Config.() -> Unit) =
     Splinter<T>(id).config(config)
 
 /**
@@ -19,7 +19,7 @@ fun <T : Any> splinter(id: String, config: Splinter<T>.Config.() -> Unit) =
  *
  * @return A new Splinter
  */
-fun <T : Any> oneShotDonatello(id: String, request: suspend () -> T) =
+fun <T : Any> oneShotDonatello(id: String = "", request: suspend () -> T) =
     Splinter<T>(id).config {
         oneShotStrategy {
             request(request)
@@ -35,7 +35,7 @@ fun <T : Any> oneShotDonatello(id: String, request: suspend () -> T) =
  *
  * @return The ResponseLiveData receiving updates from the Splinter
  */
-fun <T : Any> oneShotMichelangelo(id: String, request: suspend () -> T) =
+fun <T : Any> oneShotMichelangelo(id: String = "", request: suspend () -> T) =
     oneShotDonatello(id, request).execute().liveData
 
 /**
@@ -47,5 +47,5 @@ fun <T : Any> oneShotMichelangelo(id: String, request: suspend () -> T) =
  *
  * @return The ResponseFlow receiving updates from the Splinter
  */
-fun <T : Any> oneShotLeonardo(id: String, request: suspend () -> T) =
+fun <T : Any> oneShotLeonardo(id: String = "", request: suspend () -> T) =
     oneShotDonatello(id, request).execute().flow

@@ -9,5 +9,4 @@ class RepositoryItemView(context: Context) : AppCompatTextView(context), ViewBin
     override fun bind(model: RepoDTO) {
         text = model.name
     }
-
 }

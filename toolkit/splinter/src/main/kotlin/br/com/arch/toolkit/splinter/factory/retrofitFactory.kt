@@ -45,7 +45,7 @@ class SplinterFactory : CallAdapter.Factory() {
             }
 
         val tag = annotations.filterIsInstance(SplinterConfig::class.java).firstOrNull()?.tag
-            .takeUnless(String?::isNullOrBlank) ?: "Undefined Tag"
+            .takeUnless(String?::isNullOrBlank) ?: ""
 
         return when (returnClass) {
 

@@ -20,7 +20,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -75,6 +77,7 @@ class Splinter<RETURN : Any> internal constructor(val id: String) : DefaultLifec
     private val config = Config()
     private val supervisorJob = SupervisorJob()
     private var job: Job = Job().apply(CompletableJob::complete)
+    private var onCancel: (() -> Unit)? = null
     //endregion
 
     /**
@@ -83,18 +86,24 @@ class Splinter<RETURN : Any> internal constructor(val id: String) : DefaultLifec
     val isRunning: Boolean get() = supervisorJob.isActive && job.isActive
 
     /**
+     * Executed when this running splinter gets canceled
      *
+     * @See Splinter.cancel
      */
-    private var onCancel: (() -> Unit)? = null
     fun onCancel(func: () -> Unit) = apply { onCancel = func }
 
     /**
+     * Block that configure how this splinter will work ^^
      *
+     * @see Splinter.Config
      */
     fun config(config: Config.() -> Unit) = apply { this.config.run(config) }
 
     /**
+     * Execute with all configurations using the execution policy and strategy
      *
+     * @see Splinter.ExecutionPolicy
+     * @see Strategy
      */
     fun execute(): Splinter<RETURN> = synchronized(lock) {
 
@@ -188,14 +197,27 @@ class Splinter<RETURN : Any> internal constructor(val id: String) : DefaultLifec
         }
     }
 
+    /**
+     * Log level INFO
+     */
     internal fun logInfo(message: String, error: Throwable? = null) =
-        Timber.tag("Splinter[$id]").i(error, message)
+        Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]").i(error, message)
 
-    internal fun logError(message: String, error: Throwable? = null) =
-        Timber.tag("Splinter[$id]").e(error, message)
 
     /**
-     *
+     * Log level ERROR
+     */
+    internal fun logError(message: String, error: Throwable? = null) =
+        Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]").e(error, message)
+
+    /**
+     * Log level WARN
+     */
+    internal fun logWarning(message: String, error: Throwable? = null) =
+        Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]").w(error, message)
+
+    /**
+     * Creates a new job to create a new operation from scratch!
      */
     private fun newJob(): Job = config.scope.launch(start = CoroutineStart.LAZY) {
         kotlin.runCatching {
@@ -206,10 +228,8 @@ class Splinter<RETURN : Any> internal constructor(val id: String) : DefaultLifec
                     synchronized(operationLock) { /* - */ }
                 }
 
-                requireNotNull(config.strategy) { "You Must set a strategy to run" }.execute(
-                    this,
-                    this@Splinter
-                )
+                requireNotNull(config.strategy) { "You Must set a strategy to run" }
+                    .execute(this, this@Splinter)
             }.catch { flowFailure ->
                 logError("Something went wrong inside the operation", flowFailure)
                 if (status != DataResultStatus.SUCCESS) {
@@ -219,7 +239,7 @@ class Splinter<RETURN : Any> internal constructor(val id: String) : DefaultLifec
                         this@Splinter
                     )
                 }
-            }//.populateLiveData()
+            }.onEach(_liveData::postValue).collect { _flow.emit(it) }
         }.onFailure { majorFailure ->
             logError("Major failure inside operation!", majorFailure)
             if (status != DataResultStatus.SUCCESS) {
@@ -229,7 +249,7 @@ class Splinter<RETURN : Any> internal constructor(val id: String) : DefaultLifec
                         this,
                         this@Splinter
                     )
-                }//.populateLiveData()
+                }.onEach(_liveData::postValue).collect { _flow.emit(it) }
             }
         }
     }
