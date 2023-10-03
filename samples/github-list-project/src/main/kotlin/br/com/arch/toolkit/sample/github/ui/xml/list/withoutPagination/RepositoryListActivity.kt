@@ -24,6 +24,8 @@ class RepositoryListActivity : AppCompatActivity(R.layout.activity_repository_li
     private val stateError = DataResultStatus.ERROR.ordinal
     private val stateSuccess = DataResultStatus.SUCCESS.ordinal
     private val stateEmpty = DataResultStatus.SUCCESS.ordinal + 1
+
+    private val saveStateMachine = "SAVE_STATE_MACHINE"
     //endregion
 
     private val viewModel: RepositoryListViewModel by viewModelProvider()
@@ -37,28 +39,34 @@ class RepositoryListActivity : AppCompatActivity(R.layout.activity_repository_li
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupStateMachine()
+        setupStateMachine(savedInstanceState?.getBundle(saveStateMachine))
         successView.adapter = adapter
 
         viewModel.listLiveData().observe(this) {
             showLoading { stateMachine.changeState(stateLoading) }
             error { _ -> stateMachine.changeState(stateError) }
-            data { list ->
-                if (list.items.isEmpty()) {
+            data { page ->
+                if (page.items.isEmpty()) {
+                    throw error("") /* Fazer funcionaaar */
                     stateMachine.changeState(stateEmpty)
                 } else {
                     stateMachine.changeState(stateSuccess)
                 }
-                adapter.setList((list.items))
+                adapter.setList((page.items))
             }
         }
     }
 
-    private fun onItemClick(model: RepoDTO) {
-
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBundle(saveStateMachine, stateMachine.saveInstanceState())
     }
 
-    private fun setupStateMachine() = stateMachine.setup {
+    private fun onItemClick(model: RepoDTO) = Unit
+
+    private fun setupStateMachine(savedInstanceState: Bundle?) = stateMachine.setup {
+
+        restoreInstanceState(savedInstanceState)
 
         config {
             setOnChangeState {

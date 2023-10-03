@@ -26,7 +26,7 @@ data class DataResult<T>(
  * The possible types of statuses of DataResult
  */
 enum class DataResultStatus {
-    LOADING, SUCCESS, ERROR, NONE
+    NONE, LOADING, SUCCESS, ERROR
 }
 
 /**

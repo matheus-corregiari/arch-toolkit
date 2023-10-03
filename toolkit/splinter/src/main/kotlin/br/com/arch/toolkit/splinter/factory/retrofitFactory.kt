@@ -13,12 +13,16 @@ import retrofit2.Retrofit
 import br.com.arch.toolkit.splinter.Splinter as SplinterExec
 
 /**
+ * Annotation used to configure some behaviors inside generated splinter
  *
+ * @param id - Used to identify the logs from this splinter in logcat
+ * @param quiet - Used to turn on/off the logs inside logcat
  */
-annotation class SplinterConfig(val tag: String = "")
+annotation class SplinterConfig(val id: String = "", val quiet: Boolean = false)
 
 /**
- *
+ * This evil class is responsible to teach Retrofit how to deliver a Splinter, ResponseLiveData or ResponseFlow
+ * directly from the retrofit api interface ^^
  */
 class SplinterFactory : CallAdapter.Factory() {
     override fun get(
@@ -44,46 +48,47 @@ class SplinterFactory : CallAdapter.Factory() {
                 else -> error("Resource must be Parameterized")
             }
 
-        val tag = annotations.filterIsInstance(SplinterConfig::class.java).firstOrNull()?.tag
-            .takeUnless(String?::isNullOrBlank) ?: "Undefined Tag"
+        val splinterConfig = annotations.filterIsInstance(SplinterConfig::class.java).firstOrNull()
+            ?: SplinterConfig("", false)
 
         return when (returnClass) {
 
             /**
-             *
+             * When you want to deliver the ResponseFlow
              */
             ResponseFlow::class.java -> {
                 Adapter.AsFlow(
-                    tag = tag,
+                    annotation = splinterConfig,
                     responseType = getRawType(type),
                     kClass = returnClass,
                 )
             }
 
             /**
-             *
+             * When you want to deliver the ResponseLiveData
              */
             ResponseLiveData::class.java -> {
                 Adapter.AsLiveData(
-                    tag = tag,
+                    annotation = splinterConfig,
                     responseType = getRawType(type),
                     kClass = returnClass,
                 )
             }
 
             /**
-             *
+             * When you want to deliver the Splinter
              */
             SplinterExec::class.java -> {
                 Adapter.AsSplinter(
-                    tag = tag,
+                    annotation = splinterConfig,
                     responseType = getRawType(type),
                     kClass = returnClass,
                 )
             }
 
             /**
-             *
+             * When this factory cannot determine any valid format to it,
+             * so return null to follow the default configurations or another factories
              */
             else -> null
         }
@@ -91,32 +96,34 @@ class SplinterFactory : CallAdapter.Factory() {
 }
 
 private sealed class Adapter<T, R>(
-    private val tag: String,
+    private val id: String,
+    private val quiet: Boolean,
     private val responseType: Type,
     private val kClass: Class<T>
 ) : CallAdapter<T, R> {
 
-    class AsSplinter<T : Any>(tag: String, responseType: Type, kClass: Class<T>) :
-        Adapter<T, SplinterExec<T>>(tag, responseType, kClass) {
+    class AsSplinter<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
+        Adapter<T, SplinterExec<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call)
 
     }
 
-    class AsLiveData<T : Any>(tag: String, responseType: Type, kClass: Class<T>) :
-        Adapter<T, ResponseLiveData<T>>(tag, responseType, kClass) {
+    class AsLiveData<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
+        Adapter<T, ResponseLiveData<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call).liveData
 
     }
 
-    class AsFlow<T : Any>(tag: String, responseType: Type, kClass: Class<T>) :
-        Adapter<T, ResponseFlow<T>>(tag, responseType, kClass) {
+    class AsFlow<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
+        Adapter<T, ResponseFlow<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call).flow
 
     }
 
     override fun responseType() = responseType
 
-    protected fun executeWithSplinter(call: Call<T>) = oneShotDonatello(tag) {
+    protected fun executeWithSplinter(call: Call<T>) = oneShotDonatello(id, quiet) {
+
         val response = makeRequest(call)
         if (response.isSuccessful) {
             requireNotNull(response.body()) {

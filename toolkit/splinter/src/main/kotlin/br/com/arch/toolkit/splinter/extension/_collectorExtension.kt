@@ -2,16 +2,39 @@ package br.com.arch.toolkit.splinter.extension
 
 import br.com.arch.toolkit.common.DataResult
 import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.common.dataResultError
+import br.com.arch.toolkit.common.dataResultLoading
+import br.com.arch.toolkit.common.dataResultNone
+import br.com.arch.toolkit.common.dataResultSuccess
 import kotlinx.coroutines.flow.FlowCollector
 
-suspend fun <T> FlowCollector<DataResult<T>>.emitData(data: T) = emit(
-    DataResult(data, null, DataResultStatus.SUCCESS)
-)
+/**
+ * Emits a success data
+ *
+ * @see dataResultSuccess
+ */
+suspend fun <T> FlowCollector<DataResult<T>>.emitData(data: T) =
+    emit(dataResultSuccess(data))
 
-suspend fun <T> FlowCollector<DataResult<T>>.emitLoading(data: T? = null) = emit(
-    DataResult(data, null, DataResultStatus.LOADING)
-)
+/**
+ * Emits a loading data
+ *
+ * @see dataResultLoading
+ */
+suspend fun <T> FlowCollector<DataResult<T>>.emitLoading(data: T? = null) =
+    emit(dataResultLoading(data))
 
-suspend fun <T> FlowCollector<DataResult<T>>.emitError(error: Throwable, data: T? = null) = emit(
-    DataResult(data, error, DataResultStatus.ERROR)
-)
+/**
+ * Emits a error data
+ *
+ * @see dataResultError
+ */
+suspend fun <T> FlowCollector<DataResult<T>>.emitError(error: Throwable, data: T? = null) =
+    emit(dataResultError(error, data))
+
+/**
+ * Emits a none
+ *
+ * @see dataResultNone
+ */
+suspend fun <T> FlowCollector<DataResult<T>>.emitNone() = emit(dataResultNone())

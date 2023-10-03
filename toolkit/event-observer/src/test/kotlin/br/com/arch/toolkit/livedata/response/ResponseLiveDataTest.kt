@@ -9,11 +9,6 @@ import br.com.arch.toolkit.common.DataResult
 import br.com.arch.toolkit.common.DataResultStatus
 import br.com.arch.toolkit.livedata.extention.mutableResponseLiveDataOf
 import br.com.arch.toolkit.livedata.extention.responseLiveDataOf
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verifyBlocking
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -35,10 +30,11 @@ class ResponseLiveDataTest {
 
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
-        override fun getLifecycle(): Lifecycle {
-            registry.currentState = Lifecycle.State.RESUMED
-            return registry
-        }
+        override val lifecycle: Lifecycle
+            get() {
+                registry.currentState = Lifecycle.State.RESUMED
+                return registry
+            }
     }
 
     init {

@@ -6,13 +6,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import br.com.arch.toolkit.livedata.extention.observeNotNull
 import br.com.arch.toolkit.livedata.extention.observeSingle
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.times
 
 class ComputableLiveDataTest {
 
@@ -26,10 +26,11 @@ class ComputableLiveDataTest {
 
     private var owner = object : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
-        override fun getLifecycle(): Lifecycle {
-            registry.currentState = Lifecycle.State.RESUMED
-            return registry
-        }
+        override val lifecycle: Lifecycle
+            get() {
+                registry.currentState = Lifecycle.State.RESUMED
+                return registry
+            }
     }
 
     @Before
