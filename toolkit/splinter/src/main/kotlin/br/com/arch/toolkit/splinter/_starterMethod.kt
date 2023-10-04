@@ -28,9 +28,7 @@ fun <T : Any> oneShotDonatello(
     id: String = "",
     quiet: Boolean = false,
     request: suspend () -> T
-) = splinter(id, quiet) {
-    oneShotStrategy { request(request) }
-}.execute()
+) = splinter(id, quiet) { oneShotStrategy { request(request) } }.execute()
 
 /**
  * Method that creates Splinter instance and execute it,
@@ -46,8 +44,7 @@ fun <T : Any> oneShotMichelangelo(
     id: String = "",
     quiet: Boolean = false,
     request: suspend () -> T
-) =
-    oneShotDonatello(id, quiet, request).execute().liveData
+) = oneShotDonatello(id, quiet, request).execute().liveData
 
 /**
  * Method that creates Splinter instance and execute it,
