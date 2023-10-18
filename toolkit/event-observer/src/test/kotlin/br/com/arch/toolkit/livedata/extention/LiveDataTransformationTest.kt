@@ -6,10 +6,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
 import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.given
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verifyBlocking
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -19,8 +15,12 @@ import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.BDDMockito.given
 import org.mockito.Mockito
 import org.mockito.Mockito.times
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyBlocking
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LiveDataTransformationTest {
@@ -85,7 +85,7 @@ class LiveDataTransformationTest {
         advanceUntilIdle()
         verifyBlocking(mockedTransformation, times(2)) { invoke(any()) }
         advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke(any()) }
+        verifyBlocking(mockedObserver, times(1)) { invoke(any()) }
     }
 
     @Test
@@ -97,7 +97,7 @@ class LiveDataTransformationTest {
                 .transformDispatcher(Dispatchers.Main)
             val transformedLiveData = liveData.mapList(mockedTransformation)
 
-            transformedLiveData.observeData(owner, mockedObserver)
+            transformedLiveData.observe(owner) { data(observer = mockedObserver) }
 
             liveData.postData(listOf("ONE", "TWO"))
 
@@ -116,7 +116,7 @@ class LiveDataTransformationTest {
                 .transformDispatcher(Dispatchers.Main)
             val transformedLiveData = liveData.mapList(mockedTransformation)
 
-            transformedLiveData.observeData(owner, mockedObserver)
+            transformedLiveData.observe(owner) { data(observer = mockedObserver) }
 
             liveData.postData(listOf("ONE", "TWO"))
 

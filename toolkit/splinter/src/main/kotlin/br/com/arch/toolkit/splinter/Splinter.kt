@@ -2,8 +2,8 @@ package br.com.arch.toolkit.splinter
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import br.com.arch.toolkit.common.DataResultStatus
-import br.com.arch.toolkit.common.dataResultNone
+import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.result.dataResultNone
 import br.com.arch.toolkit.flow.MutableResponseFlow
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
@@ -20,7 +20,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

@@ -1,8 +1,8 @@
 package br.com.arch.toolkit.flow
 
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.DataResultStatus
-import br.com.arch.toolkit.common.dataResultNone
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.result.dataResultNone
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

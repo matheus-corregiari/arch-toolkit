@@ -1,9 +1,9 @@
 package br.com.arch.toolkit.flow
 
 import androidx.annotation.NonNull
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.DataResultStatus
-import br.com.arch.toolkit.common.ObserveWrapper
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.result.ObserveWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

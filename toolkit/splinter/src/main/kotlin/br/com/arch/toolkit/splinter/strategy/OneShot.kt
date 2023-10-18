@@ -1,8 +1,8 @@
 package br.com.arch.toolkit.splinter.strategy
 
 import androidx.annotation.WorkerThread
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.splinter.Splinter
 import br.com.arch.toolkit.splinter.cache.CacheStrategy
 import br.com.arch.toolkit.splinter.extension.emitData

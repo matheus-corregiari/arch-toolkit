@@ -24,7 +24,7 @@ jetbrains-coroutines = "1.6.4"
 androidx-appcompat = "1.6.1"
 androidx-annotation = "1.7.0"
 androidx-constraint = "2.1.4"
-androidx-recyclerview = "1.3.1"
+androidx-recyclerview = "1.3.2"
 androidx-lifecycle-livedata = "2.6.2"
 androidx-lifecycle-runtime = "2.6.2"
 androidx-window = "1.1.0"
@@ -34,12 +34,12 @@ androidx-test-junit = "1.1.5"
 
 ## AndroidX Compose
 androidx-compose-compiler = "1.4.3"
-androidx-compose-material = "1.5.2"
+androidx-compose-material = "1.5.4"
 androidx-compose-material3 = "1.1.2"
 androidx-compose-constraint = "1.0.1"
-androidx-compose-core = "1.5.2"
+androidx-compose-core = "1.5.4"
 androidx-compose-lifecycle = "2.6.2"
-androidx-compose-activity = "1.7.2"
+androidx-compose-activity = "1.8.0"
 
 ## SquareUp
 square-retrofit = "2.9.0"
@@ -54,13 +54,13 @@ android-test-espresso = "3.1.1"
 android-test-uiAutomator = "2.2.0"
 
 ## Google
-google-material = "1.9.0"
+google-material = "1.10.0"
 
 ## Tools
 hamcrest = "1.3"
 mirror = "1.6.1"
-mockito = "3.3.3"
-mockito-kotlin = "3.3.3"
+mockito = "5.6.0"
+mockito-kotlin = "5.1.0"
 junit = "4.13.2"
 robolectric = "4.8"
 
@@ -124,7 +124,7 @@ hamcrest-test-library = { group = "org.hamcrest", name = "hamcrest-library", ver
 mirror-test = { group = "net.vidageek", name = "mirror", version.ref = "mirror" }
 mockito-test-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 mockito-test-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito" }
-mockito-test-kotlin = { group = "com.nhaarman.mockitokotlin2", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
+mockito-test-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 junit-test = { group = "junit", name = "junit", version.ref = "junit" }
 robolectric-test = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 

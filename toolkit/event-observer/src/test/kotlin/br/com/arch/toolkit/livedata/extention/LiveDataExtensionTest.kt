@@ -5,9 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
-import br.com.arch.toolkit.common.DataResultStatus
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verifyBlocking
+import br.com.arch.toolkit.result.DataResultStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -18,6 +16,8 @@ import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyBlocking
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LiveDataExtensionTest {

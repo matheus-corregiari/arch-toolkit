@@ -5,7 +5,7 @@ import android.transition.TransitionManager
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.delegate.viewModelProvider
 import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.recycler.adapter.SimpleAdapter

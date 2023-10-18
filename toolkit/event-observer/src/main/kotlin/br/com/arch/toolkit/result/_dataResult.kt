@@ -1,4 +1,4 @@
-package br.com.arch.toolkit.common
+package br.com.arch.toolkit.result
 
 /**
  * The capsule with contains a optional data, optional error and a non null status

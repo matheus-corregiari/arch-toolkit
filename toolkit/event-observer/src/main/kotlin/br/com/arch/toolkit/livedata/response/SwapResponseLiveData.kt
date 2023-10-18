@@ -2,9 +2,9 @@ package br.com.arch.toolkit.livedata.response
 
 import android.os.Looper
 import androidx.lifecycle.MediatorLiveData
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.DataResultStatus
-import br.com.arch.toolkit.common.exception.DataTransformationException
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.exception.DataTransformationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

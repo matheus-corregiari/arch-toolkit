@@ -5,9 +5,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.DataResultStatus
-import br.com.arch.toolkit.common.exception.DataTransformationException
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.exception.DataTransformationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -19,8 +19,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyBlocking
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SwapResponseLiveDataTest {
@@ -60,7 +61,8 @@ class SwapResponseLiveDataTest {
 
         val data = "data"
         liveData.setData(data)
-        swapLiveData.observeData(owner, mockedObserver)
+        swapLiveData.observe(owner) { data(observer = mockedObserver) }
+
         advanceUntilIdle()
         verifyBlocking(mockedObserver) { invoke(data) }
     }
@@ -81,7 +83,8 @@ class SwapResponseLiveDataTest {
 
             val data = "data"
             liveData.setData(data)
-            swapLiveData.observeSingleData(owner, mockedObserver)
+            swapLiveData.observe(owner) { data(single = true, observer = mockedObserver) }
+
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(data) }
 
@@ -92,7 +95,8 @@ class SwapResponseLiveDataTest {
                 it.isAccessible = true
                 it.invoke(liveData, null)
             }
-            swapLiveData.observeSingleData(owner, mockedObserver)
+            swapLiveData.observe(owner) { data(single = true, observer = mockedObserver) }
+
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(data) }
 
@@ -115,7 +119,8 @@ class SwapResponseLiveDataTest {
             advanceUntilIdle()
             Assert.assertFalse(swapLiveData.hasDataSource)
 
-            swapLiveData.observeData(owner, mockedObserver)
+            swapLiveData.observe(owner) { data(observer = mockedObserver) }
+
             swapLiveData.swapSource(liveData, mockedTransformation)
             advanceUntilIdle()
             Assert.assertTrue(swapLiveData.hasDataSource)
@@ -157,8 +162,10 @@ class SwapResponseLiveDataTest {
         advanceUntilIdle()
         Assert.assertFalse(swapLiveData.hasDataSource)
 
-        swapLiveData.observeData(owner, mockedObserver)
-        swapLiveData.observeError(owner, mockedErrorObserver)
+        swapLiveData.observe(owner) {
+            data(observer = mockedObserver)
+            error(observer = mockedErrorObserver)
+        }
 
         swapLiveData.swapSource(liveData, mockedTransformation)
         advanceUntilIdle()
@@ -207,7 +214,8 @@ class SwapResponseLiveDataTest {
             .transformDispatcher(Dispatchers.Main)
         Assert.assertFalse(swapLiveData.hasDataSource)
 
-        swapLiveData.observeData(owner, mockedDataObserver)
+        swapLiveData.observe(owner) { data(observer = mockedDataObserver) }
+
         swapLiveData.swapSource(liveData, mockedTransformation)
         Assert.assertTrue(swapLiveData.hasDataSource)
 
@@ -227,7 +235,7 @@ class SwapResponseLiveDataTest {
     fun whenInitialize_withoutValue_shouldReturnAnInstanceWithEmptyValue() = runTest {
         val liveData = SwapResponseLiveData<Any>()
         Assert.assertNull(liveData.data)
-        Assert.assertNull(liveData.status)
+        Assert.assertEquals(liveData.status, DataResultStatus.NONE)
         Assert.assertNull(liveData.error)
     }
 

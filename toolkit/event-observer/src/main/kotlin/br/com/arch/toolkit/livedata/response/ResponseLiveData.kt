@@ -7,10 +7,10 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.DataResultStatus
-import br.com.arch.toolkit.common.ObserveWrapper
-import br.com.arch.toolkit.common.dataResultNone
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.result.ObserveWrapper
+import br.com.arch.toolkit.result.dataResultNone
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

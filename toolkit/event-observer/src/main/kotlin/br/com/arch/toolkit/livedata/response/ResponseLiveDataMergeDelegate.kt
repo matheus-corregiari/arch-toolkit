@@ -2,10 +2,10 @@ package br.com.arch.toolkit.livedata.response
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.DataResultStatus
-import br.com.arch.toolkit.common.mergeAll
-import br.com.arch.toolkit.common.mergeWith
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.result.mergeAll
+import br.com.arch.toolkit.result.mergeWith
 import br.com.arch.toolkit.livedata.extention.responseLiveDataOf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope

@@ -14,4 +14,6 @@ dependencies {
     testImplementation libraries.androidx.lifecycle.runtime
     testImplementation libraries.androidx.test.core
     testImplementation libraries.jetbrains.test.coroutines
+    testImplementation libraries.mockito.test.core
+    testImplementation libraries.mockito.test.kotlin
 }

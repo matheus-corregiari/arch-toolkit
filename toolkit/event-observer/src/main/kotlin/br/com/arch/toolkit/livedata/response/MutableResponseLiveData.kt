@@ -6,11 +6,11 @@ package br.com.arch.toolkit.livedata.response
 import android.annotation.SuppressLint
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.dataResultError
-import br.com.arch.toolkit.common.dataResultLoading
-import br.com.arch.toolkit.common.dataResultNone
-import br.com.arch.toolkit.common.dataResultSuccess
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.dataResultError
+import br.com.arch.toolkit.result.dataResultLoading
+import br.com.arch.toolkit.result.dataResultNone
+import br.com.arch.toolkit.result.dataResultSuccess
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 

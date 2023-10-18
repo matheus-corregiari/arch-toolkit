@@ -1,16 +1,16 @@
 @file:SuppressLint("KotlinNullnessAnnotation")
 
-package br.com.arch.toolkit.common
+package br.com.arch.toolkit.result
 
 import android.annotation.SuppressLint
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
-import br.com.arch.toolkit.common.DataResultStatus.ERROR
-import br.com.arch.toolkit.common.DataResultStatus.LOADING
-import br.com.arch.toolkit.common.DataResultStatus.NONE
-import br.com.arch.toolkit.common.DataResultStatus.SUCCESS
-import br.com.arch.toolkit.common.exception.DataTransformationException
+import br.com.arch.toolkit.result.DataResultStatus.ERROR
+import br.com.arch.toolkit.result.DataResultStatus.LOADING
+import br.com.arch.toolkit.result.DataResultStatus.NONE
+import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
+import br.com.arch.toolkit.exception.DataTransformationException
 import br.com.arch.toolkit.livedata.extention.observeUntil
 import br.com.arch.toolkit.livedata.response.ResponseLiveData
 import kotlinx.coroutines.CoroutineDispatcher

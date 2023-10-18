@@ -1,7 +1,7 @@
 package br.com.arch.toolkit.splinter.strategy
 
 import androidx.annotation.WorkerThread
-import br.com.arch.toolkit.common.DataResult
+import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.splinter.Splinter
 import br.com.arch.toolkit.splinter.extension.emitError
 import kotlinx.coroutines.flow.FlowCollector

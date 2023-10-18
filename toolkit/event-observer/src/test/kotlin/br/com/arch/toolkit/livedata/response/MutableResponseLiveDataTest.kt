@@ -1,8 +1,8 @@
 package br.com.arch.toolkit.livedata.response
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.DataResultStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -120,7 +120,7 @@ class MutableResponseLiveDataTest {
     fun whenInitialize_withoutValue_shouldReturnAnInstanceWithEmptyValue() = runTest {
         val liveData = MutableResponseLiveData<Any>()
         Assert.assertNull(liveData.data)
-        Assert.assertNull(liveData.status)
+        Assert.assertEquals(liveData.status, DataResultStatus.NONE)
         Assert.assertNull(liveData.error)
     }
 

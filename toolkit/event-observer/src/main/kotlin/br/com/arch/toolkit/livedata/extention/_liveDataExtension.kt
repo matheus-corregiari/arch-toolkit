@@ -5,8 +5,8 @@ package br.com.arch.toolkit.livedata.extention
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import br.com.arch.toolkit.common.DataResult
-import br.com.arch.toolkit.common.DataResultStatus
+import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
 import br.com.arch.toolkit.livedata.response.ResponseLiveData
 import br.com.arch.toolkit.livedata.response.SwapResponseLiveData
