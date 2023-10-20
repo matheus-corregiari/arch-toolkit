@@ -1,107 +1,409 @@
+@file:Suppress("LongMethod")
+
 package br.com.arch.toolkit.result
 
-import org.junit.Assert.assertEquals
+import br.com.arch.toolkit.util.dataResultError
+import br.com.arch.toolkit.util.dataResultLoading
+import br.com.arch.toolkit.util.dataResultNone
+import br.com.arch.toolkit.util.dataResultSuccess
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.Assert
+import org.junit.Before
+import org.junit.FixMethodOrder
 import org.junit.Test
+import org.junit.runners.MethodSorters
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class DataResultTest {
 
-    @Test
-    fun success_validateCreationMethods() {
-        val resultSuccessWithNull = dataResultSuccess<String>(null)
-        val resultSuccessWithData = dataResultSuccess("data")
-        assertEquals(
-            /* message = */ "Fail to assert Success with null data",
-            /* expected = */ resultSuccessWithNull,
-            /* actual = */ DataResult(null, null, DataResultStatus.SUCCESS)
-        )
-        assertEquals(
-            /* message = */ "Fail to assert Success with data",
-            /* expected = */ resultSuccessWithData,
-            /* actual = */ DataResult("data", null, DataResultStatus.SUCCESS)
-        )
+    private val error = IllegalStateException("error")
+
+    //Success
+    private val resultA = dataResultSuccess("data A")
+    private val resultB = dataResultSuccess<String>(null)
+
+    // Loading
+    private val resultC = dataResultLoading<String>()
+    private val resultD = dataResultLoading("data D")
+    private val resultE = dataResultLoading<String>(null, error)
+    private val resultF = dataResultLoading("data F", error)
+
+    // Error
+    private val resultG = dataResultError(error, "data G")
+    private val resultH = dataResultError<String>(error)
+    private val resultI = dataResultError<String>(null)
+
+    // None
+    private val resultJ = dataResultNone<String>()
+
+    // Data Mocks
+    private val mockedData: (String) -> Unit = mock()
+    private val transformData: (String) -> Int = mock()
+    private val mockedTransformedData: (Int) -> Unit = mock()
+
+    // Loading Mocks
+    private val mockedLoading: (Boolean) -> Unit = mock()
+    private val mockedHideLoading: () -> Unit = mock()
+    private val mockedShowLoading: () -> Unit = mock()
+
+    // Error Mocks
+    private val mockedError: (Throwable) -> Unit = mock()
+    private val mockedErrorWithoutArgument: () -> Unit = mock()
+    private val transformError: (Throwable) -> Int = mock()
+    private val mockedTransformedError: (Int) -> Unit = mock()
+
+    init {
+        Dispatchers.setMain(StandardTestDispatcher())
+    }
+
+    @Before
+    fun before() {
+        whenever(transformData.invoke(any())) doReturn 123
+        whenever(transformError.invoke(any())) doReturn 123
+
+        resultA.scope(CoroutineScope(Dispatchers.Main))
+        resultA.transformDispatcher(Dispatchers.Main)
+        resultB.transformDispatcher(Dispatchers.Main)
+        resultC.transformDispatcher(Dispatchers.Main)
+        resultD.transformDispatcher(Dispatchers.Main)
+        resultE.transformDispatcher(Dispatchers.Main)
+        resultF.transformDispatcher(Dispatchers.Main)
+        resultG.transformDispatcher(Dispatchers.Main)
+        resultH.transformDispatcher(Dispatchers.Main)
+        resultI.transformDispatcher(Dispatchers.Main)
+        resultJ.transformDispatcher(Dispatchers.Main)
     }
 
     @Test
-    fun loading_validateCreationMethods() {
-        val error = IllegalStateException("error")
+    fun `0 - Custom Getters and setters`() {
 
-        val resultLoadingWithNull = dataResultLoading<String>()
-        val resultLoadingWithData = dataResultLoading("data")
-        val resultLoadingWithError = dataResultLoading<String>(error = error)
-        val resultLoadingWithDataAndError = dataResultLoading("data", error)
+        // hasData
+        Assert.assertTrue(resultA.hasData)
+        Assert.assertFalse(resultB.hasData)
+        Assert.assertFalse(resultC.hasData)
+        Assert.assertTrue(resultD.hasData)
+        Assert.assertFalse(resultE.hasData)
+        Assert.assertTrue(resultF.hasData)
+        Assert.assertTrue(resultG.hasData)
+        Assert.assertFalse(resultH.hasData)
+        Assert.assertFalse(resultI.hasData)
+        Assert.assertFalse(resultJ.hasData)
 
-        assertEquals(
-            /* message = */ "Fail to assert Loading with null data",
-            /* expected = */ resultLoadingWithNull,
-            /* actual = */ DataResult<String>(null, null, DataResultStatus.LOADING)
-        )
-        assertEquals(
-            /* message = */ "Fail to assert Loading with data",
-            /* expected = */ resultLoadingWithData,
-            /* actual = */ DataResult("data", null, DataResultStatus.LOADING)
-        )
-        assertEquals(
-            /* message = */ "Fail to assert Loading with error",
-            /* expected = */ resultLoadingWithError,
-            /* actual = */ DataResult<String>(null, error, DataResultStatus.LOADING)
-        )
-        assertEquals(
-            /* message = */ "Fail to assert Loading with data and error",
-            /* expected = */ resultLoadingWithDataAndError,
-            /* actual = */ DataResult("data", error, DataResultStatus.LOADING)
-        )
+        // hasError
+        Assert.assertFalse(resultA.hasError)
+        Assert.assertFalse(resultB.hasError)
+        Assert.assertFalse(resultC.hasError)
+        Assert.assertFalse(resultD.hasError)
+        Assert.assertTrue(resultE.hasError)
+        Assert.assertTrue(resultF.hasError)
+        Assert.assertTrue(resultG.hasError)
+        Assert.assertTrue(resultH.hasError)
+        Assert.assertFalse(resultI.hasError)
+        Assert.assertFalse(resultJ.hasError)
+
+        // isSuccess
+        Assert.assertTrue(resultA.isSuccess)
+        Assert.assertTrue(resultB.isSuccess)
+        Assert.assertFalse(resultC.isSuccess)
+        Assert.assertFalse(resultD.isSuccess)
+        Assert.assertFalse(resultE.isSuccess)
+        Assert.assertFalse(resultF.isSuccess)
+        Assert.assertFalse(resultG.isSuccess)
+        Assert.assertFalse(resultH.isSuccess)
+        Assert.assertFalse(resultI.isSuccess)
+        Assert.assertFalse(resultJ.isSuccess)
+
+        // isLoading
+        Assert.assertFalse(resultA.isLoading)
+        Assert.assertFalse(resultB.isLoading)
+        Assert.assertTrue(resultC.isLoading)
+        Assert.assertTrue(resultD.isLoading)
+        Assert.assertTrue(resultE.isLoading)
+        Assert.assertTrue(resultF.isLoading)
+        Assert.assertFalse(resultG.isLoading)
+        Assert.assertFalse(resultH.isLoading)
+        Assert.assertFalse(resultI.isLoading)
+        Assert.assertFalse(resultJ.isLoading)
+
+        // isError
+        Assert.assertFalse(resultA.isError)
+        Assert.assertFalse(resultB.isError)
+        Assert.assertFalse(resultC.isError)
+        Assert.assertFalse(resultD.isError)
+        Assert.assertFalse(resultE.isError)
+        Assert.assertFalse(resultF.isError)
+        Assert.assertTrue(resultG.isError)
+        Assert.assertTrue(resultH.isError)
+        Assert.assertTrue(resultI.isError)
+        Assert.assertFalse(resultJ.isError)
+
+        // isNone
+        Assert.assertFalse(resultA.isNone)
+        Assert.assertFalse(resultB.isNone)
+        Assert.assertFalse(resultC.isNone)
+        Assert.assertFalse(resultD.isNone)
+        Assert.assertFalse(resultE.isNone)
+        Assert.assertFalse(resultF.isNone)
+        Assert.assertFalse(resultG.isNone)
+        Assert.assertFalse(resultH.isNone)
+        Assert.assertFalse(resultI.isNone)
+        Assert.assertTrue(resultJ.isNone)
+    }
+
+
+    //region State: SUCCESS
+    @Test
+    fun `A - data A, null, SUCCESS`() = runTest {
+        observe(resultA)
+        advanceUntilIdle()
+
+        // Data
+        verifyBlocking(mockedData) { invoke("data A") }
+        verifyBlocking(transformData) { invoke("data A") }
+        verifyBlocking(mockedTransformedData) { invoke(123) }
+
+        // Loading
+        verifyBlocking(mockedLoading) { invoke(false) }
+        verifyBlocking(mockedHideLoading) { invoke() }
+        verifyNoInteractions(mockedShowLoading)
+
+        // Error
+        verifyNoInteractions(mockedError)
+        verifyNoInteractions(mockedErrorWithoutArgument)
+        verifyNoInteractions(transformError)
+        verifyNoInteractions(mockedTransformedError)
     }
 
     @Test
-    fun error_validateCreationMethods() {
-        val error = IllegalStateException("error")
+    fun `B - null, null, SUCCESS`() = runTest {
+        observe(resultB)
+        advanceUntilIdle()
 
-        val resultErrorWithNull = dataResultError<String>(null)
-        val resultErrorWithData = dataResultError(null, "data")
-        val resultErrorWithError = dataResultError<String>(error)
-        val resultErrorWithDataAndError = dataResultError(error, "data")
+        // Data
+        verifyNoInteractions(mockedData)
+        verifyNoInteractions(transformData)
+        verifyNoInteractions(mockedTransformedData)
 
-        assertEquals(
-            /* message = */ "Fail to assert Error with null data",
-            /* expected = */ resultErrorWithNull,
-            /* actual = */ DataResult<String>(null, null, DataResultStatus.ERROR)
-        )
-        assertEquals(
-            /* message = */ "Fail to assert Error with data",
-            /* expected = */ resultErrorWithData,
-            /* actual = */ DataResult("data", null, DataResultStatus.ERROR)
-        )
-        assertEquals(
-            /* message = */ "Fail to assert Error with error",
-            /* expected = */ resultErrorWithError,
-            /* actual = */ DataResult<String>(null, error, DataResultStatus.ERROR)
-        )
-        assertEquals(
-            /* message = */ "Fail to assert Error with data and error",
-            /* expected = */ resultErrorWithDataAndError,
-            /* actual = */ DataResult("data", error, DataResultStatus.ERROR)
-        )
+        // Loading
+        verifyBlocking(mockedLoading) { invoke(false) }
+        verifyBlocking(mockedHideLoading) { invoke() }
+        verifyNoInteractions(mockedShowLoading)
+
+        // Error
+        verifyNoInteractions(mockedError)
+        verifyNoInteractions(mockedErrorWithoutArgument)
+        verifyNoInteractions(transformError)
+        verifyNoInteractions(mockedTransformedError)
+    }
+    //endregion
+
+    //region State: LOADING
+    @Test
+    fun `C - null, null, LOADING`() = runTest {
+        observe(resultC)
+        advanceUntilIdle()
+
+        verifyNoInteractions(mockedData)
+        verifyNoInteractions(transformData)
+        verifyNoInteractions(mockedTransformedData)
+
+        verifyBlocking(mockedLoading) { invoke(true) }
+        verifyNoInteractions(mockedHideLoading)
+        verifyBlocking(mockedShowLoading) { invoke() }
+
+        // Error
+        verifyNoInteractions(mockedError)
+        verifyNoInteractions(mockedErrorWithoutArgument)
+        verifyNoInteractions(transformError)
+        verifyNoInteractions(mockedTransformedError)
     }
 
     @Test
-    fun none_validateCreationMethods() {
+    fun `D - data D, null, LOADING`() = runTest {
+        observe(resultD)
+        advanceUntilIdle()
 
-        val resultNone = dataResultNone<String>()
+        // Data
+        verifyBlocking(mockedData) { invoke("data D") }
+        verifyBlocking(transformData) { invoke("data D") }
+        verifyBlocking(mockedTransformedData) { invoke(123) }
 
-        assertEquals(
-            /* message = */ "Fail to assert None",
-            /* expected = */ resultNone,
-            /* actual = */ DataResult<String>(null, null, DataResultStatus.NONE)
-        )
+        // Loading
+        verifyBlocking(mockedLoading) { invoke(true) }
+        verifyNoInteractions(mockedHideLoading)
+        verifyBlocking(mockedShowLoading) { invoke() }
+
+        // Error
+        verifyNoInteractions(mockedError)
+        verifyNoInteractions(mockedErrorWithoutArgument)
+        verifyNoInteractions(transformError)
+        verifyNoInteractions(mockedTransformedError)
     }
 
     @Test
-    fun validate_mergeWith() {
-        /* TODO */
+    fun `E - null, error, LOADING`() = runTest {
+        observe(resultE)
+        advanceUntilIdle()
+
+        // Data
+        verifyNoInteractions(mockedData)
+        verifyNoInteractions(transformData)
+        verifyNoInteractions(mockedTransformedData)
+
+        // Loading
+        verifyBlocking(mockedLoading) { invoke(true) }
+        verifyNoInteractions(mockedHideLoading)
+        verifyBlocking(mockedShowLoading) { invoke() }
+
+        // Error
+        verifyNoInteractions(mockedError)
+        verifyNoInteractions(mockedErrorWithoutArgument)
+        verifyNoInteractions(transformError)
+        verifyNoInteractions(mockedTransformedError)
+    }
+    //endregion
+
+    //region Status: ERROR
+    @Test
+    fun `F - data F, error, LOADING`() = runTest {
+        observe(resultF)
+        advanceUntilIdle()
+
+        // Data
+        verifyBlocking(mockedData) { invoke("data F") }
+        verifyBlocking(transformData) { invoke("data F") }
+        verifyBlocking(mockedTransformedData) { invoke(123) }
+
+        // Loading
+        verifyBlocking(mockedLoading) { invoke(true) }
+        verifyNoInteractions(mockedHideLoading)
+        verifyBlocking(mockedShowLoading) { invoke() }
+
+        // Error
+        verifyNoInteractions(mockedError)
+        verifyNoInteractions(mockedErrorWithoutArgument)
+        verifyNoInteractions(transformError)
+        verifyNoInteractions(mockedTransformedError)
     }
 
     @Test
-    fun validate_mergeAll() {
-        /* TODO */
+    fun `G - data G, error, ERROR`() = runTest {
+        observe(resultG)
+        advanceUntilIdle()
+
+        // Data
+        verifyBlocking(mockedData) { invoke("data G") }
+        verifyBlocking(transformData) { invoke("data G") }
+        verifyBlocking(mockedTransformedData) { invoke(123) }
+
+        // Loading
+        verifyBlocking(mockedLoading) { invoke(false) }
+        verifyBlocking(mockedHideLoading) { invoke() }
+        verifyNoInteractions(mockedShowLoading)
+
+        // Error
+        verifyBlocking(mockedError) { invoke(error) }
+        verifyBlocking(mockedErrorWithoutArgument) { invoke() }
+        verifyBlocking(transformError) { invoke(error) }
+        verifyBlocking(mockedTransformedError) { invoke(123) }
     }
+
+    @Test
+    fun `H - null, error, ERROR`() = runTest {
+        observe(resultH)
+        advanceUntilIdle()
+
+        // Data
+        verifyNoInteractions(mockedData)
+        verifyNoInteractions(transformData)
+        verifyNoInteractions(mockedTransformedData)
+
+        // Loading
+        verifyBlocking(mockedLoading) { invoke(false) }
+        verifyBlocking(mockedHideLoading) { invoke() }
+        verifyNoInteractions(mockedShowLoading)
+
+        // Error
+        verifyBlocking(mockedError) { invoke(error) }
+        verifyBlocking(mockedErrorWithoutArgument) { invoke() }
+        verifyBlocking(transformError) { invoke(error) }
+        verifyBlocking(mockedTransformedError) { invoke(123) }
+    }
+
+    @Test
+    fun `I - null, null, ERROR`() = runTest {
+        observe(resultI)
+        advanceUntilIdle()
+
+        // Data
+        verifyNoInteractions(mockedData)
+        verifyNoInteractions(transformData)
+        verifyNoInteractions(mockedTransformedData)
+
+        // Loading
+        verifyBlocking(mockedLoading) { invoke(false) }
+        verifyBlocking(mockedHideLoading) { invoke() }
+        verifyNoInteractions(mockedShowLoading)
+
+        // Error
+        verifyNoInteractions(mockedError)
+        verifyBlocking(mockedErrorWithoutArgument) { invoke() }
+        verifyNoInteractions(transformError)
+        verifyNoInteractions(mockedTransformedError)
+    }
+    //endregion
+
+    //region Status: NONE
+    @Test
+    fun `J - null, null, NONE`() = runTest {
+        observe(resultJ)
+        advanceUntilIdle()
+
+        // Data
+        verifyNoInteractions(mockedData)
+        verifyNoInteractions(transformData)
+        verifyNoInteractions(mockedTransformedData)
+
+        // Loading
+        verifyBlocking(mockedLoading) { invoke(false) }
+        verifyBlocking(mockedHideLoading) { invoke() }
+        verifyNoInteractions(mockedShowLoading)
+
+        // Error
+        verifyNoInteractions(mockedError)
+        verifyNoInteractions(mockedErrorWithoutArgument)
+        verifyNoInteractions(transformError)
+        verifyNoInteractions(mockedTransformedError)
+    }
+    //endregion
+
+    private fun observe(result: DataResult<String>) {
+        // Data
+        result.data(mockedData)
+        result.data(transformData, mockedTransformedData)
+
+        // Loading
+        result.loading(mockedLoading)
+        result.hideLoading(mockedHideLoading)
+        result.showLoading(mockedShowLoading)
+
+        // Error
+        result.error(mockedError)
+        result.error(mockedErrorWithoutArgument)
+        result.error(transformError, mockedTransformedError)
+    }
+
 }

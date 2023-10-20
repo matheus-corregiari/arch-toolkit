@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.exception.DataTransformationException
+import br.com.arch.toolkit.livedata.MutableResponseLiveData
+import br.com.arch.toolkit.livedata.SwapResponseLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

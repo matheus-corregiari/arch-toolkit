@@ -1,4 +1,4 @@
-package br.com.arch.toolkit.livedata.response
+package br.com.arch.toolkit.livedata
 
 import android.os.Looper
 import androidx.lifecycle.MediatorLiveData

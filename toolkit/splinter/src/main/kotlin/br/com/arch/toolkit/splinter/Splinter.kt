@@ -6,8 +6,8 @@ import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.dataResultNone
 import br.com.arch.toolkit.flow.MutableResponseFlow
 import br.com.arch.toolkit.flow.ResponseFlow
-import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
-import br.com.arch.toolkit.livedata.response.ResponseLiveData
+import br.com.arch.toolkit.livedata.MutableResponseLiveData
+import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.splinter.extension.invokeCatching
 import br.com.arch.toolkit.splinter.strategy.OneShot
 import br.com.arch.toolkit.splinter.strategy.Strategy

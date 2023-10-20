@@ -1,6 +1,6 @@
 @file:SuppressLint("KotlinNullnessAnnotation")
 
-package br.com.arch.toolkit.livedata.response
+package br.com.arch.toolkit.livedata
 
 import android.annotation.SuppressLint
 import androidx.annotation.NonNull
@@ -10,7 +10,7 @@ import androidx.lifecycle.LiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
-import br.com.arch.toolkit.result.dataResultNone
+import br.com.arch.toolkit.util.dataResultNone
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

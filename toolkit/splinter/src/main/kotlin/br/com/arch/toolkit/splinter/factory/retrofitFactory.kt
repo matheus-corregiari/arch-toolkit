@@ -1,7 +1,7 @@
 package br.com.arch.toolkit.splinter.factory
 
 import br.com.arch.toolkit.flow.ResponseFlow
-import br.com.arch.toolkit.livedata.response.ResponseLiveData
+import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.splinter.oneShotDonatello
 import java.io.IOException
 import java.lang.reflect.ParameterizedType

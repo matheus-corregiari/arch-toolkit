@@ -5,10 +5,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
+import br.com.arch.toolkit.livedata.MutableResponseLiveData
+import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.livedata.extention.mutableResponseLiveDataOf
-import br.com.arch.toolkit.livedata.extention.responseLiveDataOf
+import br.com.arch.toolkit.util.mutableResponseLiveDataOf
+import br.com.arch.toolkit.util.responseLiveDataOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

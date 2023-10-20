@@ -6,13 +6,13 @@ import android.annotation.SuppressLint
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
+import br.com.arch.toolkit.exception.DataTransformationException
+import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.result.DataResultStatus.ERROR
 import br.com.arch.toolkit.result.DataResultStatus.LOADING
 import br.com.arch.toolkit.result.DataResultStatus.NONE
 import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
-import br.com.arch.toolkit.exception.DataTransformationException
-import br.com.arch.toolkit.livedata.extention.observeUntil
-import br.com.arch.toolkit.livedata.response.ResponseLiveData
+import br.com.arch.toolkit.util.observeUntil
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -687,9 +687,7 @@ private class WrapObserver<T, V>(
     }
 }
 
-private enum class EventDataStatus {
-    WITH_DATA, WITHOUT_DATA, DOESNT_MATTER
-}
+private enum class EventDataStatus { WITH_DATA, WITHOUT_DATA, DOESNT_MATTER }
 
 private sealed class ObserveEvent<T>(
     @NonNull val wrapper: WrapObserver<T, *>,

@@ -1,12 +1,13 @@
-package br.com.arch.toolkit.livedata.response
+package br.com.arch.toolkit.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.result.mergeAll
-import br.com.arch.toolkit.result.mergeWith
-import br.com.arch.toolkit.livedata.extention.responseLiveDataOf
+import br.com.arch.toolkit.util.mergeAll
+import br.com.arch.toolkit.util.merge
+import br.com.arch.toolkit.util.mergeNotNull
+import br.com.arch.toolkit.util.responseLiveDataOf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 
@@ -94,7 +95,7 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         scope,
         transformDispatcher,
         listOf(source),
-        { source.value.mergeWith(DataResult(null, null, DataResultStatus.LOADING)) }
+        { source.value.mergeNotNull(DataResult(null, null, DataResultStatus.LOADING)) }
     ) {
         val sourceValue = source.value ?: return@addSources
 
@@ -103,9 +104,11 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
             !conditionMet && !successOnConditionError -> {
                 responseLiveDataOf(IllegalStateException("Pre-condition not met for merge"))
             }
+
             !conditionMet && successOnConditionError -> {
                 responseLiveDataOf(sourceValue.data!! to null)
             }
+
             else -> source.mergeWith(next.invoke(sourceValue)).map { it }
         }
 
@@ -145,7 +148,7 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         scope,
         transformDispatcher,
         listOf(first, second),
-        { first.value.mergeWith(second.value) }
+        { first.value.mergeNotNull(second.value) }
     )
 
     override fun <T, R> followedBy(

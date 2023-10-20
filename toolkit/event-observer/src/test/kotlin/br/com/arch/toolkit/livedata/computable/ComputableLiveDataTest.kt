@@ -4,8 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import br.com.arch.toolkit.livedata.extention.observeNotNull
-import br.com.arch.toolkit.livedata.extention.observeSingle
+import br.com.arch.toolkit.util.observeNotNull
+import br.com.arch.toolkit.util.observeSingle
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule

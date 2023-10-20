@@ -1,10 +1,8 @@
 package br.com.arch.toolkit.sample.github.data.remote.api
 
-import br.com.arch.toolkit.livedata.response.ResponseLiveData
+import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.sample.github.data.remote.model.PageDTO
 import br.com.arch.toolkit.sample.github.data.remote.model.PullRequestDTO
-import br.com.arch.toolkit.sample.github.data.remote.model.RepoDTO
-import br.com.arch.toolkit.splinter.factory.SplinterConfig
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

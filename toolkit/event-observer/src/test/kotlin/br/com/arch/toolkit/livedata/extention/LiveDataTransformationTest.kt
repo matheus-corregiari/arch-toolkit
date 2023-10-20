@@ -5,7 +5,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
-import br.com.arch.toolkit.livedata.response.MutableResponseLiveData
+import br.com.arch.toolkit.livedata.MutableResponseLiveData
+import br.com.arch.toolkit.util.map
+import br.com.arch.toolkit.util.mapList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

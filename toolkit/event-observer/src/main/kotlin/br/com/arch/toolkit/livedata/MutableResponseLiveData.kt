@@ -1,16 +1,16 @@
 @file:SuppressLint("KotlinNullnessAnnotation")
 @file:Suppress("TooManyFunctions")
 
-package br.com.arch.toolkit.livedata.response
+package br.com.arch.toolkit.livedata
 
 import android.annotation.SuppressLint
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.dataResultError
-import br.com.arch.toolkit.result.dataResultLoading
-import br.com.arch.toolkit.result.dataResultNone
-import br.com.arch.toolkit.result.dataResultSuccess
+import br.com.arch.toolkit.util.dataResultError
+import br.com.arch.toolkit.util.dataResultLoading
+import br.com.arch.toolkit.util.dataResultNone
+import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 
