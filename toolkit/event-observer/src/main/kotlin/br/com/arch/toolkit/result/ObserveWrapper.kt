@@ -313,10 +313,26 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has the Error Status
      *
+     * ## Usage:
+     * ```kotlin
+     * fun onError() {
+     *     // Handle Error
+     * }
+     *
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     error(single = true /* default - false */, observer = ::onError)
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first ERROR status, Default: false
      * @param observer Will be called when the actual value has the ERROR status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.error
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun error(
@@ -335,11 +351,27 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has the Error Status
      *
+     * ## Usage:
+     * ```kotlin
+     * fun onError() {
+     *     // Handle Error
+     * }
+     *
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     error(single = true /* default - false */, withData = false, observer = ::onError)
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first ERROR status, Default: false
      * @param withData If true, will execute only with the status ERROR and with NonNull data
      * @param observer Will be called when the actual value has the ERROR status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.error
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun error(
@@ -360,10 +392,24 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has the Error Status and have error
      *
+     * ## Usage:
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     error(single = true /* default - false */, observer = { error ->
+     *         // Handle Error
+     *     })
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first ERROR status, Default: false
      * @param observer Will receive the not null error when the actual value has the ERROR status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.error
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun error(
@@ -383,11 +429,25 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has the Error Status and have error
      *
+     * ## Usage:
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     error(single = true /* default - false */, withData = false, observer = { error ->
+     *         // Handle Error
+     *     })
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first ERROR status, Default: false
      * @param withData If true, will execute only with the status ERROR and with NonNull data
      * @param observer Will receive the not null error when the actual value has the ERROR status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.error
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun error(
@@ -408,11 +468,30 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has the Error Status and have error
      *
+     * ```kotlin
+     * fun transform(error: Throwable): String = error.message
+     *
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     error(
+     *         single = true /* default - false */,
+     *        transformer = ::transform,
+     *        observer = { transformedError ->
+     *             // Handle Transformed Error
+     *         }
+     *     )
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first ERROR status, Default: false
      * @param transformer Transform the Throwable into R before deliver it to the observer
      * @param observer Will receive the not null transformed error when the actual value has the ERROR status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.error
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun <R> error(
@@ -434,12 +513,32 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has the Error Status and have error
      *
+     * ```kotlin
+     * fun transform(error: Throwable): String = error.message
+     *
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     error(
+     *         single = true /* default - false */,
+     *        withData = false,
+     *        transformer = ::transform,
+     *        observer = { transformedError ->
+     *             // Handle Transformed Error
+     *         }
+     *     )
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first ERROR status, Default: false
      * @param withData If true, will execute only with the status ERROR and with NonNull data
      * @param transformer Transform the Throwable into R before deliver it to the observer
      * @param observer Will receive the not null transformed error when the actual value has the ERROR status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.error
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun <R> error(
