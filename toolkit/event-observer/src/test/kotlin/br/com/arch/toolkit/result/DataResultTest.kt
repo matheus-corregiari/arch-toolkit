@@ -49,6 +49,14 @@ class DataResultTest {
     // None
     private val resultJ = dataResultNone<String>()
 
+    // List
+    private val resultListEmpty = dataResultSuccess(listOf<String>())
+    private val resultMapEmpty = dataResultSuccess(mapOf<String, String>())
+    private val resultSequenceEmpty = dataResultSuccess(sequenceOf<String>())
+    private val resultListNotEmpty = dataResultSuccess(listOf("a"))
+    private val resultMapNotEmpty = dataResultSuccess(mapOf("a" to "a"))
+    private val resultSequenceNotEmpty = dataResultSuccess(sequenceOf("a"))
+
     // Data Mocks
     private val mockedData: (String) -> Unit = mock()
     private val transformData: (String) -> Int = mock()
@@ -101,6 +109,12 @@ class DataResultTest {
         Assert.assertFalse(resultH.hasData)
         Assert.assertFalse(resultI.hasData)
         Assert.assertFalse(resultJ.hasData)
+        Assert.assertTrue(resultListEmpty.hasData)
+        Assert.assertTrue(resultMapEmpty.hasData)
+        Assert.assertTrue(resultSequenceEmpty.hasData)
+        Assert.assertTrue(resultListNotEmpty.hasData)
+        Assert.assertTrue(resultMapNotEmpty.hasData)
+        Assert.assertTrue(resultSequenceNotEmpty.hasData)
 
         // hasError
         Assert.assertFalse(resultA.hasError)
@@ -113,6 +127,12 @@ class DataResultTest {
         Assert.assertTrue(resultH.hasError)
         Assert.assertFalse(resultI.hasError)
         Assert.assertFalse(resultJ.hasError)
+        Assert.assertFalse(resultListEmpty.hasError)
+        Assert.assertFalse(resultMapEmpty.hasError)
+        Assert.assertFalse(resultSequenceEmpty.hasError)
+        Assert.assertFalse(resultListNotEmpty.hasError)
+        Assert.assertFalse(resultMapNotEmpty.hasError)
+        Assert.assertFalse(resultSequenceNotEmpty.hasError)
 
         // isSuccess
         Assert.assertTrue(resultA.isSuccess)
@@ -125,6 +145,12 @@ class DataResultTest {
         Assert.assertFalse(resultH.isSuccess)
         Assert.assertFalse(resultI.isSuccess)
         Assert.assertFalse(resultJ.isSuccess)
+        Assert.assertTrue(resultListEmpty.isSuccess)
+        Assert.assertTrue(resultMapEmpty.isSuccess)
+        Assert.assertTrue(resultSequenceEmpty.isSuccess)
+        Assert.assertTrue(resultListNotEmpty.isSuccess)
+        Assert.assertTrue(resultMapNotEmpty.isSuccess)
+        Assert.assertTrue(resultSequenceNotEmpty.isSuccess)
 
         // isLoading
         Assert.assertFalse(resultA.isLoading)
@@ -137,6 +163,12 @@ class DataResultTest {
         Assert.assertFalse(resultH.isLoading)
         Assert.assertFalse(resultI.isLoading)
         Assert.assertFalse(resultJ.isLoading)
+        Assert.assertFalse(resultListEmpty.isLoading)
+        Assert.assertFalse(resultMapEmpty.isLoading)
+        Assert.assertFalse(resultSequenceEmpty.isLoading)
+        Assert.assertFalse(resultListNotEmpty.isLoading)
+        Assert.assertFalse(resultMapNotEmpty.isLoading)
+        Assert.assertFalse(resultSequenceNotEmpty.isLoading)
 
         // isError
         Assert.assertFalse(resultA.isError)
@@ -149,6 +181,12 @@ class DataResultTest {
         Assert.assertTrue(resultH.isError)
         Assert.assertTrue(resultI.isError)
         Assert.assertFalse(resultJ.isError)
+        Assert.assertFalse(resultListEmpty.isError)
+        Assert.assertFalse(resultMapEmpty.isError)
+        Assert.assertFalse(resultSequenceEmpty.isError)
+        Assert.assertFalse(resultListNotEmpty.isError)
+        Assert.assertFalse(resultMapNotEmpty.isError)
+        Assert.assertFalse(resultSequenceNotEmpty.isError)
 
         // isNone
         Assert.assertFalse(resultA.isNone)
@@ -161,6 +199,66 @@ class DataResultTest {
         Assert.assertFalse(resultH.isNone)
         Assert.assertFalse(resultI.isNone)
         Assert.assertTrue(resultJ.isNone)
+        Assert.assertFalse(resultListEmpty.isNone)
+        Assert.assertFalse(resultMapEmpty.isNone)
+        Assert.assertFalse(resultSequenceEmpty.isNone)
+        Assert.assertFalse(resultListNotEmpty.isNone)
+        Assert.assertFalse(resultMapNotEmpty.isNone)
+        Assert.assertFalse(resultSequenceNotEmpty.isNone)
+
+        // isListType
+        Assert.assertFalse(resultA.isListType)
+        Assert.assertFalse(resultB.isListType)
+        Assert.assertFalse(resultC.isListType)
+        Assert.assertFalse(resultD.isListType)
+        Assert.assertFalse(resultE.isListType)
+        Assert.assertFalse(resultF.isListType)
+        Assert.assertFalse(resultG.isListType)
+        Assert.assertFalse(resultH.isListType)
+        Assert.assertFalse(resultI.isListType)
+        Assert.assertFalse(resultJ.isListType)
+        Assert.assertTrue(resultListEmpty.isListType)
+        Assert.assertTrue(resultMapEmpty.isListType)
+        Assert.assertTrue(resultSequenceEmpty.isListType)
+        Assert.assertTrue(resultListNotEmpty.isListType)
+        Assert.assertTrue(resultMapNotEmpty.isListType)
+        Assert.assertTrue(resultSequenceNotEmpty.isListType)
+
+        // isEmpty
+        Assert.assertFalse(resultA.isEmpty)
+        Assert.assertFalse(resultB.isEmpty)
+        Assert.assertFalse(resultC.isEmpty)
+        Assert.assertFalse(resultD.isEmpty)
+        Assert.assertFalse(resultE.isEmpty)
+        Assert.assertFalse(resultF.isEmpty)
+        Assert.assertFalse(resultG.isEmpty)
+        Assert.assertFalse(resultH.isEmpty)
+        Assert.assertFalse(resultI.isEmpty)
+        Assert.assertFalse(resultJ.isEmpty)
+        Assert.assertTrue(resultListEmpty.isEmpty)
+        Assert.assertTrue(resultMapEmpty.isEmpty)
+        Assert.assertTrue(resultSequenceEmpty.isEmpty)
+        Assert.assertFalse(resultListNotEmpty.isEmpty)
+        Assert.assertFalse(resultMapNotEmpty.isEmpty)
+        Assert.assertFalse(resultSequenceNotEmpty.isEmpty)
+
+        // isEmpty
+        Assert.assertFalse(resultA.isNotEmpty)
+        Assert.assertFalse(resultB.isNotEmpty)
+        Assert.assertFalse(resultC.isNotEmpty)
+        Assert.assertFalse(resultD.isNotEmpty)
+        Assert.assertFalse(resultE.isNotEmpty)
+        Assert.assertFalse(resultF.isNotEmpty)
+        Assert.assertFalse(resultG.isNotEmpty)
+        Assert.assertFalse(resultH.isNotEmpty)
+        Assert.assertFalse(resultI.isNotEmpty)
+        Assert.assertFalse(resultJ.isNotEmpty)
+        Assert.assertFalse(resultListEmpty.isNotEmpty)
+        Assert.assertFalse(resultMapEmpty.isNotEmpty)
+        Assert.assertFalse(resultSequenceEmpty.isNotEmpty)
+        Assert.assertTrue(resultListNotEmpty.isNotEmpty)
+        Assert.assertTrue(resultMapNotEmpty.isNotEmpty)
+        Assert.assertTrue(resultSequenceNotEmpty.isNotEmpty)
     }
 
 

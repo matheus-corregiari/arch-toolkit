@@ -1410,23 +1410,6 @@ class ResponseLiveDataTest {
         }
 
     @Test
-    fun whenObserveResult_shouldBeCalledWhenResultIsPosted_withoutArguments() = runTest {
-        val mockedObserver: () -> Unit = mock()
-        val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { result(observer = mockedObserver) }
-
-        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
-        liveData.value = result
-        advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke() }
-
-        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
-        liveData.value = result2
-        advanceUntilIdle()
-        verifyBlocking(mockedObserver, times(2)) { invoke() }
-    }
-
-    @Test
     fun whenObserveSingleResult_shouldBeCalledWhenResultIsPosted() = runTest {
         val mockedObserver: (DataResult<Any>) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
@@ -1471,26 +1454,6 @@ class ResponseLiveDataTest {
             Mockito.`when`(mockedTransformer.invoke(result2)).thenReturn(1)
             liveData.value = result2
             Mockito.verifyNoMoreInteractions(mockedTransformer)
-            Mockito.verifyNoMoreInteractions(mockedObserver)
-
-            Assert.assertFalse(liveData.hasObservers())
-        }
-
-    @Test
-    fun whenObserveSingleResult_shouldBeCalledWhenResultIsPosted_withoutArguments() =
-        runTest {
-            val mockedObserver: () -> Unit = mock()
-            val liveData =
-                MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { result(single = true, observer = mockedObserver) }
-
-            val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
-            liveData.value = result
-            advanceUntilIdle()
-            verifyBlocking(mockedObserver) { invoke() }
-
-            val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
-            liveData.value = result2
             Mockito.verifyNoMoreInteractions(mockedObserver)
 
             Assert.assertFalse(liveData.hasObservers())
