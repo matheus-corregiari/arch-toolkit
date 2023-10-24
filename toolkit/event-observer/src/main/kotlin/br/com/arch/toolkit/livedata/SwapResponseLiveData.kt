@@ -4,7 +4,7 @@ import android.os.Looper
 import androidx.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.exception.DataTransformationException
+import br.com.arch.toolkit.exception.DataResultTransformationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -146,7 +146,7 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
                 withContext(transformDispatcher) {
                     transformation.runCatching { invoke(data) }
                 }.onFailure {
-                    val error = DataTransformationException(
+                    val error = DataResultTransformationException(
                         "Error performing swapSource, please check your transformations",
                         it
                     )

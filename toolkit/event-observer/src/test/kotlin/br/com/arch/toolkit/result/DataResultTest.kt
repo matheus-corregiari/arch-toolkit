@@ -378,8 +378,8 @@ class DataResultTest {
         verifyNoInteractions(mockedTransformedData)
 
         // Loading
-        verifyBlocking(mockedLoading) { invoke(false) }
-        verifyBlocking(mockedHideLoading) { invoke() }
+        verifyNoInteractions(mockedLoading)
+        verifyNoInteractions(mockedHideLoading)
         verifyNoInteractions(mockedShowLoading)
 
         // Error

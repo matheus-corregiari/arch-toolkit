@@ -132,7 +132,7 @@ fun <T> dataResultNone() = DataResult<T>(null, null, NONE)
  * val merged = dataResultA.merge(dataResultB)
  *
  * // The merged result will be a union of the two results
- * assert(merged.data == ("value1" to 1))
+ * assert(merged.data == ("value1" to 2))
  * assert(merged.status == DataResultStatus.SUCCESS)
  * assert(merged.error == null)
  * ```
@@ -189,8 +189,8 @@ fun <T, R> DataResult<T>?.merge(second: DataResult<R>?): DataResult<Pair<T?, R?>
  * val merged = dataResultA.mergeNotNull(dataResultB)
  *
  * // The merged result will be a union of the two results
- * assert(merged.data == ("value1" to 1))
- * assert(merged.status == DataResultStatus.SUCCESS)
+ * assert(merged.data == null)
+ * assert(merged.status == DataResultStatus.LOADING)
  * assert(merged.error == null)
  * ```
  *
