@@ -642,15 +642,12 @@ class ObserveWrapper<T> internal constructor() {
      * Observes when the DataResult has data
      *
      * ```kotlin
-     * fun transform(data: String): Int = 123
-     *
      * val dataResult = dataResultSuccess("data")
      * dataResult.unwrap {
      *     data(
      *         single = true /* default - false */,
-     *        transformer = ::transform,
-     *        observer = { transformedData ->
-     *             // Handle Transformed Data
+     *        observer = { data ->
+     *             // Handle Data
      *         }
      *     )
      *}
@@ -725,10 +722,26 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes the DataResult
      *
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     result(
+     *         single = true /* default - false */,
+     *        observer = { result ->
+     *             // Handle Result
+     *         }
+     *     )
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first non-null result, Default: false
      * @param observer Will be called for every result and will receive the not null result
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.result
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun result(
@@ -747,11 +760,30 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes the DataResult
      *
+     * ```kotlin
+     * fun transform(data: DataResult<String>): Int = 123
+     *
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     result(
+     *         single = true /* default - false */,
+     *        transformer = ::transform,
+     *        observer = { transformedResult ->
+     *             // Handle Transformed Result
+     *         }
+     *     )
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first non-null result, Default: false
      * @param transformer Transform the T into R before deliver it to the observer
      * @param observer Will be called for every result and will receive the not null transformed result
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.result
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun <R> result(
@@ -769,38 +801,32 @@ class ObserveWrapper<T> internal constructor() {
         )
         return this
     }
-
-    /**
-     * Observes the DataResult
-     *
-     * @param single If true, will execute only until the first non-null result, Default: false
-     * @param observer Will be called for every result
-     *
-     * @return The ObserveWrapper<T>
-     */
-    @NonNull
-    fun result(
-        @NonNull single: Boolean = false,
-        @NonNull observer: suspend () -> Unit
-    ): ObserveWrapper<T> {
-        eventList.add(
-            ResultEvent(
-                WrapObserver<DataResult<T>, Any>(emptyObserver = observer),
-                single
-            )
-        )
-        return this
-    }
     //endregion
 
     //region Status
     /**
      * Observes the Status
      *
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     status(
+     *         single = true /* default - false */,
+     *        observer = { status ->
+     *             // Handle Status
+     *         }
+     *     )
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first non-null status, Default: false
      * @param observer Will be called for every status and will receive the not null status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.status
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun status(
@@ -819,11 +845,30 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes the Status
      *
+     * ```kotlin
+     * fun transform(data: DataResultStatus): Int = 123
+     *
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     status(
+     *         single = true /* default - false */,
+     *        transformer = ::transform,
+     *        observer = { transformedStatus ->
+     *             // Handle Transformed Status
+     *         }
+     *     )
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first non-null status, Default: false
      * @param transformer Transform the T into R before deliver it to the observer
      * @param observer Will be called for every status and will receive the not null transformed status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.status
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun <R> status(
