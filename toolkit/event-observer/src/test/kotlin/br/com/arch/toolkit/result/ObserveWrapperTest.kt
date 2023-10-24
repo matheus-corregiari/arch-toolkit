@@ -55,6 +55,13 @@ class ObserveWrapperTest {
     private val mockedResultTransform: (DataResult<String>) -> Int = mock()
     private val mockedTransformResult: (Int) -> Unit = mock()
 
+    // Mock Empty
+    private val mockedEmpty: () -> Unit = mock()
+    private val mockedNotEmpty: () -> Unit = mock()
+
+    // Mock None
+    private val mockedNone: () -> Unit = mock()
+
     init {
         Dispatchers.setMain(StandardTestDispatcher())
     }
@@ -86,6 +93,13 @@ class ObserveWrapperTest {
         whenever(mockedResult.invoke(any())) doReturn Unit
         whenever(mockedResultTransform.invoke(any())) doReturn 123
         whenever(mockedTransformResult.invoke(123)) doReturn Unit
+
+        // Mock Empty
+        whenever(mockedEmpty.invoke()) doReturn Unit
+        whenever(mockedNotEmpty.invoke()) doReturn Unit
+
+        // Mock None
+        whenever(mockedNone.invoke()) doReturn Unit
     }
 
     //region SUCCESS
@@ -416,6 +430,16 @@ class ObserveWrapperTest {
         runTestWith(DataResult("data", error, NONE), withData = false)
     //endregion
 
+    //region Empty
+    @Test
+    fun `017-1 - empty, null, SUCCESS`() =
+        runTestListWith(DataResult(listOf(), null, SUCCESS))
+
+    @Test
+    fun `017-2 - notEmpty, null, SUCCESS`() =
+        runTestListWith(DataResult(listOf("item"), null, SUCCESS))
+    //endregion
+
     private fun runTestWith(
         result: DataResult<String>,
         single: Boolean? = null,
@@ -429,6 +453,19 @@ class ObserveWrapperTest {
         verifyError(result.isError, result.hasError, result.isNone, result.hasData, withData)
         verifyStatus(result.status, result.isNone)
         verifyResult(result, result.isNone)
+        verifyNone(result.isNone)
+        verifyEmpty(result.isListType, result.isEmpty)
+        verifyNotEmpty(result.isListType, result.isNotEmpty)
+    }
+
+    private fun runTestListWith(result: DataResult<List<String>>) = runTest {
+        result.unwrap {
+            empty(observer = mockedEmpty)
+            notEmpty(observer = mockedNotEmpty)
+        }
+        advanceUntilIdle()
+        verifyEmpty(result.isListType, result.isEmpty)
+        verifyNotEmpty(result.isListType, result.isNotEmpty)
     }
 
     private fun unwrap(result: DataResult<String>, single: Boolean?, withData: Boolean?) =
@@ -459,36 +496,41 @@ class ObserveWrapperTest {
                     transformer = mockedResultTransform,
                     observer = mockedTransformResult
                 )
-            } else if (withData != null) {
-                data(observer = mockedData)
-                data(transformer = mockedTransform, observer = mockedTransformData)
-                loading(withData = withData, observer = mockedLoading)
-                showLoading(withData = withData, observer = mockedShowLoading)
-                hideLoading(withData = withData, observer = mockedHideLoading)
-                error(withData = withData, observer = mockedError)
-                error(withData = withData, observer = mockedExceptionError)
-                error(
-                    withData = withData,
-                    transformer = mockedErrorTransform,
-                    observer = mockedTransformError
-                )
-                status(observer = mockedStatus)
-                status(transformer = mockedStatusTransform, observer = mockedTransformStatus)
-                result(observer = mockedResult)
-                result(transformer = mockedResultTransform, observer = mockedTransformResult)
+                none(single = single, observer = mockedNone)
+                empty(single = single, observer = mockedEmpty)
+                notEmpty(single = single, observer = mockedNotEmpty)
             } else {
                 data(observer = mockedData)
                 data(transformer = mockedTransform, observer = mockedTransformData)
-                loading(observer = mockedLoading)
-                showLoading(observer = mockedShowLoading)
-                hideLoading(observer = mockedHideLoading)
-                error(observer = mockedError)
-                error(observer = mockedExceptionError)
-                error(transformer = mockedErrorTransform, observer = mockedTransformError)
+                if (withData != null) {
+                    loading(withData = withData, observer = mockedLoading)
+                    showLoading(withData = withData, observer = mockedShowLoading)
+                    hideLoading(withData = withData, observer = mockedHideLoading)
+                    error(withData = withData, observer = mockedError)
+                    error(withData = withData, observer = mockedExceptionError)
+                    error(
+                        withData = withData,
+                        transformer = mockedErrorTransform,
+                        observer = mockedTransformError
+                    )
+                } else {
+                    loading(observer = mockedLoading)
+                    showLoading(observer = mockedShowLoading)
+                    hideLoading(observer = mockedHideLoading)
+                    error(observer = mockedError)
+                    error(observer = mockedExceptionError)
+                    error(
+                        transformer = mockedErrorTransform,
+                        observer = mockedTransformError
+                    )
+                }
                 status(observer = mockedStatus)
                 status(transformer = mockedStatusTransform, observer = mockedTransformStatus)
                 result(observer = mockedResult)
                 result(transformer = mockedResultTransform, observer = mockedTransformResult)
+                none(observer = mockedNone)
+                empty(observer = mockedEmpty)
+                notEmpty(observer = mockedNotEmpty)
             }
         }
 
@@ -573,6 +615,34 @@ class ObserveWrapperTest {
             verifyNoInteractions(mockedResult)
             verifyNoInteractions(mockedResultTransform)
             verifyNoInteractions(mockedTransformResult)
+        }
+    }
+
+    private fun verifyNone(isNone: Boolean) {
+        if (isNone) {
+            verifyBlocking(mockedNone) { invoke() }
+        } else {
+            verifyNoInteractions(mockedNone)
+        }
+    }
+
+    private fun verifyEmpty(isListType: Boolean, isEmpty: Boolean) {
+        if (isListType.not()) {
+            verifyNoInteractions(mockedEmpty)
+        } else if (isEmpty) {
+            verifyBlocking(mockedEmpty) { invoke() }
+        } else {
+            verifyNoInteractions(mockedEmpty)
+        }
+    }
+
+    private fun verifyNotEmpty(isListType: Boolean, isNotEmpty: Boolean) {
+        if (isListType.not()) {
+            verifyNoInteractions(mockedNotEmpty)
+        } else if (isNotEmpty) {
+            verifyBlocking(mockedNotEmpty) { invoke() }
+        } else {
+            verifyNoInteractions(mockedNotEmpty)
         }
     }
 }

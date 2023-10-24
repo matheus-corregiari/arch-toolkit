@@ -888,6 +888,146 @@ class ObserveWrapper<T> internal constructor() {
     }
     //endregion
 
+    //region Empty
+    /**
+     * Observes when the DataResult has data, the type is a "list" and it is empty
+     *
+     *
+     * Types available:
+     *  - Collection`<*>`
+     *  - Map`<*, *>`
+     *  - Sequence`<*>`
+     *
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     empty(
+     *         single = true /* default - false */,
+     *        observer = {
+     *             // Handle Empty Data
+     *         }
+     *     )
+     *}
+     * ```
+     *
+     * @param single If true, will execute only until the first non-null valid empty data, Default: false
+     * @param observer Will be called only if the data is not-null and is represents a valid list type, with empty data
+     *
+     * @see DataResult
+     * @see DataResult.isListType
+     * @see DataResult.isEmpty
+     * @see DataResult.isNotEmpty
+     * @see DataResultStatus
+     * @see ObserveWrapper.empty
+     * @see ObserveWrapper.notEmpty
+     *
+     * @return ObserveWrapper`<T>`
+     */
+    @NonNull
+    fun empty(
+        @NonNull single: Boolean = false,
+        @NonNull observer: suspend () -> Unit
+    ): ObserveWrapper<T> {
+        eventList.add(
+            EmptyEvent(
+                WrapObserver<Void, Any>(emptyObserver = observer),
+                single
+            )
+        )
+        return this
+    }
+
+    /**
+     * Observes when the DataResult has data, the type is a "list" and it is not empty
+     *
+     *
+     * Types available:
+     *  - Collection`<*>`
+     *  - Map`<*, *>`
+     *  - Sequence`<*>`
+     *
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     notEmpty(
+     *         single = true /* default - false */,
+     *        observer = {
+     *             // Handle Not Empty Data
+     *         }
+     *     )
+     *}
+     * ```
+     *
+     * @param single If true, will execute only until the first non-null valid not empty data, Default: false
+     * @param observer Will be called only if the data is not-null and is represents a valid list type,
+     * with not empty data
+     *
+     * @see DataResult
+     * @see DataResult.isListType
+     * @see DataResult.isEmpty
+     * @see DataResult.isNotEmpty
+     * @see DataResultStatus
+     * @see ObserveWrapper.empty
+     * @see ObserveWrapper.notEmpty
+     *
+     * @return ObserveWrapper`<T>`
+     */
+    @NonNull
+    fun notEmpty(
+        @NonNull single: Boolean = false,
+        @NonNull observer: suspend () -> Unit
+    ): ObserveWrapper<T> {
+        eventList.add(
+            NotEmptyEvent(
+                WrapObserver<Void, Any>(emptyObserver = observer),
+                single
+            )
+        )
+        return this
+    }
+    //endregion
+
+    //region None
+    /**
+     * Observes when the DataResult has status NONE
+     *
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     none(
+     *         single = true /* default - false */,
+     *        observer = {
+     *             // Handle None event
+     *         }
+     *     )
+     *}
+     * ```
+     *
+     * @param single If true, will execute only until the first non-null valid not empty data, Default: false
+     * @param observer Only way to observe a result with status NONE
+     *
+     * @see DataResult
+     * @see DataResult.isNone
+     * @see DataResultStatus
+     * @see ObserveWrapper.none
+     *
+     * @return ObserveWrapper`<T>`
+     */
+    @NonNull
+    fun none(
+        @NonNull single: Boolean = false,
+        @NonNull observer: suspend () -> Unit
+    ): ObserveWrapper<T> {
+        eventList.add(
+            NoneEvent(
+                WrapObserver<Void, Any>(emptyObserver = observer),
+                single
+            )
+        )
+        return this
+    }
+    //endregion
+
     //region Attach Methods
     /**
      * Observes until all observers on Wrapper get removed
