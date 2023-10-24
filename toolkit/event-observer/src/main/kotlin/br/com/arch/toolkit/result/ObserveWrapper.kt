@@ -641,10 +641,29 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has data
      *
+     * ```kotlin
+     * fun transform(data: String): Int = 123
+     *
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     data(
+     *         single = true /* default - false */,
+     *        transformer = ::transform,
+     *        observer = { transformedData ->
+     *             // Handle Transformed Data
+     *         }
+     *     )
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first Non null Data, Default: false
      * @param observer Will receive the not null data
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.data
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun data(
@@ -658,11 +677,31 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has data
      *
+     * ```kotlin
+     * fun transform(data: String): Int = 123
+     *
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     data(
+     *         single = true /* default - false */,
+     *        withData = false,
+     *        transformer = ::transform,
+     *        observer = { transformedData ->
+     *             // Handle Transformed Data
+     *         }
+     *     )
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first Non null Data, Default: false
      * @param transformer Transform the T into R before deliver it to the observer
      * @param observer Will receive the not null transformed data
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.data
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun <R> data(
