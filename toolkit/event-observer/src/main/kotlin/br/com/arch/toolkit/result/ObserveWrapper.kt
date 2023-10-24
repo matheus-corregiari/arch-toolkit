@@ -563,10 +563,24 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has the Success Status
      *
+     * ## Usage:
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     success(single = true /* default - false */, observer = {
+     *         // Handle Success
+     *     })
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first SUCCESS status, Default: false
      * @param observer Will be called when the actual value has the SUCCESS status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.success
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun success(
@@ -586,11 +600,25 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Observes when the DataResult has the Success Status
      *
+     * ## Usage:
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     success(single = true /* default - false */, withData = false, observer = {
+     *         // Handle Success
+     *     })
+     *}
+     * ```
+     *
      * @param single If true, will execute only until the first SUCCESS status, Default: false
      * @param withData If true, will execute only with the status SUCCESS and with NonNull data
      * @param observer Will be called when the actual value has the SUCCESS status
      *
-     * @return The ObserveWrapper<T>
+     * @see DataResult
+     * @see DataResultStatus
+     * @see ObserveWrapper.success
+     *
+     * @return ObserveWrapper`<T>`
      */
     @NonNull
     fun success(
