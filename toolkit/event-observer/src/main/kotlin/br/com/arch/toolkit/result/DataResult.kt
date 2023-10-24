@@ -82,6 +82,82 @@ data class DataResult<T>(
      * Usage:
      * ```kotlin
      * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
+     * if(dataResult.isEmpty) {
+     *     // Data is List ou Map or Sequence and it is empty!
+     * } else {
+     *     // Data is any of the known types or is not empty!
+     * }
+     * ```
+     *
+     * - **true** - if this data is != null and is is a list and it is empty
+     * - **false** - if this data is null or, it is any of the mapped list type, or is not empty
+     *
+     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it is empty
+     */
+    val isEmpty: Boolean
+        get() = isListType && when (data) {
+            is Collection<*> -> data.isEmpty()
+            is Map<*, *> -> data.isEmpty()
+            is Sequence<*> -> data.count() == 0
+            else -> false
+        }
+
+    /**
+     *
+     * Usage:
+     * ```kotlin
+     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
+     * if(dataResult.isEmpty) {
+     *     // Data is List ou Map or Sequence and it is empty!
+     * } else {
+     *     // Data is any of the known types or is not empty!
+     * }
+     * ```
+     *
+     * - **true** - if this data is != null and is is a list and it is not empty
+     * - **false** - if this data is null or, it is any of the mapped list type, or is empty
+     *
+     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it is NOT empty
+     */
+    val isNotEmpty: Boolean
+        get() = isListType && when (data) {
+            is Collection<*> -> data.isNotEmpty()
+            is Map<*, *> -> data.isNotEmpty()
+            is Sequence<*> -> data.count() > 0
+            else -> false
+        }
+
+    /**
+     *
+     * Usage:
+     * ```kotlin
+     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
+     * if(dataResult.isListType) {
+     *     // Data is List ou Map or Sequence!
+     * } else {
+     *     // Data is any of the known types!
+     * }
+     * ```
+     *
+     * - **true** - if this data is != null and is is a list
+     * - **false** - if this data is null or, it is any of the mapped list type
+     *
+     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence
+     */
+    val isListType: Boolean
+        get() = hasData && when (data) {
+            is Collection<*>,
+            is Map<*, *>,
+            is Sequence<*> -> true
+
+            else -> false
+        }
+
+    /**
+     *
+     * Usage:
+     * ```kotlin
+     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
      * if(dataResult.isLoading) {
      *     // Is Loading!
      * } else {
