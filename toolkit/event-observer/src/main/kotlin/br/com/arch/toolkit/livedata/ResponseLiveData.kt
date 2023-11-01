@@ -164,7 +164,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
     @NonNull
     fun <R> mergeWith(@NonNull source: ResponseLiveData<R>): ResponseLiveData<Pair<T, R>> =
         withDelegate {
-            it.merge(this, source, scope, transformDispatcher)
+            merge(this@ResponseLiveData, source, scope, transformDispatcher)
         }
 
     /**
@@ -180,7 +180,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
         @NonNull tag: String,
         @NonNull vararg sources: Pair<String, ResponseLiveData<*>>
     ): ResponseLiveData<Map<String, *>> = withDelegate {
-        it.merge(
+        merge(
             scope,
             transformDispatcher,
             sources.toMutableList().apply { add(0, tag to this@ResponseLiveData) }
@@ -202,8 +202,8 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
         @NonNull condition: (T) -> Boolean,
         @NonNull successOnConditionError: Boolean
     ): ResponseLiveData<Pair<T, R?>> = withDelegate {
-        it.followedBy(
-            this,
+        followedBy(
+            this@ResponseLiveData,
             source,
             scope,
             transformDispatcher,
@@ -334,9 +334,9 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      *
      * @return A new instance of ResponseLiveData<T>
      */
-    private fun <R> withDelegate(func: (ResponseLiveDataMergeDelegate) -> ResponseLiveData<R>): ResponseLiveData<R> =
+    private fun <R> withDelegate(func: ResponseLiveDataMergeDelegate.() -> ResponseLiveData<R>): ResponseLiveData<R> =
         synchronized(mergeLock) {
-            mergeDelegate = (mergeDelegate ?: DefaultResponseLiveDataMergeDelegate())
+            mergeDelegate = mergeDelegate ?: DefaultResponseLiveDataMergeDelegate()
             return func.invoke(requireNotNull(mergeDelegate))
         }
 }

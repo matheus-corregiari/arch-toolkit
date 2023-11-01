@@ -11,6 +11,7 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import br.com.arch.toolkit.exception.DataResultException
 import br.com.arch.toolkit.exception.DataResultTransformationException
 import br.com.arch.toolkit.flow.ResponseFlow
@@ -20,7 +21,6 @@ import br.com.arch.toolkit.result.DataResultStatus.LOADING
 import br.com.arch.toolkit.result.DataResultStatus.NONE
 import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import br.com.arch.toolkit.util.dataResultError
-import br.com.arch.toolkit.util.observeUntil
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -1051,12 +1051,17 @@ class ObserveWrapper<T> internal constructor() {
         @NonNull liveData: ResponseLiveData<T>,
         @NonNull owner: LifecycleOwner
     ): ResponseLiveData<T> {
-        liveData.observeUntil(owner) {
-            scope.launchWithErrorTreatment { handleResult(it) }
-
-            // Observe until this list becomes empty
-            eventList.isEmpty()
+        val observer = object : Observer<DataResult<T>> {
+            override fun onChanged(value: DataResult<T>) {
+                scope.launchWithErrorTreatment {
+                    handleResult(value)
+                    if (eventList.isEmpty()) {
+                        liveData.removeObserver(this)
+                    }
+                }
+            }
         }
+        liveData.observe(owner, observer)
         return liveData
     }
 

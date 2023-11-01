@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList")
+
 package br.com.arch.toolkit.livedata
 
 import androidx.lifecycle.LiveData
@@ -5,7 +7,6 @@ import androidx.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.util.mergeAll
-import br.com.arch.toolkit.util.merge
 import br.com.arch.toolkit.util.mergeNotNull
 import br.com.arch.toolkit.util.responseLiveDataOf
 import kotlinx.coroutines.CoroutineDispatcher
@@ -75,7 +76,13 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
             lastSources.add(liveData)
             mergerLiveData.addSource(liveData) {
                 val merged = onMerge.invoke()
-                if (result.value != merged) result.swapSource(ResponseLiveData(merged))
+                if (result.value != merged) {
+                    result.swapSource(
+                        ResponseLiveData(merged)
+                            .scope(scope)
+                            .transformDispatcher(transformDispatcher)
+                    )
+                }
 
                 if (onChanged != null) result.onChanged(merged)
             }
@@ -92,11 +99,11 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         condition: (T) -> Boolean,
         successOnConditionError: Boolean
     ): ResponseLiveData<Pair<T, R?>> = addSources(
-        scope,
-        transformDispatcher,
-        listOf(source),
-        { source.value.mergeNotNull(DataResult(null, null, DataResultStatus.LOADING)) }
-    ) {
+        scope = scope,
+        transformDispatcher = transformDispatcher,
+        newSources = listOf(source),
+        onMerge = { source.value.mergeNotNull(DataResult(null, null, DataResultStatus.LOADING)) }
+    ) { result ->
         val sourceValue = source.value ?: return@addSources
 
         val conditionMet = sourceValue.data?.let(condition) == true
@@ -133,10 +140,10 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         transformDispatcher: CoroutineDispatcher,
         sources: List<Pair<String, ResponseLiveData<*>>>
     ): ResponseLiveData<Map<String, *>> = addSources(
-        scope,
-        transformDispatcher,
-        sources.map { it.second },
-        { sources.map { it.first to it.second.value }.mergeAll() }
+        scope = scope,
+        transformDispatcher = transformDispatcher,
+        newSources = sources.map { it.second },
+        onMerge = { sources.merged }
     )
 
     override fun <T, R> merge(
@@ -145,10 +152,10 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         scope: CoroutineScope,
         transformDispatcher: CoroutineDispatcher
     ): ResponseLiveData<Pair<T, R>> = addSources(
-        scope,
-        transformDispatcher,
-        listOf(first, second),
-        { first.value.mergeNotNull(second.value) }
+        scope = scope,
+        transformDispatcher = transformDispatcher,
+        newSources = listOf(first, second),
+        onMerge = { first.value.mergeNotNull(second.value) }
     )
 
     override fun <T, R> followedBy(
@@ -159,11 +166,11 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         condition: (T) -> Boolean,
         successOnConditionError: Boolean
     ): ResponseLiveData<Pair<T, R?>> = chainSources(
-        scope,
-        transformDispatcher,
-        source,
-        next,
-        condition,
-        successOnConditionError
+        scope = scope,
+        transformDispatcher = transformDispatcher,
+        source = source,
+        next = next,
+        condition = condition,
+        successOnConditionError = successOnConditionError
     )
 }

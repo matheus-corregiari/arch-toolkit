@@ -5,8 +5,8 @@ package br.com.arch.toolkit.util
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.map
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.livedata.SwapResponseLiveData
@@ -56,11 +56,14 @@ fun <T> LiveData<T>.observeSingle(owner: LifecycleOwner, observer: ((T) -> Unit)
  * @param observer Will be called on every data changes until it returns true
  */
 fun <T> LiveData<T>.observeUntil(owner: LifecycleOwner, observer: ((T?) -> Boolean)) =
-    observe(owner, object : Observer<T> {
-        override fun onChanged(value: T) {
-            if (value.let(observer)) removeObserver(this)
+    observe(
+        owner,
+        object : Observer<T> {
+            override fun onChanged(value: T) {
+                if (value.let(observer)) removeObserver(this)
+            }
         }
-    })
+    )
 
 /**
  * Returns an instance of a ResponseLiveData<T> with the desired value
@@ -126,25 +129,12 @@ fun <T> swapResponseLiveDataOf(error: Throwable) =
     SwapResponseLiveData(DataResult(null, error, DataResultStatus.ERROR))
 
 /**
- * Transforms a LiveData<T> into a LiveData<R>
- *
- * @param transformation Receive the actual non null T value and return the transformed non null R value
- */
-fun <T, R> LiveData<T>.map(transformation: (T) -> R): LiveData<R> {
-    val liveData = MediatorLiveData<R>()
-    liveData.addSource(this) {
-        it?.let(transformation)?.let(liveData::setValue)
-    }
-    return liveData
-}
-
-/**
  * Transforms a LiveData<List<T>> into a LiveData<List<R>>
  *
  * @param transformation Receive the actual non null T value and return the transformed non null R value
  */
-fun <T, R> LiveData<List<T>>.mapList(transformation: (T) -> R): LiveData<List<R>> {
-    return map { it.map(transformation) }
+fun <T, R> LiveData<List<T>?>.mapList(transformation: (T) -> R): LiveData<List<R>?> {
+    return map { it?.map(transformation) }
 }
 
 /**
