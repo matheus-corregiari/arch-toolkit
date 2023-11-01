@@ -1,7 +1,7 @@
 package com.toolkit.plugin
 
-import kotlin.jvm.optionals.getOrNull
 import org.gradle.api.artifacts.VersionCatalog
+import kotlin.jvm.optionals.getOrNull
 
 internal fun VersionCatalog.version(alias: String) =
     findVersion(alias).getOrNull()?.requiredVersion

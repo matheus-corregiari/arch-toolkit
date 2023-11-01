@@ -2,15 +2,15 @@ package br.com.arch.toolkit.splinter
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.result.dataResultNone
 import br.com.arch.toolkit.flow.MutableResponseFlow
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.livedata.ResponseLiveData
+import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.splinter.extension.invokeCatching
 import br.com.arch.toolkit.splinter.strategy.OneShot
 import br.com.arch.toolkit.splinter.strategy.Strategy
+import br.com.arch.toolkit.util.dataResultNone
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -108,9 +108,7 @@ class Splinter<RETURN : Any> internal constructor(
      * @see Strategy
      */
     fun execute(): Splinter<RETURN> = synchronized(lock) {
-
         when (config.policy) {
-
             /**
              * When the code enter here, means that we need to check
              * if the job is already running
@@ -203,23 +201,34 @@ class Splinter<RETURN : Any> internal constructor(
      * Log level INFO
      */
     internal fun logInfo(message: String, error: Throwable? = null) =
-        if (quiet) Unit else Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]")
-            .i(error, message)
-
+        if (quiet) {
+            Unit
+        } else {
+            Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]")
+                .i(error, message)
+        }
 
     /**
      * Log level ERROR
      */
     internal fun logError(message: String, error: Throwable? = null) =
-        if (quiet) Unit else Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]")
-            .e(error, message)
+        if (quiet) {
+            Unit
+        } else {
+            Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]")
+                .e(error, message)
+        }
 
     /**
      * Log level WARN
      */
     internal fun logWarning(message: String, error: Throwable? = null) =
-        if (quiet) Unit else Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]")
-            .w(error, message)
+        if (quiet) {
+            Unit
+        } else {
+            Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]")
+                .w(error, message)
+        }
 
     /**
      * Creates a new job to create a new operation from scratch!
@@ -339,7 +348,6 @@ class Splinter<RETURN : Any> internal constructor(
             this.policy = policy
         }
         //endregion
-
     }
 
     /**

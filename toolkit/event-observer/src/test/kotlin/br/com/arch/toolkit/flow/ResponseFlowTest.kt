@@ -1,7 +1,8 @@
 package br.com.arch.toolkit.flow
 
 import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.DataResultStatus.*
+import br.com.arch.toolkit.result.DataResultStatus.NONE
+import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import br.com.arch.toolkit.util.dataResultNone
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

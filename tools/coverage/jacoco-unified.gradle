@@ -32,14 +32,14 @@ afterEvaluate {
                 }
 
                 def jacocoTestReportTaskName = flavor.isEmpty() ? "jacocoTestReport-unified" : "jacocoTestReport-${flavor}-unified"
-                if (tasks.findByName(jacocoTestReportTaskName) == null) {
+                if (tasks.named(jacocoTestReportTaskName) == null) {
 
                     /**
                      * Generates a task with creates a unified coverage report for Jacoco, including all sub-project modules.
                      *
                      * This tasks should be executed after all coverage tasks inside each child module
                      */
-                    task(jacocoTestReportTaskName, type: JacocoReport, group: "coverage-report") {
+                    tasks.register('jacocoTestReportTaskName', JacocoReport) {
                         reports {
                             xml.required.set(true)
                             html.required.set(true)
@@ -56,14 +56,14 @@ afterEvaluate {
                 }
 
                 def jacocoTestCoverageVerificationTaskName = flavor.isEmpty() ? "jacocoTestCoverageVerification-unified" : "jacocoTestCoverageVerification-${flavor}-unified"
-                if (tasks.findByName(jacocoTestCoverageVerificationTaskName) == null) {
+                if (tasks.named(jacocoTestCoverageVerificationTaskName) == null) {
 
                     /**
                      * Generates a task with verify the coverage rule using including all sub-project modules.
                      *
                      * This tasks should be executed after all coverage tasks inside each child module
                      */
-                    task(jacocoTestCoverageVerificationTaskName, type: JacocoCoverageVerification, group: "coverage-report") {
+                    tasks.register(jacocoTestCoverageVerificationTaskName, type: JacocoCoverageVerification, group: "coverage-report") {
                         violationRules {
                             failOnViolation = true
                             rule {

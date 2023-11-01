@@ -10,7 +10,6 @@ internal class ToolkitSamplePlugin : Plugin<Project> {
         target.plugins.apply("toolkit-base")
 
         with(target.androidApplication) {
-
             defaultConfig {
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
@@ -21,5 +20,4 @@ internal class ToolkitSamplePlugin : Plugin<Project> {
             }
         }
     }
-
 }

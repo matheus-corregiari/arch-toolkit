@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: cimg/android:2022.06
+      - image: cimg/android:2023.10
 
 commands:
   default:
@@ -31,15 +31,15 @@ jobs:
   lint:
     executor: android
     environment:
-      JVM_OPTS: -Xmx3200m
+      JVM_OPTS: -Xmx4096m
     parameters:
       module:
         default: ""
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:lint -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-      - run: ./gradlew :<<parameters.module>>:ktLint -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:lint
+      - run: ./gradlew :<<parameters.module>>:ktLint
 
   test:
     executor: android

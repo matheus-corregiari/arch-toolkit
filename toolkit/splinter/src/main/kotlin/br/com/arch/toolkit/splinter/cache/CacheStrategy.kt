@@ -50,7 +50,6 @@ sealed class CacheStrategy<T>(val id: String) {
     @WorkerThread
     internal suspend fun howToProceed(remoteVersion: DataVersion?, local: T?) = kotlin.runCatching {
         when {
-
             /**/
             remoteVersion == null -> {
                 update(null, null)

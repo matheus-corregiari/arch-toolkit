@@ -3,7 +3,6 @@ package br.com.arch.toolkit.recycler.adapter.stickyheader
 import android.content.Context
 import android.view.View
 import android.view.ViewTreeObserver
-import androidx.annotation.NonNull
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -236,7 +235,7 @@ class StickyHeadersLinearLayoutManager<T> :
                     anchorView = child
                     anchorIndex = i
                     anchorPos = params?.absoluteAdapterPosition
-                        ?: throw IllegalStateException("Unknown adapter position")
+                        ?: error("Unknown adapter position")
                     break
                 }
             }
@@ -332,7 +331,7 @@ class StickyHeadersLinearLayoutManager<T> :
     /**
      * Binds the [.mStickyHeader] for the given `position`.
      */
-    private fun bindStickyHeader(@NonNull recycler: RecyclerView.Recycler, position: Int) {
+    private fun bindStickyHeader(recycler: RecyclerView.Recycler, position: Int) {
         // Bind the sticky header.
         recycler.bindViewToPosition(mStickyHeader!!, position)
         mStickyHeaderPosition = position
@@ -448,8 +447,11 @@ class StickyHeadersLinearLayoutManager<T> :
 
             if (reverseLayout) y += height - headerView.height
             nextHeaderView?.let {
-                y = if (reverseLayout) max(it.bottom.toFloat(), y)
-                else min((it.top - headerView.height).toFloat(), y)
+                y = if (reverseLayout) {
+                    max(it.bottom.toFloat(), y)
+                } else {
+                    min((it.top - headerView.height).toFloat(), y)
+                }
             }
 
             y
@@ -468,8 +470,11 @@ class StickyHeadersLinearLayoutManager<T> :
 
             if (reverseLayout) x += width - headerView.width
             nextHeaderView?.let {
-                x = if (reverseLayout) max(it.right.toFloat(), x)
-                else min((it.left - headerView.width).toFloat(), x)
+                x = if (reverseLayout) {
+                    max(it.right.toFloat(), x)
+                } else {
+                    min((it.left - headerView.width).toFloat(), x)
+                }
             }
 
             x
@@ -511,6 +516,7 @@ class StickyHeadersLinearLayoutManager<T> :
                 mHeaderPositions[middle] > position -> high = middle - 1
                 middle < mHeaderPositions.size - 1 && mHeaderPositions[middle + 1] <= position ->
                     low = middle + 1
+
                 else -> return middle
             }
         }

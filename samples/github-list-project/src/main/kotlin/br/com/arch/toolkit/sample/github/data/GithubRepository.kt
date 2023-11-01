@@ -8,5 +8,4 @@ class GithubRepository internal constructor() {
     private val api: GithubApi by lazyOf(ApiProvider.githubApi)
 
     fun listRepositories() = api.searchRepositories(page = 1, perPage = 10)
-
 }

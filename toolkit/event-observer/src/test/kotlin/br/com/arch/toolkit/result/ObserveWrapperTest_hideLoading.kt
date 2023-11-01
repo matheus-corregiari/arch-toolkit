@@ -2,7 +2,10 @@
 
 package br.com.arch.toolkit.result
 
-import br.com.arch.toolkit.result.DataResultStatus.*
+import br.com.arch.toolkit.result.DataResultStatus.ERROR
+import br.com.arch.toolkit.result.DataResultStatus.LOADING
+import br.com.arch.toolkit.result.DataResultStatus.NONE
+import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -14,7 +17,6 @@ import org.junit.Before
 import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verifyBlocking

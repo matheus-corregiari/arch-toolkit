@@ -42,8 +42,11 @@ abstract class FoldableActivity : AppCompatActivity(R.layout.activity_foldable) 
 
         LayoutInflater.from(this).inflate(layoutRes, root, true)
 
-        if (orientation == FoldingFeature.Orientation.VERTICAL) setUpVerticalViewStubs()
-        else setUpHorizontalViewStubs()
+        if (orientation == FoldingFeature.Orientation.VERTICAL) {
+            setUpVerticalViewStubs()
+        } else {
+            setUpHorizontalViewStubs()
+        }
 
         handleFoldableStateChange(root, R.id.fold_guide, orientation)
     }

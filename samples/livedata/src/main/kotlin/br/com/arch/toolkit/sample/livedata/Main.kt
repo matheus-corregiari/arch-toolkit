@@ -1,8 +1,8 @@
 package br.com.arch.toolkit.sample.livedata
 
+import br.com.arch.toolkit.flow.MutableResponseFlow
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.flow.MutableResponseFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking

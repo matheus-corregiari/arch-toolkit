@@ -22,17 +22,13 @@ internal object ApiProvider {
     }
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-
             /* Add default configurations */
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .client(okHttp)
             .baseUrl(BuildConfig.BASE_URL)
-
             /* This is for receiving as proper observable directly from retrofit interface */
             .addCallAdapterFactory(SplinterFactory())
-
             /* Finish Retrofit creation */
             .build()
     }
-
 }

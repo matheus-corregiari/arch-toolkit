@@ -7,6 +7,12 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:windowBackground">@color/surface_primary</item>
+
+        <!-- Configuring Splash Screen -->
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/colorAccent</item>
+        <item name="android:windowSplashScreenBackground">@color/surface_primary</item>
+        <item name="android:windowSplashScreenBehavior">icon_preferred</item>
     </style>
 
 </resources>

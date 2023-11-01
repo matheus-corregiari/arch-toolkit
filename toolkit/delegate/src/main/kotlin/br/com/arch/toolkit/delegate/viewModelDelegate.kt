@@ -25,5 +25,4 @@ class ViewModelProviderDelegate<out T : ViewModel> internal constructor(private 
     operator fun getValue(thisRef: View, property: KProperty<*>): T {
         return (thisRef.context as AppCompatActivity).defaultViewModelProviderFactory.create(kClass.java)
     }
-
 }

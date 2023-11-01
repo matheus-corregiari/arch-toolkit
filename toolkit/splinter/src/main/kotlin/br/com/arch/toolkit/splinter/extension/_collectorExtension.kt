@@ -1,10 +1,10 @@
 package br.com.arch.toolkit.splinter.extension
 
 import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.dataResultError
-import br.com.arch.toolkit.result.dataResultLoading
-import br.com.arch.toolkit.result.dataResultNone
-import br.com.arch.toolkit.result.dataResultSuccess
+import br.com.arch.toolkit.util.dataResultError
+import br.com.arch.toolkit.util.dataResultLoading
+import br.com.arch.toolkit.util.dataResultNone
+import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.flow.FlowCollector
 
 /**
@@ -12,16 +12,14 @@ import kotlinx.coroutines.flow.FlowCollector
  *
  * @see dataResultSuccess
  */
-suspend fun <T> FlowCollector<DataResult<T>>.emitData(data: T) =
-    emit(dataResultSuccess(data))
+suspend fun <T> FlowCollector<DataResult<T>>.emitData(data: T) = emit(dataResultSuccess(data))
 
 /**
  * Emits a loading data
  *
  * @see dataResultLoading
  */
-suspend fun <T> FlowCollector<DataResult<T>>.emitLoading(data: T? = null) =
-    emit(dataResultLoading(data))
+suspend fun <T> FlowCollector<DataResult<T>>.emitLoading(data: T? = null) = emit(dataResultLoading(data))
 
 /**
  * Emits a error data

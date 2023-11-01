@@ -91,15 +91,17 @@ class ViewProviderDelegate<out T>(
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun inflateIfIsViewStub(view: View?) = if (view is ViewStub) view.inflate() else view
 
     @Suppress("UNCHECKED_CAST")
     private inline fun findView(property: KProperty<*>, crossinline initializer: () -> View?): T {
-        view = if (viewStubAutoInflate) inflateIfIsViewStub(view ?: initializer.invoke())
-        else view ?: initializer.invoke()
+        view = if (viewStubAutoInflate) {
+            inflateIfIsViewStub(view ?: initializer.invoke())
+        } else {
+            view ?: initializer.invoke()
+        }
         if (required && view == null) {
-            throw IllegalStateException("View ID $idRes for '${property.name}' not found.")
+            error("View ID $idRes for '${property.name}' not found.")
         }
         return view as T
     }

@@ -40,8 +40,8 @@ class _dataResultTest {
         ).onEach { (actual, expected) ->
             assertEquals(
                 "Assert Status: ${expected.status}, " +
-                        "with data: ${expected.data}, " +
-                        "with error: ${expected.error}",
+                    "with data: ${expected.data}, " +
+                    "with error: ${expected.error}",
                 expected,
                 actual
             )

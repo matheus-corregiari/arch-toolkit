@@ -14,16 +14,15 @@ import br.com.arch.toolkit.sample.recycler.adapter.itemView.StickyItemView
 class StickyHeadersActivity : BaseActivity() {
 
     private val recycler by viewProvider<RecyclerView>(R.id.recycler_view)
-    private val adapter = SimpleStickyAdapter(StickyItemView::Item, StickyItemView::Header)
-        .withListener(::onItemClick)
+    private val adapter = SimpleStickyAdapter(StickyItemView::Item, StickyItemView::Header).withListener(::onItemClick)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
         recycler.layoutManager =
-            StickyHeadersLinearLayoutManager<SimpleStickyAdapter<StickyHeaderModelExample, StickyItemView.Item, StickyItemView.Header>>(
-                this
-            )
+            StickyHeadersLinearLayoutManager<
+                SimpleStickyAdapter<StickyHeaderModelExample, StickyItemView.Item, StickyItemView.Header>
+                >(this)
         recycler.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
         recycler.adapter = adapter
 
@@ -42,9 +41,7 @@ class StickyHeadersActivity : BaseActivity() {
         }
     }
 
-    class StickyHeaderModelExample(
-        val title: String
-    ) : StickyHeaderModel {
+    class StickyHeaderModelExample(val title: String) : StickyHeaderModel {
         override var isSticky = false
     }
 }

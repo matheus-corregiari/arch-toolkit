@@ -4,7 +4,9 @@ repositories {
     gradlePluginPortal()
 }
 
-val androidBuildVersion: String = "8.1.0"
+val androidBuildVersion: String = "8.1.1"
+val detekt: String = "1.23.3"
+val ktlint: String = "11.6.1"
 val kotlinVersion: String = "1.9.10"
 
 plugins {
@@ -21,6 +23,8 @@ dependencies {
     compileOnly(gradleApi())
 
     implementation("com.android.tools.build:gradle:$androidBuildVersion")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt")
+    implementation("org.jlleitschuh.gradle.ktlint-idea:org.jlleitschuh.gradle.ktlint-idea.gradle.plugin:$ktlint")
     implementation(kotlin("gradle-plugin", kotlinVersion))
     implementation(kotlin("android-extensions", kotlinVersion))
 }
@@ -61,6 +65,13 @@ gradlePlugin {
             displayName = "Toolkit Compose Plugin"
             description = "Enables and configure compose for module"
             implementationClass = "com.toolkit.plugin.ToolkitComposePlugin"
+        }
+
+        create("toolkit-lint") {
+            id = "toolkit-lint"
+            displayName = "Toolkit Lint Plugin"
+            description = "Enables and configure lint for module"
+            implementationClass = "com.toolkit.plugin.ToolkitLintPlugin"
         }
     }
 }

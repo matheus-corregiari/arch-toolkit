@@ -1,16 +1,16 @@
 package br.com.arch.toolkit.splinter.factory
 
+import br.com.arch.toolkit.splinter.Splinter as SplinterExec
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.splinter.oneShotDonatello
-import java.io.IOException
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Response
 import retrofit2.Retrofit
-import br.com.arch.toolkit.splinter.Splinter as SplinterExec
+import java.io.IOException
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 
 /**
  * Annotation used to configure some behaviors inside generated splinter
@@ -30,7 +30,6 @@ class SplinterFactory : CallAdapter.Factory() {
         annotations: Array<Annotation>,
         retrofit: Retrofit
     ): CallAdapter<*, *>? {
-
         val returnClass = getRawType(returnType).takeIf {
             it in listOf(
                 ResponseFlow::class.java,
@@ -52,7 +51,6 @@ class SplinterFactory : CallAdapter.Factory() {
             ?: SplinterConfig("", false)
 
         return when (returnClass) {
-
             /**
              * When you want to deliver the ResponseFlow
              */
@@ -105,25 +103,21 @@ private sealed class Adapter<T, R>(
     class AsSplinter<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
         Adapter<T, SplinterExec<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call)
-
     }
 
     class AsLiveData<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
         Adapter<T, ResponseLiveData<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call).liveData
-
     }
 
     class AsFlow<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
         Adapter<T, ResponseFlow<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call).flow
-
     }
 
     override fun responseType() = responseType
 
     protected fun executeWithSplinter(call: Call<T>) = oneShotDonatello(id, quiet) {
-
         val response = makeRequest(call)
         if (response.isSuccessful) {
             requireNotNull(response.body()) {

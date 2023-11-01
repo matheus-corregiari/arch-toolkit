@@ -3,10 +3,11 @@ package com.toolkit.plugin
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
-import kotlin.jvm.Throws
+import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
 
 internal val Project.libraries: VersionCatalog
     @Throws(IllegalStateException::class)
@@ -14,6 +15,16 @@ internal val Project.libraries: VersionCatalog
         return extensions.findByType(VersionCatalogsExtension::class.java)?.named("libraries")
             ?: error("Cannot find libraries in version catalog!")
     }
+
+internal val Project.ktLint: KtlintExtension
+    @Throws(IllegalStateException::class)
+    get() = extensions.findByType(KtlintExtension::class.java)
+        ?: error("Project do not implement ktlint plugin!")
+
+internal val Project.detekt: DetektExtension
+    @Throws(IllegalStateException::class)
+    get() = extensions.findByType(DetektExtension::class.java)
+        ?: error("Project do not implement detekt plugin!")
 
 internal val Project.androidLibrary: LibraryExtension
     @Throws(IllegalStateException::class)

@@ -17,7 +17,8 @@ sealed class StickyItemView {
         context,
         attrs,
         defStyleAttr
-    ), ViewBinder<StickyHeadersActivity.StickyHeaderModelExample> {
+    ),
+        ViewBinder<StickyHeadersActivity.StickyHeaderModelExample> {
 
         init {
             layoutParams = ViewGroup.LayoutParams(

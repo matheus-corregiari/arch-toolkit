@@ -10,7 +10,6 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
         target.plugins.apply("toolkit-base")
 
         with(target.androidLibrary) {
-
             defaultConfig {
                 consumerProguardFiles("consumer-proguard-rules.pro")
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -19,5 +18,4 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
             buildTypes.maybeCreate("release").minifyEnabled(false)
         }
     }
-
 }

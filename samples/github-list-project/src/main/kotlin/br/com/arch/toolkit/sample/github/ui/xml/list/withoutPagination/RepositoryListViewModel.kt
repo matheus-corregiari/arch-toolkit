@@ -6,6 +6,4 @@ import br.com.arch.toolkit.sample.github.data.RepositoryProvider
 internal class RepositoryListViewModel : ViewModel() {
 
     fun listLiveData() = RepositoryProvider.githubRepository.listRepositories()
-
-
 }

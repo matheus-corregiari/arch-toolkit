@@ -1,14 +1,15 @@
 package com.toolkit.plugin
 
-import java.io.File
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 internal class ToolkitBasePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.applyPlugins("jetbrains-kotlin")
+        target.plugins.apply("toolkit-lint")
 
         val libraries = target.libraries
         val allDefinedLibraries = libraries.allDefinedDependencies
@@ -22,8 +23,11 @@ internal class ToolkitBasePlugin : Plugin<Project> {
             }
         }
 
-        with(target.androidBase) {
+        with(target.kotlinExtension) {
+            jvmToolchain(17)
+        }
 
+        with(target.androidBase) {
             compileSdkVersion(libraries.version("build-sdk-compile").toInt())
             buildToolsVersion = libraries.version("build-tools")
 
@@ -55,20 +59,6 @@ internal class ToolkitBasePlugin : Plugin<Project> {
                 it.targetCompatibility(JavaVersion.VERSION_17)
             }
 
-            lintOptions {
-                it.isCheckReleaseBuilds = true
-
-                it.isAbortOnError = true
-                it.isIgnoreWarnings = false
-                it.isAbsolutePaths = false
-                it.isWarningsAsErrors = false
-
-                it.htmlOutput =
-                    File("${target.rootDir}/build/reports/lint/html/${target.name}-lint.html")
-                it.xmlOutput =
-                    File("${target.rootDir}/build/reports/lint/xml/${target.name}-lint.xml")
-            }
-
             testOptions {
                 it.unitTests.isIncludeAndroidResources = true
                 it.unitTests.isReturnDefaultValues = true
@@ -87,8 +77,6 @@ internal class ToolkitBasePlugin : Plugin<Project> {
                 it.maybeCreate("androidTest").java.srcDirs("src/androidTest/kotlin")
                 it.maybeCreate("androidTest").resources.srcDirs("src/androidTest/res")
             }
-
         }
     }
-
 }

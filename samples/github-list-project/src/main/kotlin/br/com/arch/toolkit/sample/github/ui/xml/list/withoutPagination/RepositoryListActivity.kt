@@ -5,10 +5,10 @@ import android.transition.TransitionManager
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.delegate.viewModelProvider
 import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.recycler.adapter.SimpleAdapter
+import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.sample.github.R
 import br.com.arch.toolkit.sample.github.data.remote.model.RepoDTO
 import br.com.arch.toolkit.sample.github.ui.xml.item.RepositoryItemView
@@ -47,7 +47,6 @@ class RepositoryListActivity : AppCompatActivity(R.layout.activity_repository_li
             error { _ -> stateMachine.changeState(stateError) }
             data { page ->
                 if (page.items.isEmpty()) {
-                    throw error("") /* Fazer funcionaaar */
                     stateMachine.changeState(stateEmpty)
                 } else {
                     stateMachine.changeState(stateSuccess)
@@ -65,7 +64,6 @@ class RepositoryListActivity : AppCompatActivity(R.layout.activity_repository_li
     private fun onItemClick(model: RepoDTO) = Unit
 
     private fun setupStateMachine(savedInstanceState: Bundle?) = stateMachine.setup {
-
         restoreInstanceState(savedInstanceState)
 
         config {
@@ -96,5 +94,4 @@ class RepositoryListActivity : AppCompatActivity(R.layout.activity_repository_li
             gones(R.id.success_view, R.id.error_view, R.id.loading_view)
         }
     }
-
 }

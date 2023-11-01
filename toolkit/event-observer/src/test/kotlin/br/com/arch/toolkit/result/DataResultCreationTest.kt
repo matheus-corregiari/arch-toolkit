@@ -15,43 +15,43 @@ class DataResultCreationTest {
 
     @Test
     fun validate_creationMethods() {
-
         listOf(
             // None
             dataResultNone<String>() to
-                    DataResult<String>(null, null, DataResultStatus.NONE),
+                DataResult<String>(null, null, DataResultStatus.NONE),
 
             // Success
             dataResultSuccess<String>(null) to
-                    DataResult(null, null, DataResultStatus.SUCCESS),
+                DataResult(null, null, DataResultStatus.SUCCESS),
             dataResultSuccess("data") to
-                    DataResult("data", null, DataResultStatus.SUCCESS),
+                DataResult("data", null, DataResultStatus.SUCCESS),
 
             // Loading
             dataResultLoading<String>() to
-                    DataResult<String>(null, null, DataResultStatus.LOADING),
+                DataResult<String>(null, null, DataResultStatus.LOADING),
             dataResultLoading("data") to
-                    DataResult("data", null, DataResultStatus.LOADING),
+                DataResult("data", null, DataResultStatus.LOADING),
             dataResultLoading<String>(error = error) to
-                    DataResult<String>(null, error, DataResultStatus.LOADING),
+                DataResult<String>(null, error, DataResultStatus.LOADING),
             dataResultLoading("data", error) to
-                    DataResult("data", error, DataResultStatus.LOADING),
+                DataResult("data", error, DataResultStatus.LOADING),
 
             // Error
             dataResultError<String>(null) to
-                    DataResult<String>(null, null, DataResultStatus.ERROR),
+                DataResult<String>(null, null, DataResultStatus.ERROR),
             dataResultError(null, "data") to
-                    DataResult("data", null, DataResultStatus.ERROR),
+                DataResult("data", null, DataResultStatus.ERROR),
             dataResultError<String>(error) to
-                    DataResult<String>(null, error, DataResultStatus.ERROR),
+                DataResult<String>(null, error, DataResultStatus.ERROR),
             dataResultError(error, "data") to
-                    DataResult("data", error, DataResultStatus.ERROR),
+                DataResult("data", error, DataResultStatus.ERROR),
         ).onEach { (actual, expected) ->
             assertEquals(
                 "Assert Status: ${expected.status}, " +
-                        "with data: ${expected.data}, " +
-                        "with error: ${expected.error}",
-                expected, actual
+                    "with data: ${expected.data}, " +
+                    "with error: ${expected.error}",
+                expected,
+                actual
             )
         }
     }

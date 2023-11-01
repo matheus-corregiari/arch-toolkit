@@ -54,7 +54,7 @@ class ExtraProviderDelegate<T>(
     }
 
     //region AppCompatActivity methods
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     private fun <T> getExtra(oldExtra: T?, extraName: String, thisRef: AppCompatActivity): T? =
         oldExtra ?: thisRef.intent?.extras?.get(extraName) as T?
 
@@ -64,13 +64,13 @@ class ExtraProviderDelegate<T>(
         if (isStringType) {
             return oldExtra ?: thisRef.intent?.data?.getQueryParameter(extraName) as T?
         } else {
-            throw IllegalStateException("Query parameters can only be used with String type parameters")
+            error("Query parameters can only be used with String type parameters")
         }
     }
     //endregion
 
     //region Fragment methods
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     private fun <T> getExtra(oldExtra: T?, extraName: String, thisRef: Fragment): T? =
         oldExtra ?: thisRef.arguments?.get(extraName) as T?
 
@@ -80,7 +80,7 @@ class ExtraProviderDelegate<T>(
         if (isStringType) {
             return oldExtra ?: thisRef.activity?.intent?.data?.getQueryParameter(extraName) as T?
         } else {
-            throw IllegalStateException("Query parameters can only be used with String type parameters")
+            error("Query parameters can only be used with String type parameters")
         }
     }
     //endregion

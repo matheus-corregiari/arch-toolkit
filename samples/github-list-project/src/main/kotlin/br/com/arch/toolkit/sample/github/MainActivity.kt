@@ -26,5 +26,4 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private fun onXmlFlowClick() = startActivity(Intent(this, RepositoryListActivity::class.java))
 
     private fun onComposeFlowClick() = Toast.makeText(this, "Not Yet!", Toast.LENGTH_SHORT).show()
-
 }

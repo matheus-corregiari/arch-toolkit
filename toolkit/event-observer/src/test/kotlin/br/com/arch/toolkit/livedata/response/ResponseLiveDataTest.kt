@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.DataResultStatus.*
+import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import br.com.arch.toolkit.testSetValue
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading

@@ -54,4 +54,3 @@ sealed class Strategy<RESULT : Any> {
         fun <T : Any> oneShot(config: OneShot<T>.Config.() -> Unit) = OneShot<T>().config(config)
     }
 }
-

@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList")
+
 package br.com.arch.toolkit.sample.github.data.remote.api
 
 import br.com.arch.toolkit.livedata.ResponseLiveData
@@ -9,8 +11,8 @@ import retrofit2.http.Query
 
 internal interface GithubApi {
 
+    //    @SplinterConfig("Search Repositories")
     @GET("search/repositories")
-//    @SplinterConfig("Search Repositories")
     fun searchRepositories(
         @Query("q") query: String = "language:Java",
         @Query("sort") sort: String? = null,

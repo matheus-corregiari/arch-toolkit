@@ -2,7 +2,10 @@
 
 package br.com.arch.toolkit.result
 
-import br.com.arch.toolkit.result.DataResultStatus.*
+import br.com.arch.toolkit.result.DataResultStatus.ERROR
+import br.com.arch.toolkit.result.DataResultStatus.LOADING
+import br.com.arch.toolkit.result.DataResultStatus.NONE
+import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -39,12 +42,14 @@ class ObserveWrapperTest_notEmpty {
 
     //region SUCCESS
     @Test
-    fun `001 - single=false - null, null, SUCCESS`() = test(
-        result = DataResult<Any>(data = null, error = null, status = SUCCESS),
-        single = false
-    ) { wrapper ->
-        verifyNoInteractions(mockedNotEmpty)
-        assertEquals(1, wrapper.eventList.size)
+    fun `001 - single=false - null, null, SUCCESS`() {
+        test(
+            result = DataResult<Any>(data = null, error = null, status = SUCCESS),
+            single = false
+        ) { wrapper ->
+            verifyNoInteractions(mockedNotEmpty)
+            assertEquals(1, wrapper.eventList.size)
+        }
     }
 
     @Test

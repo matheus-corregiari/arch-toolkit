@@ -25,7 +25,7 @@ afterEvaluate {
      * Iterate all jacocoTask Names list and generate all variants to run tests and create the coverage report html
      */
     jacocoTasks.each { jacocoTask ->
-        task(jacocoTask, type: JacocoReport, group: "coverage-report") {
+        tasks.register(jacocoTask, type: JacocoReport, group: "coverage-report") {
             def flavorName = jacocoTask.split("-").last()
             flavorName = flavorName == jacocoTask ? "" : flavorName
 
@@ -41,7 +41,7 @@ afterEvaluate {
 
             getSourceDirectories().from(files(findSourceDirectories(project, flavorName)))
             getClassDirectories().from(files(findClassDirectories(project, flavorName)))
-            getExecutionData().from(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)))
+            getExecutionData().from(fileTree(dir: "$layout.buildDirectory", includes: findCoverageFiles(flavorName)))
 
             doFirst {
                 println files(findClassDirectories(project, flavorName)).files
@@ -59,7 +59,7 @@ afterEvaluate {
      * This tasks must be executed with all coverage files already generated, in other words, after the jacocoTestReport task
      */
     jacocoVerificationTasks.each { jacocoVerificationTask ->
-        task(jacocoVerificationTask, type: JacocoCoverageVerification, group: "coverage-report") {
+        tasks.register(jacocoVerificationTask, type: JacocoCoverageVerification, group: "coverage-report") {
             def flavorName = jacocoVerificationTask.split("-").last()
             flavorName = flavorName == jacocoVerificationTask ? "" : flavorName
 
@@ -74,7 +74,7 @@ afterEvaluate {
 
             getSourceDirectories().from(files(findSourceDirectories(project, flavorName)))
             getClassDirectories().from(files(findClassDirectories(project, flavorName)))
-            getExecutionData().from(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)))
+            getExecutionData().from(fileTree(dir: "$layout.buildDirectory", includes: findCoverageFiles(flavorName)))
         }
     }
 }

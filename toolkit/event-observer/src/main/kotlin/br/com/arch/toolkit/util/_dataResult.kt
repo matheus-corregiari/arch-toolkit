@@ -151,7 +151,6 @@ fun <T> dataResultNone() = DataResult<T>(null, null, NONE)
  * @return DataResult<Pair<T?, R?>>
  */
 fun <T, R> DataResult<T>?.merge(second: DataResult<R>?): DataResult<Pair<T?, R?>> = when {
-
     /* One of the results are null */
     this == null || second == null -> DataResult(
         data = Pair(this?.data, second?.data)
@@ -246,7 +245,6 @@ fun <T, R> DataResult<T>?.mergeNotNull(second: DataResult<R>?): DataResult<Pair<
  * @return DataResult<Map<String, *>>
  */
 fun List<Pair<String, DataResult<*>?>>.mergeAll(): DataResult<Map<String, *>> {
-
     val resultWithMaxStatus = maxBy { it.second?.status?.ordinal ?: NONE.ordinal }
     if (resultWithMaxStatus.second?.status == NONE) return dataResultNone()
 

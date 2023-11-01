@@ -9,12 +9,12 @@ import br.com.arch.toolkit.splinter.extension.emitData
 import br.com.arch.toolkit.splinter.extension.emitError
 import br.com.arch.toolkit.splinter.extension.emitLoading
 import br.com.arch.toolkit.splinter.extension.invokeCatching
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.withTimeout
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Strategy to make a single request (one shot)
@@ -56,14 +56,13 @@ class OneShot<RESULT : Any> : Strategy<RESULT>() {
                         val howToProceed = cache.howToProceed(remoteVersion, local)
                         executor.logInfo("\t\t[Cache] - How to proceed - $howToProceed")
                         when (howToProceed) {
-
                             /* This means the cache is still valid! */
                             CacheStrategy.HowToProceed.STOP_FLOW_AND_DISPATCH_CACHE -> {
                                 remoteVersion = cache.localVersion
                                 executor.logInfo(
                                     "\t\t[Cache] - " +
-                                            "Dispatching Local data and finish - " +
-                                            "Local version: $remoteVersion"
+                                        "Dispatching Local data and finish - " +
+                                        "Local version: $remoteVersion"
                                 )
                                 return@withTimeout local
                             }
@@ -110,7 +109,6 @@ class OneShot<RESULT : Any> : Strategy<RESULT>() {
             remoteVersion?.runCatching { config.cacheStrategy?.update(this, data) }
                 ?.onSuccess { executor.logInfo("\t\t[Cache] Save - Success!") }
                 ?.onFailure { executor.logError("\t\t[Cache] Save - Error!", it) }
-
         }.onFailure { error ->
             handleMinDuration(timeInMillisBeforeStart, executor)
             if (executor.status != DataResultStatus.SUCCESS) {
@@ -135,12 +133,10 @@ class OneShot<RESULT : Any> : Strategy<RESULT>() {
      *
      */
     private suspend fun handleMinDuration(start: Long, executor: Splinter<RESULT>) {
-
         val operationDuration = System.currentTimeMillis() - start
         val delta = config.minDuration.inWholeMilliseconds - operationDuration
 
         when {
-
             /* This means that we need to wait the delta time to reach the minDuration set inside config*/
             delta > 0 -> {
                 executor.logInfo("\t[OneShot] Execution time ${operationDuration}ms, need to wait more ${delta}ms")
@@ -149,7 +145,6 @@ class OneShot<RESULT : Any> : Strategy<RESULT>() {
 
             /* This means that the operation already surpassed the minDuration, so we don't need to wait */
             delta <= 0 -> executor.logInfo("\t[OneShot] Execution time ${operationDuration}ms")
-
         }
     }
 
@@ -168,5 +163,4 @@ class OneShot<RESULT : Any> : Strategy<RESULT>() {
 
         fun request(request: suspend () -> RESULT) = apply { this.request = request }
     }
-
 }

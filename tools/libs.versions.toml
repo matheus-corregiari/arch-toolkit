@@ -1,11 +1,12 @@
 # ------------------------------------------------------------------------------------------------ #
 [versions]
 ## --- Plugins and more general stuff --- ##
-android_plugin = "8.1.0"
+android_plugin = "8.1.1"
 jacoco = "0.8.9"
 dexcount = "4.0.0"
 pedrinho_publish = "0.0.2"
-ktLint = "0.31.0"
+detekt = "1.23.3"
+ktlint = "11.6.1"
 ksp = "1.9.10-1.0.13"
 
 ## --- Build Config and SDK --- ##
@@ -127,6 +128,7 @@ mockito-test-android = { group = "org.mockito", name = "mockito-android", versio
 mockito-test-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 junit-test = { group = "junit", name = "junit", version.ref = "junit" }
 robolectric-test = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 
 # ------------------------------------------------------------------------------------------------ #
 [plugins]
@@ -143,6 +145,8 @@ jetbrains-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrai
 
 ## Tools to make my life easier
 dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint-idea", version.ref = "ktlint" }
 pedrinho_publish = { id = "io.github.pedro-bachiega.sonatype-maven-publish", version.ref = "pedrinho_publish" }
 
 # ------------------------------------------------------------------------------------------------ #

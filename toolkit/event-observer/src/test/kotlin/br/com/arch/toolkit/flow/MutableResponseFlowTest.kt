@@ -1,7 +1,10 @@
 package br.com.arch.toolkit.flow
 
 import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.DataResultStatus.*
+import br.com.arch.toolkit.result.DataResultStatus.ERROR
+import br.com.arch.toolkit.result.DataResultStatus.LOADING
+import br.com.arch.toolkit.result.DataResultStatus.NONE
+import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultNone

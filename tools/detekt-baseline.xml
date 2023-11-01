@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues>
+    <ID>MaxLineLength:_collectorExtension.kt$suspend</ID>
+    <ID>Filename:_util.kt$br.com.arch.toolkit._util.kt</ID>
+    <ID>Filename:_dataResult.kt$br.com.arch.toolkit.util._dataResult.kt</ID>
+    <ID>Filename:_starterMethod.kt$br.com.arch.toolkit.splinter._starterMethod.kt</ID>
+    <ID>Filename:retrofitFactory.kt$br.com.arch.toolkit.splinter.factory.retrofitFactory.kt</ID>
+    <ID>
+      Filename:_functionExtension.kt$br.com.arch.toolkit.splinter.extension._functionExtension.kt
+    </ID>
+    <ID>
+      Filename:_collectorExtension.kt$br.com.arch.toolkit.splinter.extension._collectorExtension.kt
+    </ID>
+    <ID>
+      Filename:sceneStateMachineExtensions.kt$br.com.arch.toolkit.statemachine.sceneStateMachineExtensions.kt
+    </ID>
+    <ID>
+      Filename:stateMachineExtensions.kt$br.com.arch.toolkit.statemachine.stateMachineExtensions.kt
+    </ID>
+    <ID>
+      Filename:foldableViewExtensions.kt$br.com.arch.toolkit.foldable.extension.foldableViewExtensions.kt
+    </ID>
+    <ID>
+      Filename:foldableActivityExtensions.kt$br.com.arch.toolkit.foldable.extension.foldableActivityExtensions.kt
+    </ID>
+    <ID>Filename:viewProviderDelegate.kt$br.com.arch.toolkit.delegate.viewProviderDelegate.kt</ID>
+    <ID>Filename:viewModelDelegate.kt$br.com.arch.toolkit.delegate.viewModelDelegate.kt</ID>
+    <ID>Filename:extraProviderDelegate.kt$br.com.arch.toolkit.delegate.extraProviderDelegate.kt</ID>
+    <ID>Filename:_testStateMachine.kt$br.com.arch.toolkit.statemachine._testStateMachine.kt</ID>
+    <ID>Filename:_liveData.kt$br.com.arch.toolkit.util._liveData.kt</ID>
+  </ManuallySuppressedIssues>
+  <CurrentIssues />
+</SmellBaseline>
