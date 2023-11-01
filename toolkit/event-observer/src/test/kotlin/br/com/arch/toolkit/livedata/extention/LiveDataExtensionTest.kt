@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
+import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.util.mutableResponseLiveDataOf
 import br.com.arch.toolkit.util.observeNotNull
@@ -33,15 +34,6 @@ class LiveDataExtensionTest {
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private var owner = object : LifecycleOwner {
-        private val registry = LifecycleRegistry(this)
-        override val lifecycle: Lifecycle
-            get() {
-                registry.currentState = Lifecycle.State.RESUMED
-                return registry
-            }
-    }
-
     init {
         Dispatchers.setMain(StandardTestDispatcher())
     }
@@ -52,7 +44,7 @@ class LiveDataExtensionTest {
         val liveData = MutableLiveData<Any>()
         Assert.assertNull(liveData.value)
 
-        liveData.observeNotNull(owner, mockedObserver)
+        liveData.observeNotNull(alwaysOnOwner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -69,7 +61,7 @@ class LiveDataExtensionTest {
         val liveData = MutableLiveData<Any>()
         Assert.assertNull(liveData.value)
 
-        liveData.observeNull(owner, mockedObserver)
+        liveData.observeNull(alwaysOnOwner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -86,7 +78,7 @@ class LiveDataExtensionTest {
         val liveData = MutableLiveData<Any>()
         Assert.assertNull(liveData.value)
 
-        liveData.observeSingle(owner, mockedObserver)
+        liveData.observeSingle(alwaysOnOwner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -109,7 +101,7 @@ class LiveDataExtensionTest {
         val liveData = MutableLiveData<Any>()
         Assert.assertNull(liveData.value)
 
-        liveData.observeUntil(owner, mockedObserver)
+        liveData.observeUntil(alwaysOnOwner, mockedObserver)
 
         liveData.postValue(null)
         Assert.assertTrue(liveData.hasObservers())

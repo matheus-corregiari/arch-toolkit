@@ -31,7 +31,7 @@ class DataResultTest {
 
     private val error = IllegalStateException("error")
 
-    //Success
+    // Success
     private val resultA = dataResultSuccess("data A")
     private val resultB = dataResultSuccess<String>(null)
 
@@ -97,7 +97,6 @@ class DataResultTest {
 
     @Test
     fun `0 - Custom Getters and setters`() {
-
         // hasData
         Assert.assertTrue(resultA.hasData)
         Assert.assertFalse(resultB.hasData)
@@ -261,8 +260,7 @@ class DataResultTest {
         Assert.assertTrue(resultSequenceNotEmpty.isNotEmpty)
     }
 
-
-    //region State: SUCCESS
+    // region State: SUCCESS
     @Test
     fun `A - data A, null, SUCCESS`() = runTest {
         observe(resultA)
@@ -503,5 +501,4 @@ class DataResultTest {
         result.error(mockedErrorWithoutArgument)
         result.error(transformError, mockedTransformedError)
     }
-
 }

@@ -1,14 +1,16 @@
 package br.com.arch.toolkit.livedata.response
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.LiveData
+import br.com.arch.toolkit.Mocks
+import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.result.DataResultStatus.*
+import br.com.arch.toolkit.testSetValue
+import br.com.arch.toolkit.util.dataResultLoading
+import br.com.arch.toolkit.util.dataResultSuccess
 import br.com.arch.toolkit.util.mutableResponseLiveDataOf
 import br.com.arch.toolkit.util.responseLiveDataOf
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +28,7 @@ import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoInteractions
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LargeClass")
@@ -35,43 +38,50 @@ class ResponseLiveDataTest {
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private var owner = object : LifecycleOwner {
-        private val registry = LifecycleRegistry(this)
-        override val lifecycle: Lifecycle
-            get() {
-                registry.currentState = Lifecycle.State.RESUMED
-                return registry
-            }
-    }
-
     init {
         Dispatchers.setMain(StandardTestDispatcher())
     }
 
     @Test
-    fun validateNullValueScenarios() = runTest {
-        val mockedObserver: (Any) -> Unit = mock()
-        val errorObserver: (Throwable) -> Unit = mock()
-        val emptyObserver: () -> Unit = mock()
-        val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { showLoading(single = true, observer = emptyObserver) }
-        liveData.observe(owner) { hideLoading(single = true, observer = emptyObserver) }
-        liveData.observe(owner) { error(single = true, observer = emptyObserver) }
-        liveData.observe(owner) { data(single = true, observer = mockedObserver) }
+    fun `0 - init without param, should init with null value`() = runTest {
+        val liveData = ResponseLiveData<Any>()
+        liveData.scope(this)
+        liveData.transformDispatcher(Dispatchers.Main.immediate)
 
-        liveData.observe(owner) { success(single = true, observer = emptyObserver) }
+        Assert.assertNull(liveData.value)
+        Assert.assertNull(liveData.error)
+        Assert.assertNull(liveData.data)
+        Assert.assertNull(liveData.status)
+    }
 
-        val nullObject: DataResult<Any>? = null
+    @Test
+    fun `0 - init with param, should init with param value`() = runTest {
+        val value = DataResult("String", null, SUCCESS)
+        val liveData = ResponseLiveData(value)
 
-        LiveData::class.java.declaredMethods.find { it.name == "setValue" }?.let {
-            it.isAccessible = true
-            it.invoke(liveData, nullObject)
-        }
+        Assert.assertEquals(value, liveData.value)
+        Assert.assertNull(liveData.error)
+        Assert.assertEquals("String", liveData.data)
+        Assert.assertEquals(SUCCESS, liveData.status)
+    }
 
-        Mockito.verifyNoInteractions(mockedObserver)
-        Mockito.verifyNoInteractions(errorObserver)
-        Mockito.verifyNoInteractions(emptyObserver)
+    @Test
+    fun `1 - Null Value - Any observer must be triggered`() = runTest {
+        // Mocks
+        val mocks = Mocks<Any>()
 
+        // LiveData
+        val liveData = ResponseLiveData<Any>()
+        mocks.apply(true, liveData)
+        mocks.assertAllZeroInteractions()
+
+        // Update Value
+        liveData.testSetValue(null)
+
+        // Verify mock interactions
+        mocks.assertAllZeroInteractions()
+
+        // Assert Data
         Assert.assertNull(liveData.value)
         Assert.assertNull(liveData.data)
         Assert.assertNull(liveData.status)
@@ -80,28 +90,92 @@ class ResponseLiveDataTest {
 
     // region Loading
     @Test
-    fun whenObserveLoading_shouldReceiveTrueWhenStatusIsLoading_andFalseOtherwise() = runTest {
-        val mockedObserver: (Boolean) -> Unit = mock()
-        val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { loading(observer = mockedObserver) }
-        liveData.setLoading()
-        advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke(true) }
+    fun `LOADING - single false - null, null, LOADING`() = runTest {
+        // Mocks
+        val mocks = Mocks<Any>()
 
-        liveData.setError(IllegalStateException())
-        advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke(false) }
+        // LiveData
+        val liveData = ResponseLiveData<Any>()
+        mocks.apply(false, liveData)
+        mocks.assertAllZeroInteractions()
 
-        liveData.setLoading()
+        // Update Value
+        liveData.testSetValue(dataResultLoading())
         advanceUntilIdle()
-        verifyBlocking(mockedObserver, times(2)) { invoke(true) }
+        verifyBlocking(mocks.showLoadingObserver) { invoke() }
+        verifyNoInteractions(mocks.hideLoadingObserver)
+        verifyBlocking(mocks.loadingObserver) { invoke(true) }
+        verifyNoInteractions(mocks.successObserver)
+        verifyBlocking(mocks.statusObserver) { invoke(LOADING) }
+        verifyBlocking(mocks.resultObserver) { invoke(dataResultLoading()) }
+
+        // Update Value
+        liveData.testSetValue(dataResultSuccess(null))
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mocks.showLoadingObserver)
+        verifyBlocking(mocks.hideLoadingObserver) { invoke() }
+        verifyBlocking(mocks.loadingObserver) { invoke(false) }
+        verifyBlocking(mocks.successObserver) { invoke() }
+        verifyBlocking(mocks.statusObserver) { invoke(SUCCESS) }
+        verifyBlocking(mocks.resultObserver) { invoke(dataResultSuccess(null)) }
+
+        // Update Value
+        liveData.testSetValue(dataResultLoading())
+        advanceUntilIdle()
+        verifyBlocking(mocks.showLoadingObserver, times(2)) { invoke() }
+        verifyNoMoreInteractions(mocks.hideLoadingObserver)
+        verifyBlocking(mocks.loadingObserver, times(2)) { invoke(true) }
+        verifyNoMoreInteractions(mocks.successObserver)
+        verifyBlocking(mocks.statusObserver, times(2)) { invoke(LOADING) }
+        verifyBlocking(mocks.resultObserver, times(2)) { invoke(dataResultLoading()) }
+    }
+
+    @Test
+    fun `LOADING - single true - null, null, LOADING`() = runTest {
+        // Mocks
+        val mocks = Mocks<Any>()
+
+        // LiveData
+        val liveData = ResponseLiveData<Any>()
+        mocks.apply(true, liveData)
+        mocks.assertAllZeroInteractions()
+
+        // Update Value
+        liveData.testSetValue(dataResultLoading())
+        advanceUntilIdle()
+        verifyBlocking(mocks.showLoadingObserver) { invoke() }
+        verifyNoInteractions(mocks.hideLoadingObserver)
+        verifyBlocking(mocks.loadingObserver) { invoke(true) }
+        verifyNoInteractions(mocks.successObserver)
+        verifyBlocking(mocks.statusObserver) { invoke(LOADING) }
+        verifyBlocking(mocks.resultObserver) { invoke(dataResultLoading()) }
+
+        // Update Value
+        liveData.testSetValue(dataResultSuccess(null))
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mocks.showLoadingObserver)
+        verifyBlocking(mocks.hideLoadingObserver) { invoke() }
+        verifyBlocking(mocks.loadingObserver) { invoke(false) }
+        verifyBlocking(mocks.successObserver) { invoke() }
+        verifyNoMoreInteractions(mocks.statusObserver)
+        verifyNoMoreInteractions(mocks.resultObserver)
+
+        // Update Value
+        liveData.testSetValue(dataResultLoading())
+        advanceUntilIdle()
+        verifyNoMoreInteractions(mocks.showLoadingObserver)
+        verifyNoMoreInteractions(mocks.hideLoadingObserver)
+        verifyNoMoreInteractions(mocks.loadingObserver)
+        verifyNoMoreInteractions(mocks.successObserver)
+        verifyNoMoreInteractions(mocks.statusObserver)
+        verifyNoMoreInteractions(mocks.resultObserver)
     }
 
     @Test
     fun whenObserveShowLoading_shouldBeCalledWhenStatusIsLoading() = runTest {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { showLoading(observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { showLoading(observer = mockedObserver) }
 
         liveData.setLoading()
         advanceUntilIdle()
@@ -119,7 +193,7 @@ class ResponseLiveDataTest {
     fun whenObserveHideLoading_shouldBeCalledWhenStatusIsLoading() = runTest {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { hideLoading(observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { hideLoading(observer = mockedObserver) }
 
         liveData.setLoading()
         Mockito.verifyNoInteractions(mockedObserver)
@@ -137,7 +211,7 @@ class ResponseLiveDataTest {
         runTest {
             val mockedObserver: (Boolean) -> Unit = mock()
             val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { loading(single = true, observer = mockedObserver) }
+            liveData.observe(alwaysOnOwner) { loading(single = true, observer = mockedObserver) }
 
             liveData.setLoading()
             advanceUntilIdle()
@@ -161,7 +235,7 @@ class ResponseLiveDataTest {
     fun whenObserveSingleShowLoading_shouldBeCalledWhenStatusIsLoading_onlyOnce() = runTest {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { showLoading(single = true, observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { showLoading(single = true, observer = mockedObserver) }
 
         liveData.setLoading()
         advanceUntilIdle()
@@ -192,7 +266,7 @@ class ResponseLiveDataTest {
         val combination = first.mergeWith(second)
 
         Assert.assertNull(combination.data)
-        Assert.assertTrue(combination.status == DataResultStatus.LOADING)
+        Assert.assertTrue(combination.status == LOADING)
     }
 
     @Test
@@ -202,7 +276,7 @@ class ResponseLiveDataTest {
         val combination = first.mergeWith(second)
 
         Assert.assertNull(combination.data)
-        Assert.assertTrue(combination.status == DataResultStatus.LOADING)
+        Assert.assertTrue(combination.status == LOADING)
     }
 
     @Test
@@ -256,7 +330,7 @@ class ResponseLiveDataTest {
         val second = MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
 
         val combination = first.mergeWith(second)
-        combination.observe(owner) {
+        combination.observe(alwaysOnOwner) {
             loading(observer = mockedLoadingObserver)
             error(observer = mockedErrorObserver)
             data(observer = mockedDataObserver)
@@ -291,7 +365,7 @@ class ResponseLiveDataTest {
         val second = mutableResponseLiveDataOf("second")
 
         val combination = first + second
-        combination.observe(owner) {
+        combination.observe(alwaysOnOwner) {
             loading(observer = mockedLoadingObserver)
             error(observer = mockedErrorObserver)
             data(observer = mockedDataObserver)
@@ -325,7 +399,7 @@ class ResponseLiveDataTest {
 
         val firstCombination = first.mergeWith(second)
         val secondCombination = firstCombination.mergeWith(third)
-        secondCombination.observe(owner) {
+        secondCombination.observe(alwaysOnOwner) {
             data(observer = mockedDataObserver)
         }
 
@@ -357,7 +431,7 @@ class ResponseLiveDataTest {
         val third = MutableResponseLiveData<String>()
 
         val combination = first.mergeWith("first", "second" to second, "third" to third)
-        combination.observe(owner) {
+        combination.observe(alwaysOnOwner) {
             loading(observer = mockedLoadingObserver)
             error(observer = mockedErrorObserver)
             data(observer = mockedDataObserver)
@@ -407,7 +481,7 @@ class ResponseLiveDataTest {
         val third = MutableResponseLiveData<String>()
 
         val combination = first.mergeWith("first", "second" to second, "third" to third)
-        combination.observe(owner) {
+        combination.observe(alwaysOnOwner) {
             loading(observer = mockedLoadingObserver)
             error(observer = mockedErrorObserver)
             data(observer = mockedDataObserver)
@@ -448,7 +522,7 @@ class ResponseLiveDataTest {
         val third = mutableResponseLiveDataOf("third")
 
         val combination = first.mergeWith("first", "second" to second, "third" to third)
-        combination.observe(owner) {
+        combination.observe(alwaysOnOwner) {
             data(observer = mockedDataObserver)
         }
 
@@ -493,7 +567,7 @@ class ResponseLiveDataTest {
         val second = MutableResponseLiveData<String>()
 
         val combination = first.followedBy { second }
-        combination.observe(owner) {
+        combination.observe(alwaysOnOwner) {
             loading(observer = mockedLoadingObserver)
             error(observer = mockedErrorObserver)
             data(observer = mockedDataObserver)
@@ -528,7 +602,7 @@ class ResponseLiveDataTest {
         val second = MutableResponseLiveData<String>()
 
         val combination = first.followedBy({ second }, { it == "first_set" })
-        combination.observe(owner) {
+        combination.observe(alwaysOnOwner) {
             loading(observer = mockedLoadingObserver)
             error(observer = mockedErrorObserver)
             data(observer = mockedDataObserver)
@@ -563,7 +637,7 @@ class ResponseLiveDataTest {
         val second = MutableResponseLiveData<String>()
 
         val combination = first.followedBy({ second }, { it == "first" })
-        combination.observe(owner) {
+        combination.observe(alwaysOnOwner) {
             loading(observer = mockedLoadingObserver)
             error(observer = mockedErrorObserver)
             data(observer = mockedDataObserver)
@@ -592,7 +666,7 @@ class ResponseLiveDataTest {
         val second = MutableResponseLiveData<String>()
 
         val combination = first.followedBy({ second }, { it == "first" }, true)
-        combination.observe(owner) {
+        combination.observe(alwaysOnOwner) {
             loading(observer = mockedLoadingObserver)
             error(observer = mockedErrorObserver)
             data(observer = mockedDataObserver)
@@ -614,7 +688,7 @@ class ResponseLiveDataTest {
     fun whenObserveSingleHideLoading_shouldBeCalledWhenStatusIsLoading() = runTest {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { hideLoading(single = true, observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { hideLoading(single = true, observer = mockedObserver) }
 
         liveData.setLoading()
         Mockito.verifyNoInteractions(mockedObserver)
@@ -638,7 +712,7 @@ class ResponseLiveDataTest {
         runTest {
             val mockedObserver: (Boolean) -> Unit = mock()
             val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { loading(withData = true, observer = mockedObserver) }
+            liveData.observe(alwaysOnOwner) { loading(withData = true, observer = mockedObserver) }
 
             liveData.setLoading()
             Mockito.verifyNoInteractions(mockedObserver)
@@ -665,7 +739,7 @@ class ResponseLiveDataTest {
             val mockedObserver: () -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 showLoading(
                     withData = true,
                     observer = mockedObserver
@@ -696,7 +770,7 @@ class ResponseLiveDataTest {
             val mockedObserver: () -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 hideLoading(
                     withData = true,
                     observer = mockedObserver
@@ -724,7 +798,7 @@ class ResponseLiveDataTest {
             val mockedObserver: (Boolean) -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { loading(withData = false, observer = mockedObserver) }
+            liveData.observe(alwaysOnOwner) { loading(withData = false, observer = mockedObserver) }
 
             liveData.setLoading("data")
             Mockito.verifyNoInteractions(mockedObserver)
@@ -751,7 +825,7 @@ class ResponseLiveDataTest {
             val mockedObserver: () -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 showLoading(
                     withData = false,
                     observer = mockedObserver
@@ -782,7 +856,7 @@ class ResponseLiveDataTest {
             val mockedObserver: () -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 hideLoading(
                     withData = false,
                     observer = mockedObserver
@@ -810,7 +884,7 @@ class ResponseLiveDataTest {
     fun whenObserveError_shouldBeCalledWhenStatusIsError() = runTest {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { error(observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { error(observer = mockedObserver) }
 
         liveData.setLoading()
         Mockito.verifyNoInteractions(mockedObserver)
@@ -831,7 +905,7 @@ class ResponseLiveDataTest {
     fun whenObserveError_withExceptionData_shouldBeCalledWhenStatusIsError() = runTest {
         val mockedObserver: (Throwable) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { error(observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { error(observer = mockedObserver) }
 
         liveData.setLoading()
         Mockito.verifyNoInteractions(mockedObserver)
@@ -844,7 +918,7 @@ class ResponseLiveDataTest {
         liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.value = DataResult(null, null, DataResultStatus.ERROR)
+        liveData.value = DataResult(null, null, ERROR)
         Mockito.verifyNoMoreInteractions(mockedObserver)
     }
 
@@ -855,7 +929,7 @@ class ResponseLiveDataTest {
             val mockedObserver: (String) -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 error(
                     transformer = mockedTransformer,
                     observer = mockedObserver
@@ -878,7 +952,7 @@ class ResponseLiveDataTest {
             Mockito.verifyNoMoreInteractions(mockedTransformer)
             Mockito.verifyNoMoreInteractions(mockedObserver)
 
-            liveData.value = DataResult(null, null, DataResultStatus.ERROR)
+            liveData.value = DataResult(null, null, ERROR)
             Mockito.verifyNoMoreInteractions(mockedTransformer)
             Mockito.verifyNoMoreInteractions(mockedObserver)
         }
@@ -887,7 +961,7 @@ class ResponseLiveDataTest {
     fun whenObserveSingleError_shouldBeCalledWhenStatusIsError() = runTest {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { error(single = true, observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { error(single = true, observer = mockedObserver) }
 
         liveData.setLoading()
         Mockito.verifyNoInteractions(mockedObserver)
@@ -911,7 +985,7 @@ class ResponseLiveDataTest {
             val mockedObserver: (Throwable) -> Unit = mock()
             val liveData = MutableResponseLiveData<Any>()
                 .transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { error(single = true, observer = mockedObserver) }
+            liveData.observe(alwaysOnOwner) { error(single = true, observer = mockedObserver) }
 
             liveData.setLoading()
             advanceUntilIdle()
@@ -930,7 +1004,7 @@ class ResponseLiveDataTest {
             advanceUntilIdle()
             Mockito.verifyNoMoreInteractions(mockedObserver)
 
-            liveData.value = DataResult(null, null, DataResultStatus.ERROR)
+            liveData.value = DataResult(null, null, ERROR)
             advanceUntilIdle()
             Mockito.verifyNoMoreInteractions(mockedObserver)
 
@@ -944,7 +1018,7 @@ class ResponseLiveDataTest {
             val mockedObserver: (String) -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 error(
                     single = true,
                     transformer = mockedTransformer,
@@ -976,7 +1050,7 @@ class ResponseLiveDataTest {
             advanceUntilIdle()
             Mockito.verifyNoMoreInteractions(mockedObserver)
 
-            liveData.value = DataResult(null, null, DataResultStatus.ERROR)
+            liveData.value = DataResult(null, null, ERROR)
             advanceUntilIdle()
             Mockito.verifyNoMoreInteractions(mockedTransformer)
             advanceUntilIdle()
@@ -991,7 +1065,7 @@ class ResponseLiveDataTest {
             val mockedObserver: () -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { error(withData = false, observer = mockedObserver) }
+            liveData.observe(alwaysOnOwner) { error(withData = false, observer = mockedObserver) }
 
             liveData.setLoading()
             Mockito.verifyNoInteractions(mockedObserver)
@@ -1017,7 +1091,7 @@ class ResponseLiveDataTest {
             val mockedObserver: () -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { error(withData = true, observer = mockedObserver) }
+            liveData.observe(alwaysOnOwner) { error(withData = true, observer = mockedObserver) }
 
             liveData.setLoading()
             Mockito.verifyNoInteractions(mockedObserver)
@@ -1046,7 +1120,7 @@ class ResponseLiveDataTest {
             val mockedObserver: (Throwable) -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { error(withData = false, observer = mockedObserver) }
+            liveData.observe(alwaysOnOwner) { error(withData = false, observer = mockedObserver) }
 
             liveData.setLoading()
             Mockito.verifyNoInteractions(mockedObserver)
@@ -1072,7 +1146,7 @@ class ResponseLiveDataTest {
             val mockedObserver: (Throwable) -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { error(withData = true, observer = mockedObserver) }
+            liveData.observe(alwaysOnOwner) { error(withData = true, observer = mockedObserver) }
 
             liveData.setLoading()
             Mockito.verifyNoInteractions(mockedObserver)
@@ -1101,7 +1175,7 @@ class ResponseLiveDataTest {
     fun whenObserveSuccess_shouldBeCalledWhenStatusIsSuccess() = runTest {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { success(observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { success(observer = mockedObserver) }
 
         liveData.setLoading()
         Mockito.verifyNoInteractions(mockedObserver)
@@ -1119,7 +1193,7 @@ class ResponseLiveDataTest {
     fun whenObserveSingleSuccess_shouldBeCalledWhenStatusIsSuccess() = runTest {
         val mockedObserver: () -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { success(observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { success(observer = mockedObserver) }
 
         liveData.setLoading()
         Mockito.verifyNoInteractions(mockedObserver)
@@ -1144,7 +1218,7 @@ class ResponseLiveDataTest {
             val mockedObserver: () -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 success(withData = false, observer = mockedObserver)
             }
 
@@ -1169,7 +1243,7 @@ class ResponseLiveDataTest {
             val mockedObserver: () -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 success(withData = true, observer = mockedObserver)
             }
 
@@ -1194,7 +1268,7 @@ class ResponseLiveDataTest {
     fun whenObserveData_shouldBeCalledWhenDataIsNotNull() = runTest {
         val mockedObserver: (Any) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { data(observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
 
         liveData.setLoading()
         Mockito.verifyNoInteractions(mockedObserver)
@@ -1207,7 +1281,7 @@ class ResponseLiveDataTest {
         liveData.setLoading()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
-        liveData.value = DataResult(null, null, DataResultStatus.SUCCESS)
+        liveData.value = DataResult(null, null, SUCCESS)
         advanceUntilIdle()
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
@@ -1235,7 +1309,12 @@ class ResponseLiveDataTest {
         val mockedTransformer: (String) -> Int = mock()
         val liveData =
             MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { data(transformer = mockedTransformer, observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) {
+            data(
+                transformer = mockedTransformer,
+                observer = mockedObserver
+            )
+        }
 
         liveData.setLoading()
         Mockito.verifyNoInteractions(mockedObserver)
@@ -1252,7 +1331,7 @@ class ResponseLiveDataTest {
         Mockito.verifyNoMoreInteractions(mockedObserver)
         Mockito.verifyNoMoreInteractions(mockedTransformer)
 
-        liveData.value = DataResult(null, null, DataResultStatus.SUCCESS)
+        liveData.value = DataResult(null, null, SUCCESS)
         Mockito.verifyNoMoreInteractions(mockedObserver)
         Mockito.verifyNoMoreInteractions(mockedTransformer)
 
@@ -1287,7 +1366,7 @@ class ResponseLiveDataTest {
             val mockedObserver: (Any) -> Unit = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) { data(single = true, observer = mockedObserver) }
+            liveData.observe(alwaysOnOwner) { data(single = true, observer = mockedObserver) }
 
             liveData.setLoading()
             Mockito.verifyNoInteractions(mockedObserver)
@@ -1303,7 +1382,7 @@ class ResponseLiveDataTest {
             liveData.setData(data)
             Mockito.verifyNoMoreInteractions(mockedObserver)
 
-            liveData.value = DataResult(null, null, DataResultStatus.SUCCESS)
+            liveData.value = DataResult(null, null, SUCCESS)
             Mockito.verifyNoMoreInteractions(mockedObserver)
 
             Assert.assertFalse(liveData.hasObservers())
@@ -1315,7 +1394,7 @@ class ResponseLiveDataTest {
         val mockedTransformer: (String) -> Int = mock()
         val liveData =
             MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) {
+        liveData.observe(alwaysOnOwner) {
             data(
                 single = true,
                 transformer = mockedTransformer,
@@ -1346,7 +1425,7 @@ class ResponseLiveDataTest {
         advanceUntilIdle()
         Mockito.verifyNoMoreInteractions(mockedTransformer)
 
-        liveData.value = DataResult(null, null, DataResultStatus.SUCCESS)
+        liveData.value = DataResult(null, null, SUCCESS)
         advanceUntilIdle()
         Mockito.verifyNoMoreInteractions(mockedObserver)
         advanceUntilIdle()
@@ -1361,17 +1440,17 @@ class ResponseLiveDataTest {
     fun whenObserveResult_shouldBeCalledWhenResultIsPosted() = runTest {
         val mockedObserver: (DataResult<Any>) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) {
+        liveData.observe(alwaysOnOwner) {
             result(observer = mockedObserver)
         }
 
-        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        val result = DataResult<Any>(null, null, SUCCESS)
         liveData.value = result
         advanceUntilIdle()
         advanceUntilIdle()
         verifyBlocking(mockedObserver, times(1)) { invoke(result) }
 
-        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        val result2 = DataResult<Any>(null, null, ERROR)
         liveData.value = result2
         advanceUntilIdle()
         advanceUntilIdle()
@@ -1385,14 +1464,14 @@ class ResponseLiveDataTest {
             val mockedTransformer: (DataResult<Any>) -> Int = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 result(
                     observer = mockedObserver,
                     transformer = mockedTransformer
                 )
             }
 
-            val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+            val result = DataResult<Any>(null, null, SUCCESS)
             Mockito.`when`(mockedTransformer.invoke(result)).thenReturn(0)
             liveData.value = result
             advanceUntilIdle()
@@ -1400,7 +1479,7 @@ class ResponseLiveDataTest {
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(0) }
 
-            val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+            val result2 = DataResult<Any>(null, null, ERROR)
             Mockito.`when`(mockedTransformer.invoke(result2)).thenReturn(1)
             liveData.value = result2
             advanceUntilIdle()
@@ -1413,14 +1492,14 @@ class ResponseLiveDataTest {
     fun whenObserveSingleResult_shouldBeCalledWhenResultIsPosted() = runTest {
         val mockedObserver: (DataResult<Any>) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { result(single = true, observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { result(single = true, observer = mockedObserver) }
 
-        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        val result = DataResult<Any>(null, null, SUCCESS)
         liveData.value = result
         advanceUntilIdle()
         verifyBlocking(mockedObserver) { invoke(result) }
 
-        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        val result2 = DataResult<Any>(null, null, ERROR)
         liveData.value = result2
         Mockito.verifyNoMoreInteractions(mockedObserver)
 
@@ -1434,7 +1513,7 @@ class ResponseLiveDataTest {
             val mockedTransformer: (DataResult<Any>) -> Int = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 result(
                     single = true,
                     observer = mockedObserver,
@@ -1442,7 +1521,7 @@ class ResponseLiveDataTest {
                 )
             }
 
-            val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+            val result = DataResult<Any>(null, null, SUCCESS)
             Mockito.`when`(mockedTransformer.invoke(result)).thenReturn(0)
             liveData.value = result
             advanceUntilIdle()
@@ -1450,7 +1529,7 @@ class ResponseLiveDataTest {
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(0) }
 
-            val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+            val result2 = DataResult<Any>(null, null, ERROR)
             Mockito.`when`(mockedTransformer.invoke(result2)).thenReturn(1)
             liveData.value = result2
             Mockito.verifyNoMoreInteractions(mockedTransformer)
@@ -1465,17 +1544,17 @@ class ResponseLiveDataTest {
     fun whenObserveStatus_shouldBeCalledWhenResultIsPosted() = runTest {
         val mockedObserver: (DataResultStatus) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { status(observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { status(observer = mockedObserver) }
 
-        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        val result = DataResult<Any>(null, null, SUCCESS)
         liveData.value = result
         advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke(DataResultStatus.SUCCESS) }
+        verifyBlocking(mockedObserver) { invoke(SUCCESS) }
 
-        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        val result2 = DataResult<Any>(null, null, ERROR)
         liveData.value = result2
         advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke(DataResultStatus.ERROR) }
+        verifyBlocking(mockedObserver) { invoke(ERROR) }
     }
 
     @Test
@@ -1485,27 +1564,27 @@ class ResponseLiveDataTest {
             val mockedTransformer: (DataResultStatus) -> Int = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 status(
                     observer = mockedObserver,
                     transformer = mockedTransformer
                 )
             }
 
-            val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
-            Mockito.`when`(mockedTransformer.invoke(DataResultStatus.SUCCESS)).thenReturn(0)
+            val result = DataResult<Any>(null, null, SUCCESS)
+            Mockito.`when`(mockedTransformer.invoke(SUCCESS)).thenReturn(0)
             liveData.value = result
 
             advanceUntilIdle()
-            verifyBlocking(mockedTransformer) { invoke(DataResultStatus.SUCCESS) }
+            verifyBlocking(mockedTransformer) { invoke(SUCCESS) }
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(0) }
 
-            val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
-            Mockito.`when`(mockedTransformer.invoke(DataResultStatus.ERROR)).thenReturn(1)
+            val result2 = DataResult<Any>(null, null, ERROR)
+            Mockito.`when`(mockedTransformer.invoke(ERROR)).thenReturn(1)
             liveData.value = result2
             advanceUntilIdle()
-            verifyBlocking(mockedTransformer) { invoke(DataResultStatus.ERROR) }
+            verifyBlocking(mockedTransformer) { invoke(ERROR) }
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(1) }
         }
@@ -1514,14 +1593,14 @@ class ResponseLiveDataTest {
     fun whenObserveSingleStatus_shouldBeCalledWhenResultIsPosted() = runTest {
         val mockedObserver: (DataResultStatus) -> Unit = mock()
         val liveData = MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-        liveData.observe(owner) { status(single = true, observer = mockedObserver) }
+        liveData.observe(alwaysOnOwner) { status(single = true, observer = mockedObserver) }
 
-        val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
+        val result = DataResult<Any>(null, null, SUCCESS)
         liveData.value = result
         advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke(DataResultStatus.SUCCESS) }
+        verifyBlocking(mockedObserver) { invoke(SUCCESS) }
 
-        val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
+        val result2 = DataResult<Any>(null, null, ERROR)
         liveData.value = result2
         Mockito.verifyNoMoreInteractions(mockedObserver)
         Assert.assertFalse(liveData.hasObservers())
@@ -1534,7 +1613,7 @@ class ResponseLiveDataTest {
             val mockedTransformer: (DataResultStatus) -> Int = mock()
             val liveData =
                 MutableResponseLiveData<Any>().transformDispatcher(Dispatchers.Main)
-            liveData.observe(owner) {
+            liveData.observe(alwaysOnOwner) {
                 status(
                     single = true,
                     observer = mockedObserver,
@@ -1542,16 +1621,16 @@ class ResponseLiveDataTest {
                 )
             }
 
-            val result = DataResult<Any>(null, null, DataResultStatus.SUCCESS)
-            Mockito.`when`(mockedTransformer.invoke(DataResultStatus.SUCCESS)).thenReturn(0)
+            val result = DataResult<Any>(null, null, SUCCESS)
+            Mockito.`when`(mockedTransformer.invoke(SUCCESS)).thenReturn(0)
             liveData.value = result
             advanceUntilIdle()
-            verifyBlocking(mockedTransformer) { invoke(DataResultStatus.SUCCESS) }
+            verifyBlocking(mockedTransformer) { invoke(SUCCESS) }
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(0) }
 
-            val result2 = DataResult<Any>(null, null, DataResultStatus.ERROR)
-            Mockito.`when`(mockedTransformer.invoke(DataResultStatus.ERROR)).thenReturn(1)
+            val result2 = DataResult<Any>(null, null, ERROR)
+            Mockito.`when`(mockedTransformer.invoke(ERROR)).thenReturn(1)
             liveData.value = result2
             Mockito.verifyNoMoreInteractions(mockedTransformer)
             Mockito.verifyNoMoreInteractions(mockedObserver)
@@ -1562,7 +1641,6 @@ class ResponseLiveDataTest {
 
     @Test
     fun whenMap_withTransformAsync_shouldTransformDataStartingThreads() = runTest {
-
         val mockedTransformer: (String) -> String = mock()
         val mockedObserver: (String) -> Unit = mock()
 
@@ -1574,7 +1652,7 @@ class ResponseLiveDataTest {
         Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(data)
 
         liveData.setData(data)
-        mappedLiveData.observe(owner) { data(observer = mockedObserver) }
+        mappedLiveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
 
         advanceUntilIdle()
         verifyBlocking(mockedObserver) { invoke(data) }
@@ -1585,7 +1663,6 @@ class ResponseLiveDataTest {
     @Test
     fun whenMap_withoutTransformAsync_shouldTransformDataWithoutStartingThreads() =
         runTest {
-
             val mockedTransformer: (String) -> String = mock()
             val mockedObserver: (String) -> Unit = mock()
 
@@ -1597,7 +1674,7 @@ class ResponseLiveDataTest {
             Mockito.`when`(mockedTransformer.invoke(data)).thenReturn(data)
 
             liveData.setData(data)
-            mappedLiveData.observe(owner) { data(observer = mockedObserver) }
+            mappedLiveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
 
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(data) }
@@ -1607,7 +1684,6 @@ class ResponseLiveDataTest {
 
     @Test
     fun whenMapError_withTransformAsync_shouldTransformErrorStartingThreads() = runTest {
-
         val mockedTransformer: (Throwable) -> Throwable = mock()
         val mockedObserver: (Throwable) -> Unit = mock()
 
@@ -1619,7 +1695,7 @@ class ResponseLiveDataTest {
         Mockito.`when`(mockedTransformer.invoke(error)).thenReturn(error)
 
         liveData.setError(error)
-        mappedLiveData.observe(owner) { error(observer = mockedObserver) }
+        mappedLiveData.observe(alwaysOnOwner) { error(observer = mockedObserver) }
 
         advanceUntilIdle()
         verifyBlocking(mockedObserver) { invoke(error) }
@@ -1630,7 +1706,6 @@ class ResponseLiveDataTest {
     @Test
     fun whenMapError_withoutTransformAsync_shouldTransformErrorWithoutStartingThreads() =
         runTest {
-
             val mockedTransformer: (Throwable) -> Throwable = mock()
             val mockedObserver: (Throwable) -> Unit = mock()
 
@@ -1642,7 +1717,7 @@ class ResponseLiveDataTest {
             Mockito.`when`(mockedTransformer.invoke(error)).thenReturn(error)
 
             liveData.setError(error)
-            mappedLiveData.observe(owner) { error(observer = mockedObserver) }
+            mappedLiveData.observe(alwaysOnOwner) { error(observer = mockedObserver) }
 
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(error) }
@@ -1653,7 +1728,6 @@ class ResponseLiveDataTest {
     @Test
     fun whenOnNext_withTransformAsync_shouldDeliverDataBeforeCallObserverStartingThreads() =
         runTest {
-
             val mockedOnNext: (String) -> Unit = mock()
             val mockedObserver: (String) -> Unit = mock()
 
@@ -1664,7 +1738,7 @@ class ResponseLiveDataTest {
             val data = "data"
 
             liveData.setData(data)
-            onNextLiveData.observe(owner) { data(observer = mockedObserver) }
+            onNextLiveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
 
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(data) }
@@ -1675,7 +1749,6 @@ class ResponseLiveDataTest {
     @Test
     fun whenOnNext_withoutTransformAsync_shouldDeliverDataBeforeCallObserverWithoutStartingThreads() =
         runTest {
-
             val mockedOnNext: (String) -> Unit = mock()
             val mockedObserver: (String) -> Unit = mock()
 
@@ -1686,7 +1759,7 @@ class ResponseLiveDataTest {
             val data = "data"
 
             liveData.setData(data)
-            onNextLiveData.observe(owner) { data(observer = mockedObserver) }
+            onNextLiveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
 
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(data) }
@@ -1697,7 +1770,6 @@ class ResponseLiveDataTest {
     @Test
     fun whenOnError_withTransformAsync_shouldDeliverErrorBeforeCallObserverStartingThreads() =
         runTest {
-
             val mockedOnError: (Throwable) -> Unit = mock()
             val mockedObserver: (Throwable) -> Unit = mock()
 
@@ -1708,7 +1780,7 @@ class ResponseLiveDataTest {
             val error = IllegalStateException("error")
 
             liveData.setError(error)
-            onErrorLiveData.observe(owner) { error(observer = mockedObserver) }
+            onErrorLiveData.observe(alwaysOnOwner) { error(observer = mockedObserver) }
 
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(error) }
@@ -1719,7 +1791,6 @@ class ResponseLiveDataTest {
     @Test
     fun whenOnError_withoutTransformAsync_shouldDeliverErrorBeforeCallObserverWithoutStartingThreads() =
         runTest {
-
             val mockedOnError: (Throwable) -> Unit = mock()
             val mockedObserver: (Throwable) -> Unit = mock()
 
@@ -1730,7 +1801,7 @@ class ResponseLiveDataTest {
             val error = IllegalStateException("error")
 
             liveData.setError(error)
-            onErrorLiveData.observe(owner) { error(observer = mockedObserver) }
+            onErrorLiveData.observe(alwaysOnOwner) { error(observer = mockedObserver) }
 
             advanceUntilIdle()
             verifyBlocking(mockedObserver) { invoke(error) }
@@ -1741,7 +1812,6 @@ class ResponseLiveDataTest {
     @Test
     fun whenOnErrorReturn_withTransformAsync_shouldDeliverTransformedDataBeforeCallObserverStartingThreads() =
         runTest {
-
             val mockedOnErrorReturn: (Throwable) -> String = mock()
             val mockedObserver: (Throwable) -> Unit = mock()
             val mockedDataObserver: (String) -> Unit = mock()
@@ -1754,8 +1824,8 @@ class ResponseLiveDataTest {
             Mockito.`when`(mockedOnErrorReturn.invoke(error)).thenReturn("error")
 
             liveData.setError(error)
-            onErrorLiveData.observe(owner) { error(observer = mockedObserver) }
-            onErrorLiveData.observe(owner) { data(observer = mockedDataObserver) }
+            onErrorLiveData.observe(alwaysOnOwner) { error(observer = mockedObserver) }
+            onErrorLiveData.observe(alwaysOnOwner) { data(observer = mockedDataObserver) }
 
             Mockito.verifyNoInteractions(mockedObserver)
             advanceUntilIdle()
@@ -1767,7 +1837,6 @@ class ResponseLiveDataTest {
     @Test
     fun whenOnErrorReturn_withoutTransformAsync_shouldDeliverTransformedDataBeforeCallObserverWithoutStartingThreads() =
         runTest {
-
             val mockedOnErrorReturn: (Throwable) -> String = mock()
             val mockedObserver: (Throwable) -> Unit = mock()
             val mockedDataObserver: (String) -> Unit = mock()
@@ -1780,8 +1849,8 @@ class ResponseLiveDataTest {
             Mockito.`when`(mockedOnErrorReturn.invoke(error)).thenReturn("error")
 
             liveData.setError(error)
-            onErrorLiveData.observe(owner) { error(observer = mockedObserver) }
-            onErrorLiveData.observe(owner) { data(observer = mockedDataObserver) }
+            onErrorLiveData.observe(alwaysOnOwner) { error(observer = mockedObserver) }
+            onErrorLiveData.observe(alwaysOnOwner) { data(observer = mockedDataObserver) }
 
             Mockito.verifyNoInteractions(mockedObserver)
             advanceUntilIdle()
@@ -1804,8 +1873,8 @@ class ResponseLiveDataTest {
             val error = IllegalStateException("error")
             liveData.setError(error, "data")
 
-            onErrorLiveData.observe(owner) { error(observer = mockedObserver) }
-            onErrorLiveData.observe(owner) { data(observer = mockedDataObserver) }
+            onErrorLiveData.observe(alwaysOnOwner) { error(observer = mockedObserver) }
+            onErrorLiveData.observe(alwaysOnOwner) { data(observer = mockedDataObserver) }
 
             Mockito.verifyNoInteractions(mockedObserver)
             Mockito.verifyNoInteractions(mockedOnErrorReturn)
@@ -1816,17 +1885,16 @@ class ResponseLiveDataTest {
     @Test
     fun whenTransform_withoutAsync_shouldDeliverTransformedDataBeforeCallObserverWithoutStartingThreads() =
         runTest {
-
             val mockedTransformation: (DataResult<String>) -> DataResult<Int> = mock()
             val mockedDataObserver: (Int) -> Unit = mock()
 
             val liveData =
                 MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
             val transformedLiveData = liveData.transform(mockedTransformation)
-            transformedLiveData.observe(owner) { data(observer = mockedDataObserver) }
+            transformedLiveData.observe(alwaysOnOwner) { data(observer = mockedDataObserver) }
 
-            val data = DataResult("data", null, DataResultStatus.SUCCESS)
-            val result = DataResult(0, null, DataResultStatus.SUCCESS)
+            val data = DataResult("data", null, SUCCESS)
+            val result = DataResult(0, null, SUCCESS)
             Mockito.`when`(mockedTransformation.invoke(data)).thenReturn(result)
             liveData.setData("data")
 
@@ -1839,17 +1907,16 @@ class ResponseLiveDataTest {
     @Test
     fun whenTransform_withAsync_shouldDeliverTransformedDataBeforeCallObserverWithoutStartingThreads() =
         runTest {
-
             val mockedTransformation: (DataResult<String>) -> DataResult<Int> = mock()
             val mockedDataObserver: (Int) -> Unit = mock()
 
             val liveData =
                 MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
             val transformedLiveData = liveData.transform(mockedTransformation)
-            transformedLiveData.observe(owner) { data(observer = mockedDataObserver) }
+            transformedLiveData.observe(alwaysOnOwner) { data(observer = mockedDataObserver) }
 
-            val data = DataResult("data", null, DataResultStatus.SUCCESS)
-            val result = DataResult(0, null, DataResultStatus.SUCCESS)
+            val data = DataResult("data", null, SUCCESS)
+            val result = DataResult(0, null, SUCCESS)
             Mockito.`when`(mockedTransformation.invoke(data)).thenReturn(result)
             liveData.setData("data")
 
@@ -1870,10 +1937,10 @@ class ResponseLiveDataTest {
     @Test
     fun whenInitialize_withValue_shouldReturnAnInstanceWithADefaultValue() = runTest {
         val liveData = ResponseLiveData(
-            DataResult("value", null, DataResultStatus.SUCCESS)
+            DataResult("value", null, SUCCESS)
         )
         Assert.assertTrue(liveData.data == "value")
-        Assert.assertTrue(liveData.status == DataResultStatus.SUCCESS)
+        Assert.assertTrue(liveData.status == SUCCESS)
         Assert.assertNull(liveData.error)
     }
 }

@@ -6,7 +6,7 @@ jacoco = "0.8.9"
 dexcount = "4.0.0"
 pedrinho_publish = "0.0.2"
 ktLint = "0.31.0"
-ksp = "1.8.10-1.0.9"
+ksp = "1.9.10-1.0.13"
 
 ## --- Build Config and SDK --- ##
 build-version-name = "1.0.0"
@@ -17,7 +17,7 @@ build-sdk-target = "34"
 build-tools = "34.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "1.8.10" # --> Cannot update because of compose
+jetbrains-kotlin = "1.9.10"
 jetbrains-coroutines = "1.6.4"
 
 ## AndroidX

@@ -9,6 +9,7 @@ package br.com.arch.toolkit.result
 
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleOwner
 import br.com.arch.toolkit.exception.DataResultException
 import br.com.arch.toolkit.exception.DataResultTransformationException
@@ -44,7 +45,8 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * List of all events configured
      */
-    private val eventList = mutableListOf<ObserveEvent<*>>()
+    @VisibleForTesting
+    internal val eventList = mutableListOf<ObserveEvent<*>>()
 
     /**
      * Big "catch" to handle unexpected exceptions inside the executions of the events
@@ -342,7 +344,8 @@ class ObserveWrapper<T> internal constructor() {
         eventList.add(
             ErrorEvent(
                 WrapObserver<Throwable, Any>(emptyObserver = observer),
-                single, EventDataStatus.DOESNT_MATTER
+                single,
+                EventDataStatus.DOESNT_MATTER
             )
         )
         return this
@@ -504,7 +507,9 @@ class ObserveWrapper<T> internal constructor() {
                 WrapObserver(
                     transformer = transformer,
                     transformerObserver = observer
-                ), single, EventDataStatus.DOESNT_MATTER
+                ),
+                single,
+                EventDataStatus.DOESNT_MATTER
             )
         )
         return this
@@ -552,7 +557,9 @@ class ObserveWrapper<T> internal constructor() {
                 WrapObserver(
                     transformer = transformer,
                     transformerObserver = observer
-                ), single, getEventDataStatus(withData)
+                ),
+                single,
+                getEventDataStatus(withData)
             )
         )
         return this
@@ -711,7 +718,8 @@ class ObserveWrapper<T> internal constructor() {
                 WrapObserver(
                     transformer = transformer,
                     transformerObserver = observer
-                ), single
+                ),
+                single
             )
         )
         return this
@@ -796,7 +804,8 @@ class ObserveWrapper<T> internal constructor() {
                 WrapObserver(
                     transformer = transformer,
                     transformerObserver = observer
-                ), single
+                ),
+                single
             )
         )
         return this
@@ -881,7 +890,8 @@ class ObserveWrapper<T> internal constructor() {
                 WrapObserver(
                     transformer = transformer,
                     transformerObserver = observer
-                ), single
+                ),
+                single
             )
         )
         return this
@@ -1078,81 +1088,66 @@ class ObserveWrapper<T> internal constructor() {
     //endregion
 
     private suspend fun handleResult(@Nullable result: DataResult<T>?) {
-
         if (result == null) return
         val isLoading = result.status == LOADING
 
         eventList.iterate(result) { event ->
-
-            when {
-
+            return@iterate when {
                 // Handle None
-                result.status == NONE -> {
-                    (event as? NoneEvent)?.wrapper?.handle(null, transformDispatcher)
-                    return@iterate event is NoneEvent
-                }
+                result.status == NONE -> (event as? NoneEvent)?.wrapper
+                    ?.handle(null, transformDispatcher) == true
 
                 // Handle Loading
                 event is LoadingEvent -> event.run {
-                    wrapper.handle(isLoading, transformDispatcher)
-                    return@run isLoading.not()
+                    wrapper.handle(isLoading, transformDispatcher) && isLoading.not()
                 }
 
                 // Handle ShowLoading
                 event is ShowLoadingEvent && isLoading -> event.run {
                     wrapper.handle(true, transformDispatcher)
-                    return@run true
                 }
 
                 // Handle HideLoading
                 event is HideLoadingEvent && isLoading.not() -> event.run {
                     wrapper.handle(isLoading, transformDispatcher)
-                    return@run true
                 }
 
                 // Handle Error
                 event is ErrorEvent && result.status == ERROR -> event.run {
                     wrapper.handle(result.error, transformDispatcher)
-                    return@run true
                 }
 
                 // Handle Success
                 event is SuccessEvent && result.status == SUCCESS -> event.run {
                     wrapper.handle(null, transformDispatcher)
-                    return@run true
                 }
 
                 // Handle Data
                 event is DataEvent -> (event as DataEvent<T>).wrapper.let {
-                    it.handle(result.data, transformDispatcher)
-                    return@let result.data != null
+                    it.handle(result.data, transformDispatcher) && (result.data != null)
                 }
 
                 // Handle Empty
                 event is EmptyEvent && result.isListType && result.isEmpty -> event.run {
                     wrapper.handle(null, transformDispatcher)
-                    return@run true
                 }
 
                 // Handle Not Empty
                 event is NotEmptyEvent && result.isListType && result.isNotEmpty -> event.run {
                     wrapper.handle(null, transformDispatcher)
-                    return@run true
                 }
 
                 // Handle Result
                 event is ResultEvent<*> -> (event as ResultEvent<T>).run {
                     wrapper.handle(result, transformDispatcher)
-                    return@run true
                 }
 
                 // Handle Status
                 event is StatusEvent -> event.run {
                     wrapper.handle(result.status, transformDispatcher)
-                    return@run true
                 }
 
-                else -> return@iterate false
+                else -> false
             }
         }
     }
@@ -1168,9 +1163,9 @@ class ObserveWrapper<T> internal constructor() {
         }
     }
 
-    private fun getEventDataStatus(withData: Boolean): EventDataStatus {
-        return if (withData) EventDataStatus.WITH_DATA
-        else EventDataStatus.WITHOUT_DATA
+    private fun getEventDataStatus(withData: Boolean) = when {
+        withData -> EventDataStatus.WITH_DATA
+        else -> EventDataStatus.WITHOUT_DATA
     }
 
     private suspend inline fun MutableList<ObserveEvent<*>>.iterate(
@@ -1225,43 +1220,58 @@ class ObserveWrapper<T> internal constructor() {
     }
 }
 
-private class WrapObserver<T, V>(
+internal class WrapObserver<T, V>(
     @Nullable val observer: (suspend (T) -> Unit)? = null,
     @Nullable val emptyObserver: (suspend () -> Unit)? = null,
     @Nullable val transformer: (suspend (T) -> V)? = null,
     @Nullable val transformerObserver: (suspend (V) -> Unit)? = null
 ) {
 
-    suspend fun handle(@Nullable data: T?, dispatcher: CoroutineDispatcher) {
-        emptyObserver?.invoke()
-        data?.also {
-            observer?.invoke(data)
-            executeTransformer(data, dispatcher)
+    suspend fun handle(@Nullable data: T?, dispatcher: CoroutineDispatcher) = when {
+        emptyObserver != null -> {
+            emptyObserver.invoke()
+            true
         }
+
+        data != null && observer != null -> {
+            observer.invoke(data)
+            true
+        }
+
+        data != null -> executeTransformer(data, dispatcher)
+
+        else -> false
     }
 
-    private suspend fun executeTransformer(@Nullable data: T, dispatcher: CoroutineDispatcher) {
-        if (transformerObserver == null) return
-        if (transformer == null) return
-
-        val result = withContext(dispatcher) {
-            transformer.runCatching { invoke(data) }
-        }
-
-        val catch = CoroutineExceptionHandler { _, error -> throw error }
-        withContext(currentCoroutineContext() + catch) {
-            result.onSuccess {
-                transformerObserver.invoke(it)
-            }.onFailure {
-                throw DataResultTransformationException("Error performing transformation", it)
+    private suspend fun executeTransformer(
+        @Nullable data: T,
+        dispatcher: CoroutineDispatcher
+    ) = when {
+        transformerObserver == null -> false
+        transformer == null -> false
+        else -> {
+            val result = withContext(dispatcher) {
+                transformer.runCatching { invoke(data) }
             }
+
+            val catch = CoroutineExceptionHandler { _, error -> throw error }
+            withContext(currentCoroutineContext() + catch) {
+                result.onSuccess { transformerObserver.invoke(it) }
+                    .onFailure {
+                        throw DataResultTransformationException(
+                            "Error performing transformation",
+                            it
+                        )
+                    }
+            }
+            true
         }
     }
 }
 
-private enum class EventDataStatus { WITH_DATA, WITHOUT_DATA, DOESNT_MATTER }
+internal enum class EventDataStatus { WITH_DATA, WITHOUT_DATA, DOESNT_MATTER }
 
-private sealed class ObserveEvent<T>(
+internal sealed class ObserveEvent<T>(
     @NonNull val wrapper: WrapObserver<T, *>,
     @NonNull val single: Boolean,
     @NonNull val dataStatus: EventDataStatus

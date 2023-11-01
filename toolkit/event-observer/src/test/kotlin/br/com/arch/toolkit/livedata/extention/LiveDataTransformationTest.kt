@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
+import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.util.map
 import br.com.arch.toolkit.util.mapList
@@ -33,15 +34,6 @@ class LiveDataTransformationTest {
 
     private lateinit var mockedTransformation: (String) -> Int
 
-    private var owner = object : LifecycleOwner {
-        private val registry = LifecycleRegistry(this)
-        override val lifecycle: Lifecycle
-            get() {
-                registry.currentState = Lifecycle.State.RESUMED
-                return registry
-            }
-    }
-
     init {
         Dispatchers.setMain(StandardTestDispatcher())
     }
@@ -60,7 +52,7 @@ class LiveDataTransformationTest {
         val liveData = MutableLiveData<String>()
         val transformedLiveData = liveData.map(mockedTransformation)
 
-        transformedLiveData.observe(owner, mockedObserver)
+        transformedLiveData.observe(alwaysOnOwner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -77,7 +69,7 @@ class LiveDataTransformationTest {
         val liveData = MutableLiveData<List<String>>()
         val transformedLiveData = liveData.mapList(mockedTransformation)
 
-        transformedLiveData.observe(owner, mockedObserver)
+        transformedLiveData.observe(alwaysOnOwner, mockedObserver)
 
         liveData.postValue(null)
 
@@ -99,7 +91,7 @@ class LiveDataTransformationTest {
                 .transformDispatcher(Dispatchers.Main)
             val transformedLiveData = liveData.mapList(mockedTransformation)
 
-            transformedLiveData.observe(owner) { data(observer = mockedObserver) }
+            transformedLiveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
 
             liveData.postData(listOf("ONE", "TWO"))
 
@@ -118,7 +110,7 @@ class LiveDataTransformationTest {
                 .transformDispatcher(Dispatchers.Main)
             val transformedLiveData = liveData.mapList(mockedTransformation)
 
-            transformedLiveData.observe(owner) { data(observer = mockedObserver) }
+            transformedLiveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
 
             liveData.postData(listOf("ONE", "TWO"))
 

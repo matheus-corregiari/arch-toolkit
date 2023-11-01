@@ -1,8 +1,11 @@
-@file:Suppress("LongMethod")
+@file:Suppress("LongMethod", "LargeClass")
 
 package br.com.arch.toolkit.result
 
-import br.com.arch.toolkit.result.DataResultStatus.*
+import br.com.arch.toolkit.result.DataResultStatus.ERROR
+import br.com.arch.toolkit.result.DataResultStatus.LOADING
+import br.com.arch.toolkit.result.DataResultStatus.NONE
+import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultNone
@@ -12,8 +15,11 @@ import br.com.arch.toolkit.util.mergeAll
 import br.com.arch.toolkit.util.mergeNotNull
 import br.com.arch.toolkit.util.plus
 import org.junit.Assert.assertEquals
+import org.junit.FixMethodOrder
 import org.junit.Test
+import org.junit.runners.MethodSorters
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class DataResultMergeTest {
 
     private val error = IllegalStateException("error")

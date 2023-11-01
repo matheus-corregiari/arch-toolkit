@@ -1,8 +1,7 @@
-@file:SuppressLint("KotlinNullnessAnnotation")
+@file:Suppress("KotlinNullnessAnnotation", "TooManyFunctions")
 
 package br.com.arch.toolkit.livedata
 
-import android.annotation.SuppressLint
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
@@ -10,7 +9,6 @@ import androidx.lifecycle.LiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
-import br.com.arch.toolkit.util.dataResultNone
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,7 +67,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      *
      * @return An empty ResponseLiveData<T> instance
      */
-    constructor() : this(dataResultNone())
+    constructor() : super()
 
     /**
      * Constructor for initializing with a value

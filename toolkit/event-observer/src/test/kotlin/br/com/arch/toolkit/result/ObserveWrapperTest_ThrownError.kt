@@ -1,4 +1,4 @@
-@file:Suppress("LongMethod")
+@file:Suppress("LongMethod", "ClassNaming", "ClassName")
 
 package br.com.arch.toolkit.result
 
@@ -27,7 +27,7 @@ import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-class ObserveWrapperThrownErrorTest {
+class ObserveWrapperTest_ThrownError {
 
     private val error = IllegalStateException("Thrown Error!")
     private val expected = DataResultException(
@@ -208,5 +208,4 @@ class ObserveWrapperThrownErrorTest {
         Assert.assertEquals(expectedTransformation, errorFound)
     }
     //endregion
-
 }

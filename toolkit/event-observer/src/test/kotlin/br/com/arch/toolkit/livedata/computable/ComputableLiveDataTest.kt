@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.util.observeNotNull
 import br.com.arch.toolkit.util.observeSingle
 import org.junit.Assert
@@ -23,16 +24,7 @@ class ComputableLiveDataTest {
     private lateinit var mockedObserver: (Any) -> Unit
     private lateinit var computeObserver: () -> Unit
     private lateinit var abortObserver: () -> Unit
-
-    private var owner = object : LifecycleOwner {
-        private val registry = LifecycleRegistry(this)
-        override val lifecycle: Lifecycle
-            get() {
-                registry.currentState = Lifecycle.State.RESUMED
-                return registry
-            }
-    }
-
+    
     @Before
     fun setup() {
         mockedObserver = mock()
@@ -50,7 +42,7 @@ class ComputableLiveDataTest {
         Mockito.verifyNoInteractions(computeObserver)
         Mockito.verifyNoInteractions(abortObserver)
 
-        liveData.observeNotNull(owner, mockedObserver)
+        liveData.observeNotNull(alwaysOnOwner, mockedObserver)
 
         Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
@@ -68,7 +60,7 @@ class ComputableLiveDataTest {
         Mockito.verifyNoInteractions(abortObserver)
 
         // Call when become active
-        liveData.observeNotNull(owner, mockedObserver)
+        liveData.observeNotNull(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
 
         // Call again if have observers
@@ -90,11 +82,11 @@ class ComputableLiveDataTest {
         Mockito.verifyNoInteractions(abortObserver)
 
         // Call when become active
-        liveData.observeNotNull(owner, mockedObserver)
+        liveData.observeNotNull(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
 
-        liveData.removeObservers(owner)
+        liveData.removeObservers(alwaysOnOwner)
         Assert.assertTrue(liveData.hasComputed())
 
         // Call again if have observers
@@ -119,7 +111,7 @@ class ComputableLiveDataTest {
         Assert.assertFalse(liveData.isRunningOrHasComputed)
 
         // Call when become active
-        liveData.observeNotNull(owner, mockedObserver)
+        liveData.observeNotNull(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
 
@@ -145,7 +137,7 @@ class ComputableLiveDataTest {
         Mockito.verifyNoInteractions(abortObserver)
 
         // Call when become active
-        liveData.observeNotNull(owner, mockedObserver)
+        liveData.observeNotNull(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
         Assert.assertFalse(liveData.isRunning)
@@ -164,13 +156,13 @@ class ComputableLiveDataTest {
         Mockito.verifyNoInteractions(abortObserver)
 
         // Call when become active
-        liveData.observeSingle(owner, mockedObserver)
+        liveData.observeSingle(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
         Assert.assertFalse(liveData.isRunning)
         Assert.assertTrue(liveData.hasComputed())
 
-        liveData.observeSingle(owner, mockedObserver)
+        liveData.observeSingle(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
         Mockito.verifyNoMoreInteractions(computeObserver)
         Mockito.verifyNoInteractions(abortObserver)
@@ -204,7 +196,7 @@ class ComputableLiveDataTest {
         Mockito.verifyNoInteractions(computeObserver)
         Mockito.verifyNoInteractions(abortObserver)
 
-        liveData.observeSingle(owner, mockedObserver)
+        liveData.observeSingle(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
         Mockito.verify(computeObserver).invoke()
         Assert.assertTrue(liveData.isRunningOrHasComputed)

@@ -24,7 +24,7 @@ class MutableResponseLiveData<T> : ResponseLiveData<T> {
      *
      * @return An empty MutableResponseLiveData<T> instance
      */
-    constructor() : this(dataResultNone())
+    constructor() : super()
 
     /**
      * Constructor for initializing with a value
