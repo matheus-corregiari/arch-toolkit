@@ -4,8 +4,11 @@ import androidx.annotation.NonNull
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
+import br.com.arch.toolkit.util.dataResultNone
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,20 +20,32 @@ import kotlinx.coroutines.launch
 open class ResponseFlow<T> : StateFlow<DataResult<T>> {
 
     protected val innerFlow: MutableStateFlow<DataResult<T>>
-    private val innerScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
-    constructor(
-        value: DataResult<T> = DataResult(
-            data = null,
-            error = null,
-            status = DataResultStatus.LOADING
-        )
-    ) {
+    protected var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        private set
+
+    open fun scope(scope: CoroutineScope) =
+        apply { this.scope = scope }
+
+    protected var transformDispatcher: CoroutineDispatcher = Dispatchers.IO
+        private set
+
+    open fun transformDispatcher(dispatcher: CoroutineDispatcher) =
+        apply { transformDispatcher = dispatcher }
+
+    constructor(value: DataResult<T> = dataResultNone()) {
         this.innerFlow = MutableStateFlow(value)
     }
 
-    internal constructor(value: DataResult<T>, mirror: Flow<DataResult<T>>) : this(value) {
-        innerScope.launch { mirror.collect(innerFlow::tryEmit) }
+    private constructor(
+        value: DataResult<T>,
+        scope: CoroutineScope,
+        dispatcher: CoroutineDispatcher,
+        mirror: Flow<DataResult<T>>
+    ) : this(value) {
+        this.scope = scope
+        this.transformDispatcher = dispatcher
+        scope.launch { mirror.collect(innerFlow::tryEmit) }
     }
 
     val status: DataResultStatus
@@ -39,7 +54,6 @@ open class ResponseFlow<T> : StateFlow<DataResult<T>> {
         get() = value.error
     val data: T?
         get() = value.data
-
 
     override val replayCache: List<DataResult<T>>
         get() = innerFlow.replayCache
@@ -60,18 +74,26 @@ open class ResponseFlow<T> : StateFlow<DataResult<T>> {
      *
      */
     suspend fun collect(collector: suspend ObserveWrapper<T>.() -> Unit) {
-        newWrapper().apply { collector.invoke(this) }.attachTo(this)
+        newWrapper()
+            .scope(scope)
+            .transformDispatcher(transformDispatcher)
+            .apply { collector.invoke(this) }
+            .attachTo(this)
     }
 
-    fun shareIn(scope: CoroutineScope, started: SharingStarted): ResponseFlow<T> {
-        return ResponseFlow(value, innerFlow.shareIn(scope, started))
-    }
+    /**
+     *
+     */
+    fun shareIn(scope: CoroutineScope, started: SharingStarted, replay: Int = 0) = ResponseFlow(
+        value = value,
+        scope = scope,
+        dispatcher = transformDispatcher,
+        mirror = innerFlow.shareIn(scope, started, replay)
+    )
 
     /**
      * @return A new instance of ObserveWrapper<T>
      */
     @NonNull
     private fun newWrapper() = ObserveWrapper<T>()
-
-
 }

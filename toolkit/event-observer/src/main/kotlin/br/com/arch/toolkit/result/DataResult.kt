@@ -95,7 +95,7 @@ data class DataResult<T>(
      * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it is empty
      */
     val isEmpty: Boolean
-        get() = isListType && when (data) {
+        get() = when (data) {
             is Collection<*> -> data.isEmpty()
             is Map<*, *> -> data.isEmpty()
             is Sequence<*> -> data.count() == 0
@@ -120,7 +120,7 @@ data class DataResult<T>(
      * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it is NOT empty
      */
     val isNotEmpty: Boolean
-        get() = isListType && when (data) {
+        get() = when (data) {
             is Collection<*> -> data.isNotEmpty()
             is Map<*, *> -> data.isNotEmpty()
             is Sequence<*> -> data.count() > 0

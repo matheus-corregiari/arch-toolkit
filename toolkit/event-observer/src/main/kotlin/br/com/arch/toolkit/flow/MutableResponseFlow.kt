@@ -1,38 +1,34 @@
+@file:Suppress("TooManyFunctions")
+
 package br.com.arch.toolkit.flow
 
 import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.util.dataResultError
+import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultNone
+import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class MutableResponseFlow<T> : ResponseFlow<T>, MutableStateFlow<DataResult<T>> {
+/**
+ * Constructor for initializing with a value
+ *
+ * @param value The initial value for this MutableResponseLiveData
+ *
+ * @return An instance of ResponseFlow<T> with a default value set
+ */
+class MutableResponseFlow<T>(value: DataResult<T> = dataResultNone()) :
+    ResponseFlow<T>(value), MutableStateFlow<DataResult<T>> {
 
+    // region Override standard flow methods
     override var value: DataResult<T>
         get() = super.value
         set(value) {
             super.value = value
         }
 
-    /**
-     * Empty constructor when initializing with a value is not needed
-     *
-     * @return An empty ResponseFlow<T> instance
-     */
-    constructor() : this(dataResultNone())
-
-    /**
-     * Constructor for initializing with a value
-     *
-     * @param value The initial value for this MutableResponseLiveData
-     *
-     * @return An instance of ResponseFlow<T> with a default value set
-     */
-    constructor(value: DataResult<T>) : super(value)
-
-    override val subscriptionCount: StateFlow<Int>
-        get() = innerFlow.subscriptionCount
+    override val subscriptionCount: StateFlow<Int> get() = innerFlow.subscriptionCount
 
     override fun compareAndSet(expect: DataResult<T>, update: DataResult<T>) =
         innerFlow.compareAndSet(expect, update)
@@ -41,25 +37,29 @@ class MutableResponseFlow<T> : ResponseFlow<T>, MutableStateFlow<DataResult<T>> 
     override fun resetReplayCache() = innerFlow.resetReplayCache()
 
     override fun tryEmit(value: DataResult<T>) = innerFlow.tryEmit(value)
-
     override suspend fun emit(value: DataResult<T>) = innerFlow.emit(value)
+    // endregion
 
-    suspend fun emitData(value: T, throwable: Throwable? = null) =
-        emit(DataResult(value, throwable, DataResultStatus.SUCCESS))
+    // region Custom Emitters
+    suspend fun emitSuccess() = emit(dataResultSuccess(null))
+    suspend fun tryEmitSuccess() = tryEmit(dataResultSuccess(null))
 
-    suspend fun tryEmitData(value: T, throwable: Throwable? = null) =
-        tryEmit(DataResult(value, throwable, DataResultStatus.SUCCESS))
+    suspend fun emitData(value: T) = emit(dataResultSuccess(value))
+    suspend fun tryEmitData(value: T) = tryEmit(dataResultSuccess(value))
 
     suspend fun emitLoading(value: T? = null, throwable: Throwable? = null) =
-        emit(DataResult(value, throwable, DataResultStatus.LOADING))
+        emit(dataResultLoading(value, throwable))
 
     suspend fun tryEmitLoading(value: T? = null, throwable: Throwable? = null) =
-        tryEmit(DataResult(value, throwable, DataResultStatus.LOADING))
+        tryEmit(dataResultLoading(value, throwable))
 
-    suspend fun emitError(value: T?, throwable: Throwable) =
-        emit(DataResult(value, throwable, DataResultStatus.ERROR))
+    suspend fun emitError(throwable: Throwable, value: T? = null) =
+        emit(dataResultError(throwable, value))
 
-    suspend fun tryEmitError(value: T?, throwable: Throwable) =
-        tryEmit(DataResult(value, throwable, DataResultStatus.ERROR))
+    suspend fun tryEmitError(throwable: Throwable, value: T? = null) =
+        tryEmit(dataResultError(throwable, value))
 
+    suspend fun emitNone() = emit(dataResultNone())
+    suspend fun tryEmitNone() = tryEmit(dataResultNone())
+    // endregion
 }
