@@ -7,6 +7,8 @@ import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultNone
 import br.com.arch.toolkit.util.dataResultSuccess
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,10 +23,16 @@ import kotlinx.coroutines.flow.StateFlow
 class MutableResponseFlow<T>(value: DataResult<T> = dataResultNone()) :
     ResponseFlow<T>(value), MutableStateFlow<DataResult<T>> {
 
+    override fun scope(scope: CoroutineScope) =
+        super.scope(scope) as MutableResponseFlow<T>
+
+    override fun transformDispatcher(dispatcher: CoroutineDispatcher) =
+        super.transformDispatcher(dispatcher) as MutableResponseFlow<T>
+
     // region Override standard flow methods
     override var value: DataResult<T>
         get() = super.value
-        set(value) {
+        public set(value) {
             super.value = value
         }
 

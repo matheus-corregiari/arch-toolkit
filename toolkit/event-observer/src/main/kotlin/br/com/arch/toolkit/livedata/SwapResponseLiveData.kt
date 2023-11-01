@@ -2,9 +2,9 @@ package br.com.arch.toolkit.livedata
 
 import android.os.Looper
 import androidx.lifecycle.MediatorLiveData
+import br.com.arch.toolkit.exception.DataResultTransformationException
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.exception.DataResultTransformationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -113,17 +113,13 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
     /**
      * Returns true if does not have data source or if the status is equal to DataResultStatus.ERROR
      */
-    fun needsRefresh(): Boolean {
-        return hasDataSource.not() || status == DataResultStatus.ERROR
-    }
+    fun needsRefresh() = hasDataSource.not() || status == DataResultStatus.ERROR
 
-    override fun scope(scope: CoroutineScope): SwapResponseLiveData<T> {
-        return super.scope(scope) as SwapResponseLiveData<T>
-    }
+    override fun scope(scope: CoroutineScope) =
+        super.scope(scope) as SwapResponseLiveData<T>
 
-    override fun transformDispatcher(dispatcher: CoroutineDispatcher): SwapResponseLiveData<T> {
-        return super.transformDispatcher(dispatcher) as SwapResponseLiveData<T>
-    }
+    override fun transformDispatcher(dispatcher: CoroutineDispatcher) =
+        super.transformDispatcher(dispatcher) as SwapResponseLiveData<T>
 
     override fun onActive() {
         super.onActive()
