@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package br.com.arch.toolkit.delegate
 
 import android.view.View
@@ -14,27 +16,25 @@ fun <T : View> viewProvider(
     @IdRes idRes: Int,
     @IdRes parentRes: Int = NO_ID,
     viewStubAutoInflate: Boolean = false
-) =
-    ViewProviderDelegate<T>(
-        parentRes = parentRes,
-        idRes = idRes,
-        required = true,
-        viewStubAutoInflate = viewStubAutoInflate
-    )
+) = ViewProviderDelegate<T>(
+    parentRes = parentRes,
+    idRes = idRes,
+    required = true,
+    viewStubAutoInflate = viewStubAutoInflate
+)
 
 fun <T : View?> optionalViewProvider(
     @IdRes idRes: Int,
     @IdRes parentRes: Int = NO_ID,
     viewStubAutoInflate: Boolean = false
-) =
-    ViewProviderDelegate<T?>(
-        parentRes = parentRes,
-        idRes = idRes,
-        required = false,
-        viewStubAutoInflate = viewStubAutoInflate
-    )
+) = ViewProviderDelegate<T?>(
+    parentRes = parentRes,
+    idRes = idRes,
+    required = false,
+    viewStubAutoInflate = viewStubAutoInflate
+)
 
-class ViewProviderDelegate<out T>(
+class ViewProviderDelegate<out T> internal constructor(
     @IdRes private val parentRes: Int = NO_ID,
     @IdRes private val idRes: Int,
     private val required: Boolean,
