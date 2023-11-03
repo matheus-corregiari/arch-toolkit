@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------------------------ #
 [versions]
 ## --- Plugins and more general stuff --- ##
-android_plugin = "8.1.1"
+android_plugin = "8.1.2"
 jacoco = "0.8.9"
 dexcount = "4.0.0"
 pedrinho_publish = "0.0.2"
@@ -20,6 +20,7 @@ build-tools = "34.0.0"
 ## JetBrains
 jetbrains-kotlin = "1.9.10"
 jetbrains-coroutines = "1.6.4"
+jetbrains-kover = "0.7.4"
 
 ## AndroidX
 androidx-appcompat = "1.6.1"
@@ -63,7 +64,7 @@ mirror = "1.6.1"
 mockito = "5.6.0"
 mockito-kotlin = "5.1.0"
 junit = "4.13.2"
-robolectric = "4.8"
+robolectric = "4.9"
 
 # ------------------------------------------------------------------------------------------------ #
 [libraries]
@@ -142,6 +143,7 @@ google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 ## JetBrains
 jetbrains-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrains-kotlin" }
+jetbrains-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "jetbrains-kover" }
 
 ## Tools to make my life easier
 dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }

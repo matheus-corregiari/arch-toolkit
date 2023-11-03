@@ -4,17 +4,12 @@ repositories {
     gradlePluginPortal()
 }
 
-val androidBuildVersion: String = "8.1.1"
-val detekt: String = "1.23.3"
-val ktlint: String = "11.6.1"
-val kotlinVersion: String = "1.9.10"
-
 plugins {
     id("java-gradle-plugin")
-    kotlin("jvm").version("1.9.10") // <-- Also Kotlin version!
+    alias(pluginLibraries.plugins.jvm)
 }
 
-kotlin { jvmToolchain(11) }
+kotlin { jvmToolchain(17) }
 
 group = "com.toolkit.plugin"
 version = "1.0.0"
@@ -22,11 +17,12 @@ version = "1.0.0"
 dependencies {
     compileOnly(gradleApi())
 
-    implementation("com.android.tools.build:gradle:$androidBuildVersion")
-    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt")
-    implementation("org.jlleitschuh.gradle.ktlint-idea:org.jlleitschuh.gradle.ktlint-idea.gradle.plugin:$ktlint")
-    implementation(kotlin("gradle-plugin", kotlinVersion))
-    implementation(kotlin("android-extensions", kotlinVersion))
+    implementation(pluginLibraries.androidx.plugin)
+    implementation(pluginLibraries.detekt)
+    implementation(pluginLibraries.ktlint)
+    implementation(pluginLibraries.jetbrains.plugin)
+    implementation(pluginLibraries.jetbrains.extensions)
+    implementation(pluginLibraries.jetbrains.kover)
 }
 
 sourceSets {
@@ -72,6 +68,20 @@ gradlePlugin {
             displayName = "Toolkit Lint Plugin"
             description = "Enables and configure lint for module"
             implementationClass = "com.toolkit.plugin.ToolkitLintPlugin"
+        }
+
+        create("toolkit-test") {
+            id = "toolkit-test"
+            displayName = "Toolkit Test Plugin"
+            description = "Enables and configure test for module"
+            implementationClass = "com.toolkit.plugin.ToolkitTestPlugin"
+        }
+
+        create("toolkit-group") {
+            id = "toolkit-group"
+            displayName = "Toolkit Group Plugin"
+            description = "Enables and configure group for module"
+            implementationClass = "com.toolkit.plugin.ToolkitGroupPlugin"
         }
     }
 }

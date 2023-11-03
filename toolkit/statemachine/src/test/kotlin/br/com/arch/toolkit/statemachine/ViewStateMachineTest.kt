@@ -21,7 +21,7 @@ class ViewStateMachineTest {
     private lateinit var view5: TextView
 
     @Before
-    fun setupViews() = with(RuntimeEnvironment.application) {
+    fun setupViews() = with(RuntimeEnvironment.getApplication()) {
         view1 = TextView(this)
         view2 = TextView(this)
         view3 = TextView(this)

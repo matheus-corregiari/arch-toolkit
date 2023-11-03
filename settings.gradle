@@ -40,14 +40,14 @@ includeBuild 'plugin'
 // Toolkit Libraries
 include ':toolkit:delegate'
 include ':toolkit:event-observer'
-include ':toolkit:foldable'
+//include ':toolkit:foldable' FIXME: Uncomment
 include ':toolkit:recycler-adapter'
 include ':toolkit:splinter'
 include ':toolkit:statemachine'
 
 // Samples
 include ':samples:github-list-project'
-include ':samples:foldable'
+//include ':samples:foldable' FIXME: Uncomment
 include ':samples:livedata'
 include ':samples:recycler-adapter'
 include ':samples:statemachine'

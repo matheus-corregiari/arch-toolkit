@@ -12,28 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import java.lang.ref.WeakReference
 import kotlin.reflect.KProperty
 
-fun <T : View> viewProvider(
-    @IdRes idRes: Int,
-    @IdRes parentRes: Int = NO_ID,
-    viewStubAutoInflate: Boolean = false
-) = ViewProviderDelegate<T>(
-    parentRes = parentRes,
-    idRes = idRes,
-    required = true,
-    viewStubAutoInflate = viewStubAutoInflate
-)
-
-fun <T : View?> optionalViewProvider(
-    @IdRes idRes: Int,
-    @IdRes parentRes: Int = NO_ID,
-    viewStubAutoInflate: Boolean = false
-) = ViewProviderDelegate<T?>(
-    parentRes = parentRes,
-    idRes = idRes,
-    required = false,
-    viewStubAutoInflate = viewStubAutoInflate
-)
-
 class ViewProviderDelegate<out T> internal constructor(
     @IdRes private val parentRes: Int = NO_ID,
     @IdRes private val idRes: Int,
@@ -71,34 +49,24 @@ class ViewProviderDelegate<out T> internal constructor(
         }
     }
 
-    operator fun getValue(thisRef: View, property: KProperty<*>): T {
-        return findView(property) {
-            if (parentRes != NO_ID) {
-                thisRef.findViewById<View>(parentRes).findViewById(idRes)
-            } else {
-                thisRef.findViewById(idRes)
-            }
+    operator fun getValue(thisRef: View, property: KProperty<*>): T = findView(property) {
+        if (parentRes != NO_ID) {
+            thisRef.findViewById<View>(parentRes).findViewById(idRes)
+        } else {
+            thisRef.findViewById(idRes)
         }
     }
 
-    operator fun getValue(thisRef: RecyclerView.ViewHolder, property: KProperty<*>): T {
-        return findView(property) {
-            if (parentRes != NO_ID) {
-                thisRef.itemView.findViewById<View>(parentRes).findViewById(idRes)
-            } else {
-                thisRef.itemView.findViewById(idRes)
-            }
-        }
-    }
+    operator fun getValue(thisRef: RecyclerView.ViewHolder, property: KProperty<*>): T =
+        getValue(thisRef.itemView, property)
 
     private fun inflateIfIsViewStub(view: View?) = if (view is ViewStub) view.inflate() else view
 
     @Suppress("UNCHECKED_CAST")
     private inline fun findView(property: KProperty<*>, crossinline initializer: () -> View?): T {
-        view = if (viewStubAutoInflate) {
-            inflateIfIsViewStub(view ?: initializer.invoke())
-        } else {
-            view ?: initializer.invoke()
+        view = when {
+            viewStubAutoInflate -> inflateIfIsViewStub(view ?: initializer.invoke())
+            else -> view ?: initializer.invoke()
         }
         if (required && view == null) {
             error("View ID $idRes for '${property.name}' not found.")
@@ -106,3 +74,25 @@ class ViewProviderDelegate<out T> internal constructor(
         return view as T
     }
 }
+
+fun <T : View> viewProvider(
+    @IdRes idRes: Int,
+    @IdRes parentRes: Int = NO_ID,
+    viewStubAutoInflate: Boolean = false
+) = ViewProviderDelegate<T>(
+    parentRes = parentRes,
+    idRes = idRes,
+    required = true,
+    viewStubAutoInflate = viewStubAutoInflate
+)
+
+fun <T : View?> optionalViewProvider(
+    @IdRes idRes: Int,
+    @IdRes parentRes: Int = NO_ID,
+    viewStubAutoInflate: Boolean = false
+) = ViewProviderDelegate<T?>(
+    parentRes = parentRes,
+    idRes = idRes,
+    required = false,
+    viewStubAutoInflate = viewStubAutoInflate
+)

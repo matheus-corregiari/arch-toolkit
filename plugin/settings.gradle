@@ -1,0 +1,11 @@
+// Setting up all repository plugins
+dependencyResolutionManagement {
+    versionCatalogs {
+        libraries {
+            from(files("$rootDir/../tools/libs.versions.toml"))
+        }
+        pluginLibraries {
+            from(files("$rootDir/../tools/plugin.versions.toml"))
+        }
+    }
+}

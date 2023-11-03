@@ -9,7 +9,6 @@ internal class ToolkitBasePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.applyPlugins("jetbrains-kotlin")
-        target.plugins.apply("toolkit-lint")
 
         val libraries = target.libraries
         val allDefinedLibraries = libraries.allDefinedDependencies
@@ -39,16 +38,9 @@ internal class ToolkitBasePlugin : Plugin<Project> {
                 it.versionName = libraries.version("build-version-name")
 
                 it.resConfigs("en")
-
-                it.testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
             }
 
             buildFeatures.buildConfig = true
-
-            buildTypes.maybeCreate("debug").apply {
-                enableAndroidTestCoverage = false
-                enableUnitTestCoverage = false
-            }
 
             aaptOptions {
                 it.cruncherEnabled = false
@@ -57,12 +49,6 @@ internal class ToolkitBasePlugin : Plugin<Project> {
             compileOptions {
                 it.sourceCompatibility(JavaVersion.VERSION_17)
                 it.targetCompatibility(JavaVersion.VERSION_17)
-            }
-
-            testOptions {
-                it.unitTests.isIncludeAndroidResources = true
-                it.unitTests.isReturnDefaultValues = true
-                it.animationsDisabled = true
             }
 
             packagingOptions {
@@ -76,6 +62,25 @@ internal class ToolkitBasePlugin : Plugin<Project> {
                 it.maybeCreate("test").java.srcDirs("src/test/kotlin")
                 it.maybeCreate("androidTest").java.srcDirs("src/androidTest/kotlin")
                 it.maybeCreate("androidTest").resources.srcDirs("src/androidTest/res")
+            }
+        }
+
+        target.plugins.apply("toolkit-lint")
+        target.plugins.apply("toolkit-test")
+
+        val component = kotlin.runCatching { target.libraryComponent }.getOrNull()
+            ?: kotlin.runCatching { target.applicationComponent }.getOrNull()
+        component?.finalizeDsl {
+            target.tasks.configureEach { task ->
+                val isRelease = task.name.contains("release", true)
+                val isLint = task.name.contains("lint", true)
+                val isTest = task.name.contains("test", true)
+                val isKover = task.name.contains("kover", true)
+                val mustDisable = isLint || isTest || isKover
+                if (isRelease && mustDisable) {
+                    task.enabled = false
+                    task.group = "z-disabled"
+                }
             }
         }
     }

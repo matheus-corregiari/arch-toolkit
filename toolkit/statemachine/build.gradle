@@ -6,4 +6,11 @@ dependencies {
     // Libraries
     compileOnly libraries.jetbrains.stdlib.jdk8
     compileOnly libraries.androidx.annotation
+
+    // Test Libraries
+    testImplementation libraries.androidx.test.core
+    testImplementation libraries.jetbrains.test.coroutines
+    testImplementation libraries.mockito.test.core
+    testImplementation libraries.mockito.test.kotlin
+    testImplementation libraries.robolectric.test
 }
