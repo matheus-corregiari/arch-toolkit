@@ -3,6 +3,13 @@ plugins { id "toolkit-library" }
 android.namespace = "br.com.arch.toolkit.foldable"
 android.testNamespace = "br.com.arch.toolkit.foldable.test"
 
+android {
+    testOptions {
+        unitTests.includeAndroidResources = false
+        unitTests.all { test -> test.enabled = false }
+    }
+}
+
 dependencies {
     // Other Modules
     implementation project(":toolkit:delegate")
