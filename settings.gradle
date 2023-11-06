@@ -40,7 +40,7 @@ includeBuild 'plugin'
 // Toolkit Libraries
 include ':toolkit:delegate'
 include ':toolkit:event-observer'
-//include ':toolkit:foldable' FIXME: Uncomment
+include ':toolkit:foldable'
 include ':toolkit:recycler-adapter'
 include ':toolkit:splinter'
 include ':toolkit:statemachine'

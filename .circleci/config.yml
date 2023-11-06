@@ -16,7 +16,7 @@ jobs:
   dependencies:
     executor: android
     environment:
-      JVM_OPTS: -Xmx4096m
+      JVM_OPTS: -Xmx3400m
     steps:
       - default
       - run:
@@ -31,7 +31,7 @@ jobs:
   lint:
     executor: android
     environment:
-      JVM_OPTS: -Xmx4096m
+      JVM_OPTS: -Xmx3400m
     parameters:
       module:
         default: ""
@@ -44,7 +44,7 @@ jobs:
   test:
     executor: android
     environment:
-      JVM_OPTS: -Xmx4096m
+      JVM_OPTS: -Xmx3400m
     parameters:
       module:
         default: ""
@@ -57,7 +57,7 @@ jobs:
   build:
     executor: android
     environment:
-      JVM_OPTS: -Xmx4096m
+      JVM_OPTS: -Xmx3400m
     parameters:
       module:
         default: ""
@@ -69,7 +69,7 @@ jobs:
   deploy:
     executor: android
     environment:
-      JVM_OPTS: -Xmx4096m
+      JVM_OPTS: -Xmx3400m
     parameters:
       module:
         default: ""
