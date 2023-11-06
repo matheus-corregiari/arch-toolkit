@@ -15,13 +15,13 @@ dependencies {
     implementation project(":toolkit:delegate")
 
     // Libraries
-    compileOnly libraries.jetbrains.stdlib.jdk8
-    compileOnly libraries.androidx.annotation
-    compileOnly libraries.androidx.appcompat
-    compileOnly libraries.androidx.constraint
-    compileOnly libraries.androidx.lifecycle.runtime
-    compileOnly libraries.androidx.window
-    compileOnly libraries.google.material
+    implementation libraries.jetbrains.stdlib.jdk8
+    implementation libraries.androidx.annotation
+    implementation libraries.androidx.appcompat
+    implementation libraries.androidx.constraint
+    implementation libraries.androidx.lifecycle.runtime
+    implementation libraries.androidx.window
+    implementation libraries.google.material
 
     // Test Libraries
     androidTestImplementation libraries.jetbrains.stdlib.jdk8

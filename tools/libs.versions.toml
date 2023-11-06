@@ -24,7 +24,7 @@ jetbrains-kover = "0.7.4"
 ## AndroidX
 androidx-appcompat = "1.6.1"
 androidx-annotation = "1.7.0"
-androidx-constraint = "2.1.4"
+androidx-constraint = "2.2.0-alpha13"
 androidx-recyclerview = "1.3.2"
 androidx-lifecycle-livedata = "2.6.2"
 androidx-lifecycle-runtime = "2.6.2"
@@ -49,18 +49,11 @@ square-okhttp = "4.10.0"
 square-moshi = "1.14.0"
 square-timber = "5.0.1"
 
-## Android
-android-test-runner = "1.0.2"
-android-test-rules = "1.0.2"
-android-test-uiAutomator = "2.2.0"
-
 ## Google
 google-material = "1.10.0"
 google-ksp = "1.9.10-1.0.13"
 
 ## Tools
-hamcrest = "1.3"
-mirror = "1.6.1"
 mockito = "5.6.0"
 mockito-kotlin = "5.1.0"
 junit = "4.13.2"
@@ -73,7 +66,6 @@ jetbrains-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-
 jetbrains-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "jetbrains-coroutines" }
 jetbrains-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "jetbrains-coroutines" }
 jetbrains-test-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "jetbrains-coroutines" }
-jetbrains-test-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "jetbrains-kotlin" }
 
 ## Androidx
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
@@ -115,11 +107,7 @@ square-timber = { group = "com.jakewharton.timber", name = "timber", version.ref
 google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
 
 ## Tools
-hamcrest-test-core = { group = "org.hamcrest", name = "hamcrest-core", version.ref = "hamcrest" }
-hamcrest-test-library = { group = "org.hamcrest", name = "hamcrest-library", version.ref = "hamcrest" }
-mirror-test = { group = "net.vidageek", name = "mirror", version.ref = "mirror" }
 mockito-test-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
-mockito-test-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito" }
 mockito-test-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 junit-test = { group = "junit", name = "junit", version.ref = "junit" }
 robolectric-test = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
