@@ -2,6 +2,7 @@
 
 package br.com.arch.toolkit.flow
 
+import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * @return An instance of ResponseFlow<T> with a default value set
  */
+@Experimental
 class MutableResponseFlow<T>(value: DataResult<T> = dataResultNone()) :
     ResponseFlow<T>(value), MutableStateFlow<DataResult<T>> {
 

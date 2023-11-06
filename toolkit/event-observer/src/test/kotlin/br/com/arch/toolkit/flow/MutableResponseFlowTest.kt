@@ -1,5 +1,6 @@
 package br.com.arch.toolkit.flow
 
+import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus.ERROR
 import br.com.arch.toolkit.result.DataResultStatus.LOADING
@@ -19,7 +20,7 @@ import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, Experimental::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class MutableResponseFlowTest {
 

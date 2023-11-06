@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master.svg?style=svg)](https://circleci.com/gh/matheus-corregiari/arch-toolkit/tree/master)
+[![Pull Request](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml/badge.svg?branch=master)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
 [![codebeat badge](https://codebeat.co/badges/1add62ed-f5fc-4bd2-9054-501685ca007c)](https://codebeat.co/projects/github-com-matheus-corregiari-arch-toolkit-master)
 
 # Arch Toolkit
@@ -19,7 +19,7 @@ all of them, I'm bringing one by one.
 - **[Statemachine](toolkit/statemachine)** - A simple way to handle view change states
 - **[Recycler-Adapter](toolkit/recycler-adapter)** - A Recycler Adapter implementation using Custom
   Views and a "bind" interface
-- **[LiveData](toolkit/livedata)** - Some custom implementations of LiveData and some extensions
+- **[Event Observer](toolkit/event-observer)** - Way to observe async events with LiveData and Flow
 - **[Delegate](toolkit/delegate)** - Some custom implementations for delegated properties
 - **[Foldable](toolkit/foldable)** - Extensions to facilitate handling foldable state changes
 

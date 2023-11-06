@@ -1,5 +1,6 @@
 package br.com.arch.toolkit.flow
 
+import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus.NONE
 import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
@@ -20,7 +21,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, Experimental::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ResponseFlowTest {
 
