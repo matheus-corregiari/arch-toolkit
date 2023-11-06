@@ -64,7 +64,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Unit Tests ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:createDebugCoverageReport
+        run: ./gradlew :${{ matrix.module }}:testDebugUnitTest
 
       - name: Kover ${{ matrix.module }}
         run: ./gradlew :${{ matrix.module }}:koverVerify

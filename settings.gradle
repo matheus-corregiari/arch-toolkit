@@ -46,8 +46,11 @@ include ':toolkit:splinter'
 include ':toolkit:statemachine'
 
 // Samples
-include ':samples:github-list-project'
-//include ':samples:foldable' FIXME: Uncomment
-include ':samples:livedata'
-include ':samples:recycler-adapter'
-include ':samples:statemachine'
+final Boolean isIdeBuild = properties["android.injected.invoked.from.ide"] == "true"
+if (isIdeBuild) {
+    include ':samples:github-list-project'
+//    include ':samples:foldable' FIXME: Uncomment
+    include ':samples:livedata'
+    include ':samples:recycler-adapter'
+    include ':samples:statemachine'
+}
