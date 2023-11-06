@@ -1,4 +1,5 @@
-name: 'Setup Checkout, JDK and Gradle'
+name: setup-git-jdk-gradle
+description: "Sets up this repository clone, the JDK and the gradle"
 
 runs:
   using: "composite"

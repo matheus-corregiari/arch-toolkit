@@ -21,7 +21,7 @@ jobs:
           - toolkit:recycler-adapter
           - toolkit:statemachine
     steps:
-      - uses: actions/prepare
+      - uses: actions/setup-git-jdk-gradle
 
       - name: Lint ${{ matrix.module }}
         run: ./gradlew :${{ matrix.module }}:lint
