@@ -103,7 +103,7 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         transformDispatcher = transformDispatcher,
         newSources = listOf(source),
         onMerge = { source.value.mergeNotNull(DataResult(null, null, DataResultStatus.LOADING)) }
-    ) { result ->
+    ) {
         val sourceValue = source.value ?: return@addSources
 
         val conditionMet = sourceValue.data?.let(condition) == true

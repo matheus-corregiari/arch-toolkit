@@ -1,4 +1,4 @@
-@file:Suppress("LongMethod", "ClassNaming", "ClassName")
+@file:Suppress("LongMethod")
 
 package br.com.arch.toolkit.result
 

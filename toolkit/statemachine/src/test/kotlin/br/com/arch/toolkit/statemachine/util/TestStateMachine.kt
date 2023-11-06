@@ -1,4 +1,6 @@
-package br.com.arch.toolkit.statemachine
+package br.com.arch.toolkit.statemachine.util
+
+import br.com.arch.toolkit.statemachine.StateMachine
 
 open class TestState : StateMachine.State()
 

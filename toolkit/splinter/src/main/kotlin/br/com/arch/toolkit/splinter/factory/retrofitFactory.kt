@@ -1,6 +1,5 @@
 package br.com.arch.toolkit.splinter.factory
 
-import br.com.arch.toolkit.splinter.Splinter as SplinterExec
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.splinter.oneShotDonatello
@@ -11,6 +10,7 @@ import retrofit2.Retrofit
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import br.com.arch.toolkit.splinter.Splinter as SplinterExec
 
 /**
  * Annotation used to configure some behaviors inside generated splinter

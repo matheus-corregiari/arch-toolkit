@@ -1,5 +1,7 @@
 package br.com.arch.toolkit.statemachine
 
+import br.com.arch.toolkit.statemachine.util.TestState
+import br.com.arch.toolkit.statemachine.util.TestStateMachine
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

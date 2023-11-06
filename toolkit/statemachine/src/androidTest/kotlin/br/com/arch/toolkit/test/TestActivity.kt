@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 
 class TestActivity : AppCompatActivity() {
 
@@ -19,7 +20,7 @@ class TestActivity : AppCompatActivity() {
         setContentView(content)
     }
 
-    fun setFragment(fragment: androidx.fragment.app.Fragment) {
+    fun setFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().add(android.R.id.content, fragment, "TAG")
             .commit()
     }

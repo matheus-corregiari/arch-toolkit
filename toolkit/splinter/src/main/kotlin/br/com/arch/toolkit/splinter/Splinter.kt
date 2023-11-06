@@ -367,6 +367,6 @@ class Splinter<RETURN : Any> internal constructor(
          * When something trigger the execute() method, if this instance is already running
          * it will cancel the running job and restart from the beginning
          */
-        CANCEL_RUNNING_AND_RESTART /* Default */
+        CANCEL_RUNNING_AND_RESTART // Default
     }
 }

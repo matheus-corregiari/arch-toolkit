@@ -13,15 +13,15 @@ commands:
           key: jars-{{ checksum "build.gradle" }}
 
 jobs:
-  build:
+  dependencies:
     executor: android
     environment:
-      JVM_OPTS: -Xmx3200m
+      JVM_OPTS: -Xmx4096m
     steps:
       - default
       - run:
           name: Download Dependencies
-          command: ./gradlew androidDependencies -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD -Psigning.secretKeyRingFile=$PWD/
+          command: ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
@@ -39,38 +39,50 @@ jobs:
     steps:
       - default
       - run: ./gradlew :<<parameters.module>>:lint
-      - run: ./gradlew :<<parameters.module>>:ktLint
+      - run: ./gradlew :<<parameters.module>>:detekt
 
   test:
     executor: android
     environment:
-      JVM_OPTS: -Xmx3200m
+      JVM_OPTS: -Xmx4096m
     parameters:
       module:
         default: ""
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:testDebugUnitTest -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:createDebugCoverageReport
+      - run: ./gradlew :<<parameters.module>>:koverVerify
+
+  build:
+    executor: android
+    environment:
+      JVM_OPTS: -Xmx4096m
+    parameters:
+      module:
+        default: ""
+        type: string
+    steps:
+      - default
+      - run: ./gradlew :<<parameters.module>>:assembleRelease
 
   deploy:
     executor: android
     environment:
-      JVM_OPTS: -Xmx3200m
+      JVM_OPTS: -Xmx4096m
     parameters:
       module:
         default: ""
         type: string
     steps:
       - default
-      - run: ./gradlew :<<parameters.module>>:assembleRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
-      - run: ./gradlew :<<parameters.module>>:publishRelease -PDEVELOPER_ID=$DEVELOPER_ID -PDEVELOPER_NAME=$DEVELOPER_NAME -PDEVELOPER_EMAIL=$DEVELOPER_EMAIL -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD
+      - run: ./gradlew :<<parameters.module>>:publishRelease
 
 workflows:
   pull_request:
     jobs:
       # Builds Project and saves build cache
-      - build
+      - dependencies
 
       # Runs android lint and KtLint
       - lint:
@@ -79,13 +91,13 @@ workflows:
             parameters:
               module:
                 - toolkit:delegate
-                - toolkit:foldable
                 - toolkit:event-observer
+                - toolkit:foldable
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
           name: Lint <<matrix.module>>
           requires:
-            - build
+            - dependencies
 
       # Runs Unit tests
       - test:
@@ -94,84 +106,50 @@ workflows:
             parameters:
               module:
                 - toolkit:delegate
-                - toolkit:foldable
                 - toolkit:event-observer
+                - toolkit:foldable
                 - toolkit:recycler-adapter
                 - toolkit:statemachine
           name: Test <<matrix.module>>
           requires:
             - Lint <<matrix.module>>
 
+      # Build
+      - build:
+          matrix:
+            alias: build-all-modules
+            parameters:
+              module:
+                - toolkit:delegate
+                - toolkit:event-observer
+                - toolkit:foldable
+                - toolkit:recycler-adapter
+                - toolkit:statemachine
+          name: Build <<matrix.module>>
+          requires:
+            - Test <<matrix.module>>
+
       # Ask for approval to run deploy
       - hold-deploy:
           type: approval
           requires:
-            - unit-test-all-modules
+            - build-all-modules
           filters:
             branches:
               only:
                 - master
 
-      # FIXME Run all module in parallel is a problem to sonatype =(
-      #      # Deploys all modules
-      #      - deploy:
-      #          matrix:
-      #            alias: deploy-all-modules
-      #            parameters:
-      #              module:
-      #                - toolkit:delegate
-      #                - toolkit:foldable
-      #                - toolkit:event-observer
-      #                - toolkit:recycler-adapter
-      #                - toolkit:statemachine
-      #                - toolkit:foldable
-      #          name: Deploy <<matrix.module>>
-      #          requires:
-      #            - hold-deploy
-
-      # Deploys each modules
+      # Deploys all modules
       - deploy:
           matrix:
-            alias: deploy-delegate
+            alias: deploy-all-modules
             parameters:
               module:
                 - toolkit:delegate
-          name: Deploy <<matrix.module>>
-          requires:
-            - hold-deploy
-      - deploy:
-          matrix:
-            alias: deploy-livedata
-            parameters:
-              module:
                 - toolkit:event-observer
-          name: Deploy <<matrix.module>>
-          requires:
-            - deploy-delegate
-      - deploy:
-          matrix:
-            alias: deploy-recycler-adapter
-            parameters:
-              module:
+                - toolkit:foldable
                 - toolkit:recycler-adapter
-          name: Deploy <<matrix.module>>
-          requires:
-            - deploy-livedata
-      - deploy:
-          matrix:
-            alias: deploy-statemachine
-            parameters:
-              module:
                 - toolkit:statemachine
           name: Deploy <<matrix.module>>
           requires:
-            - deploy-recycler-adapter
-      - deploy:
-          matrix:
-            alias: deploy-foldable
-            parameters:
-              module:
-                - toolkit:foldable
-          name: Deploy <<matrix.module>>
-          requires:
-            - deploy-statemachine
+            - hold-deploy
