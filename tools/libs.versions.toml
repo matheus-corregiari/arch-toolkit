@@ -88,6 +88,7 @@ androidx-test-core = { group = "androidx.arch.core", name = "core-testing", vers
 androidx-test-window = { group = "androidx.window", name = "window-testing", version.ref = "androidx-window" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
 androidx-test-espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "androidx-test-espresso" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
 
 ## Androidx Compose
 androidx-compose-material-core = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "androidx-compose-material" }
