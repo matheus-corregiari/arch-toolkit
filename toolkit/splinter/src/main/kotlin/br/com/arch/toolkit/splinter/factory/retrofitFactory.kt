@@ -1,5 +1,6 @@
 package br.com.arch.toolkit.splinter.factory
 
+import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.splinter.oneShotDonatello
@@ -24,6 +25,7 @@ annotation class SplinterConfig(val id: String = "", val quiet: Boolean = false)
  * This evil class is responsible to teach Retrofit how to deliver a Splinter, ResponseLiveData or ResponseFlow
  * directly from the retrofit api interface ^^
  */
+@OptIn(Experimental::class)
 class SplinterFactory : CallAdapter.Factory() {
     override fun get(
         returnType: Type,
@@ -112,6 +114,7 @@ private sealed class Adapter<T, R>(
 
     class AsFlow<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
         Adapter<T, ResponseFlow<T>>(annotation.id, annotation.quiet, responseType, kClass) {
+        @OptIn(Experimental::class)
         override fun adapt(call: Call<T>) = executeWithSplinter(call).flow
     }
 

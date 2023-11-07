@@ -1,5 +1,6 @@
 package com.toolkit.plugin
 
+import com.toolkit.plugin.util.setupJavadocAndSources
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -17,5 +18,8 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
 
             buildTypes.maybeCreate("release").minifyEnabled(false)
         }
+
+        // Setup Javadoc and sources artifacts
+        target.setupJavadocAndSources()
     }
 }

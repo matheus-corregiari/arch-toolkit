@@ -2,6 +2,7 @@ package br.com.arch.toolkit.splinter
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.flow.MutableResponseFlow
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
@@ -39,7 +40,10 @@ class Splinter<RETURN : Any> internal constructor(
     /**
      * Flow that streams all data emitted from this instance of Splinter
      */
+    @OptIn(Experimental::class)
     private val _flow = MutableResponseFlow<RETURN>()
+
+    @OptIn(Experimental::class)
     val flow: ResponseFlow<RETURN>
         get() = _flow.shareIn(
             scope = config.scope,
@@ -55,6 +59,7 @@ class Splinter<RETURN : Any> internal constructor(
     /**
      * Last emitted DataResult
      */
+    @OptIn(Experimental::class)
     fun get() = _flow.value
 
     /**
@@ -161,6 +166,7 @@ class Splinter<RETURN : Any> internal constructor(
     /**
      * Reset the value inside the observables to the initial state
      */
+    @OptIn(Experimental::class)
     fun reset() {
         logWarning("[Reset] Reset!")
         if (isRunning) {
@@ -233,6 +239,7 @@ class Splinter<RETURN : Any> internal constructor(
     /**
      * Creates a new job to create a new operation from scratch!
      */
+    @OptIn(Experimental::class)
     private fun newJob(): Job = config.scope.launch(start = CoroutineStart.LAZY) {
         kotlin.runCatching {
             logInfo("[Job] Job started!")

@@ -71,6 +71,11 @@ internal val Project.applicationComponent: ApplicationAndroidComponentsExtension
     get() = extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
         ?: error("Project do not implement android-library neither android-application plugin!")
 
+//internal val Project.javadoc: Javadoc
+//    @Throws(IllegalStateException::class)
+//    get() = extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
+//        ?: error("Project do not implement android-library neither android-application plugin!")
+
 internal fun Project.applyPlugins(vararg id: String) {
     id.forEach {
         plugins.apply(libraries.findPlugin(it).get().get().pluginId)

@@ -12,6 +12,7 @@ import androidx.annotation.Nullable
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.exception.DataResultException
 import br.com.arch.toolkit.exception.DataResultTransformationException
 import br.com.arch.toolkit.flow.ResponseFlow
@@ -1072,6 +1073,7 @@ class ObserveWrapper<T> internal constructor() {
      *
      * @return The Flow<DataResult<T>> attached to the Wrapper
      */
+    @OptIn(Experimental::class)
     @NonNull
     internal fun attachTo(@NonNull flow: ResponseFlow<T>): ResponseFlow<T> {
         scope.launchWithErrorTreatment { flow.collect(::handleResult) }
