@@ -2,7 +2,8 @@ name: Generate Release Tag
 
 on:
   push:
-    branch: master
+    branches:
+      - master
 
 jobs:
   generate-tag:
