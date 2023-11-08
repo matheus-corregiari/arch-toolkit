@@ -4,8 +4,10 @@ on:
   push
 
 jobs:
-  testando:
+  pre-build:
     runs-on: ubuntu-latest
+    outputs:
+      modules: ${{steps.read-modules.outputs}}
     steps:
       - uses: actions/checkout@v4
 
@@ -20,9 +22,18 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Read Modules
+        id: read-modules
         run: |
           ./gradlew :toolkit:publishModules
           MODULES=$(cat $PWD/toolkit/build/modules.txt)
+          echo modules=$MODULES >> "$GITHUB_OUTPUT"
 
-      - name: Print
-        run: echo $MODULES
+  lint:
+    needs: pre-build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: ${{fromJSON(needs.pre-build.outputs.modules)}}
+    steps:
+      - name: Lint ${{ matrix.module }}
+        run: echo ${{ matrix.module }}
