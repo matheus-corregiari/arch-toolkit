@@ -49,8 +49,11 @@ private fun Project.runGitCommand(
 }
 
 private fun validateGit(): Boolean {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) return false
-    return when (val output = "whereis git".executeWithText) {
+    val command = when {
+        Os.isFamily(Os.FAMILY_WINDOWS) -> "git --version"
+        else -> "whereis git"
+    }
+    return when (val output = command.executeWithText) {
         null -> false
         else -> (output.isEmpty() || output == "git:").not()
     }
