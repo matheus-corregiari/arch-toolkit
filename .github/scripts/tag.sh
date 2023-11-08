@@ -5,9 +5,10 @@ message=$(git show -s --format=%B)
 parents=$(git show -s --format=%P | wc -w)
 
 # Verify if the commit is a merge
-if [ "$parents" -ne 2 ]; then
-    echo -e "Not a merge"
-    git show --summary HEAD
+merge_message=$(grep -E '(merge|Merge) pull request' <<< "$message" || true)
+if [ -z "$merge_message" ]; then
+    echo -e "MUST BE A MERGE MERGE!"
+    echo "$message"
     exit 1
 fi
 
