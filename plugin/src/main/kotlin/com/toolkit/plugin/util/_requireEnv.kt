@@ -7,7 +7,14 @@ import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.konan.file.File
 
 internal fun Project.missing(vararg name: String): Boolean {
-    return name.map(::containsEnv).any { it.not() }
+    return name.map(::containsEnv).any {
+        if (it.not()) {
+            println("Missing Variable: $it")
+            true
+        } else {
+            false
+        }
+    }
 }
 
 internal fun Project.containsEnv(name: String): Boolean {
