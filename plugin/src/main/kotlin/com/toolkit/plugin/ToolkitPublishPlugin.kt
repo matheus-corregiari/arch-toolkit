@@ -9,6 +9,7 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.jetbrains.kotlin.konan.file.File
 
 internal class ToolkitPublishPlugin : Plugin<Project> {
@@ -43,11 +44,12 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
             error("To use sample-compose plugin you must implement toolkit-library plugin")
         }
         target.plugins.apply("maven-publish")
+        target.plugins.apply("signing")
 
         with(target.publishing) {
             repositories { repo ->
-                repo.createGithubRepository(target)
                 repo.createLocalPathRepository(target)
+                repo.createSonatypeRepository(target)
             }
 
             publications {
@@ -76,26 +78,27 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
             }
         }
 
-//        with(target.sign) {
-//            setRequired {
-//                // signing is only required if the artifacts are to be published
-//                target.gradle.taskGraph.allTasks.any { (it is PublishToMavenRepository) }
-//            }
-//        }
-    }
-
-    private fun RepositoryHandler.createGithubRepository(project: Project) = maven { maven ->
-        maven.name = "Github"
-        maven.url = project.uri("https://maven.pkg.github.com/matheus-corregiari/arch-toolkit")
-        maven.credentials { cred ->
-            cred.username = "user"
-            cred.password = "token"
+        with(target.sign) {
+            sign(target.publishing.publications)
+            setRequired {
+                // signing is only required if the artifacts are to be published
+                target.gradle.taskGraph.allTasks.any { (it is PublishToMavenRepository) }
+            }
         }
     }
 
     private fun RepositoryHandler.createLocalPathRepository(project: Project) = maven { maven ->
         maven.name = "LocalPath"
         maven.url = project.uri(project.rootProject.layout.buildDirectory.asFile.get().absolutePath)
+    }
+
+    private fun RepositoryHandler.createSonatypeRepository(project: Project) = maven { maven ->
+        maven.name = "Sonatype"
+        maven.url = project.uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+        maven.credentials { cred ->
+            cred.username = System.getenv("OSSRH_USERNAME") ?: (project.properties["OSSRH_USERNAME"] as String)
+            cred.password = System.getenv("OSSRH_PASSWORD") ?: (project.properties["OSSRH_PASSWORD"] as String)
+        }
     }
 
     private fun Project.configurePom(pom: MavenPom) {

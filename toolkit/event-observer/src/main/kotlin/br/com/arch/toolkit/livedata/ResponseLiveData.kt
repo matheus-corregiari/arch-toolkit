@@ -6,6 +6,7 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
@@ -162,6 +163,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
+    @Experimental
     fun <R> mergeWith(@NonNull source: ResponseLiveData<R>): ResponseLiveData<Pair<T, R>> =
         withDelegate {
             merge(this@ResponseLiveData, source, scope, transformDispatcher)
@@ -176,6 +178,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
+    @Experimental
     fun mergeWith(
         @NonNull tag: String,
         @NonNull vararg sources: Pair<String, ResponseLiveData<*>>
@@ -197,6 +200,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
+    @Experimental
     fun <R> followedBy(
         @NonNull source: (DataResult<T>) -> ResponseLiveData<R>,
         @NonNull condition: (T) -> Boolean,
@@ -222,6 +226,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
+    @Experimental
     fun <R> followedBy(
         @NonNull source: (DataResult<T>) -> ResponseLiveData<R>,
         @NonNull condition: (T) -> Boolean
@@ -236,12 +241,14 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
+    @Experimental
     fun <R> followedBy(
         @NonNull source: (DataResult<T>) -> ResponseLiveData<R>
     ): ResponseLiveData<Pair<T, R>> = followedBy(source) { true }
     //endregion
 
     //region Operators
+    @Experimental
     operator fun <R> plus(source: ResponseLiveData<R>) = mergeWith(source)
     //endregion
 
@@ -334,6 +341,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      *
      * @return A new instance of ResponseLiveData<T>
      */
+    @Experimental
     private fun <R> withDelegate(func: ResponseLiveDataMergeDelegate.() -> ResponseLiveData<R>): ResponseLiveData<R> =
         synchronized(mergeLock) {
             mergeDelegate = mergeDelegate ?: DefaultResponseLiveDataMergeDelegate()

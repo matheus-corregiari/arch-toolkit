@@ -66,22 +66,22 @@ internal val Project.androidBase: BaseExtension
 internal val Project.libraryComponent: LibraryAndroidComponentsExtension
     @Throws(IllegalStateException::class)
     get() = extensions.findByType(LibraryAndroidComponentsExtension::class.java)
-        ?: error("Project do not implement android-library neither android-application plugin!")
+        ?: error("Project do not implement android-library plugin!")
 
 internal val Project.applicationComponent: ApplicationAndroidComponentsExtension
     @Throws(IllegalStateException::class)
     get() = extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
-        ?: error("Project do not implement android-library neither android-application plugin!")
+        ?: error("Project do not implement android-application plugin!")
 
 internal val Project.publishing: PublishingExtension
     @Throws(IllegalStateException::class)
     get() = extensions.findByType(PublishingExtension::class.java)
-        ?: error("Project do not implement maven-publish neither android-application plugin!")
+        ?: error("Project do not implement maven-publish plugin!")
 
 internal val Project.sign: SigningExtension
     @Throws(IllegalStateException::class)
     get() = extensions.findByType(SigningExtension::class.java)
-        ?: error("Project do not implement android-library neither android-application plugin!")
+        ?: error("Project do not implement signing plugin!")
 
 internal fun Project.applyPlugins(vararg id: String) {
     id.forEach {

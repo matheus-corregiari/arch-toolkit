@@ -1,0 +1,40 @@
+name: Publish
+
+on:
+  push:
+    branch: master
+    tags:
+      - [0-9].[0-9].[0-9]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      # Sonatype Credentials
+      OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+      OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+      # Sign Credentials
+      SIGN_FILENAME: ${{ secrets.SIGN_FILENAME }}
+      SIGN_KEYID: ${{ secrets.SIGN_KEYID }}
+      SIGN_PASSWORD: ${{ secrets.SIGN_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Inject sign into local.properties
+        run: |
+          echo "signing.keyId=$SIGN_KEYID" >> gradle.properties
+          echo "signing.password=$SIGN_PASSWORD" >> gradle.properties
+          echo "signing.secretKeyRingFile=$PWD/$SIGN_FILENAME" >> gradle.properties
+
+      - name: Publish
+        run: ./gradlew :toolkit:publishToolkitPublicationToSonatypeRepository
