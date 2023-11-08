@@ -1,5 +1,6 @@
 package com.toolkit.plugin
 
+import com.toolkit.plugin.util.missing
 import com.toolkit.plugin.util.versionName
 import groovy.util.Node
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
@@ -43,6 +44,19 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
         if (target.plugins.hasPlugin("toolkit-library").not()) {
             error("To use sample-compose plugin you must implement toolkit-library plugin")
         }
+
+        if (target.missing(
+                "OSSRH_USERNAME",
+                "OSSRH_PASSWORD",
+                "signing.keyId",
+                "signing.password",
+                "signing.secretKeyRingFile",
+            )
+        ) {
+            println("Missing env variables")
+            return
+        }
+
         target.plugins.apply("maven-publish")
         target.plugins.apply("signing")
 
@@ -96,8 +110,10 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
         maven.name = "Sonatype"
         maven.url = project.uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
         maven.credentials { cred ->
-            cred.username = System.getenv("OSSRH_USERNAME") ?: (project.properties["OSSRH_USERNAME"] as String)
-            cred.password = System.getenv("OSSRH_PASSWORD") ?: (project.properties["OSSRH_PASSWORD"] as String)
+            cred.username =
+                System.getenv("OSSRH_USERNAME") ?: (project.properties["OSSRH_USERNAME"] as String)
+            cred.password =
+                System.getenv("OSSRH_PASSWORD") ?: (project.properties["OSSRH_PASSWORD"] as String)
         }
     }
 

@@ -36,5 +36,8 @@ jobs:
           echo "signing.password=$SIGN_PASSWORD" >> gradle.properties
           echo "signing.secretKeyRingFile=$PWD/$SIGN_FILENAME" >> gradle.properties
 
+      - name: Build
+        run: ./gradlew :toolkit:assembleRelease
+
       - name: Publish
         run: ./gradlew :toolkit:publishToolkitPublicationToSonatypeRepository
