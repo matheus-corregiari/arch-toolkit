@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.com.google.gson.JsonArray
 internal class ToolkitGroupPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
+        target.evaluationDependsOnChildren()
         target.applyPlugins("jetbrains-kover")
 
         // Try to unify coverage reports
@@ -23,7 +24,7 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
 
             project.subprojects
                 .filter { it.plugins.hasPlugin("toolkit-publish") }
-                .map { it.name }
+                .map { "toolkit:${it.name}" }
                 .onEach { json.add(it) }
 
             file.createNewFile()

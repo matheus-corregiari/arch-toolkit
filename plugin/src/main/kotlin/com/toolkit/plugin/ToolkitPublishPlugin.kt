@@ -9,7 +9,6 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.jetbrains.kotlin.konan.file.File
 
 internal class ToolkitPublishPlugin : Plugin<Project> {
@@ -77,12 +76,12 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
             }
         }
 
-        with(target.sign) {
-            setRequired {
-                // signing is only required if the artifacts are to be published
-                target.gradle.taskGraph.allTasks.any { (it is PublishToMavenRepository) }
-            }
-        }
+//        with(target.sign) {
+//            setRequired {
+//                // signing is only required if the artifacts are to be published
+//                target.gradle.taskGraph.allTasks.any { (it is PublishToMavenRepository) }
+//            }
+//        }
     }
 
     private fun RepositoryHandler.createGithubRepository(project: Project) = maven { maven ->

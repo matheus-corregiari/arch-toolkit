@@ -4,11 +4,19 @@ on:
   pull_request:
     branches:
       - master
+      - develop
       - 'release/**'
       - 'feature/**'
       - 'bugfix/**'
       - 'config/**'
-    types: [synchronize, opened, reopened, ready_for_review]
+    paths:
+      - '**.kt'
+      - '**.gradle'
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - ready_for_review
 
 jobs:
   lint:
