@@ -30,7 +30,7 @@ dependencyResolutionManagement {
             library("x-normalize-015", "com.squareup:javawritter:2.5.0")
             library("x-normalize-016", "org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
             library("x-normalize-017", "org.jetbrains.kotlin:kotlin-stdlib-common:1.9.10")
-            library("x-normalize-018", "org.jetbrains.kotlin:kotlin-reflect:1.9.10")
+            library("x-normalize-018", "org.jetbrains.kotlin:kotlin-reflect:1.9.20")
             library("x-normalize-019", "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
             library("x-normalize-020", "org.jetbrains:annotations:20.1.0")
         }
