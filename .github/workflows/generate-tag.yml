@@ -81,10 +81,11 @@ jobs:
           echo "signing.keyId=$SIGN_KEYID" >> gradle.properties
           echo "signing.password=$SIGN_PASSWORD" >> gradle.properties
           echo "signing.secretKeyRingFile=$PWD/$SIGN_FILENAME" >> gradle.properties
+          cat gradle.properties
 
       - name: Build ${{ matrix.module }}
         run: ./gradlew :${{ matrix.module }}:assembleRelease
 
       - name: Publish ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:publishToolkitPublicationToSonatypeRepository -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD -Psigning.secretKeyRingFile="$PWD/$SIGN_FILENAME"
+        run: ./gradlew :${{ matrix.module }}:publishToolkitPublicationToSonatypeRepository
 
