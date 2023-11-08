@@ -1,4 +1,4 @@
-name: Generate Release Tag
+name: Generate Release Tag and Publish Artifacts
 
 on:
   push:
@@ -86,4 +86,5 @@ jobs:
         run: ./gradlew :${{ matrix.module }}:assembleRelease
 
       - name: Publish ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:publishToolkitPublicationToSonatypeRepository
+        run: ./gradlew :${{ matrix.module }}:publishToolkitPublicationToSonatypeRepository -POSSRH_USERNAME=$OSSRH_USERNAME -POSSRH_PASSWORD=$OSSRH_PASSWORD -Psigning.keyId=$SIGNING_KEYID -Psigning.password=$SIGNING_PASSWORD -Psigning.secretKeyRingFile="$PWD/$SIGN_FILENAME"
+
