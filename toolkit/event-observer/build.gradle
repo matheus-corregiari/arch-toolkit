@@ -1,13 +1,16 @@
-plugins { id "toolkit-library" }
+plugins {
+    id "toolkit-library"
+    id "toolkit-publish"
+}
 
 android.namespace = "br.com.arch.toolkit.livedata"
 
 dependencies {
     // Libraries
-    compileOnly libraries.jetbrains.stdlib.jdk8
-    compileOnly libraries.jetbrains.coroutines.core
-    compileOnly libraries.jetbrains.coroutines.android
-    compileOnly libraries.androidx.lifecycle.livedata
+    implementation libraries.jetbrains.stdlib.jdk8
+    implementation libraries.jetbrains.coroutines.core
+    implementation libraries.jetbrains.coroutines.android
+    implementation libraries.androidx.lifecycle.livedata
 
     // Test Libraries
     testImplementation libraries.androidx.lifecycle.livedata

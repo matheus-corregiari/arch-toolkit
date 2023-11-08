@@ -11,6 +11,8 @@ import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.plugins.signing.SigningExtension
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 
@@ -71,10 +73,15 @@ internal val Project.applicationComponent: ApplicationAndroidComponentsExtension
     get() = extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
         ?: error("Project do not implement android-library neither android-application plugin!")
 
-//internal val Project.javadoc: Javadoc
-//    @Throws(IllegalStateException::class)
-//    get() = extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
-//        ?: error("Project do not implement android-library neither android-application plugin!")
+internal val Project.publishing: PublishingExtension
+    @Throws(IllegalStateException::class)
+    get() = extensions.findByType(PublishingExtension::class.java)
+        ?: error("Project do not implement maven-publish neither android-application plugin!")
+
+internal val Project.sign: SigningExtension
+    @Throws(IllegalStateException::class)
+    get() = extensions.findByType(SigningExtension::class.java)
+        ?: error("Project do not implement android-library neither android-application plugin!")
 
 internal fun Project.applyPlugins(vararg id: String) {
     id.forEach {

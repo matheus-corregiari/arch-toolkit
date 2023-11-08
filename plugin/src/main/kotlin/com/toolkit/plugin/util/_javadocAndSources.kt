@@ -4,6 +4,7 @@ import com.toolkit.plugin.androidLibrary
 import org.gradle.api.Project
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.jvm.tasks.Jar
+import org.jetbrains.kotlin.konan.file.File
 
 internal fun Project.setupJavadocAndSources() {
     val sourcesJar = setupSources()
@@ -18,16 +19,17 @@ internal fun Project.setupJavadocAndSources() {
 }
 
 private fun Project.setupJavadoc(): Jar {
+    configurations.maybeCreate("jacocoDeps")
+
     val javadoc = tasks.register("javadoc", Javadoc::class.java) {
-        val mainSource =
-            androidLibrary.sourceSets.named("main").get().java.getSourceFiles()
-        val compileOnly = configurations.named("compileOnly").get()
-        compileOnly.isCanBeResolved = true
+        val list = ArrayList<java.io.File>()
+        androidLibrary.sourceSets.forEach { set -> list.addAll(set.java.srcDirs) }
 
         it.isFailOnError = false
-        it.source = mainSource
-        it.classpath += files(androidLibrary.bootClasspath)
-        it.classpath += compileOnly
+        it.setExcludes(listOf("**/*.kt", "**/*.java"))
+        it.source(list)
+        it.classpath += files(androidLibrary.bootClasspath.joinToString(separator = File.separator))
+        it.classpath += configurations.named("jacocoDeps").get()
     }.get()
 
     return tasks.register("javadocJar", Jar::class.java) {

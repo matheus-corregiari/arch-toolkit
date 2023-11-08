@@ -83,5 +83,12 @@ gradlePlugin {
             description = "Enables and configure group for module"
             implementationClass = "com.toolkit.plugin.ToolkitGroupPlugin"
         }
+
+        create("toolkit-publish") {
+            id = "toolkit-publish"
+            displayName = "Toolkit Publish Plugin"
+            description = "Enables and configure publish for module"
+            implementationClass = "com.toolkit.plugin.ToolkitPublishPlugin"
+        }
     }
 }

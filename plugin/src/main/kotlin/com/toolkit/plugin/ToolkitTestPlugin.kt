@@ -21,9 +21,6 @@ internal class ToolkitTestPlugin : Plugin<Project> {
             defaults { reports ->
                 reports.mergeWith("debug")
             }
-            androidReports("debug") {
-
-            }
         }
 
         // Kover configuration
