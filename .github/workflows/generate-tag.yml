@@ -13,5 +13,7 @@ jobs:
 
       - name: Generate next tag
         run: |
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions@users.noreply.github.com"
           chmod +x .github/scripts/tag.sh
           ./.github/scripts/tag.sh
