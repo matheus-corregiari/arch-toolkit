@@ -3,7 +3,7 @@
 
 # Arch Toolkit
 
-### Hello World!!
+### Hello World!! \o/
 
 Everybody have those useful files, they are copied and improved on every project, right?
 
