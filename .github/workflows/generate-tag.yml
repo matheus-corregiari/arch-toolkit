@@ -7,7 +7,7 @@ jobs:
   pre-build:
     runs-on: ubuntu-latest
     outputs:
-      modules: ${{steps.read-modules.outputs}}
+      modules: ${{ steps.read-modules.outputs.modules }}
     steps:
       - uses: actions/checkout@v4
 
@@ -26,7 +26,7 @@ jobs:
         run: |
           ./gradlew :toolkit:publishModules
           MODULES=$(cat $PWD/toolkit/build/modules.txt)
-          echo modules=$MODULES >> "$GITHUB_OUTPUT"
+          echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
 
   lint:
     needs: pre-build
