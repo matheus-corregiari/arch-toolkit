@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.FixMethodOrder
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
@@ -313,19 +312,38 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    @Ignore("Help pedrinho!")
-    fun `10 - followedBy`() = runTest {
+    fun `10 - followedBy - both success`() = runTest {
         val liveDataA = ResponseLiveData(dataResultSuccess(123))
+        liveDataA.transformDispatcher(Dispatchers.Main.immediate)
+
         val liveDataB = ResponseLiveData(dataResultSuccess("String"))
         val liveDataMerge = liveDataA.followedBy { liveDataB }
 
         Assert.assertEquals(dataResultSuccess(123), liveDataA.value)
         Assert.assertEquals(dataResultSuccess("String"), liveDataB.value)
         Assert.assertNull(liveDataMerge.value)
-
         liveDataMerge.observe(alwaysOnOwner) { status { /* Do Nothing*/ } }
+
         advanceUntilIdle()
 
         Assert.assertEquals(dataResultSuccess(123 to "String"), liveDataMerge.value)
+    }
+
+    @Test
+    fun `11 - followedBy - one success, other loading`() = runTest {
+        val liveDataA = ResponseLiveData(dataResultSuccess(123))
+        liveDataA.transformDispatcher(Dispatchers.Main.immediate)
+
+        val liveDataB = ResponseLiveData<String>(dataResultLoading())
+        val liveDataMerge = liveDataA.followedBy { liveDataB }
+
+        Assert.assertEquals(dataResultSuccess(123), liveDataA.value)
+        Assert.assertEquals(dataResultLoading<String>(), liveDataB.value)
+        Assert.assertNull(liveDataMerge.value)
+        liveDataMerge.observe(alwaysOnOwner) { status { /* Do Nothing*/ } }
+
+        advanceUntilIdle()
+
+        Assert.assertEquals(dataResultLoading<Pair<Int, String>>(), liveDataMerge.value)
     }
 }
