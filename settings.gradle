@@ -25,7 +25,7 @@ dependencyResolutionManagement {
             library("x-normalize-010", "androidx.viewpager2:viewpager2:1.1.0-beta02")
             library("x-normalize-011", "androidx.test:monitor:1.6.1")
             library("x-normalize-012", "androidx.test:runner:1.5.2")
-            library("x-normalize-013", "com.google.auto.value:auto-value-annotations:1.9")
+            library("x-normalize-013", "com.google.auto.value:auto-value-annotations:1.10.4")
             library("x-normalize-014", "com.google.code.findbugs:jsr305:3.0.2")
             library("x-normalize-015", "com.squareup:javawritter:2.5.0")
             library("x-normalize-016", "org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
