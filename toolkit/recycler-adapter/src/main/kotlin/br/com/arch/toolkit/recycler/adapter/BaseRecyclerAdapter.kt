@@ -44,7 +44,7 @@ abstract class BaseRecyclerAdapter<MODEL : Any>(differ: DiffUtil.ItemCallback<MO
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinder = viewCreator(parent.context, viewType)
         val itemView = viewBinder as? View
-            ?: throw IllegalStateException("The ViewBinder instance also must be a View")
+            ?: error("The ViewBinder instance also must be a View")
         return BaseViewHolder(itemView)
     }
 
@@ -67,7 +67,7 @@ abstract class BaseRecyclerAdapter<MODEL : Any>(differ: DiffUtil.ItemCallback<MO
         onItemClick: ((T) -> Unit)? = null
     ) {
         val binder = (holder.itemView as? ViewBinder<T>)
-            ?: throw IllegalStateException("${holder.itemView::class} cannot be cast to ViewBinder<>")
+            ?: error("${holder.itemView::class} cannot be cast to ViewBinder<>")
         binder.bind(model)
 
         // Setup click listener

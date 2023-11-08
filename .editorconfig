@@ -1,0 +1,11 @@
+root = true
+
+[*.{kt,kts}]
+ij_kotlin_name_count_to_use_star_import = 999
+ij_kotlin_name_count_to_use_star_import_for_members = 999
+insert_final_newline = true
+ij_kotlin_imports_layout = *, java.**, javax.**, kotlin.**, ^
+ktlint_code_style = android
+ktlint_standard_no-wildcard-imports = enabled
+ktlint_standard_import-ordering = enabled
+ktlint_standard_filename = disabled

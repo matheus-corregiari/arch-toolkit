@@ -14,18 +14,11 @@ Some custom implementations for delegated properties
 First you need to add Kotlin and the androidx core components
 
 ```groovy
-
-// Root project build.gradle
-dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
-}
-
 // Module build.gradle
 apply plugin: 'kotlin-android'
 
 dependencies{
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-
     implementation "androidx.annotation:annotation:$versions.androidx.annotation"
     implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
     implementation "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
@@ -37,9 +30,7 @@ Then add the Delegate dependency
 ```groovy
 implementation "io.github.matheus-corregiari:delegate:$latest_version"
 ```
-
 or
-
 ```groovy
 api "io.github.matheus-corregiari:delegate:$latest_version"
 ```

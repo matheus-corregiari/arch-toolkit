@@ -1,12 +1,11 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.com.arch.toolkit.test">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
         <activity
             android:name="br.com.arch.toolkit.test.TestActivity"
             android:label="Test Activity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.AppCompat"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

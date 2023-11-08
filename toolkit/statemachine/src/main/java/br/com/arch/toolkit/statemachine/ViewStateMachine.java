@@ -2,11 +2,9 @@ package br.com.arch.toolkit.statemachine;
 
 import android.view.View;
 import android.view.ViewStub;
-
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -119,57 +117,57 @@ public final class ViewStateMachine extends StateMachine<ViewStateMachine.State>
         private State() {
         }
 
-        public final State root(@NonNull final View view) {
+        public State root(@NonNull final View view) {
             rootView = view;
             return this;
         }
 
-        public final State visibles(@NonNull final View... views) {
+        public State visibles(@NonNull final View... views) {
             visibles.addAll(Arrays.asList(views));
             return this;
         }
 
-        public final State visibles(@NonNull @IdRes final Integer... ids) {
+        public State visibles(@NonNull @IdRes final Integer... ids) {
             visibleReferences.addAll(Arrays.asList(ids));
             return this;
         }
 
-        public final State invisibles(@NonNull final View... views) {
+        public State invisibles(@NonNull final View... views) {
             invisibles.addAll(Arrays.asList(views));
             return this;
         }
 
-        public final State invisibles(@NonNull @IdRes final Integer... ids) {
+        public State invisibles(@NonNull @IdRes final Integer... ids) {
             goneReferences.addAll(Arrays.asList(ids));
             return this;
         }
 
-        public final State gones(@NonNull final View... views) {
+        public State gones(@NonNull final View... views) {
             gones.addAll(Arrays.asList(views));
             return this;
         }
 
-        public final State gones(@NonNull @IdRes final Integer... ids) {
+        public State gones(@NonNull @IdRes final Integer... ids) {
             invisibleReferences.addAll(Arrays.asList(ids));
             return this;
         }
 
-        public final State enables(@NonNull final View... views) {
+        public State enables(@NonNull final View... views) {
             enables.addAll(Arrays.asList(views));
             return this;
         }
 
-        public final State enables(@NonNull @IdRes final Integer... ids) {
+        public State enables(@NonNull @IdRes final Integer... ids) {
             enableReferences.addAll(Arrays.asList(ids));
             return this;
         }
 
-        public final State disables(@NonNull final View... views) {
+        public State disables(@NonNull final View... views) {
             disables.addAll(Arrays.asList(views));
             return this;
         }
 
-        public final State disables(@NonNull @IdRes final Integer... ids) {
+        public State disables(@NonNull @IdRes final Integer... ids) {
             disableReferences.addAll(Arrays.asList(ids));
             return this;
         }

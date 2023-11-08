@@ -9,7 +9,7 @@ import br.com.arch.toolkit.recycler.adapter.stickyheader.StickyHeaderModel
  */
 open class SimpleAdapter<MODEL : Any, out VIEW>(private val creator: (context: Context) -> VIEW) :
     BaseRecyclerAdapter<MODEL>()
-        where VIEW : View, VIEW : ViewBinder<MODEL> {
+    where VIEW : View, VIEW : ViewBinder<MODEL> {
 
     override fun viewCreator(context: Context, viewType: Int) = creator.invoke(context)
 }
@@ -22,12 +22,18 @@ open class SimpleStickyAdapter<MODEL, out VIEW, out STICKY_VIEW>(
     private val itemCreator: (context: Context) -> VIEW,
     private val stickyItemCreator: (context: Context) -> STICKY_VIEW
 ) : BaseRecyclerAdapter<MODEL>()
-        where MODEL : StickyHeaderModel, VIEW : View, VIEW : ViewBinder<MODEL>, STICKY_VIEW : View, STICKY_VIEW : ViewBinder<MODEL> {
+    where MODEL : StickyHeaderModel,
+          VIEW : View, VIEW : ViewBinder<MODEL>,
+          STICKY_VIEW : View, STICKY_VIEW : ViewBinder<MODEL> {
 
     override fun viewCreator(context: Context, viewType: Int): ViewBinder<MODEL> =
-        if (viewType == STICKY_TYPE) stickyItemCreator.invoke(context) else itemCreator.invoke(
-            context
-        )
+        if (viewType == STICKY_TYPE) {
+            stickyItemCreator.invoke(context)
+        } else {
+            itemCreator.invoke(
+                context
+            )
+        }
 
     override fun getItemViewType(position: Int) =
         if (items[position].isSticky) STICKY_TYPE else DEFAULT_TYPE
