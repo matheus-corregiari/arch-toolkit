@@ -1,28 +1,17 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins { id "toolkit-sample" }
 
-android {
-    defaultConfig {
-        applicationId "br.com.arch.toolkit.sample.foldable"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-}
+android.namespace = "br.com.arch.toolkit.sample.foldable"
+android.defaultConfig.applicationId "br.com.arch.toolkit.sample.foldable"
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
-
-    implementation project(":toolkit:delegate")
+    // Other Modules
     implementation project(":toolkit:foldable")
+    implementation project(":toolkit:delegate")
 
-    implementation "androidx.constraintlayout:constraintlayout:$versions.androidx.constraintlayout"
-    implementation "androidx.window:window:$versions.androidx.window"
+    // Libraries
+    implementation libraries.jetbrains.stdlib.jdk8
+    implementation libraries.androidx.appcompat
+    implementation libraries.androidx.constraint
+    implementation libraries.androidx.window
 }
 

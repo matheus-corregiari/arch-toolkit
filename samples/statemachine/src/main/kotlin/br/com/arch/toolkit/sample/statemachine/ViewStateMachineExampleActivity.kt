@@ -46,7 +46,6 @@ class ViewStateMachineExampleActivity : BaseActivity() {
     }
 
     private fun setupStateMachine(savedInstanceState: Bundle?) = stateMachine.setup {
-
         config {
             initialState = STATE_ONE
             setOnChangeState { newActiveStateKey ->

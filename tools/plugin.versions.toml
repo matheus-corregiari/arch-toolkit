@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------------------------------------ #
+[versions]
+android_plugin = "8.1.2"
+detekt = "1.23.3"
+ktlint = "11.6.1"
+jetbrains-kotlin = "1.9.10"
+jetbrains-kover = "0.7.4"
+
+# ------------------------------------------------------------------------------------------------ #
+[libraries]
+
+## JetBrains
+jetbrains-kover = { group = "org.jetbrains.kotlinx", name = "kover-gradle-plugin", version.ref = "jetbrains-kover" }
+jetbrains-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "jetbrains-kotlin" }
+jetbrains-extensions = { group = "org.jetbrains.kotlin", name = "kotlin-android-extensions", version.ref = "jetbrains-kotlin" }
+
+## Androidx
+androidx-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android_plugin" }
+
+## Lint
+detekt = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
+ktlint = { group = "org.jlleitschuh.gradle.ktlint-idea", name = "org.jlleitschuh.gradle.ktlint-idea.gradle.plugin", version.ref = "ktlint" }
+
+# ------------------------------------------------------------------------------------------------ #
+[plugins]
+jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrains-kotlin" }

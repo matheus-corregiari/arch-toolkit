@@ -1,26 +1,16 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins { id "toolkit-sample" }
 
-android {
-    defaultConfig {
-        applicationId "br.com.arch.toolkit.sample.recycler.adapter"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-}
+android.namespace = "br.com.arch.toolkit.sample.recycler.adapter"
+android.defaultConfig.applicationId "br.com.arch.toolkit.sample.recycler.adapter"
 
 dependencies {
-    implementation "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    implementation "androidx.annotation:annotation:$versions.androidx.annotation"
-    implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
-
+    // Other Modules
     implementation project(":toolkit:recycler-adapter")
     implementation project(":toolkit:delegate")
+
+    // Libraries
+    implementation libraries.jetbrains.stdlib.jdk8
+    implementation libraries.androidx.annotation
+    implementation libraries.androidx.appcompat
+    implementation libraries.androidx.recycler
 }

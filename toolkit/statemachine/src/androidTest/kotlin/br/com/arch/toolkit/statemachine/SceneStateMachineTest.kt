@@ -4,8 +4,9 @@ import android.content.Intent
 import android.transition.Fade
 import android.transition.Scene
 import android.widget.FrameLayout
-import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import br.com.arch.toolkit.test.TestActivity
 import org.junit.Assert
 import org.junit.Rule
@@ -15,18 +16,15 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SceneStateMachineTest {
 
-    @Rule
-    @JvmField
-    val rule = IntentsTestRule(TestActivity::class.java, true, false)
+    val intent = Intent(ApplicationProvider.getApplicationContext(), TestActivity::class.java)
+
+    @get:Rule
+    val activityRule = ActivityScenarioRule<TestActivity>(intent)
 
     @Test
     fun whenChangeState_shouldApplyViewChangesOnEachState() {
         lateinit var container: FrameLayout
-        rule.launchActivity(Intent())
-        rule.activity.setView {
-            container = FrameLayout(it)
-            container
-        }
+        activityRule.scenario.onActivity { container = FrameLayout(it) }
         Thread.sleep(300L)
 
         val machine = SceneStateMachine()
@@ -45,28 +43,27 @@ class SceneStateMachineTest {
             }
         }
 
-        rule.activity.runOnUiThread {
+        activityRule.scenario.onActivity {
             machine.changeState(0)
         }
         Thread.sleep(1000L)
 
         Assert.assertEquals(0, machine.currentStateKey)
-        Assert.assertNotNull(rule.activity.findViewById(android.R.id.icon))
-        Assert.assertNull(rule.activity.findViewById(android.R.id.title))
+        Assert.assertNotNull(container.findViewById(android.R.id.icon))
+        Assert.assertNull(container.findViewById(android.R.id.title))
 
-        rule.activity.runOnUiThread {
+        activityRule.scenario.onActivity {
             machine.changeState(1)
         }
         Thread.sleep(1000L)
 
         Assert.assertEquals(1, machine.currentStateKey)
-        Assert.assertNotNull(rule.activity.findViewById(android.R.id.title))
-        Assert.assertNull(rule.activity.findViewById(android.R.id.icon))
+        Assert.assertNotNull(container.findViewById(android.R.id.title))
+        Assert.assertNull(container.findViewById(android.R.id.icon))
     }
 
     @Test
     fun withoutScene_shouldDoNothing() {
-
         val machine = SceneStateMachine()
         machine.setup {
             state(0) {

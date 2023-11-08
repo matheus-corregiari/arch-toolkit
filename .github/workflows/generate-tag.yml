@@ -1,0 +1,17 @@
+name: Generate Release Tag
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  generate-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate next tag
+        run: |
+          chmod +x .github/scripts/tag.sh
+          ./.github/scripts/tag.sh

@@ -47,7 +47,6 @@ class SceneStateMachineExampleActivity : BaseActivity() {
     }
 
     private fun setupStateMachine(savedInstanceState: Bundle?) = with(stateMachine) {
-
         restoreInstanceState(savedInstanceState)
 
         config {

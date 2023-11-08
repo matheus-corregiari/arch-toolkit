@@ -1,21 +1,12 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-
-android {
-
-    defaultConfig {
-        consumerProguardFiles 'consumer-proguard-rules.pro'
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-
+plugins {
+    id "toolkit-library"
+    id "toolkit-publish"
 }
 
+android.namespace = "br.com.arch.toolkit.recycler.adapter"
+
 dependencies {
-    compileOnly "androidx.recyclerview:recyclerview:$versions.androidx.recyclerview"
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+    // Libraries
+    compileOnly libraries.jetbrains.stdlib.jdk8
+    compileOnly libraries.androidx.recycler
 }

@@ -1,30 +1,40 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins { id "toolkit-library" }
+
+android.namespace = "br.com.arch.toolkit.foldable"
+android.testNamespace = "br.com.arch.toolkit.foldable.test"
 
 android {
-    defaultConfig {
-        consumerProguardFiles 'consumer-proguard-rules.pro'
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildTypes.debug.testCoverageEnabled false
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
+    testOptions {
+        unitTests.includeAndroidResources = false
+        unitTests.all { test -> test.enabled = false }
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
-    implementation "androidx.appcompat:appcompat:$versions.androidx.appcompat"
-    implementation "androidx.annotation:annotation:$versions.androidx.annotation"
-    implementation "androidx.constraintlayout:constraintlayout:$versions.androidx.constraintlayout"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle.runtime"
-    implementation "androidx.window:window:$versions.androidx.window"
-
+    // Other Modules
     implementation project(":toolkit:delegate")
-    implementation 'com.google.android.material:material:1.4.0'
 
-    androidTestImplementation "androidx.window:window-testing:$versions.androidx.window"
+    // Libraries
+    implementation libraries.jetbrains.stdlib.jdk8
+    implementation libraries.androidx.annotation
+    implementation libraries.androidx.appcompat
+    implementation libraries.androidx.constraint
+    implementation libraries.androidx.lifecycle.runtime
+    implementation libraries.androidx.window
+    implementation libraries.google.material
+
+    // Test Libraries
+    androidTestImplementation libraries.jetbrains.stdlib.jdk8
+    androidTestImplementation libraries.androidx.annotation
+    androidTestImplementation libraries.androidx.appcompat
+    androidTestImplementation libraries.androidx.constraint
+    androidTestImplementation libraries.androidx.lifecycle.runtime
+    androidTestImplementation libraries.androidx.window
+    androidTestImplementation libraries.google.material
+    androidTestImplementation libraries.androidx.test.window
+    androidTestImplementation libraries.androidx.test.core
+    androidTestImplementation libraries.androidx.test.junit
+    androidTestImplementation libraries.androidx.test.espresso.intents
+    androidTestImplementation libraries.androidx.test.espresso.core
+    androidTestImplementation libraries.junit.test
 }
