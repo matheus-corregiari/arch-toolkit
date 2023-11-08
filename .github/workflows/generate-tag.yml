@@ -20,7 +20,9 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Read Modules
-        run: MODULES=$(cat $PWD/toolkit/build/modules.txt)
+        run: |
+          ./gradlew :toolkit:publishModules
+          MODULES=$(cat $PWD/toolkit/build/modules.txt)
 
       - name: Print
         run: echo $MODULES

@@ -15,20 +15,24 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
             target.dependencies.add("kover", it)
         }
 
-        target.afterEvaluate { project ->
-            val json = JsonArray()
-            val file = project.layout.buildDirectory.file("modules.txt").get().asFile
-            if (file.exists()) {
-                file.delete()
+        target.tasks.register("publishModules") {
+            it.group = "groupTask"
+            it.doLast {
+                val json = JsonArray()
+                val file = target.layout.buildDirectory.file("modules.txt").get().asFile
+                file.parentFile.mkdirs()
+                if (file.exists()) {
+                    file.delete()
+                }
+
+                target.subprojects
+                    .filter { it.plugins.hasPlugin("toolkit-publish") }
+                    .map { "toolkit:${it.name}" }
+                    .onEach { json.add(it) }
+
+                file.createNewFile()
+                file.writeText(json.toString())
             }
-
-            project.subprojects
-                .filter { it.plugins.hasPlugin("toolkit-publish") }
-                .map { "toolkit:${it.name}" }
-                .onEach { json.add(it) }
-
-            file.createNewFile()
-            file.writeText(json.toString())
         }
     }
 }
