@@ -1,5 +1,6 @@
 package com.toolkit.plugin
 
+import com.toolkit.plugin.util.versionName
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.com.google.gson.JsonArray
@@ -32,6 +33,12 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
 
                 file.createNewFile()
                 file.writeText(json.toString())
+            }
+        }
+        target.tasks.register("testeVersion") {
+            it.group = "groupTask"
+            it.doLast {
+                println(target.versionName)
             }
         }
     }
