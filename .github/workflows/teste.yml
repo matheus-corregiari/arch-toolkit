@@ -10,11 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      -  id: base-setup
-         uses: ./.github/actions/setup-gradle
+      - name: Base Setup
+        id: base-setup
+        uses: ./.github/actions/setup-gradle
 
-      -  id: version-name
-         uses: ./.github/actions/version-name
+      - name: Version Name
+        id: version-name
+        uses: ./.github/actions/version-name
 
       - name: Teste Version2
         run: ./gradlew :toolkit:testeVersion
