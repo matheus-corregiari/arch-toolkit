@@ -27,4 +27,4 @@ jobs:
       - name: Teste Version2
         run: |
           ./gradlew :toolkit:testeVersion
-          echo "describe: ${{ steps.ghd.outputs.describe }}"
+          echo "describe: ${{ steps.bacate.outputs.describe }}"
