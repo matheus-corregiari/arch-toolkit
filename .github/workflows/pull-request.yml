@@ -6,6 +6,7 @@ on:
       - master
       - develop
       - 'release/**'
+      - 'hotfix/**'
       - 'feature/**'
       - 'bugfix/**'
       - 'config/**'
@@ -23,7 +24,7 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     outputs:
-      modules: ${{ steps.read-modules.outputs.modules }}
+      modules: ${{ steps.publishing-modules.outputs.modules }}
     steps:
       - uses: actions/checkout@v4
 
@@ -31,12 +32,9 @@ jobs:
         id: base-setup
         uses: ./.github/actions/setup-gradle
 
-      - name: Read Modules
-        id: read-modules
-        run: |
-          ./gradlew :toolkit:publishModules
-          MODULES=$(cat $PWD/toolkit/build/modules.txt)
-          echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
+      - name: List of Modules
+        id: publishing-modules
+        uses: ./.github/actions/publishing-modules
 
   lint:
     if: github.event.pull_request.draft == false

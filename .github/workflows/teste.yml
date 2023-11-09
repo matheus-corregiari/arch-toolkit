@@ -5,6 +5,15 @@ on:
 
 jobs:
 
+  # Generates a new tag and submit it into repository <3
+  generate-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate next tag
+        run: echo "UHUL"
+
   pre-build:
     runs-on: ubuntu-latest
     outputs:
@@ -22,7 +31,9 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    needs: pre-build
+    needs:
+      - generate-tag
+      - pre-build
     strategy:
       matrix:
         module: ${{ fromJSON(needs.pre-build.outputs.modules) }}
