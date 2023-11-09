@@ -29,7 +29,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Base Setup
-        id: base-setup
         uses: ./.github/actions/setup-gradle
 
       - name: List of Modules
@@ -47,7 +46,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Base Setup
-        id: base-setup
         uses: ./.github/actions/setup-gradle
 
       - name: Lint ${{ matrix.module }}
@@ -67,7 +65,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Base Setup
-        id: base-setup
         uses: ./.github/actions/setup-gradle
 
       - name: Unit Tests ${{ matrix.module }}
@@ -87,7 +84,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Base Setup
-        id: base-setup
         uses: ./.github/actions/setup-gradle
 
       - name: Assemble ${{ matrix.module }}
