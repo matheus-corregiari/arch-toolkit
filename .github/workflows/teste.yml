@@ -36,7 +36,7 @@ jobs:
     needs: pre-build
     strategy:
       matrix:
-        module: ${{fromJSON(needs.publishing-modules.outputs.modules)}}
+        module: ${{ fromJSON(needs.pre-build.outputs.modules) }}
 
     steps:
       - uses: actions/checkout@v4
