@@ -50,4 +50,3 @@ runs:
         echo "signing.keyId=$SIGN_KEYID" >> gradle.properties
         echo "signing.password=$SIGN_PASSWORD" >> gradle.properties
         echo "signing.secretKeyRingFile=$PWD/$SIGN_FILENAME" >> gradle.properties
-        cat gradle.properties
