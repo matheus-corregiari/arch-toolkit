@@ -13,6 +13,8 @@ jobs:
       -  id: base-setup
          uses: ./.github/actions/setup-gradle
 
+      -  id: version-name
+         uses: ./.github/actions/version-name
 
       - name: Teste Version2
         run: ./gradlew :toolkit:testeVersion

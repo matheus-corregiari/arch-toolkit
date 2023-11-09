@@ -1,0 +1,18 @@
+name: "Configure Java and Gradle"
+description: "Boilerplate steps"
+runs:
+  using: "composite"
+  steps:
+    -
+    # Setup versionName because we love it
+    - name: Get next version name
+      id: new-version
+      uses: proudust/gh-describe@v1.5.3
+
+    # Write versionName into build file to use properly in the future
+    - name: Write version into build file
+      shell: bash
+      run: |
+        mkdir build
+        touch version-name.txt
+        echo "${{ steps.new-version.outputs.describe }}" >> build/version-name.txt

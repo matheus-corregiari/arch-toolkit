@@ -15,14 +15,3 @@ runs:
     # Setup Gradle because without it, nothing happens
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
-
-    # Setup versionName because we love it
-    - name: Get next version name
-      id: new-version
-      uses: proudust/gh-describe@v1.5.3
-
-    - name: Write version into build file
-      run: |
-        mkdir build
-        touch version-name.txt
-        echo "${{ steps.new-version.outputs.describe }}" >> build/version-name.txt
