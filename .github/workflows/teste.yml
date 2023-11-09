@@ -20,5 +20,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Teste Version
-        run: ./gradlew :toolkit:testeVersion
+      - name: Teste Version1
+        id: bacate
+        uses: proudust/gh-describe@v1.5.3
+
+      - name: Teste Version2
+        run: |
+          ./gradlew :toolkit:testeVersion
+          echo "describe: ${{ steps.ghd.outputs.describe }}"
