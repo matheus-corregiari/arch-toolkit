@@ -26,5 +26,5 @@ jobs:
 
       - name: Teste Version2
         run: |
+          echo "${{ steps.bacate.outputs.describe }}" >> build/version-name.txt
           ./gradlew :toolkit:testeVersion
-          echo "describe: ${{ steps.bacate.outputs.describe }}"
