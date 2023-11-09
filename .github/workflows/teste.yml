@@ -17,6 +17,15 @@ jobs:
       - name: Version Name
         id: version-name
         uses: ./.github/actions/version-name
+        with:
+          # Sonatype Credentials
+          ossrh_username: ${{ secrets.OSSRH_USERNAME }}
+          ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
+
+          # Sign Credentials
+          sign_keyid: ${{ secrets.SIGN_FILENAME }}
+          sign_password: ${{ secrets.SIGN_KEYID }}
+          sign_filename: ${{ secrets.SIGN_PASSWORD }}
 
       - name: Teste Version2
         run: ./gradlew :toolkit:testeVersion

@@ -5,16 +5,6 @@ on:
     branches:
       - master
 
-# Load Secrets
-env:
-  # Sonatype Credentials
-  OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-  OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-  # Sign Credentials
-  SIGN_FILENAME: ${{ secrets.SIGN_FILENAME }}
-  SIGN_KEYID: ${{ secrets.SIGN_KEYID }}
-  SIGN_PASSWORD: ${{ secrets.SIGN_PASSWORD }}
-
 jobs:
 
   generate-tag:
@@ -68,6 +58,15 @@ jobs:
       - name: Version Name
         id: version-name
         uses: ./.github/actions/version-name
+        with:
+          # Sonatype Credentials
+          ossrh_username: ${{ secrets.OSSRH_USERNAME }}
+          ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
+
+          # Sign Credentials
+          sign_keyid: ${{ secrets.SIGN_FILENAME }}
+          sign_password: ${{ secrets.SIGN_KEYID }}
+          sign_filename: ${{ secrets.SIGN_PASSWORD }}
 
       - name: Build ${{ matrix.module }}
         run: ./gradlew :${{ matrix.module }}:assembleRelease

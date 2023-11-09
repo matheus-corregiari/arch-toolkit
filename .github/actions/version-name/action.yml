@@ -1,5 +1,23 @@
 name: "Gets and stores the new version name so we can use it do deploy"
 description: "Boilerplate steps"
+
+inputs:
+  ossrh_username:
+    description: User
+    required: false
+  ossrh_password:
+    description: Pass
+    required: false
+  sign_keyid:
+    description: Id
+    required: false
+  sign_password:
+    description: Other Pass
+    required: false
+  sign_filename:
+    description: file name
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -20,6 +38,12 @@ runs:
     # Put everything we need into gradle.properties to build properly
     - name: Inject sign into gradle.properties
       shell: bash
+      env:
+        OSSRH_USERNAME: ${{ inputs.ossrh_username}}
+        OSSRH_PASSWORD: ${{ inputs.ossrh_password}}
+        SIGN_KEYID: ${{ inputs.sign_keyid}}
+        SIGN_PASSWORD: ${{ inputs.sign_password}}
+        SIGN_FILENAME: ${{ inputs.sign_filename}}
       run: |
         echo "OSSRH_USERNAME=$OSSRH_USERNAME" >> gradle.properties
         echo "OSSRH_PASSWORD=$OSSRH_PASSWORD" >> gradle.properties
