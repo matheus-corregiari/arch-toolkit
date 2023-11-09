@@ -16,3 +16,14 @@ runs:
         mkdir build
         touch version-name.txt
         echo "${{ steps.new-version.outputs.describe }}" >> build/version-name.txt
+
+    # Put everything we need into gradle.properties to build properly
+    - name: Inject sign into gradle.properties
+      shell: bash
+      run: |
+        echo "OSSRH_USERNAME=$OSSRH_USERNAME" >> gradle.properties
+        echo "OSSRH_PASSWORD=$OSSRH_PASSWORD" >> gradle.properties
+        echo "signing.keyId=$SIGN_KEYID" >> gradle.properties
+        echo "signing.password=$SIGN_PASSWORD" >> gradle.properties
+        echo "signing.secretKeyRingFile=$PWD/$SIGN_FILENAME" >> gradle.properties
+        cat gradle.properties
