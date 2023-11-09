@@ -61,9 +61,9 @@ jobs:
           ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
 
           # Sign Credentials
-          sign_keyid: ${{ secrets.SIGN_FILENAME }}
-          sign_password: ${{ secrets.SIGN_KEYID }}
-          sign_filename: ${{ secrets.SIGN_PASSWORD }}
+          sign_keyid: ${{ secrets.SIGN_KEYID }}
+          sign_password: ${{ secrets.SIGN_PASSWORD }}
+          sign_filename: ${{ secrets.SIGN_FILENAME }}
 
       - name: Build ${{ matrix.module }}
         run: ./gradlew :${{ matrix.module }}:assembleRelease
