@@ -31,12 +31,12 @@ jobs:
         id: publishing-modules
         uses: ./.github/actions/publishing-modules
 
-    publish:
-      runs-on: ubuntu-latest
-      needs: pre-build
-      strategy:
-        matrix:
-          module: ${{fromJSON(needs.publishing-modules.outputs.modules)}}
+  publish:
+    runs-on: ubuntu-latest
+    needs: pre-build
+    strategy:
+      matrix:
+        module: ${{fromJSON(needs.publishing-modules.outputs.modules)}}
 
-      steps:
-        - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
