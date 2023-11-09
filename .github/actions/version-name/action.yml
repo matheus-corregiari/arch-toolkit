@@ -1,9 +1,9 @@
-name: "Configure Java and Gradle"
+name: "Gets and stores the new version name so we can use it do deploy"
 description: "Boilerplate steps"
 runs:
   using: "composite"
   steps:
-    -
+
     # Setup versionName because we love it
     - name: Get next version name
       id: new-version
