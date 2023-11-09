@@ -1,0 +1,52 @@
+name: "Gets and stores the new version name so we can use it do deploy"
+description: "Boilerplate steps"
+
+inputs:
+  ossrh_username:
+    description: User
+    required: false
+  ossrh_password:
+    description: Pass
+    required: false
+  sign_keyid:
+    description: Id
+    required: false
+  sign_password:
+    description: Other Pass
+    required: false
+  sign_filename:
+    description: file name
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+
+    # Setup versionName because we love it
+    - name: Get next version name
+      id: new-version
+      uses: proudust/gh-describe@v1.5.3
+
+    # Write versionName into build file to use properly in the future
+    - name: Write version into build file
+      shell: bash
+      run: |
+        mkdir build
+        touch version-name.txt
+        echo "${{ steps.new-version.outputs.describe }}" >> build/version-name.txt
+
+    # Put everything we need into gradle.properties to build properly
+    - name: Inject sign into gradle.properties
+      shell: bash
+      env:
+        OSSRH_USERNAME: ${{ inputs.ossrh_username}}
+        OSSRH_PASSWORD: ${{ inputs.ossrh_password}}
+        SIGN_KEYID: ${{ inputs.sign_keyid}}
+        SIGN_PASSWORD: ${{ inputs.sign_password}}
+        SIGN_FILENAME: ${{ inputs.sign_filename}}
+      run: |
+        echo "OSSRH_USERNAME=$OSSRH_USERNAME" >> gradle.properties
+        echo "OSSRH_PASSWORD=$OSSRH_PASSWORD" >> gradle.properties
+        echo "signing.keyId=$SIGN_KEYID" >> gradle.properties
+        echo "signing.password=$SIGN_PASSWORD" >> gradle.properties
+        echo "signing.secretKeyRingFile=$PWD/$SIGN_FILENAME" >> gradle.properties

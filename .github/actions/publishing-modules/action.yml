@@ -1,0 +1,20 @@
+name: "Find modules that need to be validated and exported"
+description: "Boilerplate steps"
+
+outputs:
+  modules:
+    description: "List of modules"
+    value: ${{ steps.read-modules.outputs.modules }}
+
+runs:
+  using: "composite"
+  steps:
+
+    # Get modules that need to be published and validated and put it into a variable
+    - name: Read Modules
+      id: read-modules
+      shell: bash
+      run: |
+        ./gradlew :toolkit:publishModules
+        MODULES=$(cat $PWD/toolkit/build/modules.txt)
+        echo "modules=$MODULES" >> "$GITHUB_OUTPUT"

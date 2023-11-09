@@ -30,17 +30,23 @@ private fun Project.runGitCommand(
         file.exists().not() -> {
             when {
                 validateGit() -> {
+                    println("foung git")
                     val output = command.executeWithText
-                    if (output == null) {
+                    if (output.isNullOrBlank()) {
+                        println("null or blank")
                         default
                     } else {
+                        println("uai")
                         file.parentFile.mkdirs()
                         file.writeText(output)
                         output
                     }
                 }
 
-                else -> default
+                else -> {
+                    println("not found git")
+                    default
+                }
             }
         }
 
