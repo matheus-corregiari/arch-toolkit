@@ -1052,8 +1052,8 @@ class ObserveWrapper<T> internal constructor() {
         @NonNull liveData: ResponseLiveData<T>,
         @NonNull owner: LifecycleOwner
     ): ResponseLiveData<T> {
-        val observer = object : Observer<DataResult<T>> {
-            override fun onChanged(value: DataResult<T>) {
+        val observer = object : Observer<DataResult<T>?> {
+            override fun onChanged(value: DataResult<T>?) {
                 scope.launchWithErrorTreatment {
                     handleResult(value)
                     if (eventList.isEmpty()) {
