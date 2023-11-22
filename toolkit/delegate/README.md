@@ -14,7 +14,7 @@ Some custom implementations for delegated properties
 First you need to add Kotlin and the androidx core components
 
 ```groovy
-// Module build.gradle
+// Module build.gradle.kts
 apply plugin: 'kotlin-android'
 
 dependencies{

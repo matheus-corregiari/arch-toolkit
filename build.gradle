@@ -1,5 +1,5 @@
 plugins {
-    id 'jacoco'
+    id "jacoco"
 
     alias(libraries.plugins.android.application) apply false
     alias(libraries.plugins.android.library) apply false

@@ -1,9 +1,3 @@
-repositories {
-    google()
-    mavenCentral()
-    gradlePluginPortal()
-}
-
 plugins {
     id("java-gradle-plugin")
     alias(pluginLibraries.plugins.jvm)

@@ -15,12 +15,12 @@ First you need to add Kotlin and Recycler View
 
 ```groovy
 
-// Root project build.gradle
+// Root project build.gradle.kts
 dependencies {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
 }
 
-// Module build.gradle
+// Module build.gradle.kts
 apply plugin: 'kotlin-android'
 
 dependencies{
