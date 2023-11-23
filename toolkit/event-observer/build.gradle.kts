@@ -1,22 +1,36 @@
+import com.toolkit.plugin.multiplatform.androidMain
+import com.toolkit.plugin.multiplatform.androidUnitTest
+
 plugins {
-    id("toolkit-library")
+    id("toolkit-multiplatform-library")
     id("toolkit-publish")
 }
 
 android.namespace = "br.com.arch.toolkit.livedata"
 
-dependencies {
-    // Libraries
-    implementation(libraries.jetbrains.stdlib.jdk8)
-    implementation(libraries.jetbrains.coroutines.core)
-    implementation(libraries.jetbrains.coroutines.android)
-    implementation(libraries.androidx.lifecycle.livedata)
+kotlin {
+    sourceSets {
 
-    // Test Libraries
-    testImplementation(libraries.androidx.lifecycle.livedata)
-    testImplementation(libraries.androidx.lifecycle.runtime)
-    testImplementation(libraries.androidx.test.core)
-    testImplementation(libraries.jetbrains.test.coroutines)
-    testImplementation(libraries.mockito.test.core)
-    testImplementation(libraries.mockito.test.kotlin)
+        // Libraries
+        androidMain {
+            dependencies {
+                implementation(libraries.jetbrains.stdlib.jdk8)
+                implementation(libraries.jetbrains.coroutines.core)
+                implementation(libraries.jetbrains.coroutines.android)
+                implementation(libraries.androidx.lifecycle.livedata)
+            }
+        }
+
+        // Test Libraries
+        androidUnitTest {
+            dependencies {
+                implementation(libraries.androidx.lifecycle.livedata)
+                implementation(libraries.androidx.lifecycle.runtime)
+                implementation(libraries.androidx.test.core)
+                implementation(libraries.jetbrains.test.coroutines)
+                implementation(libraries.mockito.test.core)
+                implementation(libraries.mockito.test.kotlin)
+            }
+        }
+    }
 }

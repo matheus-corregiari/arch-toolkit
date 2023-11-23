@@ -1,4 +1,4 @@
-package com.toolkit.plugin
+package com.toolkit.plugin.util
 
 import org.gradle.api.artifacts.VersionCatalog
 import kotlin.jvm.optionals.getOrNull

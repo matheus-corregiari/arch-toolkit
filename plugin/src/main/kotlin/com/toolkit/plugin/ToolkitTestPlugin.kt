@@ -1,7 +1,17 @@
+@file:Suppress("UnstableApiUsage")
+
 package com.toolkit.plugin
 
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
+import com.toolkit.plugin.util.androidApplication
+import com.toolkit.plugin.util.androidLibrary
+import com.toolkit.plugin.util.applyPlugins
+import com.toolkit.plugin.util.jacoco
+import com.toolkit.plugin.util.kover
+import com.toolkit.plugin.util.koverReport
+import com.toolkit.plugin.util.libraries
+import com.toolkit.plugin.util.version
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

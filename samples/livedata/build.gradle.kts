@@ -1,4 +1,4 @@
-plugins { id("toolkit-sample") }
+plugins { id("toolkit-android-sample") }
 
 android.namespace = "br.com.arch.toolkit.sample.livedata"
 android.defaultConfig.applicationId("br.com.arch.toolkit.sample.livedata")

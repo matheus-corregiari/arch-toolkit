@@ -28,26 +28,61 @@ sourceSets {
 
 gradlePlugin {
     plugins {
-        create("toolkit-library") {
-            id = "toolkit-library"
+        //region Android
+        create("toolkit-android-library") {
+            id = "toolkit-android-library"
             displayName = "Toolkit Library Plugin"
             description =
                 "Plug and play for modules those should be a exported library to the world!"
-            implementationClass = "com.toolkit.plugin.ToolkitLibraryPlugin"
+            implementationClass = "com.toolkit.plugin.android.ToolkitLibraryPlugin"
         }
 
-        create("toolkit-sample") {
-            id = "toolkit-sample"
+        create("toolkit-android-sample") {
+            id = "toolkit-android-sample"
             displayName = "Toolkit Sample Plugin"
             description = "Plug and play for modules to show the world the wonders of tomorrow!"
-            implementationClass = "com.toolkit.plugin.ToolkitSamplePlugin"
+            implementationClass = "com.toolkit.plugin.android.ToolkitSamplePlugin"
         }
 
-        create("toolkit-base") {
-            id = "toolkit-base"
+        create("toolkit-android-base") {
+            id = "toolkit-android-base"
             displayName = "Toolkit Base Plugin"
             description = "All default config"
-            implementationClass = "com.toolkit.plugin.ToolkitBasePlugin"
+            implementationClass = "com.toolkit.plugin.android.ToolkitBasePlugin"
+        }
+        //endregion
+
+        //region Multiplatform
+        create("toolkit-multiplatform-library") {
+            id = "toolkit-multiplatform-library"
+            displayName = "Toolkit Library Plugin"
+            description =
+                "Plug and play for modules those should be a exported library to the world!"
+            implementationClass = "com.toolkit.plugin.multiplatform.ToolkitLibraryPlugin"
+        }
+
+        create("toolkit-multiplatform-sample") {
+            id = "toolkit-multiplatform-sample"
+            displayName = "Toolkit Sample Plugin"
+            description = "Plug and play for modules to show the world the wonders of tomorrow!"
+            implementationClass = "com.toolkit.plugin.multiplatform.ToolkitSamplePlugin"
+        }
+
+        create("toolkit-multiplatform-base") {
+            id = "toolkit-multiplatform-base"
+            displayName = "Toolkit Base Plugin"
+            description = "All default config"
+            implementationClass = "com.toolkit.plugin.multiplatform.ToolkitBasePlugin"
+        }
+        //endregion
+
+        //region Generic
+        create("toolkit-optimize") {
+            id = "toolkit-optimize"
+            displayName = "Toolkit Optimization Plugin"
+            description = "Optimize dependencies"
+            implementationClass =
+                "com.toolkit.plugin.ToolkitOptimizeDependenciesAndFilterTasksPlugin"
         }
 
         create("toolkit-compose") {
@@ -84,5 +119,6 @@ gradlePlugin {
             description = "Enables and configure publish for module"
             implementationClass = "com.toolkit.plugin.ToolkitPublishPlugin"
         }
+        //endregion
     }
 }

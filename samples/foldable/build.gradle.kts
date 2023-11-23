@@ -1,4 +1,4 @@
-plugins { id("toolkit-sample") }
+plugins { id("toolkit-android-library") }
 
 android.namespace = "br.com.arch.toolkit.sample.foldable"
 android.defaultConfig.applicationId("br.com.arch.toolkit.sample.foldable")

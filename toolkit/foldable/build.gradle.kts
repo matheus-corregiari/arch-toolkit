@@ -1,6 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-plugins { id("toolkit-library") }
+plugins { id("toolkit-android-library") }
 
 android.namespace = "br.com.arch.toolkit.foldable"
 android.testNamespace = "br.com.arch.toolkit.foldable.test"

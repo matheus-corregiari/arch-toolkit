@@ -151,6 +151,7 @@ google-ksp = { id = "com.google.devtools.ksp", version.ref = "google-ksp" }
 ## JetBrains
 jetbrains-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrains-kotlin" }
 jetbrains-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "jetbrains-kover" }
+jetbrains-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "jetbrains-kotlin" }
 
 ## Tools to make my life easier
 dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }

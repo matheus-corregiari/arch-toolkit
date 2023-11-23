@@ -1,10 +1,10 @@
-package com.toolkit.plugin
+package com.toolkit.plugin.util
 
 import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
@@ -14,7 +14,9 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
+import com.android.build.gradle.LibraryExtension as LibraryExtension2
 
 internal val Project.libraries: VersionCatalog
     @Throws(IllegalStateException::class)
@@ -27,6 +29,11 @@ internal val Project.ktLint: KtlintExtension
     @Throws(IllegalStateException::class)
     get() = extensions.findByType(KtlintExtension::class.java)
         ?: error("Project do not implement ktlint plugin!")
+
+internal val Project.multiplatform: KotlinMultiplatformExtension
+    @Throws(IllegalStateException::class)
+    get() = extensions.findByType(KotlinMultiplatformExtension::class.java)
+        ?: error("Project do not implement kotlin-multiplatform plugin!")
 
 internal val Project.detekt: DetektExtension
     @Throws(IllegalStateException::class)
@@ -53,15 +60,20 @@ internal val Project.androidLibrary: LibraryExtension
     get() = extensions.findByType(LibraryExtension::class.java)
         ?: error("Project do not implement android-library plugin!")
 
+internal val Project.androidLibrary2: LibraryExtension2
+    @Throws(IllegalStateException::class)
+    get() = extensions.findByType(LibraryExtension2::class.java)
+        ?: error("Project do not implement android-library plugin!")
+
 internal val Project.androidApplication: ApplicationExtension
     @Throws(IllegalStateException::class)
     get() = extensions.findByType(ApplicationExtension::class.java)
         ?: error("Project do not implement android-application plugin!")
 
-internal val Project.androidBase: BaseExtension
+internal val Project.android: BaseExtension
     @Throws(IllegalStateException::class)
     get() = extensions.findByType(BaseExtension::class.java)
-        ?: error("Project do not implement android-library neither android-application plugin!")
+        ?: error("Project do not implement android plugin!")
 
 internal val Project.libraryComponent: LibraryAndroidComponentsExtension
     @Throws(IllegalStateException::class)
