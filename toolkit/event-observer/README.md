@@ -29,14 +29,14 @@ implementation "io.github.matheus-corregiari:livedata:$latest_version"
 
 ```kotlin
 
-class MyViewModel(private val repository: MyRepository): ViewModel() {
-    
+class MyViewModel(private val repository: MyRepository) : ViewModel() {
+
     // Use MutableResponseLiveData when you want to change the value
     private val _liveData: MutableResponseLiveData<Movies> = MutableResponseLiveData()
-    
+
     val liveData: ResponseLiveData<Movies>
         get() = _liveData
-    
+
     fun loadMovies() {
         try {
             // call postLoading to post loading true
@@ -49,7 +49,7 @@ class MyViewModel(private val repository: MyRepository): ViewModel() {
         }
     }
 
-    fun loadMoviesAsyncOperation() : ResponseLiveData<Movies> {
+    fun loadMoviesAsyncOperation(): ResponseLiveData<Movies> {
         // When you don't want to implement the code on the function above you can use the function makeAsyncOperation
         // She has two implementations, one using a WorkerThread and another using Coroutine
 
@@ -58,7 +58,7 @@ class MyViewModel(private val repository: MyRepository): ViewModel() {
         }
     }
 
-    fun loadMoviesAsyncOperationErrorTransformer() : ResponseLiveData<Movies> {
+    fun loadMoviesAsyncOperationErrorTransformer(): ResponseLiveData<Movies> {
         // You can also pass a errorTransformer to makeAsyncOperation
         return makeAsyncOperation(errorTransformer = {}) {
             repository.loadMovies()
@@ -66,15 +66,15 @@ class MyViewModel(private val repository: MyRepository): ViewModel() {
     }
 }
 
-class MyActivity: AppCompatActivity() {
+class MyActivity : AppCompatActivity() {
 
     private val viewModel: MyViewModel
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.loadMovies()
         viewModel.liveData.observe(this) {
-            status { 
+            status {
                 // Called when status change value
                 // The status can be:
                 // DataResultStatus.LOADING
@@ -96,11 +96,11 @@ class MyActivity: AppCompatActivity() {
             error { e ->
                 // called when error change value
             }
-            
+
             // When withData is false, the function only will be called when data is null
             // This is useful because you might not want to show loading or error state when you already have data
             showLoading(withData = false) {
-                
+
             }
             loading(withData = false) {
 
@@ -108,7 +108,7 @@ class MyActivity: AppCompatActivity() {
             error(withData = false) { e ->
 
             }
-            
+
             // When single is true, the function only will be executed one time
             status(single = true) { }
             success(single = true) { }
@@ -216,3 +216,5 @@ swapResponseLiveData.clearSource()
 swapResponseLiveData.needsRefresh()
 
 ```
+
+# NOTE: This module is almost KMM ready
