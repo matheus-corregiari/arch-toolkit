@@ -1,5 +1,9 @@
+@file:Suppress("LongMethod", "MagicNumber")
+@file:OptIn(Experimental::class)
+
 package br.com.arch.toolkit.sample.livedata
 
+import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.flow.MutableResponseFlow
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus

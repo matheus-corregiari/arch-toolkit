@@ -1,6 +1,6 @@
 plugins {
-    id("toolkit-sample")
-    // id "toolkit-compose" --> Commented until Compose finally work on API 34 -.-"
+    id("toolkit-android-sample")
+    // id("toolkit-compose") --> Commented until Compose finally work on API 34 -.-"
     alias(libraries.plugins.google.ksp)
 }
 
@@ -32,7 +32,7 @@ dependencies {
     implementation(libraries.square.okhttp.core)
     implementation(libraries.square.moshi.kotlin)
     implementation(libraries.square.timber)
-    debugImplementation(libraries.square.okhttp.logging)
+    implementation(libraries.square.okhttp.logging)
 
     // Doing evil things generating code!
     ksp(libraries.square.moshi.codegen)

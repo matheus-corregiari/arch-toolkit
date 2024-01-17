@@ -1,6 +1,5 @@
 package com.toolkit.plugin.util
 
-import com.toolkit.plugin.androidLibrary
 import org.gradle.api.Project
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.jvm.tasks.Jar
@@ -23,12 +22,12 @@ private fun Project.setupJavadoc(): Jar {
 
     val javadoc = tasks.register("javadoc", Javadoc::class.java) {
         val list = ArrayList<java.io.File>()
-        androidLibrary.sourceSets.forEach { set -> list.addAll(set.java.srcDirs) }
+        androidLibrary2.sourceSets.forEach { set -> list.addAll(set.java.srcDirs) }
 
         it.isFailOnError = false
         it.setExcludes(listOf("**/*.kt", "**/*.java"))
         it.source(list)
-        it.classpath += files(androidLibrary.bootClasspath.joinToString(separator = File.separator))
+        it.classpath += files(androidLibrary2.bootClasspath.joinToString(separator = File.separator))
         it.classpath += configurations.named("jacocoDeps").get()
     }.get()
 
@@ -39,11 +38,15 @@ private fun Project.setupJavadoc(): Jar {
     }.get()
 }
 
-private fun Project.setupSources() = tasks.register("sourcesJar", Jar::class.java) {
-    val mainSource = androidLibrary.sourceSets.named("main").get().java.srcDirs
-    it.from(mainSource)
-    it.archiveClassifier.set("sources")
-}.get()
+private fun Project.setupSources() = if (tasks.findByName("sourcesJar") == null) {
+    tasks.register("sourcesJar", Jar::class.java) {
+        val mainSource = androidLibrary2.sourceSets.named("main").get().java.srcDirs
+        it.from(mainSource)
+        it.archiveClassifier.set("sources")
+    }.get()
+} else {
+    tasks.named("sourcesJar", Jar::class.java).get()
+}
 
 private fun Project.setupArtifacts(javadoc: Jar, sources: Jar) {
     artifacts {

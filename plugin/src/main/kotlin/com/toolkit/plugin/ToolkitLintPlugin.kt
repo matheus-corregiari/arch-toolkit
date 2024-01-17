@@ -3,6 +3,12 @@ package com.toolkit.plugin
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.dsl.Lint
+import com.toolkit.plugin.util.androidApplication
+import com.toolkit.plugin.util.androidLibrary
+import com.toolkit.plugin.util.applyPlugins
+import com.toolkit.plugin.util.detekt
+import com.toolkit.plugin.util.ktLint
+import com.toolkit.plugin.util.libraries
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import io.gitlab.arturbosch.detekt.extensions.DetektReport

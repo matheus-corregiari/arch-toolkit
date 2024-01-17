@@ -1,4 +1,4 @@
-plugins { id("toolkit-library") }
+plugins { id("toolkit-android-library") }
 
 android.namespace = "br.com.arch.toolkit.splinter"
 

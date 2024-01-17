@@ -1,6 +1,10 @@
 package com.toolkit.plugin
 
 import com.toolkit.plugin.util.missing
+import com.toolkit.plugin.util.publishing
+import com.toolkit.plugin.util.requireAny
+import com.toolkit.plugin.util.setupJavadocAndSources
+import com.toolkit.plugin.util.sign
 import com.toolkit.plugin.util.versionName
 import groovy.util.Node
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
@@ -33,17 +37,21 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
         }
     private val Project.sources: String?
         get() {
-            val aarPath = "$projectDir/build/libs/$name-sources.jar"
+            val sourcesPath = "$projectDir/build/libs/$name-sources.jar"
+            val sourcesMultiPlatformPath = "$projectDir/build/libs/$name-kotlin-sources.jar"
             return when {
-                File(aarPath).exists -> aarPath
+                File(sourcesPath).exists -> sourcesPath
+                File(sourcesMultiPlatformPath).exists -> sourcesMultiPlatformPath
                 else -> null
             }
         }
 
     override fun apply(target: Project) {
-        if (target.plugins.hasPlugin("toolkit-library").not()) {
-            error("To use sample-compose plugin you must implement toolkit-library plugin")
-        }
+        target.requireAny(
+            "toolkit-publish",
+            "toolkit-android-library",
+            "toolkit-multiplatform-library"
+        )
 
         if (target.missing(
                 "OSSRH_USERNAME",
@@ -60,6 +68,10 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
         target.plugins.apply("maven-publish")
         target.plugins.apply("signing")
 
+        // Setup Javadoc and sources artifacts
+        target.setupJavadocAndSources()
+
+        // Setup Publishing
         with(target.publishing) {
             repositories { repo ->
                 repo.createLocalPathRepository(target)
@@ -92,6 +104,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
             }
         }
 
+        // Setup Signing
         with(target.sign) {
             sign(target.publishing.publications)
             setRequired {

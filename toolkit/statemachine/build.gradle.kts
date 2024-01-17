@@ -1,5 +1,5 @@
 plugins {
-    id("toolkit-library")
+    id("toolkit-android-library")
     id("toolkit-publish")
 }
 
