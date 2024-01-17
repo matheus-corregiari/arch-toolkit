@@ -4,21 +4,33 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.util.observeNotNull
 import br.com.arch.toolkit.util.observeSingle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.Before
+import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runners.MethodSorters
 import org.mockito.Mockito.times
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 
+@OptIn(ExperimentalCoroutinesApi::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ComputableLiveDataTest {
 
     @Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    init {
+        Dispatchers.setMain(StandardTestDispatcher())
+    }
 
     private lateinit var mockedObserver: (Any) -> Unit
     private lateinit var computeObserver: () -> Unit
