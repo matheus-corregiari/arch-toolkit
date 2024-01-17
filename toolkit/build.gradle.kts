@@ -1,1 +1,1 @@
-//plugins { id("toolkit-group") }
+plugins { id("toolkit-group") }
