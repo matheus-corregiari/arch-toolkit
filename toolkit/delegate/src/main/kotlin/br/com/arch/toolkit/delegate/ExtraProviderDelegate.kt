@@ -35,6 +35,7 @@ class ExtraProviderDelegate<T>(
             ExtraType.QUERY -> getQueryParameter(extra, extraName, thisRef) ?: defaultValue.invoke()
             ExtraType.AUTO -> getExtra(extra, extraName, thisRef)
                 ?: (if (extra is String?) getQueryParameter(extra, extraName, thisRef) else null)
+                ?: (thisRef.activity as? AppCompatActivity)?.let { getExtra(extra, extraName, it) }
                 ?: defaultValue.invoke()
         }
 
