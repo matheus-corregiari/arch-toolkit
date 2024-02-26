@@ -33,7 +33,7 @@ private fun ApplicationExtension.setupVersion(libraries: VersionCatalog) {
     buildToolsVersion = libraries.version("build-tools")
 
     defaultConfig {
-        minSdk = libraries.version("build-sdk-min").toInt()
+        minSdk = libraries.version("build-sdk-min-sample").toInt()
         targetSdk = libraries.version("build-sdk-target").toInt()
     }
 }
