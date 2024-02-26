@@ -11,8 +11,18 @@ internal fun Project.setupJavadocAndSources() {
     setupArtifacts(javadocJar, sourcesJar)
 
     tasks.whenTaskAdded {
-        if (it.name == "assembleRelease") {
-            it.finalizedBy(sourcesJar, javadocJar)
+        when (it.name) {
+            "assembleRelease" -> {
+                it.finalizedBy(sourcesJar, javadocJar)
+            }
+
+            "signToolkitPublication" -> {
+                it.dependsOn(sourcesJar, javadocJar)
+            }
+
+            "signKotlinMultiplatformPublication" -> {
+                it.dependsOn(sourcesJar, javadocJar)
+            }
         }
     }
 }

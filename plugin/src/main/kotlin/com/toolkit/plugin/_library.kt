@@ -26,6 +26,6 @@ private fun LibraryExtension.setupVersion(libraries: VersionCatalog) {
     buildToolsVersion = libraries.version("build-tools")
 
     defaultConfig {
-        minSdk = libraries.version("build-sdk-min").toInt()
+        minSdk = libraries.version("build-sdk-min-toolkit").toInt()
     }
 }
