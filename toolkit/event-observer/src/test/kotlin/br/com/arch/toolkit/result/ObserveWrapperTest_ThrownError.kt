@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert
+import org.junit.Before
 import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
@@ -42,9 +43,13 @@ class ObserveWrapperTest_ThrownError {
         message = "Error retried but without any success",
         error = error
     )
-
-    init {
+    
+    @Before
+    fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
+        Class.forName("kotlinx.coroutines.test.TestScopeKt")
+            .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
+            .invoke(null, false)
     }
 
     //region Data Error Thrown Scenarios

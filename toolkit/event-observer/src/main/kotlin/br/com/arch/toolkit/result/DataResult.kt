@@ -29,6 +29,7 @@ data class DataResult<T>(
      */
     private var scope: CoroutineScope? = null
     fun scope(scope: CoroutineScope) = apply { this.scope = scope }
+    fun scope(scope: CoroutineDispatcher) = apply { this.scope = CoroutineScope(scope) }
 
     /**
      * Scope to run all the transformations, it is optional, is null, will use the default inside ObserveWrapper
