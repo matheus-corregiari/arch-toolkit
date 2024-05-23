@@ -43,7 +43,7 @@ class ObserveWrapperTest_ThrownError {
         message = "Error retried but without any success",
         error = error
     )
-    
+
     @Before
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
@@ -54,26 +54,29 @@ class ObserveWrapperTest_ThrownError {
 
     //region Data Error Thrown Scenarios
     @Test
-    fun `ERROR Data - Without ERROR`() = runTest {
-        val resultWithData = dataResultSuccess("data")
-        val mockedBlock: (String) -> Unit = mock()
+    fun `ERROR Data - Without ERROR`() {
+        setup()
+        runTest {
+            val resultWithData = dataResultSuccess("data")
+            val mockedBlock: (String) -> Unit = mock()
 
-        // Prepare Mock
-        whenever(mockedBlock.invoke("data")) doThrow error
+            // Prepare Mock
+            whenever(mockedBlock.invoke("data")) doThrow error
 
-        // Do Evil call
-        val errorFound = runCatching {
-            resultWithData.unwrap {
-                data(observer = mockedBlock)
-            }
-            advanceUntilIdle()
-        }.exceptionOrNull() ?: error("This test must have a error")
+            // Do Evil call
+            val errorFound = runCatching {
+                resultWithData.unwrap {
+                    data(observer = mockedBlock)
+                }
+                advanceUntilIdle()
+            }.exceptionOrNull() ?: error("This test must have a error")
 
-        // Tried to call block!
-        verifyBlocking(mockedBlock, times(1)) { invoke("data") }
+            // Tried to call block!
+            verifyBlocking(mockedBlock, times(1)) { invoke("data") }
 
-        // Assert Error Type!
-        Assert.assertEquals(expected, errorFound)
+            // Assert Error Type!
+            Assert.assertEquals(expected, errorFound)
+        }
     }
 
     @Test

@@ -68,7 +68,7 @@ jobs:
         uses: ./.github/actions/setup-gradle
 
       - name: Unit Tests ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:testDebugUnitTest
+        run: ./gradlew :${{ matrix.module }}:testDebugUnitTest --no-parallel
 
       - name: Kover ${{ matrix.module }}
         run: ./gradlew :${{ matrix.module }}:koverVerify
