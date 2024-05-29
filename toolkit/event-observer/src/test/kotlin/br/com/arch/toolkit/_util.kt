@@ -22,3 +22,15 @@ internal fun <T> ResponseLiveData<T>.testSetValue(value: DataResult<T>?) {
         it.invoke(this, value)
     }
 }
+
+internal fun enableExceptionCheck() {
+    Class.forName("kotlinx.coroutines.test.TestScopeKt")
+        .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
+        .invoke(null, false)
+}
+
+internal fun disableExceptionCheck() {
+    Class.forName("kotlinx.coroutines.test.TestScopeKt")
+        .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
+        .invoke(null, true)
+}

@@ -32,12 +32,8 @@ class ObserveWrapperTest_data {
     private val mockedData: (String) -> Unit = mock()
     private val mockedListData: (List<String>) -> Unit = mock()
 
-    @Before
-    fun setup() {
+    init {
         Dispatchers.setMain(StandardTestDispatcher())
-        Class.forName("kotlinx.coroutines.test.TestScopeKt")
-            .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
-            .invoke(null, true)
     }
 
     @Before
