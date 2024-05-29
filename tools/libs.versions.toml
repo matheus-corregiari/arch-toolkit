@@ -18,17 +18,17 @@ build-sdk-target = "34"
 build-tools = "34.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "1.9.20"
-jetbrains-coroutines = "1.7.3" # Quebra a parte de tratamento de exception no ObserveWrapper
+jetbrains-kotlin = "1.9.23"
+jetbrains-coroutines = "1.8.0" # Quebra a parte de tratamento de exception no ObserveWrapper
 jetbrains-kover = "0.7.4"
 
 ## AndroidX
 androidx-appcompat = "1.6.1"
-androidx-annotation = "1.7.1"
+androidx-annotation = "1.8.0"
 androidx-constraint = "2.2.0-alpha13"
 androidx-recyclerview = "1.3.2"
-androidx-lifecycle-livedata = "2.7.0"
-androidx-lifecycle-runtime = "2.7.0"
+androidx-lifecycle-livedata = "2.8.0"
+androidx-lifecycle-runtime = "2.8.0"
 androidx-window = "1.2.0"
 androidx-splash = "1.0.1"
 androidx-test-core = "2.2.0"
@@ -37,12 +37,12 @@ androidx-test-espresso = "3.5.1"
 
 ## AndroidX Compose
 androidx-compose-compiler = "1.4.3"
-androidx-compose-material = "1.6.2"
-androidx-compose-material3 = "1.2.0"
+androidx-compose-material = "1.6.7"
+androidx-compose-material3 = "1.2.1"
 androidx-compose-constraint = "1.0.1"
-androidx-compose-core = "1.6.2"
-androidx-compose-lifecycle = "2.7.0"
-androidx-compose-activity = "1.8.2"
+androidx-compose-core = "1.6.7"
+androidx-compose-lifecycle = "2.8.0"
+androidx-compose-activity = "1.9.0"
 
 ## SquareUp
 square-retrofit = "2.9.0"
@@ -51,8 +51,8 @@ square-moshi = "1.14.0"
 square-timber = "5.0.1"
 
 ## Google
-google-material = "1.11.0"
-google-ksp = "1.9.10-1.0.13"
+google-material = "1.12.0"
+google-ksp = "1.9.23-1.0.20"
 
 ## Tools
 mockito = "5.6.0"
@@ -119,16 +119,16 @@ detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-form
 # ------------------------------------------------------------------------------------------------ #
 ## Comment this when you start to update some libraries
 x-normalize-001 = { group = "androidx.activity", name = "activity", version.ref = "androidx-compose-activity" }
-x-normalize-002 = { group = "androidx.annotation", name = "annotation-experimental", version = "1.4.0" }
+x-normalize-002 = { group = "androidx.annotation", name = "annotation-experimental", version = "1.4.1" }
 x-normalize-003 = { group = "androidx.arch.core", name = "core-common", version = "2.2.0" }
 x-normalize-004 = { group = "androidx.arch.core", name = "core-runtime", version = "2.2.0" }
 x-normalize-005 = { group = "androidx.collection", name = "collection", version = "1.4.0" }
-x-normalize-006 = { group = "androidx.core", name = "core", version = "1.12.0" }
-x-normalize-007 = { group = "androidx.core", name = "core-ktx", version = "1.12.0" }
+x-normalize-006 = { group = "androidx.core", name = "core", version = "1.13.1" }
+x-normalize-007 = { group = "androidx.core", name = "core-ktx", version = "1.13.1" }
 x-normalize-008 = { group = "androidx.customview", name = "customview", version = "1.1.0" }
 x-normalize-009 = { group = "androidx.drawerlayout", name = "drawerlayout", version = "1.2.0" }
-x-normalize-010 = { group = "androidx.lifecycle", name = "lifecycle-common", version = "2.7.0" }
-x-normalize-011 = { group = "androidx.viewpager2", name = "viewpager2", version = "1.1.0-beta02" }
+x-normalize-010 = { group = "androidx.lifecycle", name = "lifecycle-common", version = "2.8.0" }
+x-normalize-011 = { group = "androidx.viewpager2", name = "viewpager2", version = "1.1.0" }
 x-normalize-012 = { group = "androidx.test", name = "monitor", version = "1.6.1" }
 x-normalize-013 = { group = "androidx.test", name = "runner", version = "1.5.2" }
 x-normalize-014 = { group = "com.google.auto.value", name = "auto-value-annotations", version = "1.9" }

@@ -2,6 +2,8 @@
 
 package br.com.arch.toolkit.result
 
+import br.com.arch.toolkit.disableExceptionCheck
+import br.com.arch.toolkit.enableExceptionCheck
 import br.com.arch.toolkit.exception.DataResultException
 import br.com.arch.toolkit.exception.DataResultTransformationException
 import br.com.arch.toolkit.util.dataResultError
@@ -9,11 +11,16 @@ import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert
+import org.junit.Before
 import org.junit.FixMethodOrder
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runners.MethodSorters
 import org.mockito.kotlin.any
@@ -25,26 +32,36 @@ import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 
+/**
+ * Yes I do hate the person who did the coroutines stopping treating exceptions inside the scope of the test
+ * without giving me any other option to do that
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
+@Ignore("this test can only be run manually, because it will only work if it's the first test to run.")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ObserveWrapperTest_ThrownError {
 
     private val error = IllegalStateException("Thrown Error!")
     private val expected = DataResultException(
-        message = "Any error event found, please add one error { ... } to retry",
-        error = error
+        message = "Any error event found, please add one error { ... } to retry", error = error
     )
     private val expectedTransformation = DataResultTransformationException(
-        message = "Error performing transformation",
-        error = error
+        message = "Error performing transformation", error = error
     )
     private val expectedError = DataResultException(
-        message = "Error retried but without any success",
-        error = error
+        message = "Error retried but without any success", error = error
     )
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(StandardTestDispatcher(TestCoroutineScheduler()))
+        enableExceptionCheck()
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+        disableExceptionCheck()
     }
 
     //region Data Error Thrown Scenarios

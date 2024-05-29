@@ -10,6 +10,7 @@ package br.com.arch.toolkit.result
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import br.com.arch.toolkit.annotation.Experimental
@@ -1055,7 +1056,7 @@ class ObserveWrapper<T> internal constructor() {
         val observer = object : Observer<DataResult<T>?> {
             override fun onChanged(value: DataResult<T>?) {
                 scope.launchWithErrorTreatment {
-                    handleResult(value)
+                    handleResult(value) { owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
                     if (eventList.isEmpty()) {
                         liveData.removeObserver(this)
                     }
@@ -1094,7 +1095,10 @@ class ObserveWrapper<T> internal constructor() {
     }
     //endregion
 
-    private suspend fun handleResult(@Nullable result: DataResult<T>?) {
+    private suspend fun handleResult(
+        @Nullable result: DataResult<T>?,
+        evaluateBeforeDispatch: suspend () -> Boolean = { true }
+    ) {
         if (result == null) return
         val isLoading = result.status == LOADING
 
@@ -1102,56 +1106,56 @@ class ObserveWrapper<T> internal constructor() {
             return@iterate when {
                 // Handle None
                 result.status == NONE -> (event as? NoneEvent)?.wrapper
-                    ?.handle(null, transformDispatcher) == true
+                    ?.handle(null, transformDispatcher, evaluateBeforeDispatch) == true
 
                 // Handle Loading
                 event is LoadingEvent -> event.run {
-                    wrapper.handle(isLoading, transformDispatcher) && isLoading.not()
+                    wrapper.handle(isLoading, transformDispatcher, evaluateBeforeDispatch) && isLoading.not()
                 }
 
                 // Handle ShowLoading
                 event is ShowLoadingEvent && isLoading -> event.run {
-                    wrapper.handle(true, transformDispatcher)
+                    wrapper.handle(true, transformDispatcher, evaluateBeforeDispatch)
                 }
 
                 // Handle HideLoading
                 event is HideLoadingEvent && isLoading.not() -> event.run {
-                    wrapper.handle(isLoading, transformDispatcher)
+                    wrapper.handle(isLoading, transformDispatcher, evaluateBeforeDispatch)
                 }
 
                 // Handle Error
                 event is ErrorEvent && result.status == ERROR -> event.run {
-                    wrapper.handle(result.error, transformDispatcher)
+                    wrapper.handle(result.error, transformDispatcher, evaluateBeforeDispatch)
                 }
 
                 // Handle Success
                 event is SuccessEvent && result.status == SUCCESS -> event.run {
-                    wrapper.handle(null, transformDispatcher)
+                    wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
                 }
 
                 // Handle Data
                 event is DataEvent -> (event as DataEvent<T>).wrapper.let {
-                    it.handle(result.data, transformDispatcher) && (result.data != null)
+                    it.handle(result.data, transformDispatcher, evaluateBeforeDispatch) && (result.data != null)
                 }
 
                 // Handle Empty
                 event is EmptyEvent && result.isListType && result.isEmpty -> event.run {
-                    wrapper.handle(null, transformDispatcher)
+                    wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
                 }
 
                 // Handle Not Empty
                 event is NotEmptyEvent && result.isListType && result.isNotEmpty -> event.run {
-                    wrapper.handle(null, transformDispatcher)
+                    wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
                 }
 
                 // Handle Result
                 event is ResultEvent<*> -> (event as ResultEvent<T>).run {
-                    wrapper.handle(result, transformDispatcher)
+                    wrapper.handle(result, transformDispatcher, evaluateBeforeDispatch)
                 }
 
                 // Handle Status
                 event is StatusEvent -> event.run {
-                    wrapper.handle(result.status, transformDispatcher)
+                    wrapper.handle(result.status, transformDispatcher, evaluateBeforeDispatch)
                 }
 
                 else -> false
@@ -1231,10 +1235,17 @@ internal class WrapObserver<T, V>(
     @Nullable val observer: (suspend (T) -> Unit)? = null,
     @Nullable val emptyObserver: (suspend () -> Unit)? = null,
     @Nullable val transformer: (suspend (T) -> V)? = null,
-    @Nullable val transformerObserver: (suspend (V) -> Unit)? = null
+    @Nullable val transformerObserver: (suspend (V) -> Unit)? = null,
 ) {
 
-    suspend fun handle(@Nullable data: T?, dispatcher: CoroutineDispatcher) = when {
+    suspend fun handle(
+        @Nullable data: T?,
+        dispatcher: CoroutineDispatcher,
+        evaluate: suspend () -> Boolean
+    ) = when {
+
+        evaluate.invoke().not() -> false
+
         emptyObserver != null -> {
             emptyObserver.invoke()
             true
@@ -1245,14 +1256,15 @@ internal class WrapObserver<T, V>(
             true
         }
 
-        data != null -> executeTransformer(data, dispatcher)
+        data != null -> executeTransformer(data, dispatcher, evaluate)
 
         else -> false
     }
 
     private suspend fun executeTransformer(
         @Nullable data: T,
-        dispatcher: CoroutineDispatcher
+        dispatcher: CoroutineDispatcher,
+        evaluate: suspend () -> Boolean
     ) = when {
         transformerObserver == null -> false
         transformer == null -> false
@@ -1263,15 +1275,20 @@ internal class WrapObserver<T, V>(
 
             val catch = CoroutineExceptionHandler { _, error -> throw error }
             withContext(currentCoroutineContext() + catch) {
-                result.onSuccess { transformerObserver.invoke(it) }
-                    .onFailure {
+                if (evaluate.invoke()) {
+                    result.onSuccess {
+                        transformerObserver.invoke(it)
+                    }.onFailure {
                         throw DataResultTransformationException(
                             "Error performing transformation",
                             it
                         )
                     }
+                    true
+                } else {
+                    false
+                }
             }
-            true
         }
     }
 }
