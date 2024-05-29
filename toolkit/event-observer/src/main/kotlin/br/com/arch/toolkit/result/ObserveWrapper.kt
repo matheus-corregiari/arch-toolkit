@@ -1056,7 +1056,7 @@ class ObserveWrapper<T> internal constructor() {
         val observer = object : Observer<DataResult<T>?> {
             override fun onChanged(value: DataResult<T>?) {
                 scope.launchWithErrorTreatment {
-                    handleResult(value) { owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
+                    handleResult(value) { owner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) }
                     if (eventList.isEmpty()) {
                         liveData.removeObserver(this)
                     }
@@ -1110,7 +1110,11 @@ class ObserveWrapper<T> internal constructor() {
 
                 // Handle Loading
                 event is LoadingEvent -> event.run {
-                    wrapper.handle(isLoading, transformDispatcher, evaluateBeforeDispatch) && isLoading.not()
+                    wrapper.handle(
+                        isLoading,
+                        transformDispatcher,
+                        evaluateBeforeDispatch
+                    ) && isLoading.not()
                 }
 
                 // Handle ShowLoading
@@ -1135,7 +1139,11 @@ class ObserveWrapper<T> internal constructor() {
 
                 // Handle Data
                 event is DataEvent -> (event as DataEvent<T>).wrapper.let {
-                    it.handle(result.data, transformDispatcher, evaluateBeforeDispatch) && (result.data != null)
+                    it.handle(
+                        result.data,
+                        transformDispatcher,
+                        evaluateBeforeDispatch
+                    ) && (result.data != null)
                 }
 
                 // Handle Empty
