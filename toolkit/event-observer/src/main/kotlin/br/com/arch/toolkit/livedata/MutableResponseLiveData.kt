@@ -178,4 +178,9 @@ class MutableResponseLiveData<T> : ResponseLiveData<T> {
      * Like Uncle Ben said, with great powers...
      */
     public override fun postValue(value: DataResult<T>?) = super.postValue(value)
+
+    /**
+     * Like Uncle Ben said, with great powers...
+     */
+    public override fun safePostValue(value: DataResult<T>?) = super.safePostValue(value)
 }

@@ -7,7 +7,6 @@ import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.livedata.SwapResponseLiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.testSetValue
 import br.com.arch.toolkit.util.dataResultLoading
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -110,7 +109,7 @@ class SwapResponseLiveDataTest {
         Assert.assertTrue(swapLiveData.hasDataSource)
         Assert.assertNull(swapLiveData.value)
 
-        liveData.testSetValue(null)
+        liveData.value = null
         advanceUntilIdle()
         verifyBlocking(mockedObserver) { invoke("data") }
         Assert.assertTrue(swapLiveData.hasDataSource)

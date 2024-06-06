@@ -4,6 +4,7 @@ package br.com.arch.toolkit.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.util.mergeAll
@@ -69,7 +70,7 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         val result = SwapResponseLiveData(onMerge.invoke())
             .scope(scope)
             .transformDispatcher(transformDispatcher)
-        result.notifyOnlyOnDistinct = true
+        result.notifyOnlyOnDistinct(true)
 
         newSources.forEach { liveData ->
             if (!liveData.hasObservers()) liveData.observeForever(sourceObserver)
@@ -91,6 +92,7 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         return result
     }
 
+    @OptIn(Experimental::class)
     private fun <T, R> chainSources(
         scope: CoroutineScope,
         transformDispatcher: CoroutineDispatcher,
