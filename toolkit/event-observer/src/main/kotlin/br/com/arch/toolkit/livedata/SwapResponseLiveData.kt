@@ -1,12 +1,12 @@
 package br.com.arch.toolkit.livedata
 
-import android.os.Looper
 import androidx.lifecycle.MediatorLiveData
 import br.com.arch.toolkit.exception.DataResultTransformationException
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -44,7 +44,10 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
     /**
      * Flag to set whether we're notifying on every change or only on distinct values
      */
-    var notifyOnlyOnDistinct: Boolean = false
+    private var notifyOnlyOnDistinct: Boolean = false
+    fun notifyOnlyOnDistinct(notifyOnlyOnDistinct: Boolean) = apply {
+        this.notifyOnlyOnDistinct = notifyOnlyOnDistinct
+    }
 
     /**
      * Changes the actual DataSource
@@ -106,7 +109,9 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
      * Removes source
      */
     fun clearSource() {
-        lastSource?.let { sourceLiveData.removeSource(it) }
+        lastSource?.let {
+            scope.launch(Dispatchers.Main) { sourceLiveData.removeSource(it) }
+        }
         lastSource = null
     }
 
@@ -123,12 +128,14 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
 
     override fun onActive() {
         super.onActive()
-        if (!sourceLiveData.hasObservers()) sourceLiveData.observeForever(sourceObserver)
+        scope.launch(Dispatchers.Main) {
+            if (!sourceLiveData.hasObservers()) sourceLiveData.observeForever(sourceObserver)
+        }
     }
 
     override fun onInactive() {
         super.onInactive()
-        sourceLiveData.removeObserver(sourceObserver)
+        scope.launch(Dispatchers.Main) { sourceLiveData.removeObserver(sourceObserver) }
     }
 
     private fun <R> executeSwap(
@@ -137,37 +144,36 @@ class SwapResponseLiveData<T> : ResponseLiveData<T> {
         transformation: (DataResult<R>) -> DataResult<T>?
     ) {
         clearSource()
-        sourceLiveData.addSource(source) { data ->
-            scope.launch {
-                withContext(transformDispatcher) {
-                    transformation.runCatching { invoke(data) }
-                }.onFailure {
-                    val error = DataResultTransformationException(
-                        "Error performing swapSource, please check your transformations",
-                        it
-                    )
-
-                    val result = DataResult<T>(null, error, DataResultStatus.ERROR)
-                    if (value == result && notifyOnlyOnDistinct) return@onFailure
-
-                    if (Looper.getMainLooper()?.isCurrentThread == true) {
-                        value = result
-                    } else {
-                        postValue(result)
-                    }
-                }.getOrNull().let {
-                    if (value == it && notifyOnlyOnDistinct) return@let
-
-                    if (Looper.getMainLooper()?.isCurrentThread == true) {
-                        value = it
-                    } else {
-                        postValue(it)
-                    }
-
-                    if (it?.status != DataResultStatus.LOADING && discardAfterLoading) value = null
-                }
+        lastSource = source
+        scope.launch(Dispatchers.Main) {
+            sourceLiveData.addSource(source) { data ->
+                onChanged(data, discardAfterLoading, transformation)
             }
         }
-        lastSource = source
+    }
+
+    private fun <R> onChanged(
+        data: DataResult<R>?,
+        discardAfterLoading: Boolean,
+        transformation: (DataResult<R>) -> DataResult<T>?
+    ) = scope.launch {
+        withContext(transformDispatcher) {
+            transformation.runCatching { data?.let(::invoke) }
+        }.onFailure {
+            val error = DataResultTransformationException(
+                "Error performing swapSource, please check your transformations",
+                it
+            )
+
+            val result = DataResult<T>(null, error, DataResultStatus.ERROR)
+            if (value == result && notifyOnlyOnDistinct) return@onFailure
+
+            safePostValue(result)
+        }.getOrNull().let {
+            if (value == it && notifyOnlyOnDistinct) return@let
+            safePostValue(it)
+
+            if (it?.status != DataResultStatus.LOADING && discardAfterLoading) value = null
+        }
     }
 }

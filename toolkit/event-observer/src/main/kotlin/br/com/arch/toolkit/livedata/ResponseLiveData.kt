@@ -2,6 +2,7 @@
 
 package br.com.arch.toolkit.livedata
 
+import android.os.Looper
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
@@ -328,6 +329,17 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
             .transformDispatcher(transformDispatcher)
             .apply(wrapperConfig)
             .attachTo(this, owner)
+    }
+
+    /**
+     * @see br.com.arch.toolkit.util.safePostValue
+     */
+    protected open fun safePostValue(value: DataResult<T>?) {
+        if (Looper.getMainLooper()?.isCurrentThread == true) {
+            this.value = value
+        } else {
+            postValue(value)
+        }
     }
 
     /**
