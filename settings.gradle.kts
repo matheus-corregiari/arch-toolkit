@@ -31,6 +31,8 @@ include(":toolkit:event-observer")
 include(":toolkit:foldable")
 include(":toolkit:recycler-adapter")
 include(":toolkit:splinter")
+include(":toolkit:storage")
+include(":toolkit:util")
 include(":toolkit:statemachine")
 
 // Samples
