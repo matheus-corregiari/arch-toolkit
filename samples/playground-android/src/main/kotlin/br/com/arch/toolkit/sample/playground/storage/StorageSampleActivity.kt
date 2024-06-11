@@ -3,13 +3,15 @@
 package br.com.arch.toolkit.sample.playground.storage
 
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.sample.playground.R
 import br.com.arch.toolkit.sample.playground.statemachine.BaseActivity
 import br.com.arch.toolkit.storage.StorageCreator
+import kotlinx.coroutines.launch
 import java.util.UUID
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
 class StorageSampleActivity : BaseActivity(R.layout.activity_storage_sample) {
 
@@ -40,19 +42,21 @@ class StorageSampleActivity : BaseActivity(R.layout.activity_storage_sample) {
         super.onCreate(savedInstanceState)
 
         StorageCreator.setDefaultStorage(StorageCreator::encryptedSharedPref)
-        StorageCreator.setDefaultThreshold(2000000.milliseconds)
+        StorageCreator.setDefaultThreshold(2.minutes)
 
-        // Primitive
-        intDataView.setData(intData, ::generateInt)
-        longDataView.setData(longData, ::generateLong)
-        doubleDataView.setData(doubleData, ::generateDouble)
-        floatDataView.setData(floatData, ::generateFloat)
-        stringDataView.setData(stringData, ::generateString)
-        booleanDataView.setData(booleanData, ::generateBoolean)
+        lifecycleScope.launch {
+            // Primitive
+            intDataView.setData(intData, ::generateInt)
+            longDataView.setData(longData, ::generateLong)
+            doubleDataView.setData(doubleData, ::generateDouble)
+            floatDataView.setData(floatData, ::generateFloat)
+            stringDataView.setData(stringData, ::generateString)
+            booleanDataView.setData(booleanData, ::generateBoolean)
 
-        // Complex
-        enumDataView.setData(enumData, ::generateEnum)
-        classDataView.setData(classData, ::generateClass)
+            // Complex
+            enumDataView.setData(enumData, ::generateEnum)
+            classDataView.setData(classData, ::generateClass)
+        }
     }
 
     private fun generateInt(): SampleData.NewData<Int> {

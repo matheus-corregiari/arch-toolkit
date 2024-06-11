@@ -51,8 +51,9 @@ class SampleData<T : Any>(private val name: String, default: T, kClass: KClass<T
         StorageCreator.defaultStorage().apply {
             remove(this@SampleData.name)
             remove("nullable-${this@SampleData.name}")
-            remove("list-${this@SampleData.name}")
             remove("nullable-list-${this@SampleData.name}")
+            remove("list-${this@SampleData.name}")
+            remove("nullable-map-${this@SampleData.name}")
             remove("map-${this@SampleData.name}")
         }
     }

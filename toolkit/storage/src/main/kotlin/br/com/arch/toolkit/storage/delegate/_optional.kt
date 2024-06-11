@@ -56,7 +56,9 @@ class OptionalStorageDelegate<T : Any> internal constructor(
 ) {
 
     private val lastAccess: ThresholdData<T> by lazy {
-        StorageCreator.memory["threshold-$threshold-${name()}", ThresholdData<T>(threshold)]
+        val key = "threshold-${threshold.inWholeMilliseconds}-${name()}"
+        StorageCreator.memory[key]
+            ?: ThresholdData<T>(threshold).also { StorageCreator.memory[key] = it }
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T? {

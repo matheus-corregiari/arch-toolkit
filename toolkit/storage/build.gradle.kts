@@ -16,6 +16,6 @@ dependencies {
 
     // Tools
     implementation(libraries.square.timber)
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation(libraries.google.gson)
 
 }

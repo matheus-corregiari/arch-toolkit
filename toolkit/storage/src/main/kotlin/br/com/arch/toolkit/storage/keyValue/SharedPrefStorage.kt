@@ -93,16 +93,20 @@ sealed class SharedPrefStorage(
         )
     )
 
-    override fun <T : Any> get(key: String): T? = synchronized(lock) {
-        when {
-            contains(key) -> sharedPref.get<T>(key)
-            else -> null
+    override fun <T : Any> get(key: String): T? = synchronized(lock) { sharedPref[key] }
+
+    override fun <T : Any> get(key: String, kClass: KClass<T>): T? = synchronized(lock) {
+        runCatching {
+            val data = sharedPref.get<T>(key) ?: throw NullPointerException("Key $key not found")
+            if (data is String && kClass != String::class) {
+                Gson().fromJson(data, kClass.java)
+            } else {
+                data
+            }
+        }.getOrElse {
+            Gson().fromJson(get<String>(key), kClass.java)
         }
     }
-
-    override fun <T : Any> get(key: String, kClass: KClass<T>): T? = runCatching {
-        Gson().fromJson(get<String>(key), kClass.java)
-    }.getOrElse { get(key) }
 
     override fun <T : Any> set(key: String, value: T?) = when {
         /* Validate Value */

@@ -61,7 +61,7 @@ class MemoryStorage internal constructor(override val name: String) : KeyValueSt
         /* Validate Value */
         value == null -> remove(key)
         value == null.toString() -> remove(key)
-        (value as? String).isNullOrBlank() -> remove(key)
+        (value as? String)?.isBlank() == true -> remove(key)
 
         /* Validate Key */
         key.isBlank() -> remove(key)

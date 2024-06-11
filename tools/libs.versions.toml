@@ -55,6 +55,7 @@ square-timber = "5.0.1"
 
 ## Google
 google-material = "1.12.0"
+google-gson = "2.11.0"
 google-ksp = "2.0.0-1.0.22"
 
 ## Tools
@@ -112,6 +113,7 @@ square-timber = { group = "com.jakewharton.timber", name = "timber", version.ref
 
 ## Google
 google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
+google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "google-gson" }
 
 ## Tools
 mockito-test-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
