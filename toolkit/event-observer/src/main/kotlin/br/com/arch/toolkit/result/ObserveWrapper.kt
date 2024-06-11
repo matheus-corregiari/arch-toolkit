@@ -1251,7 +1251,6 @@ internal class WrapObserver<T, V>(
         dispatcher: CoroutineDispatcher,
         evaluate: suspend () -> Boolean
     ) = when {
-
         evaluate.invoke().not() -> false
 
         emptyObserver != null -> {

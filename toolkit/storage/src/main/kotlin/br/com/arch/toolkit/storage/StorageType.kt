@@ -19,5 +19,5 @@ enum class StorageType {
     /**
      * This suggests a more secure way of using SharedPreferences, likely employing encryption to protect the stored data.
      */
-    ENCRYPTED_SHARED_PREF;
+    ENCRYPTED_SHARED_PREF
 }

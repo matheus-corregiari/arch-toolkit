@@ -80,9 +80,18 @@ class ThresholdData<T>(private val duration: Duration) {
     }
 
     fun get(storageName: String, name: String): T? = when {
-        isExpired() -> run { clear();null }
-        storageName != this.storageName -> run { clear(); null }
-        name != this.name -> run { clear(); null }
+        isExpired() -> run {
+            clear()
+            null
+        }
+        storageName != this.storageName -> run {
+            clear()
+            null
+        }
+        name != this.name -> run {
+            clear()
+            null
+        }
         else -> this.data.ifNull { clear() }
     }
 

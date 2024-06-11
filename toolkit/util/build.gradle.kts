@@ -6,6 +6,12 @@ plugins {
 android.namespace = "br.com.arch.toolkit.util"
 
 dependencies {
+    // Other Modules
+    implementation(project(":toolkit:storage"))
+
+    // JetBrains
+    implementation(libraries.jetbrains.coroutines.android)
+
     // Androidx
     implementation(libraries.androidx.startup)
 }

@@ -1,6 +1,8 @@
 package br.com.arch.toolkit.storage.util
 
 import android.content.SharedPreferences
+import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * This Kotlin extension function provides a more concise way to edit a SharedPreferences object.
@@ -53,16 +55,37 @@ fun SharedPreferences.edit(func: SharedPreferences.Editor.() -> Unit) {
  * ```
  * > This extension function simplifies the process of storing various data types in SharedPreferences by providing a concise and type-safe way to do so.
  */
-@Throws(UnsupportedOperationException::class, IllegalArgumentException::class)
-operator fun <T> SharedPreferences.set(key: String, value: T) = when (value) {
-    is String? -> edit { putString(key, value) }
-    is String -> edit { putString(key, value) }
-    is Set<*>? -> edit { putStringSet(key, value?.mapNotNull { it?.toString() }?.toSet()) }
-    is Set<*> -> edit { putStringSet(key, value.mapNotNull { it?.toString() }.toSet()) }
-    is Int -> edit { putInt(key, value) }
-    is Boolean -> edit { putBoolean(key, value) }
-    is Float -> edit { putFloat(key, value) }
-    is Long -> edit { putLong(key, value) }
+@Throws(UnsupportedOperationException::class)
+operator fun <T : Any?> SharedPreferences.set(key: String, value: T) =
+    when (value) {
+        null -> edit { remove(key) }
 
-    else -> throw UnsupportedOperationException("Not yet implemented: $value")
+        // Primitive data types
+        is String? -> edit { putString(key, value) }
+        is String -> edit { putString(key, value) }
+        is Set<*>? -> edit { putStringSet(key, value.mapNotNull { it?.toString() }.toSet()) }
+        is Set<*> -> edit { putStringSet(key, value.mapNotNull { it?.toString() }.toSet()) }
+        is Int? -> edit { putInt(key, value) }
+        is Int -> edit { putInt(key, value) }
+        is Boolean? -> edit { putBoolean(key, value) }
+        is Boolean -> edit { putBoolean(key, value) }
+        is Float? -> edit { putFloat(key, value) }
+        is Float -> edit { putFloat(key, value) }
+        is Double? -> edit { putString(key, value.toString()) }
+        is Double -> edit { putString(key, value.toString()) }
+        is Long? -> edit { putLong(key, value) }
+        is Long -> edit { putLong(key, value) }
+
+        // Other data types
+        is JSONArray? -> edit { putString(key, value.toString()) }
+        is JSONArray -> edit { putString(key, value.toString()) }
+        is JSONObject? -> edit { putString(key, value.toString()) }
+        is JSONObject -> edit { putString(key, value.toString()) }
+
+        else -> throw UnsupportedOperationException("Not yet implemented: $value")
+    }
+
+operator fun <T : Any> SharedPreferences.get(key: String) = when {
+    contains(key) -> all[key] as? T
+    else -> null
 }

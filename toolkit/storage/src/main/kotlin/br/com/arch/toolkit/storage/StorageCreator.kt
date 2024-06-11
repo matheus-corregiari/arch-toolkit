@@ -1,9 +1,9 @@
 package br.com.arch.toolkit.storage
 
 import android.content.Context
-import br.com.arch.toolkit.storage.impl.EncryptedSharedPrefStorage
-import br.com.arch.toolkit.storage.impl.MemoryStorage
-import br.com.arch.toolkit.storage.impl.SharedPrefStorage
+import br.com.arch.toolkit.storage.keyValue.KeyValueStorage
+import br.com.arch.toolkit.storage.keyValue.MemoryStorage
+import br.com.arch.toolkit.storage.keyValue.SharedPrefStorage
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -31,35 +31,35 @@ object StorageCreator {
     /**
      * A nullable property to hold an instance of EncryptedSharedPrefStorage. It's initialized to null and later assigned a value within the init() method.
      */
-    private var _encryptedSharedPref: EncryptedSharedPrefStorage? = null
+    private var _encryptedSharedPref: SharedPrefStorage.Encrypted? = null
 
     /**
      * Similar to _encryptedSharedPref, it stores an instance of SharedPrefStorage.
      */
-    private var _sharedPref: SharedPrefStorage? = null
+    private var _sharedPref: SharedPrefStorage.Regular? = null
 
     /**
      * A property representing a time duration, initialized to 300 milliseconds. It can be modified using the setDefaultThreshold() method.
      */
-    internal var defaultThreshold: Duration = 300.milliseconds
+    var defaultThreshold: Duration = 300.milliseconds
         private set
 
     /**
      * A property representing a function that returns an instance of KeyValueStorage.
      * It's initialized to a function that returns an instance of encryptedSharedPref.
      */
-    internal var defaultStorage: () -> KeyValueStorage = { encryptedSharedPref }
+    var defaultStorage: () -> KeyValueStorage = { memory }
         private set
 
     /**
-     * An instance of MemoryStorage with the name "default", likely used for temporary in-memory data storage.
+     * An instance of MemoryStorage with the name "default-memory", likely used for temporary in-memory data storage.
      */
-    val memory = MemoryStorage("default")
+    val memory = MemoryStorage("default-memory")
 
     /**
      * A computed property that provides access to the _encryptedSharedPref instance. It throws an exception if accessed before initialization.
      */
-    val encryptedSharedPref: EncryptedSharedPrefStorage
+    val encryptedSharedPref: SharedPrefStorage.Encrypted
         get() = requireNotNull(_encryptedSharedPref) {
             "Not initialized, Be aware to call init() before use"
         }
@@ -67,8 +67,8 @@ object StorageCreator {
     /**
      * Similar to encryptedSharedPref, it provides access to the _sharedPref instance, ensuring it's initialized.
      */
-    val sharedPref: EncryptedSharedPrefStorage
-        get() = requireNotNull(_encryptedSharedPref) {
+    val sharedPref: SharedPrefStorage.Regular
+        get() = requireNotNull(_sharedPref) {
             "Not initialized, Be aware to call init() before use"
         }
 
@@ -76,8 +76,8 @@ object StorageCreator {
      * This function initializes the _encryptedSharedPref and _sharedPref properties using the provided Android Context. It's crucial to call this method before accessing these storage instances.
      */
     fun init(context: Context) {
-        _encryptedSharedPref = EncryptedSharedPrefStorage(context, "default")
-        _sharedPref = SharedPrefStorage(context, "default")
+        _encryptedSharedPref = SharedPrefStorage.Encrypted(context, "default-encrypted")
+        _sharedPref = SharedPrefStorage.Regular(context, "default-regular")
     }
 
     /**
@@ -98,8 +98,8 @@ object StorageCreator {
     fun createKeyValueStorage(context: Context, name: String, type: StorageType) =
         when (type) {
             StorageType.MEMORY -> MemoryStorage(name)
-            StorageType.ENCRYPTED_SHARED_PREF -> EncryptedSharedPrefStorage(context, name)
-            StorageType.SHARED_PREF -> SharedPrefStorage(context, name)
+            StorageType.ENCRYPTED_SHARED_PREF -> SharedPrefStorage.Encrypted(context, name)
+            StorageType.SHARED_PREF -> SharedPrefStorage.Regular(context, name)
         }
 
     /**

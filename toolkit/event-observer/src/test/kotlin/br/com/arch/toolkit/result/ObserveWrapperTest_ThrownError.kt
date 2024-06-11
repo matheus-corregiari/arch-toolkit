@@ -43,13 +43,16 @@ class ObserveWrapperTest_ThrownError {
 
     private val error = IllegalStateException("Thrown Error!")
     private val expected = DataResultException(
-        message = "Any error event found, please add one error { ... } to retry", error = error
+        message = "Any error event found, please add one error { ... } to retry",
+        error = error
     )
     private val expectedTransformation = DataResultTransformationException(
-        message = "Error performing transformation", error = error
+        message = "Error performing transformation",
+        error = error
     )
     private val expectedError = DataResultException(
-        message = "Error retried but without any success", error = error
+        message = "Error retried but without any success",
+        error = error
     )
 
     @Before

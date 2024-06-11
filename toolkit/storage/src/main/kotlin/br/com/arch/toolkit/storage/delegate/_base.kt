@@ -1,19 +1,13 @@
 package br.com.arch.toolkit.storage.delegate
 
-import br.com.arch.toolkit.storage.KeyValueStorage
-import br.com.arch.toolkit.storage.util.ThresholdData
+import br.com.arch.toolkit.storage.keyValue.KeyValueStorage
 import timber.log.Timber
-import kotlin.time.Duration
 
-
-open class BaseStorageDelegate<T> internal constructor(
+sealed class BaseStorageDelegate<T : Any>(
     private val name: () -> String,
     private val default: (() -> T)?,
-    private val storage: () -> KeyValueStorage,
-    threshold: Duration,
+    private val storage: () -> KeyValueStorage
 ) {
-
-    protected val lastAccess = ThresholdData<T>(threshold)
 
     protected fun name() = name.runCatching { invoke().takeIf { it.isNotBlank() } }
         .onFailure { it.log("[Storage] Failed to get name for key value storage") }
@@ -27,7 +21,7 @@ open class BaseStorageDelegate<T> internal constructor(
         .onFailure { it.log("[Storage] Failed to get default value for ${name()}") }
         .getOrThrow()
 
-    private fun Throwable.log(message: String) {
+    protected fun Throwable.log(message: String) {
         Timber.tag("Storage Delegate").e(this, message)
     }
 
