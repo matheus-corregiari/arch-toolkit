@@ -6,6 +6,10 @@ plugins {
 android.namespace = "br.com.arch.toolkit.sample.livedata"
 android.defaultConfig.applicationId("br.com.arch.toolkit.sample.livedata")
 
+androidComponents.beforeVariants {
+    it.enable = it.name == "debug"
+}
+
 dependencies {
     // Other Modules
     implementation(project(":toolkit:event-observer"))

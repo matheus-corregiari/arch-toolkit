@@ -25,7 +25,7 @@ annotation class SplinterConfig(val id: String = "", val quiet: Boolean = false)
  * This evil class is responsible to teach Retrofit how to deliver a Splinter, ResponseLiveData or ResponseFlow
  * directly from the retrofit api interface ^^
  */
-@OptIn(Experimental::class)
+@Experimental
 class SplinterFactory : CallAdapter.Factory() {
     override fun get(
         returnType: Type,
@@ -49,7 +49,7 @@ class SplinterFactory : CallAdapter.Factory() {
                 else -> error("Resource must be Parameterized")
             }
 
-        val splinterConfig = annotations.filterIsInstance(SplinterConfig::class.java).firstOrNull()
+        val splinterConfig = annotations.filterIsInstance<SplinterConfig>().firstOrNull()
             ?: SplinterConfig("", false)
 
         return when (returnClass) {
@@ -112,6 +112,7 @@ private sealed class Adapter<T, R>(
         override fun adapt(call: Call<T>) = executeWithSplinter(call).liveData
     }
 
+    @Experimental
     class AsFlow<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
         Adapter<T, ResponseFlow<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         @OptIn(Experimental::class)

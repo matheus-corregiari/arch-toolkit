@@ -3,6 +3,10 @@ plugins { id("toolkit-android-sample") }
 android.namespace = "br.com.arch.toolkit.sample.playground"
 android.defaultConfig.applicationId("br.com.arch.toolkit.sample.playground")
 
+androidComponents.beforeVariants {
+    it.enable = it.name == "debug"
+}
+
 dependencies {
     // Other Modules
     implementation(project(":toolkit:event-observer"))

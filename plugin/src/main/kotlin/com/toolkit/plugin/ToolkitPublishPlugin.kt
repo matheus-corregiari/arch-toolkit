@@ -167,31 +167,36 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
             }
         }
 
-        val configList = listOf("implementation", "api").mapNotNull(configurations::findByName)
-        if (configList.isNotEmpty()) {
+        val mapOfConfigurations = mapOf(
+            "runtime" to "implementation",
+            "compile" to "api",
+            "provided" to "runtimeOnly"
+        ).mapNotNull { (scope, configuration) ->
+            configurations.findByName(configuration)?.let { scope to it }
+        }.toMap()
+        if (mapOfConfigurations.isNotEmpty()) {
             pom.withXml { xml ->
                 val dependencyNode: Node = xml.asNode().appendNode("dependencies")
-                configList.forEach { config ->
-                    config.dependencies.forEach { dependencyNode.addDependency(it) }
+                mapOfConfigurations.forEach { (scope, configuration) ->
+                    configuration.dependencies.forEach { dependencyNode.addDependency(it, scope) }
                 }
             }
         }
     }
 
-    private fun Node.addDependency(dependency: Dependency) {
+    private fun Node.addDependency(dependency: Dependency, scope: String) {
         val projectDependency =
             DefaultGroovyMethods.getProperties(dependency)["dependencyProject"] as? Project
 
         if (projectDependency != null) {
             val publishExtension = projectDependency.publishing
-            publishExtension.publications.filterIsInstance(MavenPublication::class.java)
-                .onEach { pub ->
-                    val node = appendNode("dependency")
-                    node.appendNode("groupId", pub.groupId)
-                    node.appendNode("artifactId", pub.artifactId)
-                    node.appendNode("version", pub.version)
-                    node.appendNode("scope", "runtime")
-                }
+            publishExtension.publications.filterIsInstance<MavenPublication>().onEach { pub ->
+                val node = appendNode("dependency")
+                node.appendNode("groupId", pub.groupId)
+                node.appendNode("artifactId", pub.artifactId)
+                node.appendNode("version", pub.version)
+                node.appendNode("scope", scope)
+            }
         } else {
             val group = dependency.group.takeIf { it.isNullOrBlank().not() }
             val name = dependency.name.takeIf { it.isNullOrBlank().not() }
