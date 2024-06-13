@@ -8,9 +8,7 @@ import br.com.arch.toolkit.storage.StorageType
 import br.com.arch.toolkit.storage.util.edit
 import br.com.arch.toolkit.storage.util.get
 import br.com.arch.toolkit.storage.util.set
-import com.google.gson.Gson
 import timber.log.Timber
-import kotlin.reflect.KClass
 
 /**
  * This code defines a class called SharedPrefStorage that implements an interface called KeyValueStorage. This class is designed to store key-value pairs using Android's SharedPreferences system. Let's break down the code step by step:
@@ -63,18 +61,16 @@ import kotlin.reflect.KClass
  * - It can have performance issues if used excessively.
  * > For more complex data or larger datasets, consider using other storage options like Room database or DataStore.
  */
-// TODO Make it work also with complex data (transforming in JSON to save it into the disk)
 sealed class SharedPrefStorage(
     override val type: StorageType,
     private val sharedPref: SharedPreferences
 ) : KeyValueStorage {
 
     private val lock = Object()
+    private val mirageStorage: KeyValueStorage by lazy { MemoryStorage(name) }
 
     init {
-        sharedPref.registerOnSharedPreferenceChangeListener { _, key ->
-            Timber.tag("[Storage $name]").i("$key changed")
-        }
+        sharedPref.registerOnSharedPreferenceChangeListener { _, key -> log("Key $key changed") }
     }
 
     class Regular(context: Context, override val name: String) : SharedPrefStorage(
@@ -93,19 +89,13 @@ sealed class SharedPrefStorage(
         )
     )
 
-    override fun <T : Any> get(key: String): T? = synchronized(lock) { sharedPref[key] }
-
-    override fun <T : Any> get(key: String, kClass: KClass<T>): T? = synchronized(lock) {
-        runCatching {
-            val data = sharedPref.get<T>(key) ?: throw NullPointerException("Key $key not found")
-            if (data is String && kClass != String::class) {
-                Gson().fromJson(data, kClass.java)
-            } else {
-                data
-            }
-        }.getOrElse {
-            Gson().fromJson(get<String>(key), kClass.java)
-        }
+    override fun <T : Any> get(key: String): T? = synchronized(lock) {
+        mirageStorage[key] ?: runCatching { sharedPref.get<T>(key) }
+            .onFailure { log(it, "Failure getting key $key") }
+            .onSuccess {
+                log("Key $key retrieved")
+                mirageStorage[key] = it
+            }.getOrThrow()
     }
 
     override fun <T : Any> set(key: String, value: T?) = when {
@@ -119,27 +109,50 @@ sealed class SharedPrefStorage(
         key == null.toString() -> remove(key)
 
         /* If reaches here, the Key and the Value are good to go! */
-        else -> synchronized(lock) { sharedPref[key] = value }
-    }
-
-    override fun <T : Any> set(key: String, value: T?, kClass: KClass<T>) {
-        runCatching {
-            set(key, value)
-        }.getOrElse {
-            value ?: throw it
-            set(key, Gson().toJson(value))
+        else -> synchronized(lock) {
+            runCatching {
+                sharedPref[key] = value
+            }.onFailure {
+                log(it, "Failure setting key $key to $value")
+            }.onSuccess {
+                log("Key $key set to $value")
+                mirageStorage[key] = value
+            }.getOrThrow()
         }
     }
 
     override fun remove(key: String) = synchronized(lock) {
-        if (contains(key)) sharedPref.edit { remove(key) }
+        runCatching {
+            if (contains(key)) {
+                sharedPref.edit { remove(key) }
+                log("Key $key removed")
+            }
+        }.onFailure { log(it, "Failure removing key $key") }
+            .onSuccess { mirageStorage.remove(key) }
+            .getOrThrow()
     }
 
-    override fun clear() = synchronized(lock) { sharedPref.edit { clear() } }
+    override fun clear() = synchronized(lock) {
+        runCatching {
+            sharedPref.edit { clear() }
+        }.onFailure { log(it, "Failure clearing storage $name") }
+            .onSuccess {
+                log("Storage $name cleared")
+                mirageStorage.clear()
+            }.getOrThrow()
+    }
 
-    override fun contains(key: String): Boolean = sharedPref.contains(key)
+    override fun contains(key: String): Boolean = run { sharedPref.contains(key) }
 
     override fun size(): Int = sharedPref.all.count()
 
     override fun keys(): List<String> = sharedPref.all.keys.toList()
+
+    private fun log(error: Throwable, message: String) {
+        Timber.tag("[Storage $name]").e(error, message)
+    }
+
+    private fun log(message: String) {
+        Timber.tag("[Storage $name]").i(message)
+    }
 }

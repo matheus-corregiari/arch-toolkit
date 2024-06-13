@@ -7,10 +7,13 @@ import androidx.lifecycle.lifecycleScope
 import br.com.arch.toolkit.delegate.viewProvider
 import br.com.arch.toolkit.sample.playground.R
 import br.com.arch.toolkit.sample.playground.statemachine.BaseActivity
-import br.com.arch.toolkit.storage.StorageCreator
+import br.com.arch.toolkit.storage.ComplexDataParser
+import br.com.arch.toolkit.storage.Storage
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import java.util.UUID
 import kotlin.random.Random
+import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.minutes
 
 class StorageSampleActivity : BaseActivity(R.layout.activity_storage_sample) {
@@ -24,7 +27,7 @@ class StorageSampleActivity : BaseActivity(R.layout.activity_storage_sample) {
     private val booleanData = SampleData("boolean", false, Boolean::class)
 
     // Complex
-    private val enumData = SampleData("TestEnum", TestEnum.FOUR, TestEnum::class)
+    private val enumData = SampleData("TestEnum", TestEnum.ONE, TestEnum::class)
     private val classData = SampleData("TestClass", TestClass("test"), TestClass::class)
 
     //region Views
@@ -41,8 +44,16 @@ class StorageSampleActivity : BaseActivity(R.layout.activity_storage_sample) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        StorageCreator.setDefaultStorage(StorageCreator::encryptedSharedPref)
-        StorageCreator.setDefaultThreshold(2.minutes)
+        Storage.Settings.setDefaultStorage(Storage.KeyValue.encrypted)
+        Storage.Settings.setDefaultThreshold(2.minutes)
+        Storage.Settings.setComplexDataParser(object : ComplexDataParser {
+            val gson = Gson()
+
+            override fun <T : Any> fromJson(json: String, classToParse: KClass<T>) =
+                gson.fromJson(json, classToParse.java)
+
+            override fun <T : Any> toJson(data: T): String = gson.toJson(data)
+        })
 
         lifecycleScope.launch {
             // Primitive
@@ -113,7 +124,7 @@ class StorageSampleActivity : BaseActivity(R.layout.activity_storage_sample) {
         )
     }
 
-    enum class TestEnum { FOUR }
+    enum class TestEnum { ONE }
     data class TestClass(val value: String)
 
     private fun <T> Boolean.ifTrue(block: () -> T) = if (this) {

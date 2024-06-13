@@ -68,6 +68,7 @@ robolectric = "4.9"
 [libraries]
 ## JetBrains
 jetbrains-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "jetbrains-kotlin" }
+jetbrains-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "jetbrains-kotlin" }
 jetbrains-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "jetbrains-serialization" }
 jetbrains-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "jetbrains-coroutines" }
 jetbrains-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "jetbrains-coroutines" }

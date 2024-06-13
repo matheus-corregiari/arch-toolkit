@@ -1,8 +1,7 @@
 package br.com.arch.toolkit.storage.util
 
 import android.content.SharedPreferences
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlin.reflect.KClass
 
 /**
  * This Kotlin extension function provides a more concise way to edit a SharedPreferences object.
@@ -63,12 +62,10 @@ operator fun <T : Any?> SharedPreferences.set(key: String, value: T) =
         // Primitive data types
         is String? -> edit { putString(key, value) }
         is String -> edit { putString(key, value) }
-        is Set<*>? -> edit { putStringSet(key, value.mapNotNull { it?.toString() }.toSet()) }
-        is Set<*> -> edit { putStringSet(key, value.mapNotNull { it?.toString() }.toSet()) }
-        is Int? -> edit { putInt(key, value) }
-        is Int -> edit { putInt(key, value) }
         is Boolean? -> edit { putBoolean(key, value) }
         is Boolean -> edit { putBoolean(key, value) }
+        is Int? -> edit { putInt(key, value) }
+        is Int -> edit { putInt(key, value) }
         is Float? -> edit { putFloat(key, value) }
         is Float -> edit { putFloat(key, value) }
         is Double? -> edit { putString(key, value.toString()) }
@@ -76,16 +73,23 @@ operator fun <T : Any?> SharedPreferences.set(key: String, value: T) =
         is Long? -> edit { putLong(key, value) }
         is Long -> edit { putLong(key, value) }
 
-        // Other data types
-        is JSONArray? -> edit { putString(key, value.toString()) }
-        is JSONArray -> edit { putString(key, value.toString()) }
-        is JSONObject? -> edit { putString(key, value.toString()) }
-        is JSONObject -> edit { putString(key, value.toString()) }
-
         else -> throw UnsupportedOperationException("Not yet implemented: $value")
     }
 
+@Suppress("UNCHECKED_CAST")
 operator fun <T : Any> SharedPreferences.get(key: String) = when {
     contains(key) -> all[key] as? T
     else -> null
+}
+
+internal fun <T : Any> KClass<T>.isPrimitiveForSharedPref() = when (this) {
+    // Primitive data types
+    String::class,
+    Int::class,
+    Boolean::class,
+    Float::class,
+    Double::class,
+    Long::class -> true
+
+    else -> false
 }

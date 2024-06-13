@@ -2,7 +2,6 @@ package br.com.arch.toolkit.storage.keyValue
 
 import br.com.arch.toolkit.storage.StorageType
 import kotlin.collections.set
-import kotlin.reflect.KClass
 
 /**
  * This code defines a class named MemoryStorage that implements the KeyValueStorage interface. Let's break down its functionality step by step.
@@ -48,14 +47,7 @@ class MemoryStorage internal constructor(override val name: String) : KeyValueSt
     private val map: MutableMap<String, Any> = mutableMapOf()
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Any> get(key: String): T? = synchronized(lock) {
-        when {
-            contains(key) -> map[key] as? T?
-            else -> null
-        }
-    }
-
-    override fun <T : Any> get(key: String, kClass: KClass<T>): T? = get(key)
+    override fun <T : Any> get(key: String): T? = synchronized(lock) { map[key] as? T? }
 
     override fun <T : Any> set(key: String, value: T?) = when {
         /* Validate Value */
@@ -71,11 +63,7 @@ class MemoryStorage internal constructor(override val name: String) : KeyValueSt
         else -> synchronized(lock) { map[key] = value }
     }
 
-    override fun <T : Any> set(key: String, value: T?, kClass: KClass<T>) = set(key, value)
-
-    override fun remove(key: String) = synchronized(lock) {
-        if (contains(key)) map.remove(key)
-    }
+    override fun remove(key: String) = synchronized(lock) { if (contains(key)) map.remove(key) }
 
     override fun clear() = synchronized(lock) { map.clear() }
 

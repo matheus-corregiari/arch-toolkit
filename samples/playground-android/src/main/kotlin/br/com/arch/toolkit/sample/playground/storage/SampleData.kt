@@ -1,33 +1,21 @@
 package br.com.arch.toolkit.sample.playground.storage
 
-import br.com.arch.toolkit.storage.StorageCreator
+import br.com.arch.toolkit.storage.Storage
 import br.com.arch.toolkit.storage.delegate.keyValueStorage
 import kotlin.reflect.KClass
 
 class SampleData<T : Any>(private val name: String, default: T, kClass: KClass<T>) {
-    private var nullableValue: T? by keyValueStorage(
-        name = "nullable-$name",
-        classToParse = kClass
-    )
-    private var value: T by keyValueStorage(
-        name = name,
-        default = default,
-        classToParse = kClass
-    )
-    private var nullableListOfValue: List<T>? by keyValueStorage(
-        name = "nullable-list-$name",
-    )
-    private var listOfValue: List<T> by keyValueStorage(
-        name = "list-$name",
-        default = emptyList()
-    )
-    private var nullableMapOfValue: Map<String, T>? by keyValueStorage(
-        name = "nullable-map-$name",
-    )
-    private var mapOfValue: Map<String, T> by keyValueStorage(
-        name = "map-$name",
-        default = emptyMap()
-    )
+
+    private var nullableValue: T? by keyValueStorage(kClass, "nullable-$name")
+    private var value: T by keyValueStorage<T>(kClass, name).required(default)
+
+    private var nullableListOfValue: List<T>? by keyValueStorage("nullable-list-$name")
+    private var listOfValue: List<T> by keyValueStorage<List<T>>("list-$name")
+        .required(listOf(default))
+
+    private var nullableMapOfValue: Map<String, T>? by keyValueStorage("nullable-map-$name")
+    private var mapOfValue: Map<String, T> by keyValueStorage<Map<String, T>>("map-$name")
+        .required(emptyMap())
 
     fun asNewData() = NewData(
         nullableValue,
@@ -48,12 +36,13 @@ class SampleData<T : Any>(private val name: String, default: T, kClass: KClass<T
     }
 
     fun delete() {
-        StorageCreator.defaultStorage().apply {
+        nullableValue = null
+        nullableListOfValue = null
+        nullableMapOfValue = null
+
+        Storage.Settings.keyValue.apply {
             remove(this@SampleData.name)
-            remove("nullable-${this@SampleData.name}")
-            remove("nullable-list-${this@SampleData.name}")
             remove("list-${this@SampleData.name}")
-            remove("nullable-map-${this@SampleData.name}")
             remove("map-${this@SampleData.name}")
         }
     }

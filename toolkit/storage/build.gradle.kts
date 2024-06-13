@@ -9,6 +9,7 @@ dependencies {
     // JetBrains
     implementation(libraries.jetbrains.stdlib.jdk8)
     implementation(libraries.jetbrains.coroutines.core)
+    implementation(libraries.jetbrains.reflect)
 
     // Androidx
     implementation(libraries.androidx.security)
@@ -16,6 +17,4 @@ dependencies {
 
     // Tools
     implementation(libraries.square.timber)
-    implementation(libraries.google.gson)
-
 }

@@ -14,4 +14,5 @@ dependencies {
 
     // Androidx
     implementation(libraries.androidx.startup)
+    implementation(libraries.androidx.lifecycle.livedata)
 }

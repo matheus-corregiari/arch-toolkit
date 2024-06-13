@@ -170,7 +170,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
         val mapOfConfigurations = mapOf(
             "runtime" to "implementation",
             "compile" to "api",
-            "provided" to "runtimeOnly"
+            "provided" to "compileOnly"
         ).mapNotNull { (scope, configuration) ->
             configurations.findByName(configuration)?.let { scope to it }
         }.toMap()
@@ -208,7 +208,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
             node.appendNode("groupId", group)
             node.appendNode("artifactId", name)
             node.appendNode("version", version)
-            node.appendNode("scope", "runtime")
+            node.appendNode("scope", scope)
         }
     }
 }

@@ -24,4 +24,5 @@ dependencies {
     implementation(libraries.androidx.recycler)
     implementation(libraries.androidx.constraint)
     implementation(libraries.square.timber)
+    implementation(libraries.google.gson)
 }
