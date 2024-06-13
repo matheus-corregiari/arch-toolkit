@@ -16,7 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
 
-//TODO Pensar numa forma melhor de fazer explodir
+// TODO Pensar numa forma melhor de fazer explodir
 @OptIn(ExperimentalCoroutinesApi::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LongTransformTest {
@@ -29,7 +29,7 @@ class LongTransformTest {
         Dispatchers.setMain(StandardTestDispatcher())
     }
 
-    private class StoppableObserver() : LifecycleOwner {
+    private class StoppableObserver : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
         override val lifecycle: Lifecycle
             get() {
@@ -41,7 +41,6 @@ class LongTransformTest {
             registry.currentState = Lifecycle.State.DESTROYED
         }
     }
-
 
     @Test
     fun `0 - `() = runTest {
@@ -65,5 +64,4 @@ class LongTransformTest {
         liveData.setData("String")
         delay(1000L)
     }
-
 }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:overScrollMode="never">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:divider="@drawable/divider"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="24dp"
+        android:showDividers="middle">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="24dp"
+            android:text="Primitive"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <br.com.arch.toolkit.sample.playground.storage.StorageValidationView
+            android:id="@+id/int_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Int Data" />
+
+        <br.com.arch.toolkit.sample.playground.storage.StorageValidationView
+            android:id="@+id/long_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Long Data" />
+
+        <br.com.arch.toolkit.sample.playground.storage.StorageValidationView
+            android:id="@+id/double_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Double Data" />
+
+        <br.com.arch.toolkit.sample.playground.storage.StorageValidationView
+            android:id="@+id/float_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Float Data" />
+
+        <br.com.arch.toolkit.sample.playground.storage.StorageValidationView
+            android:id="@+id/string_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="String Data" />
+
+        <br.com.arch.toolkit.sample.playground.storage.StorageValidationView
+            android:id="@+id/boolean_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Boolean Data" />
+
+        <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="24dp"
+        android:text="Complex"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <br.com.arch.toolkit.sample.playground.storage.StorageValidationView
+            android:id="@+id/enum_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enum Data" />
+
+        <br.com.arch.toolkit.sample.playground.storage.StorageValidationView
+            android:id="@+id/class_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Class Data" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

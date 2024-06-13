@@ -11,6 +11,7 @@
     <ID>Filename:_dataResult.kt$br.com.arch.toolkit.util._dataResult.kt</ID>
     <ID>Filename:_liveData.kt$br.com.arch.toolkit.util._liveData.kt</ID>
     <ID>Filename:_util.kt$br.com.arch.toolkit._util.kt</ID>
+    <ID>LongParameterList:SampleData.kt$SampleData.NewData$( var nullableValue: T?, var value: T, var nullableListOfValue: List&lt;T>?, var listOfValue: List&lt;T>, var nullableMapOfValue: Map&lt;String, T>?, var mapOfValue: Map&lt;String, T>, )</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues/>
 </SmellBaseline>

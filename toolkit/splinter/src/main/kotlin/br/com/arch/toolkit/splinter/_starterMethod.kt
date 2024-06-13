@@ -1,5 +1,7 @@
 package br.com.arch.toolkit.splinter
 
+import br.com.arch.toolkit.annotation.Experimental
+
 /**
  * Method that creates a simple Splinter instance
  *
@@ -56,5 +58,6 @@ fun <T : Any> oneShotMichelangelo(
  *
  * @return The ResponseFlow receiving updates from the Splinter
  */
+@Experimental
 fun <T : Any> oneShotLeonardo(id: String = "", quiet: Boolean = false, request: suspend () -> T) =
     oneShotDonatello(id, quiet, request).execute().flow

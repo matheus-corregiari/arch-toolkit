@@ -1,4 +1,4 @@
-package br.com.arch.toolkit.recycler.adapter
+package br.com.arch.toolkit.playground.recyclerAdapter
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
