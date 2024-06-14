@@ -1,4 +1,4 @@
-package br.com.arch.toolkit.recycler.adapter
+package br.com.arch.toolkit.playground.recyclerAdapter
 
 /**
  * Implement this on your CustomView classes to start using your BaseRecyclerAdapter implementations like a charm =)

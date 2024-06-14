@@ -13,6 +13,10 @@ android {
     }
 }
 
+androidComponents.beforeVariants {
+    it.enable = it.name == "debug"
+}
+
 dependencies {
     // Other Modules
     implementation(project(":toolkit:delegate"))

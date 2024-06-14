@@ -1,4 +1,4 @@
-package br.com.arch.toolkit.recycler.adapter
+package br.com.arch.toolkit.playground.recyclerAdapter
 
 import android.content.Context
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import br.com.arch.toolkit.recycler.adapter.stickyheader.StickyHeaders
+import br.com.arch.toolkit.playground.recyclerAdapter.stickyheader.StickyHeaders
 
 /**
  * Basic implementation of RecyclerView.Adapter using AsyncListDiffer and CustomViews as items

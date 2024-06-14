@@ -31,14 +31,14 @@ include(":toolkit:event-observer")
 include(":toolkit:foldable")
 include(":toolkit:recycler-adapter")
 include(":toolkit:splinter")
+include(":toolkit:storage")
+include(":toolkit:util")
 include(":toolkit:statemachine")
 
 // Samples
 val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"
 if (isIdeBuild) {
     include(":samples:github-list-project")
-//    include(":samples:foldable") NOTE: Uncomment when necessary
-    include(":samples:livedata")
-    include(":samples:recycler-adapter")
-    include(":samples:statemachine")
+    include(":samples:playground")
+    include(":samples:playground-android")
 }

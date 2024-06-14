@@ -18,8 +18,9 @@ build-sdk-target = "34"
 build-tools = "34.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "1.9.23"
-jetbrains-coroutines = "1.8.0" # Quebra a parte de tratamento de exception no ObserveWrapper
+jetbrains-kotlin = "2.0.0"
+jetbrains-coroutines = "1.8.1"
+jetbrains-serialization = "1.6.3"
 jetbrains-kover = "0.7.4"
 
 ## AndroidX
@@ -31,6 +32,8 @@ androidx-lifecycle-livedata = "2.8.1"
 androidx-lifecycle-runtime = "2.8.1"
 androidx-window = "1.3.0"
 androidx-splash = "1.0.1"
+androidx-security = "1.0.0"
+androidx-startup = "1.1.1"
 androidx-test-core = "2.2.0"
 androidx-test-junit = "1.1.5"
 androidx-test-espresso = "3.5.1"
@@ -46,13 +49,14 @@ androidx-compose-activity = "1.9.0"
 
 ## SquareUp
 square-retrofit = "2.9.0"
-square-okhttp = "4.10.0"
+square-okhttp = "4.12.0"
 square-moshi = "1.14.0"
 square-timber = "5.0.1"
 
 ## Google
 google-material = "1.12.0"
-google-ksp = "1.9.23-1.0.20"
+google-gson = "2.11.0"
+google-ksp = "2.0.0-1.0.22"
 
 ## Tools
 mockito = "5.6.0"
@@ -64,6 +68,8 @@ robolectric = "4.9"
 [libraries]
 ## JetBrains
 jetbrains-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "jetbrains-kotlin" }
+jetbrains-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "jetbrains-kotlin" }
+jetbrains-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "jetbrains-serialization" }
 jetbrains-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "jetbrains-coroutines" }
 jetbrains-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "jetbrains-coroutines" }
 jetbrains-test-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "jetbrains-coroutines" }
@@ -77,6 +83,8 @@ androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle-runtime" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "androidx-window" }
 androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splash" }
+androidx-security = { group = "androidx.security", name = "security-crypto", version.ref = "androidx-security" }
+androidx-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidx-startup" }
 androidx-test-core = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-test-core" }
 androidx-test-window = { group = "androidx.window", name = "window-testing", version.ref = "androidx-window" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
@@ -106,6 +114,7 @@ square-timber = { group = "com.jakewharton.timber", name = "timber", version.ref
 
 ## Google
 google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
+google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "google-gson" }
 
 ## Tools
 mockito-test-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
@@ -154,6 +163,7 @@ google-ksp = { id = "com.google.devtools.ksp", version.ref = "google-ksp" }
 jetbrains-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrains-kotlin" }
 jetbrains-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "jetbrains-kover" }
 jetbrains-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "jetbrains-kotlin" }
+jetbrains-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "jetbrains-kotlin" }
 
 ## Tools to make my life easier
 dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }

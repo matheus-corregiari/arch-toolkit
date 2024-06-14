@@ -3,7 +3,7 @@ plugins {
     id("toolkit-publish")
 }
 
-android.namespace = "br.com.arch.toolkit.recycler.adapter"
+android.namespace = "br.com.arch.toolkit.playground.recyclerAdapter"
 
 dependencies {
     // Libraries
