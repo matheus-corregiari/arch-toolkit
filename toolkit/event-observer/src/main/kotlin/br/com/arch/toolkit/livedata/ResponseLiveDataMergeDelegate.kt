@@ -33,7 +33,7 @@ internal interface ResponseLiveDataMergeDelegate {
 
     fun <T, R> followedBy(
         source: ResponseLiveData<T>,
-        next: (DataResult<T>) -> ResponseLiveData<R>,
+        next: (T) -> ResponseLiveData<R>,
         scope: CoroutineScope,
         transformDispatcher: CoroutineDispatcher,
         condition: (T) -> Boolean,
@@ -97,7 +97,7 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         scope: CoroutineScope,
         transformDispatcher: CoroutineDispatcher,
         source: ResponseLiveData<T>,
-        next: (DataResult<T>) -> ResponseLiveData<R>,
+        next: (T) -> ResponseLiveData<R>,
         condition: (T) -> Boolean,
         successOnConditionError: Boolean
     ): ResponseLiveData<Pair<T, R?>> = addSources(
@@ -107,18 +107,19 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
         onMerge = { source.value.mergeNotNull(DataResult(null, null, DataResultStatus.LOADING)) }
     ) {
         val sourceValue = source.value ?: return@addSources
+        val sourceData = sourceValue.data
 
-        val conditionMet = sourceValue.data?.let(condition) == true
+        val conditionMet = sourceData?.let(condition) == true
         val nextSource: ResponseLiveData<Pair<T, R?>> = when {
             !conditionMet && !successOnConditionError -> {
                 responseLiveDataOf(IllegalStateException("Pre-condition not met for merge"))
             }
 
             !conditionMet && successOnConditionError -> {
-                responseLiveDataOf(sourceValue.data!! to null)
+                responseLiveDataOf(sourceData!! to null)
             }
 
-            else -> source.mergeWith(next.invoke(sourceValue)).map { it }
+            else -> source.mergeWith(next.invoke(sourceData!!)).map { it }
         }
 
         swapSource(nextSource)
@@ -162,7 +163,7 @@ internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDeleg
 
     override fun <T, R> followedBy(
         source: ResponseLiveData<T>,
-        next: (DataResult<T>) -> ResponseLiveData<R>,
+        next: (T) -> ResponseLiveData<R>,
         scope: CoroutineScope,
         transformDispatcher: CoroutineDispatcher,
         condition: (T) -> Boolean,

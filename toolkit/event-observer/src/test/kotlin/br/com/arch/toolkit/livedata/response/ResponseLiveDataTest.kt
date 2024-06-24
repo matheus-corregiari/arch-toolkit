@@ -52,7 +52,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `00 - init with param, should init with param value`() = runTest {
+    fun `01 - init with param, should init with param value`() = runTest {
         val value = DataResult("String", null, SUCCESS)
         val liveData = ResponseLiveData(value)
 
@@ -63,7 +63,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `01 - Should keep observer until all events has been handled`() = runTest {
+    fun `02 - Should keep observer until all events has been handled`() = runTest {
         fun singleTrue() {
             val liveData = ResponseLiveData<Any>()
             liveData.transformDispatcher(Dispatchers.Main.immediate)
@@ -94,7 +94,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `02 - transform`() = runTest {
+    fun `03 - transform`() = runTest {
         val mockTransform: (DataResult<Int>) -> DataResult<String> = mock()
         whenever(mockTransform.invoke(any())) doReturn dataResultSuccess("String")
 
@@ -120,7 +120,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `03 - onError`() = runTest {
+    fun `04 - onError`() = runTest {
         val error = IllegalStateException("error")
         val mockOnError: (Throwable) -> Unit = mock()
         val liveData = ResponseLiveData<Int>()
@@ -152,7 +152,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `04 - onErrorReturn`() = runTest {
+    fun `05 - onErrorReturn`() = runTest {
         val error = IllegalStateException("error")
         val mockOnErrorReturn: (Throwable) -> Int = mock()
         whenever(mockOnErrorReturn.invoke(error)) doReturn 123
@@ -185,7 +185,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `05 - mapError`() = runTest {
+    fun `06 - mapError`() = runTest {
         val error = IllegalStateException("error")
         val error2 = IllegalStateException("error2")
         val mockMapError: (Throwable) -> Throwable = mock()
@@ -219,7 +219,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `06 - map`() = runTest {
+    fun `07 - map`() = runTest {
         val mockMap: (Int) -> String = mock()
         whenever(mockMap.invoke(123)) doReturn "String"
         val liveData = ResponseLiveData<Int>()
@@ -251,7 +251,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `07 - onNext`() = runTest {
+    fun `08 - onNext`() = runTest {
         val mockOnNext: (Int) -> Unit = mock()
         val liveData = ResponseLiveData<Int>()
         liveData.transformDispatcher(Dispatchers.Main.immediate)
@@ -282,7 +282,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `08 - mergeWith - plus`() = runTest {
+    fun `09 - mergeWith - plus`() = runTest {
         val liveDataA = ResponseLiveData(dataResultSuccess(123))
         val liveDataB = ResponseLiveData(dataResultSuccess("String"))
         val liveDataMerge = liveDataA + liveDataB
@@ -293,7 +293,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `09 - mergeWith with tag`() = runTest {
+    fun `10 - mergeWith with tag`() = runTest {
         val liveDataA = ResponseLiveData(dataResultSuccess(123))
         val liveDataB = ResponseLiveData(dataResultSuccess("String"))
         val liveDataMerge = liveDataA.mergeWith("tagA", "tagB" to liveDataB)
@@ -312,7 +312,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `10 - followedBy - both success`() = runTest {
+    fun `11 - followedBy - both success`() = runTest {
         val liveDataA = ResponseLiveData(dataResultSuccess(123))
         liveDataA.transformDispatcher(Dispatchers.Main.immediate)
 
@@ -330,7 +330,7 @@ class ResponseLiveDataTest {
     }
 
     @Test
-    fun `11 - followedBy - one success, other loading`() = runTest {
+    fun `12 - followedBy - one success, other loading`() = runTest {
         val liveDataA = ResponseLiveData(dataResultSuccess(123))
         liveDataA.transformDispatcher(Dispatchers.Main.immediate)
 

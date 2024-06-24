@@ -203,7 +203,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
     @NonNull
     @Experimental
     fun <R> followedBy(
-        @NonNull source: (DataResult<T>) -> ResponseLiveData<R>,
+        @NonNull source: (T) -> ResponseLiveData<R>,
         @NonNull condition: (T) -> Boolean,
         @NonNull successOnConditionError: Boolean
     ): ResponseLiveData<Pair<T, R?>> = withDelegate {
@@ -229,7 +229,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
     @NonNull
     @Experimental
     fun <R> followedBy(
-        @NonNull source: (DataResult<T>) -> ResponseLiveData<R>,
+        @NonNull source: (T) -> ResponseLiveData<R>,
         @NonNull condition: (T) -> Boolean
     ): ResponseLiveData<Pair<T, R>> =
         followedBy(source, condition, false).map { it.first to it.second!! }
@@ -244,7 +244,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
     @NonNull
     @Experimental
     fun <R> followedBy(
-        @NonNull source: (DataResult<T>) -> ResponseLiveData<R>
+        @NonNull source: (T) -> ResponseLiveData<R>
     ): ResponseLiveData<Pair<T, R>> = followedBy(source) { true }
     //endregion
 
