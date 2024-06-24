@@ -133,6 +133,56 @@ data class DataResult<T>(
      * Usage:
      * ```kotlin
      * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
+     * if(dataResult.hasOneItem) {
+     *     // Data is List ou Map or Sequence and it has only one item!
+     * } else {
+     *     // Data is any of the known types or it has many items!
+     * }
+     * ```
+     *
+     * - **true** - if this data is != null and is is a list and it has only one item
+     * - **false** - if this data is null or, it is any of the mapped list type, or it has many items
+     *
+     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it has only one item
+     */
+    val hasOneItem: Boolean
+        get() = when (data) {
+            is Collection<*> -> data.size == 1
+            is Map<*, *> -> data.size == 1
+            is Sequence<*> -> data.count() == 1
+            else -> false
+        }
+
+    /**
+     *
+     * Usage:
+     * ```kotlin
+     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
+     * if(dataResult.hasManyItems) {
+     *     // Data is List ou Map or Sequence and it has more than one item!
+     * } else {
+     *     // Data is any of the known types or it has only one item!
+     * }
+     * ```
+     *
+     * - **true** - if this data is != null and is is a list and it has more than one item
+     * - **false** - if this data is null or, it is any of the mapped list type, or it has only one item
+     *
+     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it has more than one item
+     */
+    val hasManyItems: Boolean
+        get() = when (data) {
+            is Collection<*> -> data.size > 1
+            is Map<*, *> -> data.size > 1
+            is Sequence<*> -> data.count() > 1
+            else -> false
+        }
+
+    /**
+     *
+     * Usage:
+     * ```kotlin
+     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
      * if(dataResult.isListType) {
      *     // Data is List ou Map or Sequence!
      * } else {

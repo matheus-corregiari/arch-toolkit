@@ -997,6 +997,104 @@ class ObserveWrapper<T> internal constructor() {
         )
         return this
     }
+
+    /**
+     * Observes when the DataResult has data, the type is a "list" and it has one item
+     *
+     *
+     * Types available:
+     *  - Collection`<*>`
+     *  - Map`<*, *>`
+     *  - Sequence`<*>`
+     *
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     oneItem(
+     *         single = true /* default - false */,
+     *        observer = {
+     *             // Handle One Item Data
+     *         }
+     *     )
+     *}
+     * ```
+     *
+     * @param single If true, will execute only until the first non-null valid one item data, Default: false
+     * @param observer Will be called only if the data is not-null and is represents a valid list type,
+     * with only one item data
+     *
+     * @see DataResult
+     * @see DataResult.isListType
+     * @see DataResult.hasOneItem
+     * @see DataResult.hasManyItems
+     * @see DataResultStatus
+     * @see ObserveWrapper.oneItem
+     * @see ObserveWrapper.manyItems
+     *
+     * @return ObserveWrapper`<T>`
+     */
+    @NonNull
+    fun oneItem(
+        @NonNull single: Boolean = false,
+        @NonNull observer: suspend () -> Unit
+    ): ObserveWrapper<T> {
+        eventList.add(
+            OneItemEvent(
+                WrapObserver<Void, Any>(emptyObserver = observer),
+                single
+            )
+        )
+        return this
+    }
+
+    /**
+     * Observes when the DataResult has data, the type is a "list" and it has more than one item
+     *
+     *
+     * Types available:
+     *  - Collection`<*>`
+     *  - Map`<*, *>`
+     *  - Sequence`<*>`
+     *
+     * ```kotlin
+     * val dataResult = dataResultSuccess("data")
+     * dataResult.unwrap {
+     *     oneItem(
+     *         single = true /* default - false */,
+     *        observer = {
+     *             // Handle Many Items Data
+     *         }
+     *     )
+     *}
+     * ```
+     *
+     * @param single If true, will execute only until the first non-null valid many items data, Default: false
+     * @param observer Will be called only if the data is not-null and is represents a valid list type,
+     * with more than one item data
+     *
+     * @see DataResult
+     * @see DataResult.isListType
+     * @see DataResult.hasOneItem
+     * @see DataResult.hasManyItems
+     * @see DataResultStatus
+     * @see ObserveWrapper.oneItem
+     * @see ObserveWrapper.manyItems
+     *
+     * @return ObserveWrapper`<T>`
+     */
+    @NonNull
+    fun manyItems(
+        @NonNull single: Boolean = false,
+        @NonNull observer: suspend () -> Unit
+    ): ObserveWrapper<T> {
+        eventList.add(
+            ManyItemsEvent(
+                WrapObserver<Void, Any>(emptyObserver = observer),
+                single
+            )
+        )
+        return this
+    }
     //endregion
 
     //region None
@@ -1153,6 +1251,16 @@ class ObserveWrapper<T> internal constructor() {
 
                 // Handle Not Empty
                 event is NotEmptyEvent && result.isListType && result.isNotEmpty -> event.run {
+                    wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
+                }
+
+                // Handle One Item
+                event is OneItemEvent && result.isListType && result.hasOneItem -> event.run {
+                    wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
+                }
+
+                // Handle Many Items
+                event is ManyItemsEvent && result.isListType && result.hasManyItems -> event.run {
                     wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
                 }
 
@@ -1372,6 +1480,16 @@ private class EmptyEvent(
 ) : ObserveEvent<Void>(wrapper, single, EventDataStatus.DOESNT_MATTER)
 
 private class NotEmptyEvent(
+    @NonNull wrapper: WrapObserver<Void, *>,
+    @NonNull single: Boolean
+) : ObserveEvent<Void>(wrapper, single, EventDataStatus.DOESNT_MATTER)
+
+private class OneItemEvent(
+    @NonNull wrapper: WrapObserver<Void, *>,
+    @NonNull single: Boolean
+) : ObserveEvent<Void>(wrapper, single, EventDataStatus.DOESNT_MATTER)
+
+private class ManyItemsEvent(
     @NonNull wrapper: WrapObserver<Void, *>,
     @NonNull single: Boolean
 ) : ObserveEvent<Void>(wrapper, single, EventDataStatus.DOESNT_MATTER)
