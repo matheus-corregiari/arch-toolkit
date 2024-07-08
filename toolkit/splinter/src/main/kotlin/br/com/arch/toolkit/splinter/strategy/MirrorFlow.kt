@@ -7,6 +7,7 @@ import br.com.arch.toolkit.splinter.Splinter
 import br.com.arch.toolkit.splinter.extension.emitError
 import br.com.arch.toolkit.splinter.extension.emitLoading
 import br.com.arch.toolkit.splinter.extension.invokeCatching
+import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -48,7 +49,9 @@ class MirrorFlow<RESULT : Any> : Strategy<RESULT>() {
                 .collect { data ->
                     executor.logInfo("\t[MirrorFlow] Received new data, data: $data")
                     executor.logInfo("\t[MirrorFlow] Emit - Loading Data! - $data")
-                    collector.emitLoading(data)
+                    if (config.emitOnlyDistinct && executor.get() != dataResultLoading(data)) {
+                        collector.emitLoading(data)
+                    }
                 }
             executor.logInfo("\t[MirrorFlow] Finished flow!")
             if (executor.error == null) {
@@ -73,8 +76,10 @@ class MirrorFlow<RESULT : Any> : Strategy<RESULT>() {
     inner class Config internal constructor() {
         internal var mapError: (suspend (Throwable) -> Throwable)? = null
         internal var fallback: (suspend (Throwable) -> RESULT)? = null
+        internal var emitOnlyDistinct: Boolean = false
         internal var flow: (suspend () -> Flow<RESULT>)? = null
 
         fun flow(flow: suspend () -> Flow<RESULT>) = apply { this.flow = flow }
+        fun emitOnlyDistinct(enable: Boolean) = apply { this.emitOnlyDistinct = enable }
     }
 }
