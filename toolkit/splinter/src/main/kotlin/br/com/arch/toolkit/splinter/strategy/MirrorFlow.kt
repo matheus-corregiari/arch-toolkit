@@ -4,10 +4,10 @@ import androidx.annotation.WorkerThread
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.splinter.Splinter
-import br.com.arch.toolkit.splinter.extension.emitData
 import br.com.arch.toolkit.splinter.extension.emitError
 import br.com.arch.toolkit.splinter.extension.emitLoading
 import br.com.arch.toolkit.splinter.extension.invokeCatching
+import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.catch
@@ -46,11 +46,15 @@ class MirrorFlow<RESULT : Any> : Strategy<RESULT>() {
             requireNotNull(config.flow) { "Flow value mist be set!" }.invoke()
                 .catch { error -> onError.invoke(error) }
                 .collect { data ->
-                    executor.logInfo("\t[MirrorFlow] Executed with success, data: $data")
-                    executor.logInfo("\t[MirrorFlow] Emit - Success Data! - $data")
+                    executor.logInfo("\t[MirrorFlow] Received new data, data: $data")
+                    executor.logInfo("\t[MirrorFlow] Emit - Loading Data! - $data")
                     collector.emitLoading(data)
                 }
-            if (executor.error == null) executor.data?.let { collector.emitData(it) }
+            executor.logInfo("\t[MirrorFlow] Finished flow!")
+            if (executor.error == null) {
+                executor.logInfo("\t[MirrorFlow] Emit - Success Data! - ${executor.data}")
+                collector.emit(dataResultSuccess(executor.data))
+            }
         }.onFailure { error -> onError.invoke(error) }
     }
 
