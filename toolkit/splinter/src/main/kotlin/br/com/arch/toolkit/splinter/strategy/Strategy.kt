@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.FlowCollector
 /**
  * Main class that defines how the Splinter will work to emit the events!
  */
-sealed class Strategy<RESULT : Any> {
+abstract class Strategy<RESULT : Any> {
 
     /**
      * Here, all the magic happens
@@ -17,7 +17,7 @@ sealed class Strategy<RESULT : Any> {
      * This method will implement how the job inside splinter should run
      */
     @WorkerThread
-    internal abstract suspend fun execute(
+    abstract suspend fun execute(
         collector: FlowCollector<DataResult<RESULT>>,
         executor: Splinter<RESULT>
     )
@@ -26,7 +26,7 @@ sealed class Strategy<RESULT : Any> {
      * In case of error inside the job, some uncaught exception on flow, this method will trigger inside splinter
      */
     @WorkerThread
-    internal open suspend fun flowError(
+    open suspend fun flowError(
         error: Throwable,
         collector: FlowCollector<DataResult<RESULT>>,
         executor: Splinter<RESULT>
@@ -36,7 +36,7 @@ sealed class Strategy<RESULT : Any> {
      * In case of major error inside the job, some uncaught exception on job, this method will trigger inside splinter
      */
     @WorkerThread
-    internal open suspend fun majorError(
+    open suspend fun majorError(
         error: Throwable,
         collector: FlowCollector<DataResult<RESULT>>,
         executor: Splinter<RESULT>
@@ -52,5 +52,14 @@ sealed class Strategy<RESULT : Any> {
          * @return br.com.arch.toolkit.splinter.strategy.OneShot
          */
         fun <T : Any> oneShot(config: OneShot<T>.Config.() -> Unit) = OneShot<T>().config(config)
+
+        /**
+         * Helper method that creates a MirrorFlow strategy and configure it
+         *
+         * @param config - Block that will configure the mirrorFlow strategy
+         *
+         * @return br.com.arch.toolkit.splinter.strategy.MirrorFlow
+         */
+        fun <T : Any> mirrorFlow(config: MirrorFlow<T>.Config.() -> Unit) = MirrorFlow<T>().config(config)
     }
 }

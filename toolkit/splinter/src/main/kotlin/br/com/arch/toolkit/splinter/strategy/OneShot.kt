@@ -34,6 +34,7 @@ class OneShot<RESULT : Any> : Strategy<RESULT>() {
     fun config(config: Config.() -> Unit) = apply { this.config.run(config) }
 
     @WorkerThread
+    @Suppress("LongMethod")
     override suspend fun execute(
         collector: FlowCollector<DataResult<RESULT>>,
         executor: Splinter<RESULT>

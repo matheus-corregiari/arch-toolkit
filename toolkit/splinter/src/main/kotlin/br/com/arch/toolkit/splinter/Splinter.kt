@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package br.com.arch.toolkit.splinter
 
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -9,6 +11,7 @@ import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.splinter.extension.invokeCatching
+import br.com.arch.toolkit.splinter.strategy.MirrorFlow
 import br.com.arch.toolkit.splinter.strategy.OneShot
 import br.com.arch.toolkit.splinter.strategy.Strategy
 import br.com.arch.toolkit.util.dataResultNone
@@ -338,6 +341,13 @@ class Splinter<RETURN : Any> internal constructor(
          */
         fun oneShotStrategy(strategyConfig: OneShot<RETURN>.Config.() -> Unit) = apply {
             this.strategy = Strategy.oneShot(strategyConfig)
+        }
+
+        /**
+         * Define and configure a MirrorFlow strategy to this splinter
+         */
+        fun mirrorFlowStrategy(strategyConfig: MirrorFlow<RETURN>.Config.() -> Unit) = apply {
+            this.strategy = Strategy.mirrorFlow(strategyConfig)
         }
         //endregion
 
