@@ -5,7 +5,9 @@ import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
+import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultNone
+import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +17,11 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Experimental
 open class ResponseFlow<T> : StateFlow<DataResult<T>> {
@@ -91,6 +96,31 @@ open class ResponseFlow<T> : StateFlow<DataResult<T>> {
         scope = scope,
         dispatcher = transformDispatcher,
         mirror = innerFlow.shareIn(scope, started, replay)
+    )
+
+    /**
+     *
+     */
+    fun mirror(other: Flow<DataResult<T>>) = ResponseFlow(
+        value = value,
+        scope = scope,
+        dispatcher = transformDispatcher,
+        mirror = other
+    )
+
+    /**
+     *
+     */
+    @Suppress("RemoveExplicitTypeArguments")
+    fun <R> mirror(other: Flow<R>, transform: (R) -> T) = ResponseFlow(
+        value = value,
+        scope = scope,
+        dispatcher = transformDispatcher,
+        mirror = other.map<R, DataResult<T>> {
+            withContext(transformDispatcher) {
+                dataResultSuccess(it.let(transform))
+            }
+        }.catch { emit(dataResultError(it)) }
     )
 
     /**
