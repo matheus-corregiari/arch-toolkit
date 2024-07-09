@@ -47,10 +47,20 @@ class MirrorFlow<RESULT : Any> : Strategy<RESULT>() {
             requireNotNull(config.flow) { "Flow value mist be set!" }.invoke()
                 .catch { error -> onError.invoke(error) }
                 .collect { data ->
-                    executor.logInfo("\t[MirrorFlow] Received new data, data: $data")
-                    executor.logInfo("\t[MirrorFlow] Emit - Loading Data! - $data")
-                    if (config.emitOnlyDistinct && executor.get() != dataResultLoading(data)) {
-                        collector.emitLoading(data)
+                    executor.logInfo("\t[MirrorFlow] Received new data!")
+                    when {
+                        config.emitOnlyDistinct && executor.get() != dataResultLoading(data) -> {
+                            executor.logInfo("\t[MirrorFlow] Emit - New Loading Data! - $data")
+                            collector.emitLoading(data)
+                        }
+
+                        config.emitOnlyDistinct ->
+                            executor.logInfo("\t[MirrorFlow] Value is equal to the actual, skipping it!")
+
+                        else -> {
+                            executor.logInfo("\t[MirrorFlow] Emit - Loading Data! - $data")
+                            collector.emitLoading(data)
+                        }
                     }
                 }
             executor.logInfo("\t[MirrorFlow] Finished flow!")
