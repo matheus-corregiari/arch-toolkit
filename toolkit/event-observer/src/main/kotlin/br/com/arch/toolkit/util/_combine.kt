@@ -1,4 +1,4 @@
-@file:Suppress("Filename", "TooManyFunctions")
+@file:Suppress("Filename", "TooManyFunctions", "unused")
 
 package br.com.arch.toolkit.util
 
@@ -286,7 +286,7 @@ fun <T, R, X> LiveData<T>.combineNotNull(
  * It handles cases where one or both [LiveData] sources are initially uninitialized by using
  * `trySend` to send values only when both sources are initialized.
  */
-private suspend inline fun <T, R> LiveData<T>.internalCombine(other: LiveData<R>) = channelFlow {
+internal suspend inline fun <T, R> LiveData<T>.internalCombine(other: LiveData<R>) = channelFlow {
     val aFlow = this@internalCombine.asFlow()
     val bFlow = other.asFlow()
     val cFlow: Flow<Pair<T?, R?>> = aFlow.combine(bFlow) { a, b -> (a to b) }
