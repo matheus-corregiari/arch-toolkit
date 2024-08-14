@@ -1,5 +1,4 @@
 @file:JvmName("LiveDataUtils")
-@file:Suppress("TooManyFunctions")
 
 package br.com.arch.toolkit.util
 
@@ -9,7 +8,73 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
+import br.com.arch.toolkit.livedata.ResponseLiveData
+import br.com.arch.toolkit.livedata.responseLiveData
+import br.com.arch.toolkit.result.DataResult
+
+/**
+ * Converts this [LiveData] into a [ResponseLiveData] if it is not already one.
+ *
+ * This method checks if the current [LiveData] is an instance of [ResponseLiveData]. If it is, it casts it to a [ResponseLiveData<R>].
+ * If it is not, it creates a new instance of [ResponseLiveData] by converting this [LiveData] to a flow and collecting its emissions.
+ *
+ * @return A [ResponseLiveData<R>] that wraps the current [LiveData]. If the current [LiveData] is already a [ResponseLiveData], it is returned as is.
+ *
+ * This method is particularly useful when dealing with [LiveData] that has a specific structure related to a result or response,
+ * and you want to ensure it is represented as a [ResponseLiveData] for consistent handling in your application.
+ *
+ * Example usage:
+ * ```
+ * val liveData: LiveData<DataResult<String>> = MutableLiveData(DataResult.Success("Data"))
+ * val responseLiveData: ResponseLiveData<String> = liveData.asResponse()
+ * responseLiveData.observe(this, Observer { response ->
+ *     when (response) {
+ *         is DataResult.Success -> println("Success: ${response.data}")
+ *         is DataResult.Error -> println("Error: ${response.error}")
+ *     }
+ * })
+ * ```
+ *
+ * In the example, `liveData` is converted to `responseLiveData`, which can then be observed for `DataResult` values.
+ *
+ * @param T The type of the data contained in the [LiveData].
+ * @param R The type of the result in the [DataResult].
+ * @return A [ResponseLiveData<R>] instance.
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T, R> LiveData<T>.asResponse(): ResponseLiveData<R> where T : DataResult<R> = when {
+    this is ResponseLiveData<*> -> this as ResponseLiveData<R>
+    else -> responseLiveData { asFlow().collect(::emit) }
+}
+
+/**
+ * Converts this [LiveData] into a [ResponseLiveData] by creating a new instance that wraps the current [LiveData].
+ *
+ * This method creates a new [ResponseLiveData] by converting the current [LiveData] to a flow and collecting its emissions.
+ *
+ * @return A [ResponseLiveData<T>] instance that wraps this [LiveData].
+ *
+ * This method is useful when you want to ensure that any [LiveData] is represented as a [ResponseLiveData], regardless of its original type.
+ * It effectively transforms any [LiveData] into a [ResponseLiveData] with the same data type.
+ *
+ * Example usage:
+ * ```
+ * val liveData: LiveData<String> = MutableLiveData("Hello")
+ * val responseLiveData: ResponseLiveData<String> = liveData.asResponse()
+ * responseLiveData.observe(this, Observer { data ->
+ *     println("Data: $data")
+ * })
+ * ```
+ *
+ * In the example, `liveData` is converted to `responseLiveData`, allowing it to be observed as a `ResponseLiveData` where the emitted value is directly the data.
+ *
+ * @param T The type of the data contained in the [LiveData].
+ * @return A [ResponseLiveData<T>] instance.
+ */
+fun <T> LiveData<T>.asResponse(): ResponseLiveData<T> =
+    responseLiveData { asFlow().collect(::emitData) }
 
 /**
  * Observes a [LiveData] with non-null values.

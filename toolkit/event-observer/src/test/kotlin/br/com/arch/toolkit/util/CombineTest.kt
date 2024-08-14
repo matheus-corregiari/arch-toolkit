@@ -3,6 +3,9 @@ package br.com.arch.toolkit.util
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import br.com.arch.toolkit.alwaysOnOwner
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -14,10 +17,7 @@ import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyNoInteractions
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -32,378 +32,260 @@ class CombineTest {
     }
 
     @Test
-    fun `01 - LiveData - not initialized - combine`() = runTest {
-        val liveDataA = MutableLiveData<String>()
-        val liveDataB = MutableLiveData<Int>()
-        val liveDataC = liveDataA + liveDataB
-        advanceUntilIdle()
-
-        val mockedObserver: (Pair<String?, Int?>) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        advanceUntilIdle()
-        verifyNoInteractions(mockedObserver)
-
-        assertAll(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `01 - LiveData - not initialized - combine`() =
+        `LiveData - not initialized - combine`(null)
 
     @Test
-    fun `02 - LiveData - initialized A - combine`() = runTest {
-        val liveDataA = MutableLiveData<String>(null)
-        val liveDataB = MutableLiveData<Int>()
-        val liveDataC = liveDataA + liveDataB
-
-        val mockedObserver: (Pair<String?, Int?>) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        verifyBlocking(mockedObserver, times(1)) { invoke(null to null) }
-
-        assertAll(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `02 - LiveData - initialized A - combine`() =
+        `LiveData - initialized A - combine`(null)
 
     @Test
-    fun `03 - LiveData - initialized B - combine`() = runTest {
-        val liveDataA = MutableLiveData<String>()
-        val liveDataB = MutableLiveData<Int>(null)
-        val liveDataC = liveDataA + liveDataB
-
-        val mockedObserver: (Pair<String?, Int?>) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        verifyBlocking(mockedObserver, times(1)) { invoke(null to null) }
-
-        assertAll(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `03 - LiveData - initialized B - combine`() =
+        `LiveData - initialized B - combine`(null)
 
     @Test
-    fun `04 - LiveData - initialized A B - combine`() = runTest {
-        val liveDataA = MutableLiveData<String>(null)
-        val liveDataB = MutableLiveData<Int>(null)
-        val liveDataC = liveDataA + liveDataB
-
-        val mockedObserver: (Pair<String?, Int?>) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        verifyBlocking(mockedObserver, times(1)) { invoke(null to null) }
-
-        assertAll(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `04 - LiveData - initialized A B - combine`() =
+        `LiveData - initialized A B - combine`(null)
 
     @Test
-    fun `05 - LiveData - not initialized - combine - coroutine`() = runTest {
-        val liveDataA = MutableLiveData<String>()
-        val liveDataB = MutableLiveData<Int>()
-        val liveDataC = liveDataA.plus(EmptyCoroutineContext, liveDataB)
-        advanceUntilIdle()
-
-        val mockedObserver: (Pair<String?, Int?>) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        advanceUntilIdle()
-        verifyNoInteractions(mockedObserver)
-
-        assertAll(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `05 - LiveData - not initialized - combine - coroutine`() =
+        `LiveData - not initialized - combine`(EmptyCoroutineContext)
 
     @Test
-    fun `06 - LiveData - initialized A - combine - coroutine`() = runTest {
-        val liveDataA = MutableLiveData<String>(null)
-        val liveDataB = MutableLiveData<Int>()
-        val liveDataC = liveDataA.combine(EmptyCoroutineContext, liveDataB)
-        advanceUntilIdle()
-
-        val mockedObserver: (Pair<String?, Int?>) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        advanceUntilIdle()
-        verifyBlocking(mockedObserver, times(1)) { invoke(null to null) }
-
-        assertAll(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `06 - LiveData - initialized A - combine - coroutine`() =
+        `LiveData - initialized A - combine`(EmptyCoroutineContext)
 
     @Test
-    fun `07 - LiveData - initialized B - combine - coroutine`() = runTest {
-        val liveDataA = MutableLiveData<String>()
-        val liveDataB = MutableLiveData<Int>(null)
-        val liveDataC = liveDataA.combine(EmptyCoroutineContext, liveDataB)
-        advanceUntilIdle()
-
-        val mockedObserver: (Pair<String?, Int?>) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        advanceUntilIdle()
-        verifyBlocking(mockedObserver, times(1)) { invoke(null to null) }
-
-        assertAll(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `07 - LiveData - initialized B - combine - coroutine`() =
+        `LiveData - initialized B - combine`(EmptyCoroutineContext)
 
     @Test
-    fun `08 - LiveData - initialized A B - combine - coroutine`() = runTest {
-        val liveDataA = MutableLiveData<String>(null)
-        val liveDataB = MutableLiveData<Int>(null)
-        val liveDataC = liveDataA.combine(EmptyCoroutineContext, liveDataB)
-        advanceUntilIdle()
+    fun `08 - LiveData - initialized A B - combine - coroutine`() =
+        `LiveData - initialized A B - combine`(EmptyCoroutineContext)
 
-        val mockedObserver: (Pair<String?, Int?>) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        advanceUntilIdle()
-        verifyBlocking(mockedObserver, times(1)) { invoke(null to null) }
-
-        assertAll(liveDataA, liveDataB, mockedObserver)
-    }
+    //region Transform
+    @Test
+    fun `09 - LiveData - not initialized - combine - transform`() = executeCombineTransform(
+        liveDataA = MutableLiveData(),
+        liveDataB = MutableLiveData(),
+        block = { liveDataA, liveDataB, _, mockedObserver ->
+            coVerify(exactly = 0) { mockedObserver.invoke(any()) }
+            assertAllTransform(liveDataA, liveDataB, mockedObserver)
+        }
+    )
 
     @Test
-    fun `09 - LiveData - not initialized - combine - transform`() = runTest {
-        val mockedObserver: (String?) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-        val transform: (String?, Int?) -> String = mock(
-            name = "Transform",
-            defaultAnswer = { "${it.arguments[0]}|${it.arguments[1]}" }
-        )
-
-        val liveDataA = MutableLiveData<String>()
-        val liveDataB = MutableLiveData<Int>()
-        val liveDataC = liveDataA.combine(
-            context = EmptyCoroutineContext,
-            other = liveDataB,
-            transformDispatcher = Dispatchers.Main.immediate,
-            transform = transform
-        )
-        advanceUntilIdle()
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        advanceUntilIdle()
-        verifyNoInteractions(mockedObserver)
-
-        assertAllTransform(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `10 - LiveData - initialized A - combine - transform`() = executeCombineTransform(
+        liveDataA = MutableLiveData(null),
+        liveDataB = MutableLiveData(),
+        block = { liveDataA, liveDataB, _, mockedObserver ->
+            coVerify(exactly = 1) { mockedObserver.invoke("null|null") }
+            assertAllTransform(liveDataA, liveDataB, mockedObserver)
+        }
+    )
 
     @Test
-    fun `10 - LiveData - initialized A - combine - transform`() = runTest {
-        val mockedObserver: (String?) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-        val transform: (String?, Int?) -> String = mock(
-            name = "Transform",
-            defaultAnswer = { "${it.arguments[0]}|${it.arguments[1]}" }
-        )
-
-        val liveDataA = MutableLiveData<String>(null)
-        val liveDataB = MutableLiveData<Int>()
-        val liveDataC = liveDataA.combine(
-            context = EmptyCoroutineContext,
-            other = liveDataB,
-            transformDispatcher = Dispatchers.Main.immediate,
-            transform = transform
-        )
-        advanceUntilIdle()
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        advanceUntilIdle()
-        verifyBlocking(mockedObserver, times(1)) { invoke("null|null") }
-
-        assertAllTransform(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `11 - LiveData - initialized B - combine - transform`() = executeCombineTransform(
+        liveDataA = MutableLiveData(),
+        liveDataB = MutableLiveData(null),
+        block = { liveDataA, liveDataB, _, mockedObserver ->
+            coVerify(exactly = 1) { mockedObserver.invoke("null|null") }
+            assertAllTransform(liveDataA, liveDataB, mockedObserver)
+        }
+    )
 
     @Test
-    fun `11 - LiveData - initialized B - combine - transform`() = runTest {
-        val mockedObserver: (String?) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-        val transform: (String?, Int?) -> String = mock(
-            name = "Transform",
-            defaultAnswer = { "${it.arguments[0]}|${it.arguments[1]}" }
-        )
-
-        val liveDataA = MutableLiveData<String>()
-        val liveDataB = MutableLiveData<Int>(null)
-        val liveDataC = liveDataA.combine(
-            context = EmptyCoroutineContext,
-            other = liveDataB,
-            transformDispatcher = Dispatchers.Main.immediate,
-            transform = transform
-        )
-        advanceUntilIdle()
-
-        liveDataC.observe(alwaysOnOwner, mockedObserver)
-        advanceUntilIdle()
-        verifyBlocking(mockedObserver, times(1)) { invoke("null|null") }
-
-        assertAllTransform(liveDataA, liveDataB, mockedObserver)
-    }
+    fun `12 - LiveData - initialized A B - combine - transform`() = executeCombineTransform(
+        liveDataA = MutableLiveData(null),
+        liveDataB = MutableLiveData(null),
+        block = { liveDataA, liveDataB, _, mockedObserver ->
+            coVerify(exactly = 1) { mockedObserver.invoke("null|null") }
+            assertAllTransform(liveDataA, liveDataB, mockedObserver)
+        }
+    )
 
     @Test
-    fun `12 - LiveData - initialized A B - combine - transform`() = runTest {
-        val mockedObserver: (String?) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-        val transform: (String?, Int?) -> String = mock(
-            name = "Transform",
-            defaultAnswer = { "${it.arguments[0]}|${it.arguments[1]}" }
-        )
+    fun `13 - LiveData - initialized A B - combine - transform - exception`() = executeCombineTransform(
+        liveDataA = MutableLiveData("String"),
+        liveDataB = MutableLiveData(123),
+        transformException = true,
+        block = { _, _, _, mockedObserver ->
+            coVerify(exactly = 1) { mockedObserver.invoke(null) }
+        }
+    )
+    //endregion
 
-        val liveDataA = MutableLiveData<String>(null)
-        val liveDataB = MutableLiveData<Int>(null)
-        val liveDataC = liveDataA.combine(
-            context = EmptyCoroutineContext,
-            other = liveDataB,
-            transformDispatcher = Dispatchers.Main.immediate,
-            transform = transform
-        )
-        advanceUntilIdle()
+    private fun `LiveData - not initialized - combine`(context: CoroutineContext?) = executeCombine(
+        context = context,
+        liveDataA = MutableLiveData(),
+        liveDataB = MutableLiveData(),
+        block = { liveDataA, liveDataB, mockedObserver ->
+            coVerify(exactly = 0) { mockedObserver.invoke(any()) }
+            assertAll(liveDataA, liveDataB, mockedObserver)
+        }
+    )
 
+    private fun `LiveData - initialized A - combine`(context: CoroutineContext?) = executeCombine(
+        context = context,
+        liveDataA = MutableLiveData(null),
+        liveDataB = MutableLiveData(),
+        block = { liveDataA, liveDataB, mockedObserver ->
+            coVerify(exactly = 1) { mockedObserver.invoke(null to null) }
+            assertAll(liveDataA, liveDataB, mockedObserver)
+        }
+    )
+
+    private fun `LiveData - initialized B - combine`(context: CoroutineContext?) = executeCombine(
+        context = context,
+        liveDataA = MutableLiveData(),
+        liveDataB = MutableLiveData(null),
+        block = { liveDataA, liveDataB, mockedObserver ->
+            coVerify(exactly = 1) { mockedObserver.invoke(null to null) }
+            assertAll(liveDataA, liveDataB, mockedObserver)
+        }
+    )
+
+    private fun `LiveData - initialized A B - combine`(context: CoroutineContext?) = executeCombine(
+        context = context,
+        liveDataA = MutableLiveData(null),
+        liveDataB = MutableLiveData(null),
+        block = { liveDataA, liveDataB, mockedObserver ->
+            coVerify(exactly = 1) { mockedObserver.invoke(null to null) }
+            assertAll(liveDataA, liveDataB, mockedObserver)
+        }
+    )
+
+    //region Auxiliary
+    @Suppress("LongParameterList")
+    private fun executeCombine(
+        context: CoroutineContext? = null,
+        liveDataA: MutableLiveData<String>,
+        liveDataB: MutableLiveData<Int>,
+        block: suspend TestScope.(
+            a: MutableLiveData<String>,
+            b: MutableLiveData<Int>,
+            observer: suspend (Pair<String?, Int?>) -> Unit
+        ) -> Unit
+    ) = runTest {
+        val mockedObserver: (Pair<String?, Int?>) -> Unit = mockk("Observer")
+        coEvery { mockedObserver.invoke(any()) } coAnswers {
+            println("Result -> ${it.invocation.args[0]}")
+        }
+
+        val liveDataC = if (context == null) {
+            liveDataA.combine(liveDataB)
+        } else {
+            liveDataA.combine(context, liveDataB)
+        }
         liveDataC.observe(alwaysOnOwner, mockedObserver)
         advanceUntilIdle()
-        verifyBlocking(mockedObserver, times(1)) { invoke("null|null") }
-
-        assertAllTransform(liveDataA, liveDataB, mockedObserver)
+        block(liveDataA, liveDataB, mockedObserver)
     }
 
-    @Test
-    fun `13 - LiveData - initialized A B - combine - transform - exception`() = runTest {
-        val mockedObserver: (String?) -> Unit = mock(
-            name = "Observer",
-            defaultAnswer = { println("Result -> ${it.arguments[0]}") }
-        )
-        val transform: (String?, Int?) -> String = mock(
-            name = "Transform",
-            defaultAnswer = { error("Deu ruim!") }
-        )
+    @Suppress("LongParameterList")
+    private fun executeCombineTransform(
+        liveDataA: MutableLiveData<String>,
+        liveDataB: MutableLiveData<Int>,
+        transformException: Boolean = false,
+        block: suspend TestScope.(
+            a: MutableLiveData<String>,
+            b: MutableLiveData<Int>,
+            transformer: suspend (String?, Int?) -> String?,
+            observer: suspend (String?) -> Unit
+        ) -> Unit
+    ) = runTest {
+        val mockedObserver: (String?) -> Unit = mockk("Observer")
+        coEvery { mockedObserver.invoke(any()) } coAnswers {
+            println("Result -> ${it.invocation.args[0]}")
+        }
+        val mockedTransform: suspend (String?, Int?) -> String? = mockk("Transform")
+        coEvery { mockedTransform.invoke(any(), any()) } coAnswers {
+            if (transformException) error("") else "${it.invocation.args[0]}|${it.invocation.args[1]}"
+        }
 
-        val liveDataA = MutableLiveData<String>(null)
-        val liveDataB = MutableLiveData<Int>(null)
-        val liveDataC = liveDataA.combine(
-            context = EmptyCoroutineContext,
-            other = liveDataB,
-            transformDispatcher = Dispatchers.Main.immediate,
-            transform = transform
-        )
-        advanceUntilIdle()
-
+        val liveDataC = liveDataA.combine(liveDataB, Dispatchers.Main to mockedTransform)
         liveDataC.observe(alwaysOnOwner, mockedObserver)
         advanceUntilIdle()
-        verifyBlocking(mockedObserver, times(1)) { invoke(null) }
+        block(liveDataA, liveDataB, mockedTransform, mockedObserver)
     }
 
     private fun TestScope.assertAll(
         liveDataA: MutableLiveData<String>,
         liveDataB: MutableLiveData<Int>,
-        nullObserver: (Pair<String?, Int?>) -> Unit
+        observer: suspend (Pair<String?, Int?>) -> Unit
     ) {
         val hasInitialValue = liveDataA.isInitialized || liveDataB.isInitialized
 
         liveDataA.value = null
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(1.plus(if (hasInitialValue) 1 else 0))) {
-            invoke(null to null)
-        }
+        coVerify(exactly = 1.plus(if (hasInitialValue) 1 else 0)) { observer.invoke(null to null) }
 
         liveDataB.value = null
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(2.plus(if (hasInitialValue) 1 else 0))) {
-            invoke(null to null)
-        }
+        coVerify(exactly = 2.plus(if (hasInitialValue) 1 else 0)) { observer.invoke(null to null) }
 
         liveDataA.value = "String"
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(1)) { invoke("String" to null) }
+        coVerify(exactly = 1) { observer.invoke("String" to null) }
 
         liveDataB.value = 123
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(1)) { invoke("String" to 123) }
+        coVerify(exactly = 1) { observer.invoke("String" to 123) }
 
         liveDataA.value = null
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(1)) { invoke(null to 123) }
+        coVerify(exactly = 1) { observer.invoke(null to 123) }
 
         liveDataB.value = null
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(3.plus(if (hasInitialValue) 1 else 0))) {
-            invoke(null to null)
-        }
+        coVerify(exactly = 3.plus(if (hasInitialValue) 1 else 0)) { observer.invoke(null to null) }
 
         liveDataB.value = 123
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(2)) { invoke(null to 123) }
+        coVerify(exactly = 2) { observer.invoke(null to 123) }
 
         liveDataA.value = "String"
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(2)) { invoke("String" to 123) }
+        coVerify(exactly = 2) { observer.invoke("String" to 123) }
     }
 
     private fun TestScope.assertAllTransform(
         liveDataA: MutableLiveData<String>,
         liveDataB: MutableLiveData<Int>,
-        nullObserver: (String?) -> Unit
+        observer: suspend (String?) -> Unit
     ) {
         val hasInitialValue = liveDataA.isInitialized || liveDataB.isInitialized
 
         liveDataA.value = null
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(1.plus(if (hasInitialValue) 1 else 0))) {
-            invoke("null|null")
-        }
+        coVerify(exactly = 1.plus(if (hasInitialValue) 1 else 0)) { observer.invoke("null|null") }
 
         liveDataB.value = null
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(2.plus(if (hasInitialValue) 1 else 0))) {
-            invoke("null|null")
-        }
+        coVerify(exactly = 2.plus(if (hasInitialValue) 1 else 0)) { observer.invoke("null|null") }
 
         liveDataA.value = "String"
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(1)) { invoke("String|null") }
+        coVerify(exactly = 1) { observer.invoke("String|null") }
 
         liveDataB.value = 123
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(1)) { invoke("String|123") }
+        coVerify(exactly = 1) { observer.invoke("String|123") }
 
         liveDataA.value = null
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(1)) { invoke("null|123") }
+        coVerify(exactly = 1) { observer.invoke("null|123") }
 
         liveDataB.value = null
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(3.plus(if (hasInitialValue) 1 else 0))) {
-            invoke("null|null")
-        }
+        coVerify(exactly = 3.plus(if (hasInitialValue) 1 else 0)) { observer.invoke("null|null") }
 
         liveDataB.value = 123
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(2)) { invoke("null|123") }
+        coVerify(exactly = 2) { observer.invoke("null|123") }
 
         liveDataA.value = "String"
         advanceUntilIdle()
-        verifyBlocking(nullObserver, times(2)) { invoke("String|123") }
+        coVerify(exactly = 2) { observer.invoke("String|123") }
     }
 }

@@ -23,7 +23,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-class ChainTest {
+class ChainNotNullTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -34,67 +34,67 @@ class ChainTest {
 
     //region No Coroutine
     @Test
-    fun `01 - LiveData - not initialized - chainWith`() =
-        `LiveData - not initialized - chainWith`(null)
+    fun `01 - LiveData - not initialized - chainNotNullWith`() =
+        `LiveData - not initialized - chainNotNullWith`(null)
 
     @Test
-    fun `02 - LiveData - initialized A - chainWith`() =
-        `LiveData - initialized A - chainWith`(null)
+    fun `02 - LiveData - initialized A - chainNotNullWith`() =
+        `LiveData - initialized A - chainNotNullWith`(null)
 
     @Test
-    fun `03 - LiveData - initialized B - chainWith`() =
-        `LiveData - initialized B - chainWith`(null)
+    fun `03 - LiveData - initialized B - chainNotNullWith`() =
+        `LiveData - initialized B - chainNotNullWith`(null)
 
     @Test
-    fun `04 - LiveData - initialized A B - chainWith`() =
-        `LiveData - initialized A B - chainWith`(null)
+    fun `04 - LiveData - initialized A B - chainNotNullWith`() =
+        `LiveData - initialized A B - chainNotNullWith`(null)
 
     @Test
-    fun `05 - LiveData - initialized A B - chainWith - data`() =
-        `LiveData - initialized A B - chainWith - data`(null)
+    fun `05 - LiveData - initialized A B - chainNotNullWith - data`() =
+        `LiveData - initialized A B - chainNotNullWith - data`(null)
 
     @Test
-    fun `06 - LiveData - initialized A B - chainWith - exception condition`() =
-        `LiveData - initialized A B - chainWith - exception condition`(null)
+    fun `06 - LiveData - initialized A B - chainNotNullWith - exception condition`() =
+        `LiveData - initialized A B - chainNotNullWith - exception condition`(null)
 
     @Test
-    fun `07 - LiveData - initialized A B - chainWith - exception livedata`() =
-        `LiveData - initialized A B - chainWith - exception livedata`(null)
+    fun `07 - LiveData - initialized A B - chainNotNullWith - exception livedata`() =
+        `LiveData - initialized A B - chainNotNullWith - exception livedata`(null)
     //endregion
 
     //region Coroutine
     @Test
-    fun `08 - LiveData - not initialized - chainWith - coroutine`() =
-        `LiveData - not initialized - chainWith`(EmptyCoroutineContext)
+    fun `08 - LiveData - not initialized - chainNotNullWith - coroutine`() =
+        `LiveData - not initialized - chainNotNullWith`(EmptyCoroutineContext)
 
     @Test
-    fun `09 - LiveData - initialized A - chainWith - coroutine`() =
-        `LiveData - initialized A - chainWith`(EmptyCoroutineContext)
+    fun `09 - LiveData - initialized A - chainNotNullWith - coroutine`() =
+        `LiveData - initialized A - chainNotNullWith`(EmptyCoroutineContext)
 
     @Test
-    fun `10 - LiveData - initialized B - chainWith - coroutine`() =
-        `LiveData - initialized B - chainWith`(EmptyCoroutineContext)
+    fun `10 - LiveData - initialized B - chainNotNullWith - coroutine`() =
+        `LiveData - initialized B - chainNotNullWith`(EmptyCoroutineContext)
 
     @Test
-    fun `11 - LiveData - initialized A B - chainWith - coroutine`() =
-        `LiveData - initialized A B - chainWith`(EmptyCoroutineContext)
+    fun `11 - LiveData - initialized A B - chainNotNullWith - coroutine`() =
+        `LiveData - initialized A B - chainNotNullWith`(EmptyCoroutineContext)
 
     @Test
-    fun `12 - LiveData - initialized A B - chainWith - coroutine`() =
-        `LiveData - initialized A B - chainWith - data`(EmptyCoroutineContext)
+    fun `12 - LiveData - initialized A B - chainNotNullWith - coroutine`() =
+        `LiveData - initialized A B - chainNotNullWith - data`(EmptyCoroutineContext)
 
     @Test
-    fun `13 - LiveData - initialized A B - chainWith - coroutine - exception condition`() =
-        `LiveData - initialized A B - chainWith - exception condition`(EmptyCoroutineContext)
+    fun `13 - LiveData - initialized A B - chainNotNullWith - coroutine - exception condition`() =
+        `LiveData - initialized A B - chainNotNullWith - exception condition`(EmptyCoroutineContext)
 
     @Test
-    fun `14 - LiveData - initialized A B - chainWith - coroutine - exception livedata`() =
-        `LiveData - initialized A B - chainWith - exception livedata`(EmptyCoroutineContext)
+    fun `14 - LiveData - initialized A B - chainNotNullWith - coroutine - exception livedata`() =
+        `LiveData - initialized A B - chainNotNullWith - exception livedata`(EmptyCoroutineContext)
     //endregion
 
     //region Transform
     @Test
-    fun `15 - LiveData - not initialized - chainWith - transform`() = executeChainWithTransform(
+    fun `15 - LiveData - not initialized - chainNotNullWith - transform`() = executechainNotNullWithTransform(
         liveDataA = MutableLiveData<String>(),
         liveDataB = MutableLiveData<Int>(),
         block = { liveDataA, liveDataB, liveData, condition, transform, observer ->
@@ -105,14 +105,14 @@ class ChainTest {
 
             liveDataA.value = null
             advanceUntilIdle()
-            coVerify(exactly = 1) { condition(null) }
+            coVerify(exactly = 0) { condition(any()) }
             coVerify(exactly = 0) { liveData(any()) }
             coVerify(exactly = 0) { transform(any(), any()) }
             coVerify(exactly = 0) { observer(any()) }
 
             liveDataB.value = null
             advanceUntilIdle()
-            coVerify(exactly = 1) { condition(null) }
+            coVerify(exactly = 0) { condition(any()) }
             coVerify(exactly = 0) { liveData(any()) }
             coVerify(exactly = 0) { transform(any(), any()) }
             coVerify(exactly = 0) { observer(any()) }
@@ -121,36 +121,36 @@ class ChainTest {
             advanceUntilIdle()
             coVerify(exactly = 1) { condition("String") }
             coVerify(exactly = 1) { liveData("String") }
-            coVerify(exactly = 1) { transform("String", null) }
-            coVerify(exactly = 1) { observer("String|null") }
+            coVerify(exactly = 0) { transform(any(), any()) }
+            coVerify(exactly = 0) { observer(any()) }
 
             liveDataB.value = 123
             advanceUntilIdle()
-            coVerify(exactly = 2) { condition(any()) }
+            coVerify(exactly = 1) { condition(any()) }
             coVerify(exactly = 1) { liveData(any()) }
             coVerify(exactly = 1) { transform("String", 123) }
             coVerify(exactly = 1) { observer("String|123") }
 
             liveDataA.value = null
             advanceUntilIdle()
-            coVerify(exactly = 2) { condition(null) }
+            coVerify(exactly = 1) { condition(any()) }
             coVerify(exactly = 1) { liveData(any()) }
-            coVerify(exactly = 2) { transform(any(), any()) }
-            coVerify(exactly = 2) { observer(any()) }
+            coVerify(exactly = 1) { transform(any(), any()) }
+            coVerify(exactly = 1) { observer(any()) }
 
             liveDataB.value = null
             advanceUntilIdle()
-            coVerify(exactly = 2) { condition(null) }
+            coVerify(exactly = 1) { condition(any()) }
             coVerify(exactly = 1) { liveData(any()) }
-            coVerify(exactly = 2) { transform(any(), any()) }
-            coVerify(exactly = 2) { observer(any()) }
+            coVerify(exactly = 1) { transform(any(), any()) }
+            coVerify(exactly = 1) { observer(any()) }
 
             liveDataB.value = 123
             advanceUntilIdle()
-            coVerify(exactly = 2) { condition(null) }
+            coVerify(exactly = 1) { condition(any()) }
             coVerify(exactly = 1) { liveData(any()) }
-            coVerify(exactly = 2) { transform(any(), any()) }
-            coVerify(exactly = 2) { observer(any()) }
+            coVerify(exactly = 1) { transform(any(), any()) }
+            coVerify(exactly = 1) { observer(any()) }
 
             liveDataA.value = "String"
             advanceUntilIdle()
@@ -162,11 +162,11 @@ class ChainTest {
     )
 
     @Test
-    fun `16 - LiveData - initialized A - chainWith - transform`() = executeChainWithTransform(
+    fun `16 - LiveData - initialized A - chainNotNullWith - transform`() = executechainNotNullWithTransform(
         liveDataA = MutableLiveData<String>(null),
         liveDataB = MutableLiveData<Int>(),
         block = { _, _, liveData, condition, transform, observer ->
-            coVerify(exactly = 1) { condition(null) }
+            coVerify(exactly = 0) { condition(any()) }
             coVerify(exactly = 0) { liveData(any()) }
             coVerify(exactly = 0) { transform(any(), any()) }
             coVerify(exactly = 0) { observer(any()) }
@@ -174,7 +174,7 @@ class ChainTest {
     )
 
     @Test
-    fun `17 - LiveData - initialized B - chainWith - transform`() = executeChainWithTransform(
+    fun `17 - LiveData - initialized B - chainNotNullWith - transform`() = executechainNotNullWithTransform(
         liveDataA = MutableLiveData<String>(),
         liveDataB = MutableLiveData<Int>(null),
         block = { _, _, liveData, condition, transform, observer ->
@@ -186,11 +186,11 @@ class ChainTest {
     )
 
     @Test
-    fun `18 - LiveData - initialized A B - chainWith - transform`() = executeChainWithTransform(
+    fun `18 - LiveData - initialized A B - chainNotNullWith - transform`() = executechainNotNullWithTransform(
         liveDataA = MutableLiveData<String>(null),
         liveDataB = MutableLiveData<Int>(null),
         block = { _, _, liveData, condition, transform, observer ->
-            coVerify(exactly = 1) { condition(null) }
+            coVerify(exactly = 0) { condition(any()) }
             coVerify(exactly = 0) { liveData(any()) }
             coVerify(exactly = 0) { transform(any(), any()) }
             coVerify(exactly = 0) { observer(any()) }
@@ -198,7 +198,7 @@ class ChainTest {
     )
 
     @Test
-    fun `19 - LiveData - initialized A B - chainWith - transform`() = executeChainWithTransform(
+    fun `19 - LiveData - initialized A B - chainNotNullWith - transform`() = executechainNotNullWithTransform(
         liveDataA = MutableLiveData<String>("String"),
         liveDataB = MutableLiveData<Int>(123),
         block = { _, _, liveData, condition, transform, observer ->
@@ -210,8 +210,8 @@ class ChainTest {
     )
 
     @Test
-    fun `20 - LiveData - initialized A B - chainWith - transform - exception condition`() =
-        executeChainWithTransform(
+    fun `20 - LiveData - initialized A B - chainNotNullWith - transform - exception condition`() =
+        executechainNotNullWithTransform(
             liveDataA = MutableLiveData<String>("String"),
             liveDataB = MutableLiveData<Int>(123),
             conditionException = true,
@@ -224,8 +224,8 @@ class ChainTest {
         )
 
     @Test
-    fun `21 - LiveData - initialized A B - chainWith - transform - exception livedata`() =
-        executeChainWithTransform(
+    fun `21 - LiveData - initialized A B - chainNotNullWith - transform - exception livedata`() =
+        executechainNotNullWithTransform(
             liveDataA = MutableLiveData<String>("String"),
             liveDataB = MutableLiveData<Int>(123),
             liveDataException = true,
@@ -238,8 +238,8 @@ class ChainTest {
         )
 
     @Test
-    fun `22 - LiveData - initialized A B - chainWith - transform - exception transform`() =
-        executeChainWithTransform(
+    fun `22 - LiveData - initialized A B - chainNotNullWith - transform - exception transform`() =
+        executechainNotNullWithTransform(
             liveDataA = MutableLiveData<String>("String"),
             liveDataB = MutableLiveData<Int>(123),
             transformException = true,
@@ -247,14 +247,14 @@ class ChainTest {
                 coVerify(exactly = 1) { condition("String") }
                 coVerify(exactly = 1) { liveData("String") }
                 coVerify(exactly = 1) { transform("String", 123) }
-                coVerify(exactly = 1) { observer(null) }
+                coVerify(exactly = 0) { observer(any()) }
             }
         )
     //endregion
 
     //region Scenarios
-    private fun `LiveData - not initialized - chainWith`(context: CoroutineContext?) =
-        executeChainWith(
+    private fun `LiveData - not initialized - chainNotNullWith`(context: CoroutineContext?) =
+        executechainNotNullWith(
             context = context,
             liveDataA = MutableLiveData<String>(),
             liveDataB = MutableLiveData<Int>(),
@@ -265,13 +265,13 @@ class ChainTest {
 
                 liveDataA.value = null
                 advanceUntilIdle()
-                coVerify(exactly = 1) { condition(null) }
+                coVerify(exactly = 0) { condition(any()) }
                 coVerify(exactly = 0) { liveData(any()) }
                 coVerify(exactly = 0) { observer(any()) }
 
                 liveDataB.value = null
                 advanceUntilIdle()
-                coVerify(exactly = 1) { condition(null) }
+                coVerify(exactly = 0) { condition(any()) }
                 coVerify(exactly = 0) { liveData(any()) }
                 coVerify(exactly = 0) { observer(any()) }
 
@@ -279,31 +279,31 @@ class ChainTest {
                 advanceUntilIdle()
                 coVerify(exactly = 1) { condition("String") }
                 coVerify(exactly = 1) { liveData("String") }
-                coVerify(exactly = 1) { observer("String" to null) }
+                coVerify(exactly = 0) { observer(any()) }
 
                 liveDataB.value = 123
                 advanceUntilIdle()
-                coVerify(exactly = 2) { condition(any()) }
+                coVerify(exactly = 1) { condition(any()) }
                 coVerify(exactly = 1) { liveData(any()) }
                 coVerify(exactly = 1) { observer("String" to 123) }
 
                 liveDataA.value = null
                 advanceUntilIdle()
-                coVerify(exactly = 2) { condition(null) }
+                coVerify(exactly = 1) { condition(any()) }
                 coVerify(exactly = 1) { liveData(any()) }
-                coVerify(exactly = 2) { observer(any()) }
+                coVerify(exactly = 1) { observer(any()) }
 
                 liveDataB.value = null
                 advanceUntilIdle()
-                coVerify(exactly = 2) { condition(null) }
+                coVerify(exactly = 1) { condition(any()) }
                 coVerify(exactly = 1) { liveData(any()) }
-                coVerify(exactly = 2) { observer(any()) }
+                coVerify(exactly = 1) { observer(any()) }
 
                 liveDataB.value = 123
                 advanceUntilIdle()
-                coVerify(exactly = 2) { condition(null) }
+                coVerify(exactly = 1) { condition(any()) }
                 coVerify(exactly = 1) { liveData(any()) }
-                coVerify(exactly = 2) { observer(any()) }
+                coVerify(exactly = 1) { observer(any()) }
 
                 liveDataA.value = "String"
                 advanceUntilIdle()
@@ -313,20 +313,20 @@ class ChainTest {
             }
         )
 
-    private fun `LiveData - initialized A - chainWith`(context: CoroutineContext?) =
-        executeChainWith(
+    private fun `LiveData - initialized A - chainNotNullWith`(context: CoroutineContext?) =
+        executechainNotNullWith(
             context = context,
             liveDataA = MutableLiveData<String>(null),
             liveDataB = MutableLiveData<Int>(),
             block = { _, _, liveData, condition, observer ->
-                coVerify(exactly = 1) { condition(null) }
+                coVerify(exactly = 0) { condition(any()) }
                 coVerify(exactly = 0) { liveData(any()) }
                 coVerify(exactly = 0) { observer(any()) }
             }
         )
 
-    private fun `LiveData - initialized B - chainWith`(context: CoroutineContext?) =
-        executeChainWith(
+    private fun `LiveData - initialized B - chainNotNullWith`(context: CoroutineContext?) =
+        executechainNotNullWith(
             context = context,
             liveDataA = MutableLiveData<String>(),
             liveDataB = MutableLiveData<Int>(null),
@@ -337,20 +337,20 @@ class ChainTest {
             }
         )
 
-    private fun `LiveData - initialized A B - chainWith`(context: CoroutineContext?) =
-        executeChainWith(
+    private fun `LiveData - initialized A B - chainNotNullWith`(context: CoroutineContext?) =
+        executechainNotNullWith(
             context = context,
             liveDataA = MutableLiveData<String>(null),
             liveDataB = MutableLiveData<Int>(null),
             block = { _, _, liveData, condition, observer ->
-                coVerify(exactly = 1) { condition(null) }
+                coVerify(exactly = 0) { condition(any()) }
                 coVerify(exactly = 0) { liveData(any()) }
                 coVerify(exactly = 0) { observer(any()) }
             }
         )
 
-    private fun `LiveData - initialized A B - chainWith - data`(context: CoroutineContext?) =
-        executeChainWith(
+    private fun `LiveData - initialized A B - chainNotNullWith - data`(context: CoroutineContext?) =
+        executechainNotNullWith(
             context = context,
             liveDataA = MutableLiveData<String>("String"),
             liveDataB = MutableLiveData<Int>(123),
@@ -361,8 +361,8 @@ class ChainTest {
             }
         )
 
-    private fun `LiveData - initialized A B - chainWith - exception condition`(context: CoroutineContext?) =
-        executeChainWith(
+    private fun `LiveData - initialized A B - chainNotNullWith - exception condition`(context: CoroutineContext?) =
+        executechainNotNullWith(
             context = context,
             liveDataA = MutableLiveData<String>("String"),
             liveDataB = MutableLiveData<Int>(123),
@@ -374,8 +374,8 @@ class ChainTest {
             }
         )
 
-    private fun `LiveData - initialized A B - chainWith - exception livedata`(context: CoroutineContext?) =
-        executeChainWith(
+    private fun `LiveData - initialized A B - chainNotNullWith - exception livedata`(context: CoroutineContext?) =
+        executechainNotNullWith(
             context = context,
             liveDataA = MutableLiveData<String>("String"),
             liveDataB = MutableLiveData<Int>(123),
@@ -390,7 +390,7 @@ class ChainTest {
 
     //region Auxiliary
     @Suppress("LongParameterList")
-    private fun executeChainWith(
+    private fun executechainNotNullWith(
         context: CoroutineContext? = null,
         liveDataA: MutableLiveData<String>,
         liveDataB: MutableLiveData<Int>,
@@ -399,30 +399,30 @@ class ChainTest {
         block: suspend TestScope.(
             a: MutableLiveData<String>,
             b: MutableLiveData<Int>,
-            liveData: suspend (String?) -> LiveData<Int>,
-            condition: suspend (String?) -> Boolean,
-            observer: suspend (Pair<String?, Int?>) -> Unit
+            liveData: suspend (String) -> LiveData<Int>,
+            condition: suspend (String) -> Boolean,
+            observer: suspend (Pair<String, Int>) -> Unit
         ) -> Unit
     ) = runTest {
-        val mockedCondition: (String?) -> Boolean = mockk("Condition")
+        val mockedCondition: (String) -> Boolean = mockk("Condition")
         coEvery { mockedCondition.invoke(any()) } coAnswers {
             if (conditionException) error("") else it.invocation.args[0] == "String"
         }
 
-        val mockedLiveData: (String?) -> LiveData<Int> = mockk("LiveData")
+        val mockedLiveData: (String) -> LiveData<Int> = mockk("LiveData")
         coEvery { mockedLiveData.invoke(any()) } coAnswers {
             if (liveDataException) error("") else liveDataB
         }
 
-        val mockedObserver: (Pair<String?, Int?>) -> Unit = mockk("Observer")
+        val mockedObserver: (Pair<String, Int>) -> Unit = mockk("Observer")
         coEvery { mockedObserver.invoke(any()) } coAnswers {
             println("Result -> ${it.invocation.args[0]}")
         }
 
         val liveDataC = if (context == null) {
-            liveDataA.chainWith(mockedLiveData, mockedCondition)
+            liveDataA.chainNotNullWith(mockedLiveData, mockedCondition)
         } else {
-            liveDataA.chainWith(context, mockedLiveData, mockedCondition)
+            liveDataA.chainNotNullWith(context, mockedLiveData, mockedCondition)
         }
         liveDataC.observe(alwaysOnOwner, mockedObserver)
         advanceUntilIdle()
@@ -430,7 +430,7 @@ class ChainTest {
     }
 
     @Suppress("LongParameterList")
-    private fun executeChainWithTransform(
+    private fun executechainNotNullWithTransform(
         liveDataA: MutableLiveData<String>,
         liveDataB: MutableLiveData<Int>,
         conditionException: Boolean = false,
@@ -439,13 +439,13 @@ class ChainTest {
         block: suspend TestScope.(
             a: MutableLiveData<String>,
             b: MutableLiveData<Int>,
-            liveData: suspend (String?) -> LiveData<Int>,
-            condition: suspend (String?) -> Boolean,
-            transform: suspend (String?, Int?) -> String?,
-            observer: suspend (String?) -> Unit
+            liveData: suspend (String) -> LiveData<Int>,
+            condition: suspend (String) -> Boolean,
+            transform: suspend (String, Int) -> String,
+            observer: suspend (String) -> Unit
         ) -> Unit
     ) = runTest {
-        val mockedCondition: suspend (String?) -> Boolean = mockk("Condition")
+        val mockedCondition: suspend (String) -> Boolean = mockk("Condition")
         coEvery { mockedCondition.invoke(any()) } coAnswers {
             if (conditionException) error("") else it.invocation.args[0] == "String"
         }
@@ -455,17 +455,17 @@ class ChainTest {
             if (liveDataException) error("") else liveDataB
         }
 
-        val mockedTransform: suspend (String?, Int?) -> String? = mockk("Transform")
+        val mockedTransform: suspend (String, Int) -> String = mockk("Transform")
         coEvery { mockedTransform.invoke(any(), any()) } coAnswers {
             if (transformException) error("") else "${it.invocation.args[0]}|${it.invocation.args[1]}"
         }
 
-        val mockedObserver: (String?) -> Unit = mockk("Observer")
+        val mockedObserver: (String) -> Unit = mockk("Observer")
         coEvery { mockedObserver.invoke(any()) } coAnswers {
             println("Result -> ${it.invocation.args[0]}")
         }
 
-        val liveDataC = liveDataA.chainWith<String, Int, String>(
+        val liveDataC = liveDataA.chainNotNullWith<String, Int, String>(
             context = EmptyCoroutineContext,
             other = mockedLiveData,
             condition = mockedCondition,
