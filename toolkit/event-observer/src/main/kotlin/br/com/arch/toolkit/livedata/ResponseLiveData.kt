@@ -7,10 +7,12 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
+import br.com.arch.toolkit.util.mapNotNull
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +65,11 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     val data: T?
         @Nullable get() = value?.data
+
+    val liveData: LiveData<DataResult<T>> get() = this
+    val dataLiveData: LiveData<T> get() = liveData.mapNotNull { it.data }
+    val statusLiveData: LiveData<DataResultStatus> get() = liveData.mapNotNull { it.status }
+    val errorLiveData: LiveData<Throwable> get() = liveData.mapNotNull { it.error }
 
     /**
      * Empty constructor when initializing with a value is not needed

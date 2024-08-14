@@ -1,20 +1,26 @@
+@file:Suppress("TooManyFunctions")
+
 package br.com.arch.toolkit.result
 
-import br.com.arch.toolkit.flow.ResponseFlow
-import br.com.arch.toolkit.livedata.ResponseLiveData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 
 /**
- * The capsule with contains a optional data, optional error and a non null status
+ * DataResult is a generic class that encapsulates the result of an operation, including the data, error, and status.
+ * It provides various utility methods to handle and transform the data, as well as to check the state of the result.
  *
- * This model of interpretation was based on Google Architecture Components Example
+ * @param T The type of data held by this DataResult.
+ * @property data The data resulting from the operation, or null if there was an error.
+ * @property error The exception thrown during the operation, or null if the operation was successful.
+ * @property status The current status of the operation, represented by the [DataResultStatus] enum.
  *
- * @see <a href="https://github.com/googlesamples/android-architecture-components">Google's github repository</a>
- * @see DataResultStatus
- * @see ObserveWrapper
- * @see ResponseLiveData
- * @see ResponseFlow
+ * Example usage:
+ * ```
+ * val result: DataResult<String> = DataResult("Success", null, DataResultStatus.SUCCESS)
+ * if (result.isSuccess) {
+ *     println("Data: ${result.data}")
+ * }
+ * ```
  */
 data class DataResult<T>(
     val data: T?,
@@ -22,78 +28,94 @@ data class DataResult<T>(
     val status: DataResultStatus
 ) {
 
-    /**
-     * Scope to run all the transformations, it is optional, is null, will use the default inside ObserveWrapper
-     *
-     * @see ObserveWrapper.scope
-     */
     private var scope: CoroutineScope? = null
+    private var transformDispatcher: CoroutineDispatcher? = null
+
+    /**
+     * Sets a CoroutineScope to be used by this DataResult.
+     *
+     * @param scope The CoroutineScope to set.
+     * @return This DataResult instance.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult("Success", null, DataResultStatus.SUCCESS)
+     * result.scope(CoroutineScope(Dispatchers.Main))
+     * ```
+     */
     fun scope(scope: CoroutineScope) = apply { this.scope = scope }
+
+    /**
+     * Sets a CoroutineDispatcher to be used by this DataResult to create a CoroutineScope.
+     *
+     * @param scope The CoroutineDispatcher to set.
+     * @return This DataResult instance.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult("Success", null, DataResultStatus.SUCCESS)
+     * result.scope(Dispatchers.IO)
+     * ```
+     */
     fun scope(scope: CoroutineDispatcher) = apply { this.scope = CoroutineScope(scope) }
 
     /**
-     * Scope to run all the transformations, it is optional, is null, will use the default inside ObserveWrapper
+     * Sets a CoroutineDispatcher to be used for transforming data.
      *
-     * @see ObserveWrapper.transformDispatcher
+     * @param dispatcher The CoroutineDispatcher to set.
+     * @return This DataResult instance.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult("Success", null, DataResultStatus.SUCCESS)
+     * result.transformDispatcher(Dispatchers.Default)
+     * ```
      */
-    private var transformDispatcher: CoroutineDispatcher? = null
     fun transformDispatcher(dispatcher: CoroutineDispatcher) =
         apply { this.transformDispatcher = dispatcher }
 
     /**
+     * Checks if the data is not null.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.hasData) {
-     *     // Have data!
-     * } else {
-     *     // Not have data!
+     * @return True if the data is not null, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult("Success", null, DataResultStatus.SUCCESS)
+     * if (result.hasData) {
+     *     println("Data is present.")
      * }
      * ```
-     *
-     * - **true** - if this DataResult has data != null
-     * - **false** - if this DataResult has data == null
-     *
-     * @return Flag indicating if this DataResult has data or not
      */
     val hasData: Boolean get() = data != null
 
     /**
+     * Checks if an error is present.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.hasError) {
-     *     // Have data!
-     * } else {
-     *     // Not have data!
+     * @return True if an error is present, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult<String>(null, RuntimeException("An error occurred"), DataResultStatus.ERROR)
+     * if (result.hasError) {
+     *     println("Error: ${result.error?.message}")
      * }
      * ```
-     *
-     * - **true** - if this DataResult has error != null
-     * - **false** - if this DataResult has error == null
-     *
-     * @return Flag indicating if this DataResult has error or not
      */
     val hasError: Boolean get() = error != null
 
     /**
+     * Checks if the data is empty. This is applicable if the data is a Collection, Map, or Sequence.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.isEmpty) {
-     *     // Data is List ou Map or Sequence and it is empty!
-     * } else {
-     *     // Data is any of the known types or is not empty!
+     * @return True if the data is empty, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult(listOf<String>(), null, DataResultStatus.SUCCESS)
+     * if (result.isEmpty) {
+     *     println("Data is empty.")
      * }
      * ```
-     *
-     * - **true** - if this data is != null and is is a list and it is empty
-     * - **false** - if this data is null or, it is any of the mapped list type, or is not empty
-     *
-     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it is empty
      */
     val isEmpty: Boolean
         get() = when (data) {
@@ -104,21 +126,17 @@ data class DataResult<T>(
         }
 
     /**
+     * Checks if the data is not empty. This is applicable if the data is a Collection, Map, or Sequence.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.isEmpty) {
-     *     // Data is List ou Map or Sequence and it is empty!
-     * } else {
-     *     // Data is any of the known types or is not empty!
+     * @return True if the data is not empty, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult(listOf("Item1", "Item2"), null, DataResultStatus.SUCCESS)
+     * if (result.isNotEmpty) {
+     *     println("Data is not empty.")
      * }
      * ```
-     *
-     * - **true** - if this data is != null and is is a list and it is not empty
-     * - **false** - if this data is null or, it is any of the mapped list type, or is empty
-     *
-     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it is NOT empty
      */
     val isNotEmpty: Boolean
         get() = when (data) {
@@ -129,21 +147,17 @@ data class DataResult<T>(
         }
 
     /**
+     * Checks if the data contains exactly one item. This is applicable if the data is a Collection, Map, or Sequence.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.hasOneItem) {
-     *     // Data is List ou Map or Sequence and it has only one item!
-     * } else {
-     *     // Data is any of the known types or it has many items!
+     * @return True if the data contains exactly one item, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult(listOf("OnlyItem"), null, DataResultStatus.SUCCESS)
+     * if (result.hasOneItem) {
+     *     println("Data contains one item.")
      * }
      * ```
-     *
-     * - **true** - if this data is != null and is is a list and it has only one item
-     * - **false** - if this data is null or, it is any of the mapped list type, or it has many items
-     *
-     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it has only one item
      */
     val hasOneItem: Boolean
         get() = when (data) {
@@ -154,21 +168,17 @@ data class DataResult<T>(
         }
 
     /**
+     * Checks if the data contains more than one item. This is applicable if the data is a Collection, Map, or Sequence.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.hasManyItems) {
-     *     // Data is List ou Map or Sequence and it has more than one item!
-     * } else {
-     *     // Data is any of the known types or it has only one item!
+     * @return True if the data contains more than one item, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult(listOf("Item1", "Item2"), null, DataResultStatus.SUCCESS)
+     * if (result.hasManyItems) {
+     *     println("Data contains multiple items.")
      * }
      * ```
-     *
-     * - **true** - if this data is != null and is is a list and it has more than one item
-     * - **false** - if this data is null or, it is any of the mapped list type, or it has only one item
-     *
-     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence and it has more than one item
      */
     val hasManyItems: Boolean
         get() = when (data) {
@@ -179,21 +189,17 @@ data class DataResult<T>(
         }
 
     /**
+     * Checks if the data is of a list type (Collection, Map, or Sequence).
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.isListType) {
-     *     // Data is List ou Map or Sequence!
-     * } else {
-     *     // Data is any of the known types!
+     * @return True if the data is of a list type, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult(listOf("Item1", "Item2"), null, DataResultStatus.SUCCESS)
+     * if (result.isListType) {
+     *     println("Data is of a list type.")
      * }
      * ```
-     *
-     * - **true** - if this data is != null and is is a list
-     * - **false** - if this data is null or, it is any of the mapped list type
-     *
-     * @return Flag indicating if this DataResult has data and it is a List, Map or Sequence
      */
     val isListType: Boolean
         get() = hasData && when (data) {
@@ -205,103 +211,100 @@ data class DataResult<T>(
         }
 
     /**
+     * Checks if the current status is LOADING.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.isLoading) {
-     *     // Is Loading!
-     * } else {
-     *     // Is Not Loading
+     * @return True if the status is LOADING, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult<String>(null, null, DataResultStatus.LOADING)
+     * if (result.isLoading) {
+     *     println("The operation is loading.")
      * }
      * ```
-     *
-     * - **true** - if this DataResult has loading status
-     * - **false** - if this DataResult hasn't loading status
-     *
-     * @return Flag indicating if this DataResult has loading status
-     * @see DataResultStatus
      */
     val isLoading: Boolean get() = status == DataResultStatus.LOADING
 
     /**
+     * Checks if the current status is ERROR.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.isError) {
-     *     // Is Error!
-     * } else {
-     *     // Is Not Error
+     * @return True if the status is ERROR, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult<String>(null, RuntimeException("An error occurred"), DataResultStatus.ERROR)
+     * if (result.isError) {
+     *     println("The operation encountered an error.")
      * }
      * ```
-     *
-     * - **true** - if this DataResult has error status
-     * - **false** - if this DataResult hasn't error status
-     *
-     * @return Flag indicating if this DataResult has error status
-     * @see DataResultStatus
      */
     val isError: Boolean get() = status == DataResultStatus.ERROR
 
     /**
+     * Checks if the current status is SUCCESS.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.isSuccess) {
-     *     // Is Success!
-     * } else {
-     *     // Is Not Success
+     * @return True if the status is SUCCESS, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult("Success", null, DataResultStatus.SUCCESS)
+     * if (result.isSuccess) {
+     *     println("The operation was successful.")
      * }
      * ```
-     *
-     * - **true** - if this DataResult has success status
-     * - **false** - if this DataResult hasn't success status
-     *
-     * @return Flag indicating if this DataResult has success status
-     * @see DataResultStatus
      */
     val isSuccess: Boolean get() = status == DataResultStatus.SUCCESS
 
     /**
+     * Checks if the current status is NONE.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * if(dataResult.isNone) {
-     *     // Is None!
-     * } else {
-     *     // Is Not None
+     * @return True if the status is NONE, false otherwise.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult<String>(null, null, DataResultStatus.NONE)
+     * if (result.isNone) {
+     *     println("The operation has no status.")
      * }
      * ```
-     *
-     * - **true** - if this DataResult has none status
-     * - **false** - if this DataResult hasn't none status
-     *
-     * @return Flag indicating if this DataResult has none status
-     * @see DataResultStatus
      */
     val isNone: Boolean get() = status == DataResultStatus.NONE
 
     /**
-     * Creates and configure a ObserverWrapper to handle by yourself any changes on this data
+     * Transforms the data using the provided function and returns a new [DataResult] with the transformed data.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * dataResult.unwrap {
-     *    // See what you can do inside ObserveWrapper
-     *    data { data -> /* Work with data here */ }
-     *    loading { loading -> /* Work with loading here */ }
-     *    showLoading { /* Display loading here */ }
-     *    hideLoading { /* Hide loading here */ }
-     *    error { error -> /* Work with error here */ }
-     *    status { status -> /* Work with status here */ }
+     * @param R The type of the transformed data.
+     * @param transform The function to transform the data.
+     * @return A new [DataResult] containing the transformed data, or the original error and status if the transformation fails.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult(10, null, DataResultStatus.SUCCESS)
+     * val transformedResult = result.transform { it * 2 }
+     * println(transformedResult.data) // Output: 20
+     * ```
+     */
+    fun <R> transform(transform: (T) -> R): DataResult<R> = data?.runCatching {
+        DataResult(transform(this), error, status)
+    }?.getOrElse { error ->
+        DataResult<R>(null, error, status)
+    } ?: DataResult(null, error, status)
+
+    /**
+     * Unwraps the DataResult, applying the provided configuration and attaching the current DataResult.
+     *
+     * @param config The configuration to apply using [ObserveWrapper].
+     * @return The configured [ObserveWrapper] instance.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult("Success", null, DataResultStatus.SUCCESS)
+     * result.unwrap {
+     *     data { println("Data: $it") }
+     *     loading { println("Loading: $it") }
+     *     error { println("Error: ${it.message}") }
      * }
      * ```
-     *
-     * @see ObserveWrapper
      */
     fun unwrap(config: ObserveWrapper<T>.() -> Unit) =
         ObserveWrapper<T>().also {
@@ -310,154 +313,129 @@ data class DataResult<T>(
         }.apply(config).attachTo(this)
 
     //region Data
-    /**
-     * Function that will run only if this DataResult has non-null data
-     *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * dataResult.data { data ->
-     *    /* work with data here */
-     * }
-     * ```
-     * @param func Function that receives data
-     * @see DataResult.unwrap
-     * @see ObserveWrapper.data
-     */
-    fun data(func: (T) -> Unit) = unwrap { data(observer = func) }
 
     /**
-     * Function that will run only if this DataResult has non-null data
+     * Executes the provided function if data is present.
      *
-     * Usage:
-     * ```kotlin
-     * fun transform(data: T): R {
-     *     return "transformed data"
-     * }
+     * @param func The function to execute with the data.
+     * @return The [ObserveWrapper] instance configured with the data observer.
      *
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * dataResult.data(transformer = ::transform) { transformed ->
-     *     /* work with transformed data here */
-     * }
+     * Example usage:
      * ```
-     * @param transformer Function that receives data and return the transformed data
-     * @param func Function that receives transformed data
-     * @see DataResult.unwrap
-     * @see ObserveWrapper.data
+     * val result = DataResult("Success", null, DataResultStatus.SUCCESS)
+     * result.data { println("Data: $it") }
+     * ```
      */
-    fun <R> data(transformer: (T) -> R, func: (R) -> Unit) =
+    fun data(func: suspend (T) -> Unit) = unwrap { data(observer = func) }
+
+    /**
+     * Transforms the data using the provided transformer function and then executes the provided function with the transformed data.
+     *
+     * @param R The type of the transformed data.
+     * @param transformer The function to transform the data.
+     * @param func The function to execute with the transformed data.
+     * @return The [ObserveWrapper] instance configured with the data observer.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult(10, null, DataResultStatus.SUCCESS)
+     * result.data({ it * 2 }) { println("Transformed Data: $it") } // Output: Transformed Data: 20
+     * ```
+     */
+    fun <R> data(transformer: suspend (T) -> R, func: suspend (R) -> Unit) =
         unwrap { data(transformer = transformer, observer = func) }
     //endregion
 
     //region Loading
-    /**
-     * Function that will run based on this DataResult status
-     *
-     * Will receive true if the status is LOADING, and false otherwise
-     *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * dataResult.loading { loading ->
-     *     if(loading) {
-     *         /* Display Loading here */
-     *     else {
-     *         /* Hide Loading here */
-     *     }
-     * }
-     * ```
-     * @param func Function that receives a bool that indicates to display/hide loading
-     * @see DataResult.unwrap
-     * @see ObserveWrapper.loading
-     */
-    fun loading(func: (Boolean) -> Unit) = unwrap { loading(observer = func) }
 
     /**
-     * Function that will run only if this DataResult status is LOADING
+     * Executes the provided function with the loading state.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * dataResult.showLoading {
-     *     /* Display Loading here */
-     * }
+     * @param func The function to execute with the loading state.
+     * @return The [ObserveWrapper] instance configured with the loading observer.
+     *
+     * Example usage:
      * ```
-     * @param func Function that will execute only if the status is LOADING
-     * @see DataResult.unwrap
-     * @see ObserveWrapper.showLoading
+     * val result = DataResult<String>(null, null, DataResultStatus.LOADING)
+     * result.loading { isLoading -> println("Loading: $isLoading") }
+     * ```
      */
-    fun showLoading(func: () -> Unit) = unwrap { showLoading(observer = func) }
+    fun loading(func: suspend (Boolean) -> Unit) = unwrap { loading(observer = func) }
 
     /**
-     * Function that will run only if this DataResult status is not LOADING
+     * Executes the provided function when the loading state is shown.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * dataResult.hideLoading {
-     *     /* Hide Loading here */
-     * }
+     * @param func The function to execute when loading is shown.
+     * @return The [ObserveWrapper] instance configured with the showLoading observer.
+     *
+     * Example usage:
      * ```
-     * @param func Function that will execute only if the status is not LOADING
-     * @see DataResult.unwrap
-     * @see ObserveWrapper.hideLoading
+     * val result = DataResult<String>(null, null, DataResultStatus.LOADING)
+     * result.showLoading { println("Loading started...") }
+     * ```
      */
-    fun hideLoading(func: () -> Unit) = unwrap { hideLoading(observer = func) }
+    fun showLoading(func: suspend () -> Unit) = unwrap { showLoading(observer = func) }
+
+    /**
+     * Executes the provided function when the loading state is hidden.
+     *
+     * @param func The function to execute when loading is hidden.
+     * @return The [ObserveWrapper] instance configured with the hideLoading observer.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult<String>(null, null, DataResultStatus.SUCCESS)
+     * result.hideLoading { println("Loading finished.") }
+     * ```
+     */
+    fun hideLoading(func: suspend () -> Unit) = unwrap { hideLoading(observer = func) }
     //endregion
 
     //region Error
-    /**
-     * Function that will run only if this DataResult has non-null error
-     *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * dataResult.error { error ->
-     *    /* work with error here */
-     * }
-     * ```
-     * @param func Function that receives error
-     * @see DataResult.unwrap
-     * @see ObserveWrapper.error
-     */
-    fun error(func: (Throwable) -> Unit) = unwrap { error(observer = func) }
 
     /**
-     * Function that will run only if this DataResult has status ERROR
+     * Executes the provided function if an error is present.
      *
-     * Usage:
-     * ```kotlin
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * dataResult.error {
-     *    /* work here in case of error */
-     * }
+     * @param func The function to execute with the error.
+     * @return The [ObserveWrapper] instance configured with the error observer.
+     *
+     * Example usage:
      * ```
-     * @param func Function that runs in case of status ERROR
-     * @see DataResult.unwrap
-     * @see ObserveWrapper.error
+     * val result = DataResult<String>(null, RuntimeException("An error occurred"), DataResultStatus.ERROR)
+     * result.error { error -> println("Error: ${error.message}") }
+     * ```
      */
-    fun error(func: () -> Unit) = unwrap { error(observer = func) }
+    fun error(func: suspend (Throwable) -> Unit) = unwrap { error(observer = func) }
 
     /**
-     * Function that will run only if this DataResult has non-null error
+     * Executes the provided function if an error is present (no parameter version).
      *
-     * Usage:
-     * ```kotlin
-     * fun transform(error: Throwable): R {
-     *     return "transformed data"
-     * }
+     * @param func The function to execute if an error is present.
+     * @return The [ObserveWrapper] instance configured with the error observer.
      *
-     * val dataResult = DataResult(null, null, DataResultStatus.SUCCESS)
-     * dataResult.error(transformer = ::transform) { transformed ->
-     *     /* work with transformed error here */
-     * }
+     * Example usage:
      * ```
-     * @param transformer Function that receives error and return the transformed data
-     * @param func Function that receives transformed error
-     * @see DataResult.unwrap
-     * @see ObserveWrapper.error
+     * val result = DataResult<String>(null, RuntimeException("An error occurred"), DataResultStatus.ERROR)
+     * result.error { println("An error occurred.") }
+     * ```
      */
-    fun <R> error(transformer: (Throwable) -> R, func: (R) -> Unit) =
+    fun error(func: suspend () -> Unit) = unwrap { error(observer = func) }
+
+    /**
+     * Transforms the error using the provided transformer function and then executes the provided function with the transformed error.
+     *
+     * @param R The type of the transformed error.
+     * @param transformer The function to transform the error.
+     * @param func The function to execute with the transformed error.
+     * @return The [ObserveWrapper] instance configured with the error observer.
+     *
+     * Example usage:
+     * ```
+     * val result = DataResult<String>(null, RuntimeException("An error occurred"), DataResultStatus.ERROR)
+     * result.error({ it.message ?: "Unknown Error" }) { errorMsg -> println("Error: $errorMsg") }
+     * ```
+     */
+    fun <R> error(transformer: suspend (Throwable) -> R, func: suspend (R) -> Unit) =
         unwrap { error(transformer = transformer, observer = func) }
     //endregion
 }

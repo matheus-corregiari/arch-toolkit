@@ -13,6 +13,9 @@
     <ID>Filename:_util.kt$br.com.arch.toolkit._util.kt</ID>
     <ID>LongParameterList:SampleData.kt$SampleData.NewData$( var nullableValue: T?, var value: T, var nullableListOfValue: List&lt;T>?, var listOfValue: List&lt;T>, var nullableMapOfValue: Map&lt;String, T>?, var mapOfValue: Map&lt;String, T>, )</ID>
     <ID>ComplexCondition:Splinter.kt$Splinter$job.isActive || job.isCompleted || job.isCancelled</ID>
+    <ID>MaxLineLength:_liveData.kt$*</ID>
+    <ID>MaxLineLength:_responseLiveData.kt$*</ID>
+    <ID>MaxLineLength:_responseLiveData.kt$ResponseLiveDataScope$*</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues/>
 </SmellBaseline>

@@ -18,4 +18,6 @@ dependencies {
     testImplementation(libraries.jetbrains.test.coroutines)
     testImplementation(libraries.mockito.test.core)
     testImplementation(libraries.mockito.test.kotlin)
+    testImplementation(libraries.mockk.test.android)
+    testImplementation(libraries.mockk.test.agent)
 }

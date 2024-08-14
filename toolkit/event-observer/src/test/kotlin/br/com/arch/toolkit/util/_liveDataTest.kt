@@ -5,14 +5,9 @@ package br.com.arch.toolkit.util
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import br.com.arch.toolkit.alwaysOnOwner
-import br.com.arch.toolkit.livedata.ResponseLiveData
-import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.testSetValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.FixMethodOrder
@@ -24,6 +19,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -111,61 +107,7 @@ class _liveDataTest {
     }
 
     @Test
-    fun `05 - responseLiveDataOf - value`() = runTest {
-        val liveData = responseLiveDataOf("value")
-
-        Assert.assertTrue(liveData.data == "value")
-        Assert.assertTrue(liveData.status == DataResultStatus.SUCCESS)
-        Assert.assertNull(liveData.error)
-    }
-
-    @Test
-    fun `06 - responseLiveDataOf - error`() = runTest {
-        val liveData = responseLiveDataOf<Any>(Throwable())
-
-        Assert.assertNull(liveData.data)
-        Assert.assertTrue(liveData.status == DataResultStatus.ERROR)
-        Assert.assertNotNull(liveData.error)
-    }
-
-    @Test
-    fun `07 - mutableResponseLiveDataOf - value`() = runTest {
-        val liveData = mutableResponseLiveDataOf("value")
-
-        Assert.assertTrue(liveData.data == "value")
-        Assert.assertTrue(liveData.status == DataResultStatus.SUCCESS)
-        Assert.assertNull(liveData.error)
-    }
-
-    @Test
-    fun `08 - mutableResponseLiveDataOf - error`() = runTest {
-        val liveData = mutableResponseLiveDataOf<Any>(Throwable())
-
-        Assert.assertNull(liveData.data)
-        Assert.assertTrue(liveData.status == DataResultStatus.ERROR)
-        Assert.assertNotNull(liveData.error)
-    }
-
-    @Test
-    fun `09 - swapResponseLiveDataOf - value`() = runTest {
-        val liveData = swapResponseLiveDataOf("value")
-
-        Assert.assertTrue(liveData.data == "value")
-        Assert.assertTrue(liveData.status == DataResultStatus.SUCCESS)
-        Assert.assertNull(liveData.error)
-    }
-
-    @Test
-    fun `10 - swapResponseLiveDataOf - error`() = runTest {
-        val liveData = swapResponseLiveDataOf<Any>(Throwable())
-
-        Assert.assertNull(liveData.data)
-        Assert.assertTrue(liveData.status == DataResultStatus.ERROR)
-        Assert.assertNotNull(liveData.error)
-    }
-
-    @Test
-    fun `11 - LiveData mapList`() {
+    fun `05 - LiveData mapList`() {
         val mockedTransformer: (String) -> Int = mock()
         val mockedObserver: (List<Int>?) -> Unit = mock()
 
@@ -191,34 +133,34 @@ class _liveDataTest {
     }
 
     @Test
-    fun `12 - ResponseLiveData mapList`() = runTest {
-        val mockMap: (Int) -> String = mock()
-        whenever(mockMap.invoke(123)) doReturn "String"
-        val liveData = ResponseLiveData<List<Int>>()
-        liveData.transformDispatcher(Dispatchers.Main.immediate)
-        val onErrorLiveData = liveData.mapList(mockMap)
+    fun `06 - LiveData mapNotNull`() {
+        val mockedTransformer: (String?) -> Int? = mock()
+        val mockedObserver: (Int) -> Unit = mock()
+
+        whenever(mockedTransformer.invoke(null)) doReturn 321
+        whenever(mockedTransformer.invoke("String")) doReturn 123
+        whenever(mockedTransformer.invoke("null")) doReturn null
+
+        val liveData = MutableLiveData<String>()
+        val transformedLiveData = liveData.mapNotNull(mockedTransformer)
+
+        transformedLiveData.observe(alwaysOnOwner, mockedObserver)
+        verifyNoInteractions(mockedTransformer)
+        verifyNoInteractions(mockedObserver)
 
         Assert.assertNull(liveData.value)
-        Assert.assertNull(onErrorLiveData.value)
-        verifyNoInteractions(mockMap)
+        Assert.assertNull(transformedLiveData.value)
 
-        // Will change the value only after the observe
-        liveData.testSetValue(dataResultSuccess(listOf(123)))
-        advanceUntilIdle()
-        Assert.assertEquals(
-            dataResultSuccess(listOf(123)),
-            liveData.value
-        )
-        Assert.assertNull(onErrorLiveData.value)
-        verifyNoInteractions(mockMap)
+        liveData.value = null
+        verifyBlocking(mockedTransformer) { invoke(null) }
+        verifyBlocking(mockedObserver) { invoke(321) }
 
-        // Now the transformation will be triggered
-        onErrorLiveData.observe(alwaysOnOwner) { status { /* Nothing */ } }
-        advanceUntilIdle()
-        Assert.assertEquals(
-            dataResultSuccess(listOf("String")),
-            onErrorLiveData.value
-        )
-        verifyBlocking(mockMap) { invoke(123) }
+        liveData.value = "null"
+        verifyBlocking(mockedTransformer) { invoke("null") }
+        verifyNoMoreInteractions(mockedObserver)
+
+        liveData.value = "String"
+        verifyBlocking(mockedTransformer) { invoke("String") }
+        verifyBlocking(mockedObserver) { invoke(123) }
     }
 }

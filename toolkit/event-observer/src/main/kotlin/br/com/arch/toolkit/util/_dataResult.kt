@@ -7,12 +7,11 @@ import br.com.arch.toolkit.result.DataResultStatus.ERROR
 import br.com.arch.toolkit.result.DataResultStatus.LOADING
 import br.com.arch.toolkit.result.DataResultStatus.NONE
 import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
-import br.com.arch.toolkit.result.DataResultStatus.values
 import kotlin.math.max
 
 //region Data Result Creator Methods
 /**
- * Creates a new DataResult with:
+ * Creates a new [DataResult] with:
  * - data: `<passed as argument>`
  * - error: null
  * - status: SUCCESS
@@ -24,9 +23,9 @@ import kotlin.math.max
  * )
  * ```
  *
- * @param data Data that will reflect inside DataResult
+ * @param data Data that will be set inside the [DataResult].
  *
- * @return DataResult(`<data>`, null, DataResultStatus.SUCCESS)
+ * @return A [DataResult] with the specified data, null error, and [DataResultStatus.SUCCESS] status.
  *
  * @see DataResult
  * @see DataResultStatus
@@ -34,7 +33,7 @@ import kotlin.math.max
 fun <T> dataResultSuccess(data: T?) = DataResult(data, null, SUCCESS)
 
 /**
- * Creates a new DataResult with:
+ * Creates a new [DataResult] with:
  * - data: `<passed as optional argument>`
  * - error: `<passed as optional argument>`
  * - status: LOADING
@@ -42,15 +41,15 @@ fun <T> dataResultSuccess(data: T?) = DataResult(data, null, SUCCESS)
  * Usage:
  * ```kotlin
  * val result = dataResultLoading<String>(
- *     data = null, /* (optional param) Your Optional Data */
- *     error = null /* (optional param) Your Optional Exception */
+ *     data = null, /* (optional) Your Optional Data */
+ *     error = null /* (optional) Your Optional Exception */
  * )
  * ```
  *
- * @param data (optional) Data that will reflect inside DataResult
- * @param error (optional) Error that will reflect inside DataResult
+ * @param data (optional) Data that will be set inside the [DataResult].
+ * @param error (optional) Error that will be set inside the [DataResult].
  *
- * @return DataResult(`<data>`, `<error>`, DataResultStatus.LOADING)
+ * @return A [DataResult] with the specified data, error, and [DataResultStatus.LOADING] status.
  *
  * @see DataResult
  * @see DataResultStatus
@@ -59,7 +58,7 @@ fun <T> dataResultLoading(data: T? = null, error: Throwable? = null) =
     DataResult(data, error, LOADING)
 
 /**
- * Creates a new DataResult with:
+ * Creates a new [DataResult] with:
  * - data: `<passed as optional argument>`
  * - error: `<passed as argument>`
  * - status: ERROR
@@ -68,14 +67,14 @@ fun <T> dataResultLoading(data: T? = null, error: Throwable? = null) =
  * ```kotlin
  * val result = dataResultError<String>(
  *     error = null, /* Your Exception */
- *     data = null   /* (optional param) Your Optional Data */
+ *     data = null   /* (optional) Your Optional Data */
  * )
  * ```
  *
- * @param error Error that will reflect inside DataResult
- * @param data (optional) Data that will reflect inside DataResult
+ * @param error Error that will be set inside the [DataResult].
+ * @param data (optional) Data that will be set inside the [DataResult].
  *
- * @return DataResult(`<data>`, `<error>`, DataResultStatus.ERROR)
+ * @return A [DataResult] with the specified data, error, and [DataResultStatus.ERROR] status.
  *
  * @see DataResult
  * @see DataResultStatus
@@ -84,7 +83,7 @@ fun <T> dataResultError(error: Throwable?, data: T? = null) =
     DataResult(data, error, ERROR)
 
 /**
- * Creates a new DataResult with:
+ * Creates a new [DataResult] with:
  * - data: null
  * - error: null
  * - status: NONE
@@ -94,7 +93,7 @@ fun <T> dataResultError(error: Throwable?, data: T? = null) =
  * val result = dataResultNone()
  * ```
  *
- * @return DataResult(null, null, DataResultStatus.NONE)
+ * @return A [DataResult] with null data, null error, and [DataResultStatus.NONE] status.
  *
  * @see DataResult
  * @see DataResultStatus
@@ -104,24 +103,34 @@ fun <T> dataResultNone() = DataResult<T>(null, null, NONE)
 
 //region Transformation Methods
 /**
- * Merges a DataResult<T> with a DataResult<R>
+ * Transforms a [DataResult] with a pair of nullable values to a [DataResult] with non-null values.
+ *
+ * If any value in the pair is null, the result will be null.
+ *
+ * @return A [DataResult] with a pair of non-null values, or null if any value is null.
+ */
+fun <T, R> DataResult<Pair<T?, R?>>.toNotNull(): DataResult<Pair<T, R>>? = when (val data = data) {
+    null -> DataResult(null, error, status)
+    else -> data.runCatching { requireNotNull(first) to requireNotNull(second) }
+        .mapCatching { DataResult<Pair<T, R>>(it, error, status) }
+        .getOrNull()
+}
+
+/**
+ * Merges this [DataResult] with another [DataResult].
  *
  * ## Status
- * - **NONE** Lowest in priority, returned if both results are null or have this status NONE
- * - **SUCCESS** Will return this status if both DataResult have this status, or if one of them have the status NONE)
- * - **LOADING** Will return if any of DataResults have this status
- * - **ERROR** Will return if any of DataResults have this status
+ * - **NONE**: Lowest priority, returned if both results are null or have this status.
+ * - **SUCCESS**: Returned if both DataResults have this status or if one of them has status NONE.
+ * - **LOADING**: Returned if any of the DataResults have this status.
+ * - **ERROR**: Returned if any of the DataResults have this status.
  *
  * ## Throwable
- * The throwable inside the DataResult will represent the first non-null error, in priority the current DataResult
+ * The throwable inside the resulting [DataResult] will represent the first non-null error, with priority given to the current [DataResult].
  *
  * ## Data
- * The Data will always be a union of the two data, representing a pair (Pair<T?, R?>)
- *
- * > If one of the result are null, the non-null will prevail
- * > and the result will have data with a Pair with one of the results with null
- *
- * > If both results are null, will return a result equivalent a **dataResultNone()**
+ * The resulting data will be a pair of values from the two [DataResult] objects.
+ * If both results are null, the resulting data will also be null.
  *
  * ## Usage:
  * ```kotlin
@@ -137,7 +146,9 @@ fun <T> dataResultNone() = DataResult<T>(null, null, NONE)
  * assert(merged.error == null)
  * ```
  *
- * @param second The DataResult<R> this will be combined with
+ * @param second The [DataResult] to combine with.
+ *
+ * @return A [DataResult] containing a pair of data from both results, the first non-null error, and the highest status.
  *
  * @see DataResult
  * @see DataResultStatus
@@ -147,11 +158,9 @@ fun <T> dataResultNone() = DataResult<T>(null, null, NONE)
  * @see dataResultLoading
  * @see dataResultError
  * @see mergeNotNull
- *
- * @return DataResult<Pair<T?, R?>>
  */
 fun <T, R> DataResult<T>?.merge(second: DataResult<R>?): DataResult<Pair<T?, R?>> = when {
-    /* One of the results are null */
+    /* One of the results is null */
     this == null || second == null -> DataResult(
         data = Pair(this?.data, second?.data)
             .takeIf { it.first != null || it.second != null },
@@ -167,17 +176,14 @@ fun <T, R> DataResult<T>?.merge(second: DataResult<R>?): DataResult<Pair<T?, R?>
         data = (this.data to second.data)
             .takeIf { it.first != null || it.second != null },
         error = this.error ?: second.error,
-        status = values()[max(this.status.ordinal, second.status.ordinal)]
+        status = DataResultStatus.entries[max(this.status.ordinal, second.status.ordinal)]
     )
 }
 
 /**
- * Merges a DataResult<T> with a DataResult<R> with the impossibility to return any null data inside the Pair
+ * Merges this [DataResult] with another [DataResult] ensuring that the resulting pair contains non-null values.
  *
- * It is basically the same behavior seen inside the `@see merge` method
- * But it any of the values inside the pair returns null, then, the data is null
- *
- * > If one of the results data are null, so the data is null
+ * If any value in the resulting pair is null, the resulting data will be null.
  *
  * ## Usage:
  * ```kotlin
@@ -193,7 +199,9 @@ fun <T, R> DataResult<T>?.merge(second: DataResult<R>?): DataResult<Pair<T?, R?>
  * assert(merged.error == null)
  * ```
  *
- * @param second The DataResult<R> this will be combined with
+ * @param second The [DataResult] to combine with.
+ *
+ * @return A [DataResult] with non-null data, if both results contain non-null data. If either result's data is null, the resulting data will be null.
  *
  * @see DataResult
  * @see DataResultStatus
@@ -203,8 +211,6 @@ fun <T, R> DataResult<T>?.merge(second: DataResult<R>?): DataResult<Pair<T?, R?>
  * @see dataResultLoading
  * @see dataResultError
  * @see merge
- *
- * @return DataResult<Pair<T?, R?>>
  */
 fun <T, R> DataResult<T>?.mergeNotNull(second: DataResult<R>?): DataResult<Pair<T, R>> {
     val mergeNullable = merge(second)
@@ -224,32 +230,32 @@ fun <T, R> DataResult<T>?.mergeNotNull(second: DataResult<R>?): DataResult<Pair<
 }
 
 /**
- * Merges multiple DataResult<*> into a Map<String, *> with all the data stored with the chosen tags
+ * Merges multiple [DataResult] objects into a single [DataResult] containing a map of data.
  *
  * ## Status
- * - **NONE** Lowest in priority, returned if all results are null or have this status NONE
- * - **SUCCESS** Will return this status if all DataResult have this status, or if one of them have the status NONE
- * - **LOADING** Will return if any of DataResults have this status
- * - **ERROR** Will return if any of DataResults have this status
+ * - **NONE**: Lowest priority, returned if all results are null or have this status.
+ * - **SUCCESS**: Returned if all DataResults have this status, or if one of them has status NONE.
+ * - **LOADING**: Returned if any of the DataResults have this status.
+ * - **ERROR**: Returned if any of the DataResults have this status.
  *
  * ## Throwable
- * The throwable inside the DataResult will represent the first non-null error
+ * The throwable inside the resulting [DataResult] will represent the first non-null error.
  *
  * ## Data
- * A Map<String, *> representing all results inside all DataResult
+ * A map of string keys to data values from all [DataResult] objects.
  *
  * @see DataResult
  * @see DataResultStatus
  * @see ResponseLiveData
  *
- * @return DataResult<Map<String, *>>
+ * @return A [DataResult] containing a map of all data from the given [DataResult] objects.
  */
 fun List<Pair<String, DataResult<*>?>>.mergeAll(): DataResult<Map<String, *>> {
     val resultWithMaxStatus = maxBy { it.second?.status?.ordinal ?: NONE.ordinal }
     if (resultWithMaxStatus.second?.status == NONE) return dataResultNone()
 
     val ordinal = resultWithMaxStatus.second?.status?.ordinal ?: NONE.ordinal
-    val status = DataResultStatus.values()[ordinal]
+    val status = DataResultStatus.entries[ordinal]
 
     return DataResult(
         associate { (key, result) -> key to result?.data }
@@ -262,17 +268,21 @@ fun List<Pair<String, DataResult<*>?>>.mergeAll(): DataResult<Map<String, *>> {
 
 //region Operator Methods
 /**
- * Uses **merge** to make a fun syntax
+ * Combines this [DataResult] with another [DataResult] using the plus (`+`) operator.
  *
  * Usage:
  * ```kotlin
  * val dataResultA = dataResultSuccess("value1")
  * val dataResultB = dataResultSuccess(2)
  * // Combine the resultA with resultB
- * val merged = dataResultA.merge(dataResultB)*
+ * val merged = dataResultA + dataResultB
  * ```
+ *
+ * @param another The [DataResult] to combine with.
+ *
+ * @return A [DataResult] containing the combined data, the first non-null error, and the highest status.
+ *
  * @see merge
- * @return DataResult<Pair<T?, R?>>
  */
 operator fun <T, R> DataResult<T>?.plus(another: DataResult<R>?) = merge(another)
 //endregion
