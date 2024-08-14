@@ -39,13 +39,11 @@ import br.com.arch.toolkit.result.DataResult
  *
  * In the example, `liveData` is converted to `responseLiveData`, which can then be observed for `DataResult` values.
  *
- * @param T The type of the data contained in the [LiveData].
- * @param R The type of the result in the [DataResult].
+ * @param T The type of the result in the [DataResult].
  * @return A [ResponseLiveData<R>] instance.
  */
-@Suppress("UNCHECKED_CAST")
-fun <T, R> LiveData<T>.asResponse(): ResponseLiveData<R> where T : DataResult<R> = when {
-    this is ResponseLiveData<*> -> this as ResponseLiveData<R>
+fun <T> LiveData<DataResult<T>>.asResponse(): ResponseLiveData<T> = when {
+    this is ResponseLiveData<*> -> this as ResponseLiveData<T>
     else -> responseLiveData { asFlow().collect(::emit) }
 }
 
@@ -62,7 +60,7 @@ fun <T, R> LiveData<T>.asResponse(): ResponseLiveData<R> where T : DataResult<R>
  * Example usage:
  * ```
  * val liveData: LiveData<String> = MutableLiveData("Hello")
- * val responseLiveData: ResponseLiveData<String> = liveData.asResponse()
+ * val responseLiveData: ResponseLiveData<String> = liveData.toResponse()
  * responseLiveData.observe(this, Observer { data ->
  *     println("Data: $data")
  * })
@@ -73,7 +71,7 @@ fun <T, R> LiveData<T>.asResponse(): ResponseLiveData<R> where T : DataResult<R>
  * @param T The type of the data contained in the [LiveData].
  * @return A [ResponseLiveData<T>] instance.
  */
-fun <T> LiveData<T>.asResponse(): ResponseLiveData<T> =
+fun <T> LiveData<T>.toResponse(): ResponseLiveData<T> =
     responseLiveData { asFlow().collect(::emitData) }
 
 /**
