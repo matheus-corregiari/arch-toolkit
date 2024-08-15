@@ -109,7 +109,7 @@ fun <T> dataResultNone() = DataResult<T>(null, null, NONE)
  *
  * @return A [DataResult] with a pair of non-null values, or null if any value is null.
  */
-fun <T, R> DataResult<Pair<T?, R?>>.toNotNull(): DataResult<Pair<T, R>>? = when (val data = data) {
+fun <T, R> DataResult<Pair<T?, R?>>.onlyWithValues(): DataResult<Pair<T, R>>? = when (val data = data) {
     null -> DataResult(null, error, status)
     else -> data.runCatching { requireNotNull(first) to requireNotNull(second) }
         .mapCatching { DataResult<Pair<T, R>>(it, error, status) }
@@ -215,9 +215,7 @@ fun <T, R> DataResult<T>?.merge(second: DataResult<R>?): DataResult<Pair<T?, R?>
 fun <T, R> DataResult<T>?.mergeNotNull(second: DataResult<R>?): DataResult<Pair<T, R>> {
     val mergeNullable = merge(second)
 
-    val data = mergeNullable.data?.runCatching {
-        requireNotNull(this.first) to requireNotNull(this.second)
-    }?.getOrNull()
+    val data = mergeNullable.data?.onlyWithValues()
 
     val error = mergeNullable.error
     val status = mergeNullable.status

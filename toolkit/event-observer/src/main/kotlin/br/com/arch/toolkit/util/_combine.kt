@@ -44,28 +44,6 @@ import kotlin.coroutines.EmptyCoroutineContext
  */
 operator fun <T, R> LiveData<T>.plus(other: LiveData<R>) = combine(other = other)
 
-/**
- * Combines two [LiveData] objects using the `+` operator with a specified [CoroutineContext].
- *
- * This method allows you to merge two [LiveData] sources into a single [LiveData] while specifying the context in which the operation should occur.
- *
- * @param context The [CoroutineContext] in which to perform the combination.
- * @param other The other [LiveData] to combine with.
- * @return A [LiveData] that emits pairs of values from both [LiveData] sources.
- *
- * ### Example Usage:
- * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
- * val combinedLiveData: LiveData<Pair<Int?, String?>> = liveData1.plus(Dispatchers.IO, liveData2)
- * ```
- *
- * @see [combine]
- * @see [plus]
- */
-fun <T, R> LiveData<T>.plus(context: CoroutineContext, other: LiveData<R>) =
-    combine(context = context, other = other)
-
 /* Regular Functions ---------------------------------------------------------------------------- */
 
 /**
@@ -130,18 +108,18 @@ fun <T, R> LiveData<T>.combineNotNull(other: LiveData<R>): LiveData<Pair<T, R>> 
     val initial = (value to other.value).takeIf { isInitialized || other.isInitialized }
     val mediator = when {
         initial == null -> MediatorLiveData()
-        initial.toNotNull() == null -> MediatorLiveData()
-        else -> MediatorLiveData<Pair<T, R>>(initial.toNotNull())
+        initial.onlyWithValues() == null -> MediatorLiveData()
+        else -> MediatorLiveData<Pair<T, R>>(initial.onlyWithValues())
     }
 
     mediator.addSource(this) {
         (it to other.value).takeUnless { ignoreA.compareAndSet(true, false) }
-            ?.toNotNull()
+            ?.onlyWithValues()
             ?.let(mediator::setValue)
     }
     mediator.addSource(other) {
         (value to it).takeUnless { ignoreB.compareAndSet(true, false) }
-            ?.toNotNull()
+            ?.onlyWithValues()
             ?.let(mediator::setValue)
     }
     return mediator
@@ -442,7 +420,7 @@ fun <T, R, X> LiveData<T>.combineNotNull(
 /* Auxiliary Functions -------------------------------------------------------------------------- */
 
 internal suspend inline fun <T, R> LiveData<T>.internalCombineNotNull(other: LiveData<R>) =
-    internalCombine(other).mapNotNull { it.toNotNull() }
+    internalCombine(other).mapNotNull { it.onlyWithValues() }
 
 internal suspend inline fun <T, R> LiveData<T>.internalCombine(other: LiveData<R>) = channelFlow {
     val aFlow = this@internalCombine.asFlow()

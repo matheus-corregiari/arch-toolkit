@@ -1,4 +1,10 @@
-@file:Suppress("KotlinNullnessAnnotation", "TooManyFunctions")
+@file:Suppress(
+    "KotlinNullnessAnnotation",
+    "TooManyFunctions",
+    "MemberVisibilityCanBePrivate",
+    "DeprecatedCallableAddReplaceWith",
+    "unused"
+)
 
 package br.com.arch.toolkit.livedata
 
@@ -12,11 +18,23 @@ import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
+import br.com.arch.toolkit.util.dataResultError
+import br.com.arch.toolkit.util.dataResultSuccess
+import br.com.arch.toolkit.util.internalChainNotNullWith
+import br.com.arch.toolkit.util.internalChainWith
+import br.com.arch.toolkit.util.internalCombine
+import br.com.arch.toolkit.util.internalCombineNotNull
 import br.com.arch.toolkit.util.mapNotNull
+import br.com.arch.toolkit.util.onlyWithValues
+import br.com.arch.toolkit.util.plus
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapNotNull
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Custom implementation of LiveData made to help the data handling with needs the interpretation of:
@@ -126,9 +144,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @see ResponseLiveData.onError
      */
     @NonNull
-    fun mapError(
-        @NonNull transformation: (Throwable) -> Throwable
-    ): ResponseLiveData<T> {
+    fun mapError(@NonNull transformation: (Throwable) -> Throwable): ResponseLiveData<T> {
         val liveData = SwapResponseLiveData<T>()
             .scope(scope)
             .transformDispatcher(transformDispatcher)
@@ -153,9 +169,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @see ResponseLiveData.onErrorReturn
      */
     @NonNull
-    fun onErrorReturn(
-        @NonNull onErrorReturn: ((Throwable) -> T)
-    ): ResponseLiveData<T> {
+    fun onErrorReturn(@NonNull onErrorReturn: ((Throwable) -> T)): ResponseLiveData<T> {
         val liveData = SwapResponseLiveData<T>()
             .scope(scope)
             .transformDispatcher(transformDispatcher)
@@ -172,6 +186,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
+    @Deprecated("Use combine instead")
     fun <R> mergeWith(@NonNull source: ResponseLiveData<R>): ResponseLiveData<Pair<T, R>> =
         withDelegate {
             merge(this@ResponseLiveData, source, scope, transformDispatcher)
@@ -187,6 +202,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
+    @Deprecated("Use combine instead")
     fun mergeWith(
         @NonNull tag: String,
         @NonNull vararg sources: Pair<String, ResponseLiveData<*>>
@@ -209,6 +225,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
+    @Deprecated("Use chainWith instead")
     fun <R> followedBy(
         @NonNull source: (T) -> ResponseLiveData<R>,
         @NonNull condition: (T) -> Boolean,
@@ -235,6 +252,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
+    @Deprecated("Use chainWith instead")
     fun <R> followedBy(
         @NonNull source: (T) -> ResponseLiveData<R>,
         @NonNull condition: (T) -> Boolean
@@ -250,14 +268,325 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
-    fun <R> followedBy(
-        @NonNull source: (T) -> ResponseLiveData<R>
-    ): ResponseLiveData<Pair<T, R>> = followedBy(source) { true }
+    @Deprecated("Use chainWith instead")
+    fun <R> followedBy(@NonNull source: (T) -> ResponseLiveData<R>) = followedBy(source) { true }
+    //endregion
+
+    //region Chain With
+    /* Response + LiveData Functions ---------------------------------------------------------------- */
+    /* Nullable ------------------------------------------------------------------------------------- */
+    @NonNull
+    @Experimental
+    fun <R> regularChainWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>?) -> LiveData<R>,
+        condition: suspend (DataResult<T>?) -> Boolean,
+    ) = responseLiveData(context = context) {
+        internalChainWith(other, condition)
+            .mapNotNull { (result, data) -> result + data?.let(::dataResultSuccess) }
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> regularChainWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>?) -> LiveData<R>,
+        condition: suspend (DataResult<T>?) -> Boolean,
+        transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+    ) = responseLiveData(context = context) {
+        val (dispatcher, block) = transform
+        internalChainWith(other, condition)
+            .mapNotNull { (result, data) -> result + data?.let(::dataResultSuccess) }
+            .flowOn(dispatcher)
+            .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
+            .flowOn(context)
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> regularChainWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>?) -> LiveData<R>,
+        condition: suspend (DataResult<T>?) -> Boolean,
+        transform: suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>
+    ) = regularChainWith(context, other, condition, Dispatchers.IO to transform)
+
+    /* Non Nullable --------------------------------------------------------------------------------- */
+
+    @NonNull
+    @Experimental
+    fun <R> regularChainNotNullWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>) -> LiveData<R>,
+        condition: suspend (DataResult<T>) -> Boolean,
+    ) = responseLiveData(context = context) {
+        internalChainNotNullWith(other, condition)
+            .mapNotNull { (result, data) -> (result + dataResultSuccess(data)).onlyWithValues() }
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> regularChainNotNullWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>) -> LiveData<R>,
+        condition: suspend (DataResult<T>) -> Boolean,
+        transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T, R>>) -> DataResult<X>>
+    ) = responseLiveData(context = context) {
+        val (dispatcher, block) = transform
+        internalChainNotNullWith(other, condition)
+            .mapNotNull { (result, data) -> (result + dataResultSuccess(data)).onlyWithValues() }
+            .flowOn(dispatcher)
+            .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
+            .flowOn(context)
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> regularChainNotNullWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>) -> LiveData<R>,
+        condition: suspend (DataResult<T>) -> Boolean,
+        transform: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
+    ) = regularChainNotNullWith(context, other, condition, Dispatchers.IO to transform)
+
+    /* Response + Response Functions ---------------------------------------------------------------- */
+    /* Nullable ------------------------------------------------------------------------------------- */
+    @NonNull
+    @Experimental
+    fun <R> chainWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>?) -> ResponseLiveData<R>,
+        condition: suspend (DataResult<T>?) -> Boolean,
+    ) = responseLiveData(context = context) {
+        internalChainWith(other, condition)
+            .mapNotNull { (resultA, resultB) -> resultA + resultB }
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> chainWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>?) -> ResponseLiveData<R>,
+        condition: suspend (DataResult<T>?) -> Boolean,
+        transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+    ) = responseLiveData(context = context) {
+        val (dispatcher, block) = transform
+        internalChainWith(other, condition)
+            .mapNotNull { (resultA, resultB) -> resultA + resultB }
+            .flowOn(dispatcher)
+            .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
+            .flowOn(context)
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> chainWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>?) -> ResponseLiveData<R>,
+        condition: suspend (DataResult<T>?) -> Boolean,
+        transform: suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>
+    ) = chainWith(context, other, condition, Dispatchers.IO to transform)
+
+    /* Non Nullable --------------------------------------------------------------------------------- */
+
+    @NonNull
+    @Experimental
+    fun <R> chainNotNullWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>) -> ResponseLiveData<R>,
+        condition: suspend (DataResult<T>) -> Boolean,
+    ) = responseLiveData(context = context) {
+        internalChainNotNullWith(other, condition)
+            .mapNotNull { (resultA, resultB) -> (resultA + resultB).onlyWithValues() }
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> chainNotNullWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>) -> ResponseLiveData<R>,
+        condition: suspend (DataResult<T>) -> Boolean,
+        transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T, R>>) -> DataResult<X>>
+    ) = responseLiveData(context = context) {
+        val (dispatcher, block) = transform
+        internalChainNotNullWith(other, condition)
+            .mapNotNull { (resultA, resultB) -> (resultA + resultB).onlyWithValues() }
+            .flowOn(dispatcher)
+            .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
+            .flowOn(context)
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> chainNotNullWith(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: suspend (DataResult<T>) -> ResponseLiveData<R>,
+        condition: suspend (DataResult<T>) -> Boolean,
+        transform: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
+    ) = chainNotNullWith(context, other, condition, Dispatchers.IO to transform)
+    //endregion
+
+    //region Combine
+    /* Response + LiveData Functions ---------------------------------------------------------------- */
+    /* Nullable ------------------------------------------------------------------------------------- */
+
+    @NonNull
+    @Experimental
+    fun <R> combine(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: LiveData<R>
+    ) = responseLiveData(context = context) {
+        internalCombine(other).mapNotNull { (result, data) -> result + data?.let(::dataResultSuccess) }
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> combine(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: LiveData<R>,
+        transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+    ) = responseLiveData(context = context) {
+        val (dispatcher, block) = transform
+        internalCombine(other)
+            .mapNotNull { (result, data) -> result + data?.let(::dataResultSuccess) }
+            .flowOn(dispatcher)
+            .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
+            .flowOn(context)
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> combine(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: LiveData<R>,
+        transform: suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>
+    ) = combine(context, other, Dispatchers.IO to transform)
+
+    /* Non Nullable --------------------------------------------------------------------------------- */
+    @NonNull
+    @Experimental
+    fun <R> combineNotNull(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: LiveData<R>
+    ) = responseLiveData(context = context) {
+        internalCombineNotNull(other)
+            .mapNotNull { (result, data) -> (result + dataResultSuccess(data)).onlyWithValues() }
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> combineNotNull(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: LiveData<R>,
+        transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T, R>>) -> DataResult<X>>
+    ) = responseLiveData(context = context) {
+        val (dispatcher, block) = transform
+        internalCombineNotNull(other)
+            .mapNotNull { (result, data) -> (result + dataResultSuccess(data)).onlyWithValues() }
+            .flowOn(dispatcher)
+            .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
+            .flowOn(context)
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> combineNotNull(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: LiveData<R>,
+        transform: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
+    ) = combineNotNull(context, other, Dispatchers.IO to transform)
+
+    /* Response + Response Functions ---------------------------------------------------------------- */
+    /* Nullable ------------------------------------------------------------------------------------- */
+
+    @NonNull
+    @Experimental
+    fun <R> combine(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: ResponseLiveData<R>
+    ) = responseLiveData(context = context) {
+        internalCombine(other).mapNotNull { (resultA, resultB) -> resultA + resultB }
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> combine(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: ResponseLiveData<R>,
+        transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+    ) = responseLiveData(context = context) {
+        val (dispatcher, block) = transform
+        internalCombine(other).mapNotNull { (resultA, resultB) -> resultA + resultB }
+            .flowOn(dispatcher)
+            .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
+            .flowOn(context)
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> combine(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: ResponseLiveData<R>,
+        transform: suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>
+    ) = combine(context, other, Dispatchers.IO to transform)
+
+    /* Non Nullable --------------------------------------------------------------------------------- */
+    @NonNull
+    @Experimental
+    fun <R> combineNotNull(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: ResponseLiveData<R>
+    ) = responseLiveData(context = context) {
+        internalCombineNotNull(other)
+            .mapNotNull { (resultA, resultB) -> (resultA + resultB).onlyWithValues() }
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> combineNotNull(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: ResponseLiveData<R>,
+        transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T, R>>) -> DataResult<X>>
+    ) = responseLiveData(context = context) {
+        val (dispatcher, block) = transform
+        internalCombineNotNull(other)
+            .mapNotNull { (resultA, resultB) -> (resultA + resultB).onlyWithValues() }
+            .flowOn(dispatcher)
+            .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
+            .flowOn(context)
+            .collect(::emit)
+    }
+
+    @NonNull
+    @Experimental
+    fun <R, X> combineNotNull(
+        context: CoroutineContext = EmptyCoroutineContext,
+        other: ResponseLiveData<R>,
+        transform: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
+    ) = combineNotNull(context, other, Dispatchers.IO to transform)
     //endregion
 
     //region Operators
     @Experimental
     operator fun <R> plus(source: ResponseLiveData<R>) = mergeWith(source)
+
+    @Experimental
+    operator fun <R> plus(source: LiveData<R>) = combine(other = source)
     //endregion
 
     //region Observability

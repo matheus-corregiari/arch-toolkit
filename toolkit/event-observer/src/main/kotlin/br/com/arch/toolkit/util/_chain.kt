@@ -1,4 +1,4 @@
-@file:Suppress("Filename", "TooManyFunctions", "LongParameterList")
+@file:Suppress("Filename", "TooManyFunctions", "LongParameterList", "unused")
 
 package br.com.arch.toolkit.util
 
@@ -86,7 +86,7 @@ fun <T, R> LiveData<T>.chainNotNullWith(
 ): LiveData<Pair<T, R>> = chainWith(
     other = { it?.let(other) ?: error("Data null in chainNotNullWith") },
     condition = { it?.let(condition) ?: false }
-).mapNotNull { it.toNotNull() }
+).mapNotNull { it.onlyWithValues() }
 
 /* Coroutine Functions -------------------------------------------------------------------------- */
 
@@ -371,7 +371,8 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
 ): LiveData<X> = chainNotNullWith(EmptyCoroutineContext, other, condition, transform)
 
 /**
- * Chains this non-nullable [LiveData] with another non-nullable [LiveData] based on a condition, using a simple transformation function and the default [CoroutineContext] and [CoroutineDispatcher].
+ * Chains this non-nullable [LiveData] with another non-nullable [LiveData] based on a condition,
+ * using a simple transformation function and the default [CoroutineContext] and [CoroutineDispatcher].
  *
  * @param other A suspend function that returns another non-nullable [LiveData] based on the value of this [LiveData].
  * @param condition A suspend function that determines whether to chain with the other [LiveData] based on a non-nullable value.
@@ -391,7 +392,8 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
  *     transform = { a, b -> "$a$b" }
  * )
  * ```
- */fun <T, R, X> LiveData<T>.chainNotNullWith(
+ */
+fun <T, R, X> LiveData<T>.chainNotNullWith(
     other: suspend (T) -> LiveData<R>,
     condition: suspend (T) -> Boolean,
     transform: suspend (T, R) -> X
@@ -399,15 +401,15 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
 
 /* Auxiliary Functions -------------------------------------------------------------------------- */
 
-private suspend inline fun <T, R> LiveData<T>.internalChainNotNullWith(
+internal suspend inline fun <T, R> LiveData<T>.internalChainNotNullWith(
     noinline other: suspend (T) -> LiveData<R>,
     noinline condition: suspend (T) -> Boolean,
 ) = internalChainWith(
     other = { data -> data?.let { other(it) } ?: error("Data null in chainNotNullWith") },
     condition = { data -> data?.let { condition(it) } ?: false }
-).mapNotNull { it.toNotNull() }
+).mapNotNull { it.onlyWithValues() }
 
-private suspend inline fun <T, R> LiveData<T>.internalChainWith(
+internal suspend inline fun <T, R> LiveData<T>.internalChainWith(
     noinline other: suspend (T?) -> LiveData<R>,
     noinline condition: suspend (T?) -> Boolean,
 ) = channelFlow {

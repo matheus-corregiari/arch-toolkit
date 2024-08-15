@@ -1,4 +1,5 @@
 @file:JvmName("LiveDataUtils")
+@file:Suppress("unused")
 
 package br.com.arch.toolkit.util
 
