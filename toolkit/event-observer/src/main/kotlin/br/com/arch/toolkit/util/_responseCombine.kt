@@ -2,7 +2,6 @@
 
 package br.com.arch.toolkit.util
 
-import androidx.annotation.NonNull
 import androidx.lifecycle.LiveData
 import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.livedata.ResponseLiveData
@@ -16,7 +15,6 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 /* region Operator Functions -------------------------------------------------------------------- */
-
 @Experimental
 operator fun <T, R> LiveData<T>.plus(other: ResponseLiveData<R>): ResponseLiveData<Pair<T?, R?>> =
     combine(context = EmptyCoroutineContext, other = other)
@@ -28,12 +26,11 @@ operator fun <T, R> ResponseLiveData<T>.plus(source: LiveData<R>): ResponseLiveD
 @Experimental
 operator fun <T, R> ResponseLiveData<T>.plus(source: ResponseLiveData<R>): ResponseLiveData<Pair<T?, R?>> =
     combine(context = EmptyCoroutineContext, other = source)
-
 /* endregion ------------------------------------------------------------------------------------ */
 
 /* region LiveData + Response Functions --------------------------------------------------------- */
 /* Nullable ------------------------------------------------------------------------------------- */
-
+@Experimental
 fun <T, R> LiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>
@@ -42,6 +39,7 @@ fun <T, R> LiveData<T>.combine(
         .collect(::emit)
 }
 
+@Experimental
 fun <T, R, X> LiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>,
@@ -55,6 +53,7 @@ fun <T, R, X> LiveData<T>.combine(
         .collect(::emit)
 }
 
+@Experimental
 fun <T, R, X> LiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>,
@@ -62,6 +61,7 @@ fun <T, R, X> LiveData<T>.combine(
 ): ResponseLiveData<X> = combine(context, other, Dispatchers.IO to transform)
 
 /* Non Nullable --------------------------------------------------------------------------------- */
+@Experimental
 fun <T, R> LiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>
@@ -71,6 +71,7 @@ fun <T, R> LiveData<T>.combineNotNull(
         .collect(::emit)
 }
 
+@Experimental
 fun <T, R, X> LiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>,
@@ -85,6 +86,7 @@ fun <T, R, X> LiveData<T>.combineNotNull(
         .collect(::emit)
 }
 
+@Experimental
 fun <T, R, X> LiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>,
@@ -94,8 +96,6 @@ fun <T, R, X> LiveData<T>.combineNotNull(
 
 /* region Response + LiveData Functions ---------------------------------------------------------------- */
 /* Nullable ------------------------------------------------------------------------------------- */
-
-@NonNull
 @Experimental
 fun <T, R> ResponseLiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -105,7 +105,6 @@ fun <T, R> ResponseLiveData<T>.combine(
         .collect(::emit)
 }
 
-@NonNull
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -121,7 +120,6 @@ fun <T, R, X> ResponseLiveData<T>.combine(
         .collect(::emit)
 }
 
-@NonNull
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -130,7 +128,6 @@ fun <T, R, X> ResponseLiveData<T>.combine(
 ): ResponseLiveData<X> = combine(context, other, Dispatchers.IO to transform)
 
 /* Non Nullable --------------------------------------------------------------------------------- */
-@NonNull
 @Experimental
 fun <T, R> ResponseLiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -141,7 +138,6 @@ fun <T, R> ResponseLiveData<T>.combineNotNull(
         .collect(::emit)
 }
 
-@NonNull
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -157,7 +153,6 @@ fun <T, R, X> ResponseLiveData<T>.combineNotNull(
         .collect(::emit)
 }
 
-@NonNull
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -168,8 +163,6 @@ fun <T, R, X> ResponseLiveData<T>.combineNotNull(
 
 /* region Response + Response Functions --------------------------------------------------------- */
 /* Nullable ------------------------------------------------------------------------------------- */
-
-@NonNull
 @Experimental
 fun <T, R> ResponseLiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -179,7 +172,6 @@ fun <T, R> ResponseLiveData<T>.combine(
         .collect(::emit)
 }
 
-@NonNull
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -194,7 +186,6 @@ fun <T, R, X> ResponseLiveData<T>.combine(
         .collect(::emit)
 }
 
-@NonNull
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -203,7 +194,6 @@ fun <T, R, X> ResponseLiveData<T>.combine(
 ): ResponseLiveData<X> = combine(context, other, Dispatchers.IO to transform)
 
 /* Non Nullable --------------------------------------------------------------------------------- */
-@NonNull
 @Experimental
 fun <T, R> ResponseLiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -214,7 +204,6 @@ fun <T, R> ResponseLiveData<T>.combineNotNull(
         .collect(::emit)
 }
 
-@NonNull
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -230,12 +219,10 @@ fun <T, R, X> ResponseLiveData<T>.combineNotNull(
         .collect(::emit)
 }
 
-@NonNull
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>,
     transform: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
 ): ResponseLiveData<X> = combineNotNull(context, other, Dispatchers.IO to transform)
-
 /* endregion ------------------------------------------------------------------------------------ */
