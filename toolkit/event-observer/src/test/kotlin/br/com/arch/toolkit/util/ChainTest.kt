@@ -247,7 +247,7 @@ class ChainTest {
                 coVerify(exactly = 1) { condition("String") }
                 coVerify(exactly = 1) { liveData("String") }
                 coVerify(exactly = 1) { transform("String", 123) }
-                coVerify(exactly = 1) { observer(null) }
+                coVerify(exactly = 0) { observer(any()) }
             }
         )
     //endregion

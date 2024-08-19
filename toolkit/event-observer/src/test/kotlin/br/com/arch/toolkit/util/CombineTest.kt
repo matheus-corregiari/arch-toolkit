@@ -110,7 +110,7 @@ class CombineTest {
         liveDataB = MutableLiveData(123),
         transformException = true,
         block = { _, _, _, mockedObserver ->
-            coVerify(exactly = 1) { mockedObserver.invoke(null) }
+            coVerify(exactly = 0) { mockedObserver.invoke(any()) }
         }
     )
     //endregion

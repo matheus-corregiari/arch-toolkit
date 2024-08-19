@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -130,7 +131,8 @@ fun <T, R> LiveData<T>.chainWith(
     context: CoroutineContext,
     other: suspend (T?) -> LiveData<R>,
     condition: suspend (T?) -> Boolean,
-): LiveData<Pair<T?, R?>> = liveData(context) { internalChainWith(other, condition).collect(::emit) }
+): LiveData<Pair<T?, R?>> =
+    liveData(context) { internalChainWith(other, condition).collect(::emit) }
 
 /**
  * Chains this [LiveData] with another [LiveData] based on a condition, using a transformation function.
@@ -143,6 +145,10 @@ fun <T, R> LiveData<T>.chainWith(
  *
  * This method allows for chaining two [LiveData] sources and applying a transformation function to the combined values.
  * The transformation is executed in the provided [CoroutineDispatcher].
+ *
+ * The transformation function is applied within the specified [CoroutineContext] and uses
+ * `Dispatchers.IO` by default for the transformation process. If the [transform] function throws
+ * an exception during its execution, the `LiveData` will simply omit the emission for that combination.
  *
  * Example usage:
  * ```
@@ -165,7 +171,9 @@ fun <T, R, X> LiveData<T>.chainWith(
     val (dispatcher, block) = transform
     internalChainWith(other, condition)
         .flowOn(dispatcher)
-        .map { (a, b) -> runCatching { block(a, b) }.getOrNull() }
+        .map { (a, b) -> runCatching { block(a, b) }.let { it.getOrNull() to it.isFailure } }
+        .filter { (_, isFailure) -> isFailure.not() }
+        .map { (result, _) -> result }
         .flowOn(context)
         .collect(::emit)
 }
@@ -314,6 +322,10 @@ fun <T, R> LiveData<T>.chainNotNullWith(
  * applying a simple transformation function to the combined values.
  * The transformation is executed in the provided [CoroutineDispatcher].
  *
+ * The transformation function is applied within the specified [CoroutineContext] and uses
+ * `Dispatchers.IO` by default for the transformation process. If the [transform] function throws
+ * an exception during its execution, the `LiveData` will simply omit the emission for that combination.
+ *
  * Example usage:
  * ```
  * val liveData1: LiveData<Int> = MutableLiveData(1)
@@ -335,7 +347,9 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
     val (dispatcher, block) = transform
     internalChainNotNullWith(other, condition)
         .flowOn(dispatcher)
-        .mapNotNull { (a, b) -> runCatching { block.invoke(a, b) }.getOrNull() }
+        .map { (a, b) -> runCatching { block(a, b) }.let { it.getOrNull() to it.isFailure } }
+        .filter { (_, isFailure) -> isFailure.not() }
+        .mapNotNull { (result, _) -> result }
         .flowOn(context)
         .collect(::emit)
 }

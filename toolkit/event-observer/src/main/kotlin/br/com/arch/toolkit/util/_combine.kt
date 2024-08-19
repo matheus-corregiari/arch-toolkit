@@ -13,6 +13,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -179,7 +180,9 @@ fun <T, R, X> LiveData<T>.combine(
     val (dispatcher, block) = transform
     internalCombine(other)
         .flowOn(dispatcher)
-        .map { (a, b) -> runCatching { block(a, b) }.getOrNull() }
+        .map { (a, b) -> runCatching { block(a, b) }.let { it.getOrNull() to it.isFailure } }
+        .filter { (_, isFailure) -> isFailure.not() }
+        .map { (result, _) -> result }
         .flowOn(context)
         .collect(::emit)
 }
@@ -194,7 +197,7 @@ fun <T, R, X> LiveData<T>.combine(
  *
  * The transformation function is applied within the specified [CoroutineContext] and uses
  * `Dispatchers.IO` by default for the transformation process. If the [transform] function throws
- * an exception during its execution, the `LiveData` will emit `null` for that combination.
+ * an exception during its execution, the `LiveData` will simply omit the emission for that combination.
  *
  * Example usage:
  * ```
@@ -341,7 +344,9 @@ fun <T, R, X> LiveData<T>.combineNotNull(
     val (dispatcher, block) = transform
     internalCombineNotNull(other)
         .flowOn(dispatcher)
-        .mapNotNull { (a, b) -> runCatching { block(a, b) }.getOrNull() }
+        .map { (a, b) -> runCatching { block(a, b) }.let { it.getOrNull() to it.isFailure } }
+        .filter { (_, isFailure) -> isFailure.not() }
+        .mapNotNull { (result, _) -> result }
         .flowOn(context)
         .collect(::emit)
 }
