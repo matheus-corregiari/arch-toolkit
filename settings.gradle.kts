@@ -16,6 +16,9 @@ dependencyResolutionManagement {
         register("libraries") {
             from(files("$rootDir/tools/libs.versions.toml"))
         }
+        register("pluginLibraries") {
+            from(files("$rootDir/tools/plugin.versions.toml"))
+        }
     }
 }
 

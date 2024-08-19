@@ -1,12 +1,8 @@
 # ------------------------------------------------------------------------------------------------ #
 [versions]
 ## --- Plugins and more general stuff --- ##
-android_plugin = "8.1.4"
 jacoco = "0.8.9"
-dexcount = "4.0.0"
-pedrinho_publish = "0.0.2"
 detekt = "1.23.3"
-ktlint = "11.6.1"
 
 ## --- Build Config and SDK --- ##
 build-version-name = "1.0.0"
@@ -18,7 +14,7 @@ build-sdk-target = "35"
 build-tools = "35.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "2.0.0"
+jetbrains-kotlin = "2.0.10"
 jetbrains-coroutines = "1.8.1"
 jetbrains-serialization = "1.6.3"
 jetbrains-kover = "0.7.4"
@@ -55,7 +51,6 @@ square-timber = "5.0.1"
 ## Google
 google-material = "1.12.0"
 google-gson = "2.11.0"
-google-ksp = "2.0.0-1.0.22"
 
 ## Tools
 mockito = "5.6.0"
@@ -125,8 +120,6 @@ junit-test = { group = "junit", name = "junit", version.ref = "junit" }
 robolectric-test = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 
-
-
 # ------------------------------------------------------------------------------------------------ #
 ## Comment this when you start to update some libraries
 x-normalize-001 = { group = "androidx.activity", name = "activity", version.ref = "androidx-compose-activity" }
@@ -140,8 +133,8 @@ x-normalize-008 = { group = "androidx.customview", name = "customview", version 
 x-normalize-009 = { group = "androidx.drawerlayout", name = "drawerlayout", version = "1.2.0" }
 x-normalize-010 = { group = "androidx.lifecycle", name = "lifecycle-common", version.ref = "androidx-lifecycle" }
 x-normalize-011 = { group = "androidx.viewpager2", name = "viewpager2", version = "1.1.0" }
-x-normalize-012 = { group = "androidx.test", name = "monitor", version = "1.7.1" }
-x-normalize-013 = { group = "androidx.test", name = "runner", version = "1.6.1" }
+x-normalize-012 = { group = "androidx.test", name = "monitor", version = "1.7.2" }
+x-normalize-013 = { group = "androidx.test", name = "runner", version = "1.6.2" }
 x-normalize-014 = { group = "com.google.auto.value", name = "auto-value-annotations", version = "1.9" }
 x-normalize-015 = { group = "com.google.code.findbugs", name = "jsr305", version = "3.0.2" }
 x-normalize-016 = { group = "com.squareup", name = "javawritter", version = "2.5.0" }
@@ -152,25 +145,6 @@ x-normalize-020 = { group = "org.jetbrains", name = "annotations", version = "23
 
 # ------------------------------------------------------------------------------------------------ #
 [plugins]
-
-## Android
-android-application = { id = "com.android.application", version.ref = "android_plugin" }
-android-library = { id = "com.android.library", version.ref = "android_plugin" }
-
-## Android
-google-ksp = { id = "com.google.devtools.ksp", version.ref = "google-ksp" }
-
-## JetBrains
-jetbrains-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrains-kotlin" }
-jetbrains-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "jetbrains-kover" }
-jetbrains-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "jetbrains-kotlin" }
-jetbrains-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "jetbrains-kotlin" }
-
-## Tools to make my life easier
-dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint-idea", version.ref = "ktlint" }
-pedrinho_publish = { id = "io.github.pedro-bachiega.sonatype-maven-publish", version.ref = "pedrinho_publish" }
 
 # ------------------------------------------------------------------------------------------------ #
 [bundles]

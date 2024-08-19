@@ -3,7 +3,7 @@ package com.toolkit.plugin
 import com.android.build.api.dsl.CommonExtension
 import com.toolkit.plugin.util.projectJavaVersion
 
-internal fun CommonExtension<*, *, *, *, *>.commonSetup() {
+internal fun CommonExtension<*, *, *, *, *, *>.commonSetup() {
     androidResources { noCompress.add("") }
 
     compileOptions {
@@ -18,7 +18,7 @@ internal fun CommonExtension<*, *, *, *, *>.commonSetup() {
     }
 }
 
-internal fun CommonExtension<*, *, *, *, *>.regularSourceSets() {
+internal fun CommonExtension<*, *, *, *, *, *>.regularSourceSets() {
     sourceSets {
         maybeCreate("main").java.srcDirs("src/main/kotlin")
         maybeCreate("test").java.srcDirs("src/test/kotlin")

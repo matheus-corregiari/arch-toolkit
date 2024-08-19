@@ -1,6 +1,6 @@
 plugins {
     id("toolkit-android-sample")
-    alias(libraries.plugins.jetbrains.serialization)
+    alias(pluginLibraries.plugins.jetbrains.serialization)
 }
 
 android.namespace = "br.com.arch.toolkit.sample.livedata"

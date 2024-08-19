@@ -24,6 +24,12 @@ internal val Project.libraries: VersionCatalog
         return extensions.findByType(VersionCatalogsExtension::class.java)?.named("libraries")
             ?: error("Cannot find libraries in version catalog!")
     }
+internal val Project.pluginLibraries: VersionCatalog
+    @Throws(IllegalStateException::class)
+    get() {
+        return extensions.findByType(VersionCatalogsExtension::class.java)?.named("pluginLibraries")
+            ?: error("Cannot find libraries in version catalog!")
+    }
 
 internal val Project.ktLint: KtlintExtension
     @Throws(IllegalStateException::class)
@@ -97,6 +103,6 @@ internal val Project.sign: SigningExtension
 
 internal fun Project.applyPlugins(vararg id: String) {
     id.forEach {
-        plugins.apply(libraries.findPlugin(it).get().get().pluginId)
+        plugins.apply(pluginLibraries.findPlugin(it).get().get().pluginId)
     }
 }
