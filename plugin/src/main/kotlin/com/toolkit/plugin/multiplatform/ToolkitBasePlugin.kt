@@ -5,7 +5,6 @@ package com.toolkit.plugin.multiplatform
 import com.toolkit.plugin.util.applyPlugins
 import com.toolkit.plugin.util.multiplatform
 import com.toolkit.plugin.util.projectJavaVersionCode
-import com.toolkit.plugin.util.projectJavaVersionName
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Plugin
@@ -22,13 +21,7 @@ internal class ToolkitBasePlugin : Plugin<Project> {
         }
 
         with(target.multiplatform) {
-            androidTarget {
-                compilations.all { compilation ->
-                    compilation.kotlinOptions {
-                        jvmTarget = projectJavaVersionName
-                    }
-                }
-            }
+            androidTarget {}
         }
 
         target.plugins.apply("toolkit-optimize")
