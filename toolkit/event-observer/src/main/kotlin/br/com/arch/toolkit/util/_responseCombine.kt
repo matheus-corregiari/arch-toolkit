@@ -58,7 +58,11 @@ fun <T, R, X> LiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>,
     transform: suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>
-): ResponseLiveData<X> = combine(context, other, Dispatchers.IO to transform)
+): ResponseLiveData<X> = combine(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /* Non Nullable --------------------------------------------------------------------------------- */
 @Experimental
@@ -91,7 +95,11 @@ fun <T, R, X> LiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>,
     transform: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
-): ResponseLiveData<X> = combineNotNull(context, other, Dispatchers.IO to transform)
+): ResponseLiveData<X> = combineNotNull(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 /* endregion ------------------------------------------------------------------------------------ */
 
 /* region Response + LiveData Functions ---------------------------------------------------------------- */
@@ -125,7 +133,11 @@ fun <T, R, X> ResponseLiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
     other: LiveData<R>,
     transform: suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>
-): ResponseLiveData<X> = combine(context, other, Dispatchers.IO to transform)
+): ResponseLiveData<X> = combine(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /* Non Nullable --------------------------------------------------------------------------------- */
 @Experimental
@@ -158,7 +170,11 @@ fun <T, R, X> ResponseLiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
     other: LiveData<R>,
     transform: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
-): ResponseLiveData<X> = combineNotNull(context, other, Dispatchers.IO to transform)
+): ResponseLiveData<X> = combineNotNull(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 /* endregion ------------------------------------------------------------------------------------ */
 
 /* region Response + Response Functions --------------------------------------------------------- */
@@ -191,7 +207,11 @@ fun <T, R, X> ResponseLiveData<T>.combine(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>,
     transform: suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>
-): ResponseLiveData<X> = combine(context, other, Dispatchers.IO to transform)
+): ResponseLiveData<X> = combine(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /* Non Nullable --------------------------------------------------------------------------------- */
 @Experimental
@@ -224,5 +244,9 @@ fun <T, R, X> ResponseLiveData<T>.combineNotNull(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseLiveData<R>,
     transform: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
-): ResponseLiveData<X> = combineNotNull(context, other, Dispatchers.IO to transform)
+): ResponseLiveData<X> = combineNotNull(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 /* endregion ------------------------------------------------------------------------------------ */

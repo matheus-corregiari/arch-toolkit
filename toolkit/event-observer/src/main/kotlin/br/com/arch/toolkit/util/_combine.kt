@@ -146,8 +146,10 @@ fun <T, R> LiveData<T>.combineNotNull(other: LiveData<R>): LiveData<Pair<T, R>> 
  * @see [combineNotNull]
  * @see [plus]
  */
-fun <T, R> LiveData<T>.combine(context: CoroutineContext, other: LiveData<R>) =
-    liveData(context) { internalCombine(other).collect(::emit) }
+fun <T, R> LiveData<T>.combine(
+    context: CoroutineContext,
+    other: LiveData<R>
+): LiveData<Pair<T?, R?>> = liveData(context) { internalCombine(other).collect(::emit) }
 
 /**
  * Combines two [LiveData] objects with a transformation function using coroutines.
@@ -214,7 +216,11 @@ fun <T, R, X> LiveData<T>.combine(
     context: CoroutineContext,
     other: LiveData<R>,
     transform: suspend (T?, R?) -> X?
-): LiveData<X?> = combine(context, other, Dispatchers.IO to transform)
+): LiveData<X?> = combine(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /**
  * Combines two [LiveData] objects with a transformation function and an optional [CoroutineContext].
@@ -240,7 +246,11 @@ fun <T, R, X> LiveData<T>.combine(
 fun <T, R, X> LiveData<T>.combine(
     other: LiveData<R>,
     transform: Pair<CoroutineDispatcher, suspend (T?, R?) -> X?>
-): LiveData<X?> = combine(EmptyCoroutineContext, other, transform)
+): LiveData<X?> = combine(
+    context = EmptyCoroutineContext,
+    other = other,
+    transform = transform
+)
 
 /**
  * Combines two [LiveData] objects with a transformation function using a default [CoroutineDispatcher].
@@ -265,7 +275,10 @@ fun <T, R, X> LiveData<T>.combine(
 fun <T, R, X> LiveData<T>.combine(
     other: LiveData<R>,
     transform: suspend (T?, R?) -> X?
-): LiveData<X?> = combine(other, Dispatchers.IO to transform)
+): LiveData<X?> = combine(
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /**
  * Combines two non-null [LiveData] objects using coroutines.
@@ -286,8 +299,10 @@ fun <T, R, X> LiveData<T>.combine(
  * @see [combine]
  * @see [plus]
  */
-fun <T, R> LiveData<T>.combineNotNull(context: CoroutineContext, other: LiveData<R>) =
-    liveData<Pair<T, R>>(context) { internalCombineNotNull(other).collect(::emit) }
+fun <T, R> LiveData<T>.combineNotNull(
+    context: CoroutineContext,
+    other: LiveData<R>
+): LiveData<Pair<T, R>> = liveData(context) { internalCombineNotNull(other).collect(::emit) }
 
 /**
  * Combines two non-null [LiveData] objects with a transformation function using coroutines.
@@ -364,7 +379,11 @@ fun <T, R, X> LiveData<T>.combineNotNull(
     context: CoroutineContext,
     other: LiveData<R>,
     transform: suspend (T, R) -> X
-): LiveData<X> = combineNotNull(context, other, Dispatchers.IO to transform)
+): LiveData<X> = combineNotNull(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /**
  * Combines two non-null [LiveData] objects with a transformation function and an optional [CoroutineContext].
@@ -390,7 +409,11 @@ fun <T, R, X> LiveData<T>.combineNotNull(
 fun <T, R, X> LiveData<T>.combineNotNull(
     other: LiveData<R>,
     transform: Pair<CoroutineDispatcher, suspend (T, R) -> X>
-): LiveData<X> = combineNotNull(EmptyCoroutineContext, other, transform)
+): LiveData<X> = combineNotNull(
+    context = EmptyCoroutineContext,
+    other = other,
+    transform = transform
+)
 
 /**
  * Combines two non-null [LiveData] objects with a transformation function using a default [CoroutineDispatcher].
@@ -415,7 +438,10 @@ fun <T, R, X> LiveData<T>.combineNotNull(
 fun <T, R, X> LiveData<T>.combineNotNull(
     other: LiveData<R>,
     transform: suspend (T, R) -> X
-): LiveData<X> = combineNotNull(other, Dispatchers.IO to transform)
+): LiveData<X> = combineNotNull(
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /* Auxiliary Functions -------------------------------------------------------------------------- */
 
