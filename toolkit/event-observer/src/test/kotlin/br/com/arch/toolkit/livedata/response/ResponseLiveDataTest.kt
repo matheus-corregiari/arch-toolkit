@@ -9,7 +9,6 @@ import br.com.arch.toolkit.testSetValue
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultSuccess
-import br.com.arch.toolkit.util.plus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -286,7 +285,7 @@ class ResponseLiveDataTest {
     fun `09 - mergeWith - plus`() = runTest {
         val liveDataA = ResponseLiveData(dataResultSuccess(123))
         val liveDataB = ResponseLiveData(dataResultSuccess("String"))
-        val liveDataMerge = liveDataA + liveDataB
+        val liveDataMerge = liveDataA.mergeWith(liveDataB)
 
         Assert.assertEquals(dataResultSuccess(123), liveDataA.value)
         Assert.assertEquals(dataResultSuccess("String"), liveDataB.value)
