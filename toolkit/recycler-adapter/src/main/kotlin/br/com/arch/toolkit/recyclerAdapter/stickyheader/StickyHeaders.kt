@@ -1,4 +1,4 @@
-package br.com.arch.toolkit.playground.recyclerAdapter.stickyheader
+package br.com.arch.toolkit.recyclerAdapter.stickyheader
 
 import android.view.View
 

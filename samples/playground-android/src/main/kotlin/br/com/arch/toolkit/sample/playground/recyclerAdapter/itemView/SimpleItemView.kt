@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.appcompat.widget.AppCompatTextView
-import br.com.arch.toolkit.playground.recyclerAdapter.ViewBinder
+import br.com.arch.toolkit.recyclerAdapter.ViewBinder
 import br.com.arch.toolkit.sample.playground.R
 
 class SimpleItemView : AppCompatTextView, ViewBinder<String> {

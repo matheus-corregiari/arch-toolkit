@@ -1,8 +1,8 @@
-package br.com.arch.toolkit.playground.recyclerAdapter
+package br.com.arch.toolkit.recyclerAdapter
 
 import android.content.Context
 import android.view.View
-import br.com.arch.toolkit.playground.recyclerAdapter.stickyheader.StickyHeaderModel
+import br.com.arch.toolkit.recyclerAdapter.stickyheader.StickyHeaderModel
 
 /**
  * Implementation of BaseRecyclerAdapter representing a single viewType

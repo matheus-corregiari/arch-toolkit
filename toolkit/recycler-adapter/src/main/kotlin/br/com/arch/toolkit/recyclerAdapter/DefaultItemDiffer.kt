@@ -1,4 +1,4 @@
-package br.com.arch.toolkit.playground.recyclerAdapter
+package br.com.arch.toolkit.recyclerAdapter
 
 import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil

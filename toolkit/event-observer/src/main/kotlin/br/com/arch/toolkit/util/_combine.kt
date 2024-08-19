@@ -44,28 +44,6 @@ import kotlin.coroutines.EmptyCoroutineContext
  */
 operator fun <T, R> LiveData<T>.plus(other: LiveData<R>) = combine(other = other)
 
-/**
- * Combines two [LiveData] objects using the `+` operator with a specified [CoroutineContext].
- *
- * This method allows you to merge two [LiveData] sources into a single [LiveData] while specifying the context in which the operation should occur.
- *
- * @param context The [CoroutineContext] in which to perform the combination.
- * @param other The other [LiveData] to combine with.
- * @return A [LiveData] that emits pairs of values from both [LiveData] sources.
- *
- * ### Example Usage:
- * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
- * val combinedLiveData: LiveData<Pair<Int?, String?>> = liveData1.plus(Dispatchers.IO, liveData2)
- * ```
- *
- * @see [combine]
- * @see [plus]
- */
-fun <T, R> LiveData<T>.plus(context: CoroutineContext, other: LiveData<R>) =
-    combine(context = context, other = other)
-
 /* Regular Functions ---------------------------------------------------------------------------- */
 
 /**
@@ -130,18 +108,18 @@ fun <T, R> LiveData<T>.combineNotNull(other: LiveData<R>): LiveData<Pair<T, R>> 
     val initial = (value to other.value).takeIf { isInitialized || other.isInitialized }
     val mediator = when {
         initial == null -> MediatorLiveData()
-        initial.toNotNull() == null -> MediatorLiveData()
-        else -> MediatorLiveData<Pair<T, R>>(initial.toNotNull())
+        initial.onlyWithValues() == null -> MediatorLiveData()
+        else -> MediatorLiveData<Pair<T, R>>(initial.onlyWithValues())
     }
 
     mediator.addSource(this) {
         (it to other.value).takeUnless { ignoreA.compareAndSet(true, false) }
-            ?.toNotNull()
+            ?.onlyWithValues()
             ?.let(mediator::setValue)
     }
     mediator.addSource(other) {
         (value to it).takeUnless { ignoreB.compareAndSet(true, false) }
-            ?.toNotNull()
+            ?.onlyWithValues()
             ?.let(mediator::setValue)
     }
     return mediator
@@ -168,8 +146,10 @@ fun <T, R> LiveData<T>.combineNotNull(other: LiveData<R>): LiveData<Pair<T, R>> 
  * @see [combineNotNull]
  * @see [plus]
  */
-fun <T, R> LiveData<T>.combine(context: CoroutineContext, other: LiveData<R>) =
-    liveData(context) { internalCombine(other).collect(::emit) }
+fun <T, R> LiveData<T>.combine(
+    context: CoroutineContext,
+    other: LiveData<R>
+): LiveData<Pair<T?, R?>> = liveData(context) { internalCombine(other).collect(::emit) }
 
 /**
  * Combines two [LiveData] objects with a transformation function using coroutines.
@@ -236,7 +216,11 @@ fun <T, R, X> LiveData<T>.combine(
     context: CoroutineContext,
     other: LiveData<R>,
     transform: suspend (T?, R?) -> X?
-): LiveData<X?> = combine(context, other, Dispatchers.IO to transform)
+): LiveData<X?> = combine(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /**
  * Combines two [LiveData] objects with a transformation function and an optional [CoroutineContext].
@@ -262,7 +246,11 @@ fun <T, R, X> LiveData<T>.combine(
 fun <T, R, X> LiveData<T>.combine(
     other: LiveData<R>,
     transform: Pair<CoroutineDispatcher, suspend (T?, R?) -> X?>
-): LiveData<X?> = combine(EmptyCoroutineContext, other, transform)
+): LiveData<X?> = combine(
+    context = EmptyCoroutineContext,
+    other = other,
+    transform = transform
+)
 
 /**
  * Combines two [LiveData] objects with a transformation function using a default [CoroutineDispatcher].
@@ -287,7 +275,10 @@ fun <T, R, X> LiveData<T>.combine(
 fun <T, R, X> LiveData<T>.combine(
     other: LiveData<R>,
     transform: suspend (T?, R?) -> X?
-): LiveData<X?> = combine(other, Dispatchers.IO to transform)
+): LiveData<X?> = combine(
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /**
  * Combines two non-null [LiveData] objects using coroutines.
@@ -308,8 +299,10 @@ fun <T, R, X> LiveData<T>.combine(
  * @see [combine]
  * @see [plus]
  */
-fun <T, R> LiveData<T>.combineNotNull(context: CoroutineContext, other: LiveData<R>) =
-    liveData<Pair<T, R>>(context) { internalCombineNotNull(other).collect(::emit) }
+fun <T, R> LiveData<T>.combineNotNull(
+    context: CoroutineContext,
+    other: LiveData<R>
+): LiveData<Pair<T, R>> = liveData(context) { internalCombineNotNull(other).collect(::emit) }
 
 /**
  * Combines two non-null [LiveData] objects with a transformation function using coroutines.
@@ -386,7 +379,11 @@ fun <T, R, X> LiveData<T>.combineNotNull(
     context: CoroutineContext,
     other: LiveData<R>,
     transform: suspend (T, R) -> X
-): LiveData<X> = combineNotNull(context, other, Dispatchers.IO to transform)
+): LiveData<X> = combineNotNull(
+    context = context,
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /**
  * Combines two non-null [LiveData] objects with a transformation function and an optional [CoroutineContext].
@@ -412,7 +409,11 @@ fun <T, R, X> LiveData<T>.combineNotNull(
 fun <T, R, X> LiveData<T>.combineNotNull(
     other: LiveData<R>,
     transform: Pair<CoroutineDispatcher, suspend (T, R) -> X>
-): LiveData<X> = combineNotNull(EmptyCoroutineContext, other, transform)
+): LiveData<X> = combineNotNull(
+    context = EmptyCoroutineContext,
+    other = other,
+    transform = transform
+)
 
 /**
  * Combines two non-null [LiveData] objects with a transformation function using a default [CoroutineDispatcher].
@@ -437,12 +438,15 @@ fun <T, R, X> LiveData<T>.combineNotNull(
 fun <T, R, X> LiveData<T>.combineNotNull(
     other: LiveData<R>,
     transform: suspend (T, R) -> X
-): LiveData<X> = combineNotNull(other, Dispatchers.IO to transform)
+): LiveData<X> = combineNotNull(
+    other = other,
+    transform = Dispatchers.IO to transform
+)
 
 /* Auxiliary Functions -------------------------------------------------------------------------- */
 
 internal suspend inline fun <T, R> LiveData<T>.internalCombineNotNull(other: LiveData<R>) =
-    internalCombine(other).mapNotNull { it.toNotNull() }
+    internalCombine(other).mapNotNull { it.onlyWithValues() }
 
 internal suspend inline fun <T, R> LiveData<T>.internalCombine(other: LiveData<R>) = channelFlow {
     val aFlow = this@internalCombine.asFlow()

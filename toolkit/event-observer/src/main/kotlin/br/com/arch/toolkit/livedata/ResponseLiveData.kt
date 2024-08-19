@@ -1,4 +1,10 @@
-@file:Suppress("KotlinNullnessAnnotation", "TooManyFunctions")
+@file:Suppress(
+    "KotlinNullnessAnnotation",
+    "TooManyFunctions",
+    "MemberVisibilityCanBePrivate",
+    "DeprecatedCallableAddReplaceWith",
+    "unused"
+)
 
 package br.com.arch.toolkit.livedata
 
@@ -126,9 +132,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @see ResponseLiveData.onError
      */
     @NonNull
-    fun mapError(
-        @NonNull transformation: (Throwable) -> Throwable
-    ): ResponseLiveData<T> {
+    fun mapError(@NonNull transformation: (Throwable) -> Throwable): ResponseLiveData<T> {
         val liveData = SwapResponseLiveData<T>()
             .scope(scope)
             .transformDispatcher(transformDispatcher)
@@ -153,9 +157,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @see ResponseLiveData.onErrorReturn
      */
     @NonNull
-    fun onErrorReturn(
-        @NonNull onErrorReturn: ((Throwable) -> T)
-    ): ResponseLiveData<T> {
+    fun onErrorReturn(@NonNull onErrorReturn: ((Throwable) -> T)): ResponseLiveData<T> {
         val liveData = SwapResponseLiveData<T>()
             .scope(scope)
             .transformDispatcher(transformDispatcher)
@@ -172,6 +174,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
+    @Deprecated("Use combine instead")
     fun <R> mergeWith(@NonNull source: ResponseLiveData<R>): ResponseLiveData<Pair<T, R>> =
         withDelegate {
             merge(this@ResponseLiveData, source, scope, transformDispatcher)
@@ -187,6 +190,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
+    @Deprecated("Use combine instead")
     fun mergeWith(
         @NonNull tag: String,
         @NonNull vararg sources: Pair<String, ResponseLiveData<*>>
@@ -209,6 +213,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
+    @Deprecated("Use chainWith instead")
     fun <R> followedBy(
         @NonNull source: (T) -> ResponseLiveData<R>,
         @NonNull condition: (T) -> Boolean,
@@ -235,6 +240,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
+    @Deprecated("Use chainWith instead")
     fun <R> followedBy(
         @NonNull source: (T) -> ResponseLiveData<R>,
         @NonNull condition: (T) -> Boolean
@@ -250,14 +256,8 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     @Experimental
-    fun <R> followedBy(
-        @NonNull source: (T) -> ResponseLiveData<R>
-    ): ResponseLiveData<Pair<T, R>> = followedBy(source) { true }
-    //endregion
-
-    //region Operators
-    @Experimental
-    operator fun <R> plus(source: ResponseLiveData<R>) = mergeWith(source)
+    @Deprecated("Use chainWith instead")
+    fun <R> followedBy(@NonNull source: (T) -> ResponseLiveData<R>) = followedBy(source) { true }
     //endregion
 
     //region Observability

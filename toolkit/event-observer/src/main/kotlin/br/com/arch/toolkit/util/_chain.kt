@@ -1,4 +1,4 @@
-@file:Suppress("Filename", "TooManyFunctions", "LongParameterList")
+@file:Suppress("Filename", "TooManyFunctions", "LongParameterList", "unused")
 
 package br.com.arch.toolkit.util
 
@@ -47,13 +47,15 @@ fun <T, R> LiveData<T>.chainWith(
     val mediator = MediatorLiveData<Pair<T?, R?>>()
     var bLiveData: LiveData<R>? = null
 
+    fun onBReceived(bValue: R?) = (value to bValue).let(mediator::setValue)
+
     fun onAReceived(aValue: T?) {
         bLiveData?.let(mediator::removeSource)
         val isConditionMet = condition.runCatching { invoke(aValue) }.getOrDefault(false)
         bLiveData = if (isConditionMet) other.runCatching { invoke(aValue) }.getOrNull() else null
         bLiveData?.let { liveData ->
             if (liveData.isInitialized.not()) mediator.value = aValue to null
-            mediator.addSource(liveData) { bValue -> (aValue to bValue).let(mediator::setValue) }
+            mediator.addSource(liveData, ::onBReceived)
         }
     }
 
@@ -83,10 +85,23 @@ fun <T, R> LiveData<T>.chainWith(
 fun <T, R> LiveData<T>.chainNotNullWith(
     other: (T) -> LiveData<R>,
     condition: (T) -> Boolean
-): LiveData<Pair<T, R>> = chainWith(
-    other = { it?.let(other) ?: error("Data null in chainNotNullWith") },
-    condition = { it?.let(condition) ?: false }
-).mapNotNull { it.toNotNull() }
+): LiveData<Pair<T, R>> {
+    val mediator = MediatorLiveData<Pair<T, R>>()
+    var bLiveData: LiveData<R>? = null
+
+    fun onBReceived(bValue: R?) = (value to bValue).onlyWithValues()?.let(mediator::setValue)
+
+    fun onAReceived(aValue: T?) {
+        bLiveData?.let(mediator::removeSource)
+        aValue ?: return
+        val isConditionMet = condition.runCatching { invoke(aValue) }.getOrDefault(false)
+        bLiveData = if (isConditionMet) other.runCatching { invoke(aValue) }.getOrNull() else null
+        bLiveData?.let { liveData -> mediator.addSource(liveData, ::onBReceived) }
+    }
+
+    mediator.addSource(this, ::onAReceived)
+    return mediator
+}
 
 /* Coroutine Functions -------------------------------------------------------------------------- */
 
@@ -115,7 +130,7 @@ fun <T, R> LiveData<T>.chainWith(
     context: CoroutineContext,
     other: suspend (T?) -> LiveData<R>,
     condition: suspend (T?) -> Boolean,
-) = liveData(context) { internalChainWith(other, condition).collect(::emit) }
+): LiveData<Pair<T?, R?>> = liveData(context) { internalChainWith(other, condition).collect(::emit) }
 
 /**
  * Chains this [LiveData] with another [LiveData] based on a condition, using a transformation function.
@@ -184,7 +199,12 @@ fun <T, R, X> LiveData<T>.chainWith(
     other: suspend (T?) -> LiveData<R>,
     condition: suspend (T?) -> Boolean,
     transform: suspend (T?, R?) -> X?
-): LiveData<X?> = chainWith(context, other, condition, Dispatchers.IO to transform)
+): LiveData<X?> = chainWith(
+    context = context,
+    other = other,
+    condition = condition,
+    transform = Dispatchers.IO to transform
+)
 
 /**
  * Chains this [LiveData] with another [LiveData] based on a condition, using a simple transformation function and the default [CoroutineContext].
@@ -212,7 +232,12 @@ fun <T, R, X> LiveData<T>.chainWith(
     other: suspend (T?) -> LiveData<R>,
     condition: suspend (T?) -> Boolean,
     transform: Pair<CoroutineDispatcher, suspend (T?, R?) -> X?>
-): LiveData<X?> = chainWith(EmptyCoroutineContext, other, condition, transform)
+): LiveData<X?> = chainWith(
+    context = EmptyCoroutineContext,
+    other = other,
+    condition = condition,
+    transform = transform
+)
 
 /**
  * Chains this [LiveData] with another [LiveData] based on a condition,
@@ -241,7 +266,11 @@ fun <T, R, X> LiveData<T>.chainWith(
     other: suspend (T?) -> LiveData<R>,
     condition: suspend (T?) -> Boolean,
     transform: suspend (T?, R?) -> X?
-): LiveData<X?> = chainWith(other, condition, Dispatchers.IO to transform)
+): LiveData<X?> = chainWith(
+    other = other,
+    condition = condition,
+    transform = Dispatchers.IO to transform
+)
 
 /**
  * Chains this [LiveData] with another non-nullable [LiveData] based on a condition, using coroutines.
@@ -268,7 +297,7 @@ fun <T, R> LiveData<T>.chainNotNullWith(
     context: CoroutineContext,
     other: suspend (T) -> LiveData<R>,
     condition: suspend (T) -> Boolean,
-) = liveData<Pair<T, R>>(context) {
+): LiveData<Pair<T, R>> = liveData(context) {
     internalChainNotNullWith(other, condition).collect(::emit)
 }
 
@@ -339,7 +368,12 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
     other: suspend (T) -> LiveData<R>,
     condition: suspend (T) -> Boolean,
     transform: suspend (T, R) -> X
-): LiveData<X> = chainNotNullWith(context, other, condition, Dispatchers.IO to transform)
+): LiveData<X> = chainNotNullWith(
+    context = context,
+    other = other,
+    condition = condition,
+    transform = Dispatchers.IO to transform
+)
 
 /**
  * Chains this non-nullable [LiveData] with another non-nullable [LiveData] based on a condition,
@@ -368,10 +402,16 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
     other: suspend (T) -> LiveData<R>,
     condition: suspend (T) -> Boolean,
     transform: Pair<CoroutineDispatcher, suspend (T, R) -> X>
-): LiveData<X> = chainNotNullWith(EmptyCoroutineContext, other, condition, transform)
+): LiveData<X> = chainNotNullWith(
+    context = EmptyCoroutineContext,
+    other = other,
+    condition = condition,
+    transform = transform
+)
 
 /**
- * Chains this non-nullable [LiveData] with another non-nullable [LiveData] based on a condition, using a simple transformation function and the default [CoroutineContext] and [CoroutineDispatcher].
+ * Chains this non-nullable [LiveData] with another non-nullable [LiveData] based on a condition,
+ * using a simple transformation function and the default [CoroutineContext] and [CoroutineDispatcher].
  *
  * @param other A suspend function that returns another non-nullable [LiveData] based on the value of this [LiveData].
  * @param condition A suspend function that determines whether to chain with the other [LiveData] based on a non-nullable value.
@@ -391,23 +431,28 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
  *     transform = { a, b -> "$a$b" }
  * )
  * ```
- */fun <T, R, X> LiveData<T>.chainNotNullWith(
+ */
+fun <T, R, X> LiveData<T>.chainNotNullWith(
     other: suspend (T) -> LiveData<R>,
     condition: suspend (T) -> Boolean,
     transform: suspend (T, R) -> X
-): LiveData<X> = chainNotNullWith(other, condition, Dispatchers.IO to transform)
+): LiveData<X> = chainNotNullWith(
+    other = other,
+    condition = condition,
+    transform = Dispatchers.IO to transform
+)
 
 /* Auxiliary Functions -------------------------------------------------------------------------- */
 
-private suspend inline fun <T, R> LiveData<T>.internalChainNotNullWith(
+internal suspend inline fun <T, R> LiveData<T>.internalChainNotNullWith(
     noinline other: suspend (T) -> LiveData<R>,
     noinline condition: suspend (T) -> Boolean,
 ) = internalChainWith(
     other = { data -> data?.let { other(it) } ?: error("Data null in chainNotNullWith") },
     condition = { data -> data?.let { condition(it) } ?: false }
-).mapNotNull { it.toNotNull() }
+).mapNotNull { it.onlyWithValues() }
 
-private suspend inline fun <T, R> LiveData<T>.internalChainWith(
+internal suspend inline fun <T, R> LiveData<T>.internalChainWith(
     noinline other: suspend (T?) -> LiveData<R>,
     noinline condition: suspend (T?) -> Boolean,
 ) = channelFlow {

@@ -1,4 +1,4 @@
-package br.com.arch.toolkit.playground.recyclerAdapter.stickyheader
+package br.com.arch.toolkit.recyclerAdapter.stickyheader
 
 import android.content.Context
 import android.view.View
@@ -250,10 +250,10 @@ class StickyHeadersLinearLayoutManager<T> :
                 // - There's one to show;
                 // - It's on the edge or it's not the anchor view;
                 // - Isn't followed by another sticky header;
-                if (headerPos != -1 &&
-                    (headerPos != anchorPos || isViewOnBoundary(anchorView)) &&
-                    nextHeaderPos != headerPos + 1
-                ) {
+                val oneToShow = headerPos != -1
+                val onEdgeAndNotAnchor = (headerPos != anchorPos || isViewOnBoundary(anchorView))
+                val notFollowedByNext = nextHeaderPos != headerPos + 1
+                if (oneToShow && onEdgeAndNotAnchor && notFollowedByNext) {
                     // Ensure existing sticky header, if any, is of correct type.
                     if (mStickyHeader != null &&
                         mAdapter != null &&

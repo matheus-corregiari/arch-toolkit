@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import br.com.arch.toolkit.delegate.viewModelProvider
 import br.com.arch.toolkit.delegate.viewProvider
-import br.com.arch.toolkit.playground.recyclerAdapter.SimpleAdapter
+import br.com.arch.toolkit.recyclerAdapter.SimpleAdapter
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.sample.github.R
 import br.com.arch.toolkit.sample.github.data.remote.model.RepoDTO

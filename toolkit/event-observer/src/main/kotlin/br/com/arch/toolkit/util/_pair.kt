@@ -13,15 +13,15 @@ package br.com.arch.toolkit.util
  * Example usage:
  * ```
  * val pair: Pair<String?, Int?> = "Hello" to 42
- * val nonNullPair: Pair<String, Int>? = pair.toNotNull()
+ * val nonNullPair: Pair<String, Int>? = pair.onlyWithValues()
  * nonNullPair?.let { (first, second) ->
  *     println("First: $first, Second: $second") // Output: First: Hello, Second: 42
  * }
  *
  * val nullablePair: Pair<String?, Int?> = null to 42
- * val result = nullablePair.toNotNull()
+ * val result = nullablePair.onlyWithValues()
  * println(result) // Output: null
  * ```
  */
-fun <T, R> Pair<T?, R?>.toNotNull(): Pair<T, R>? =
+fun <T, R> Pair<T?, R?>.onlyWithValues(): Pair<T, R>? =
     runCatching { requireNotNull(first) to requireNotNull(second) }.getOrNull()
