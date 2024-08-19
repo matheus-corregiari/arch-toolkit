@@ -6,9 +6,9 @@ import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import br.com.arch.toolkit.delegate.viewProvider
-import br.com.arch.toolkit.playground.recyclerAdapter.SimpleStickyAdapter
-import br.com.arch.toolkit.playground.recyclerAdapter.stickyheader.StickyHeaderModel
-import br.com.arch.toolkit.playground.recyclerAdapter.stickyheader.StickyHeadersLinearLayoutManager
+import br.com.arch.toolkit.recyclerAdapter.SimpleStickyAdapter
+import br.com.arch.toolkit.recyclerAdapter.stickyheader.StickyHeaderModel
+import br.com.arch.toolkit.recyclerAdapter.stickyheader.StickyHeadersLinearLayoutManager
 import br.com.arch.toolkit.sample.playground.R
 import br.com.arch.toolkit.sample.playground.recyclerAdapter.itemView.StickyItemView
 

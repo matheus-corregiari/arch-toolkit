@@ -1,8 +1,8 @@
 package br.com.arch.toolkit.sample.playground.recyclerAdapter.adapter
 
 import android.content.Context
-import br.com.arch.toolkit.playground.recyclerAdapter.BaseRecyclerAdapter
-import br.com.arch.toolkit.playground.recyclerAdapter.ViewBinder
+import br.com.arch.toolkit.recyclerAdapter.BaseRecyclerAdapter
+import br.com.arch.toolkit.recyclerAdapter.ViewBinder
 import br.com.arch.toolkit.sample.playground.recyclerAdapter.itemView.AnotherSimpleItemView
 import br.com.arch.toolkit.sample.playground.recyclerAdapter.itemView.SimpleItemView
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
-import br.com.arch.toolkit.playground.recyclerAdapter.ViewBinder
+import br.com.arch.toolkit.recyclerAdapter.ViewBinder
 import br.com.arch.toolkit.sample.playground.R
 import br.com.arch.toolkit.sample.playground.recyclerAdapter.StickyHeadersActivity
 
