@@ -9,7 +9,6 @@ import br.com.arch.toolkit.livedata.responseLiveData
 import br.com.arch.toolkit.result.DataResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -37,16 +36,26 @@ fun <T, R, X> LiveData<T>.chainWith(
     context: CoroutineContext = EmptyCoroutineContext,
     other: WithResponse<T, R>,
     condition: suspend (T?) -> Boolean,
-    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+    transform: ResponseTransform<T?, R?, X>
 ): ResponseLiveData<X> = responseLiveData(context = context) {
-    val (dispatcher, block) = transform
     internalChainWith(other::invoke, condition)
         .mapNotNull { (data, result) -> data?.let(::dataResultSuccess) + result }
-        .flowOn(dispatcher)
-        .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
-        .flowOn(context)
+        .applyTransformation(context, transform)
         .collect(::emit)
 }
+
+@Experimental
+fun <T, R, X> LiveData<T>.chainWith(
+    context: CoroutineContext = EmptyCoroutineContext,
+    other: WithResponse<T, R>,
+    condition: suspend (T?) -> Boolean,
+    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+): ResponseLiveData<X> = chainWith(
+    context = context,
+    other = other,
+    condition = condition,
+    transform = ResponseTransform.StatusFail(transform.first, transform.second)
+)
 
 @Experimental
 fun <T, R, X> LiveData<T>.chainWith(
@@ -83,16 +92,26 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
     context: CoroutineContext = EmptyCoroutineContext,
     other: NotNullWithResponse<T, R>,
     condition: suspend (T) -> Boolean,
-    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T, R>>) -> DataResult<X>>
+    transform: ResponseTransform<T, R, X>
 ): ResponseLiveData<X> = responseLiveData(context = context) {
-    val (dispatcher, block) = transform
     internalChainNotNullWith(other::invoke, condition)
         .mapNotNull { (data, result) -> (dataResultSuccess(data) + result).onlyWithValues() }
-        .flowOn(dispatcher)
-        .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
-        .flowOn(context)
+        .applyTransformation(context, transform)
         .collect(::emit)
 }
+
+@Experimental
+fun <T, R, X> LiveData<T>.chainNotNullWith(
+    context: CoroutineContext = EmptyCoroutineContext,
+    other: NotNullWithResponse<T, R>,
+    condition: suspend (T) -> Boolean,
+    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T, R>>) -> DataResult<X>>
+): ResponseLiveData<X> = chainNotNullWith(
+    context = context,
+    other = other,
+    condition = condition,
+    transform = ResponseTransform.StatusFail(transform.first, transform.second)
+)
 
 @Experimental
 fun <T, R, X> LiveData<T>.chainNotNullWith(
@@ -112,33 +131,33 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
 /* Nullable ------------------------------------------------------------------------------------- */
 @FunctionalInterface
 fun interface ResponseWith<T, R> {
-    suspend fun invoke(result: DataResult<T>?): LiveData<R>
+    suspend fun invoke(result: DataResult<T>): LiveData<R>
 }
 
 @Experimental
 fun <T, R> ResponseLiveData<T>.chainWith(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseWith<T, R>,
-    condition: suspend (DataResult<T>?) -> Boolean,
+    condition: suspend (DataResult<T>) -> Boolean,
 ): ResponseLiveData<Pair<T?, R?>> = responseLiveData(context = context) {
-    internalChainWith(other::invoke, condition)
-        .mapNotNull { (result, data) -> result + data?.let(::dataResultSuccess) }
-        .collect(::emit)
+    internalChainWith(
+        condition = { result -> result?.let { condition(it) } == true },
+        other = { result -> other.invoke(requireNotNull(result)) },
+    ).mapNotNull { (result, data) -> result + data?.let(::dataResultSuccess) }.collect(::emit)
 }
 
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.chainWith(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseWith<T, R>,
-    condition: suspend (DataResult<T>?) -> Boolean,
-    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+    condition: suspend (DataResult<T>) -> Boolean,
+    transform: ResponseTransform<T?, R?, X>
 ): ResponseLiveData<X> = responseLiveData(context = context) {
-    val (dispatcher, block) = transform
-    internalChainWith(other::invoke, condition)
-        .mapNotNull { (result, data) -> result + data?.let(::dataResultSuccess) }
-        .flowOn(dispatcher)
-        .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
-        .flowOn(context)
+    internalChainWith(
+        condition = { result -> result?.let { condition(it) } == true },
+        other = { result -> other.invoke(requireNotNull(result)) },
+    ).mapNotNull { (result, data) -> result + data?.let(::dataResultSuccess) }
+        .applyTransformation(context, transform)
         .collect(::emit)
 }
 
@@ -146,7 +165,20 @@ fun <T, R, X> ResponseLiveData<T>.chainWith(
 fun <T, R, X> ResponseLiveData<T>.chainWith(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseWith<T, R>,
-    condition: suspend (DataResult<T>?) -> Boolean,
+    condition: suspend (DataResult<T>) -> Boolean,
+    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+): ResponseLiveData<X> = chainWith(
+    context = context,
+    other = other,
+    condition = condition,
+    transform = ResponseTransform.StatusFail(transform.first, transform.second)
+)
+
+@Experimental
+fun <T, R, X> ResponseLiveData<T>.chainWith(
+    context: CoroutineContext = EmptyCoroutineContext,
+    other: ResponseWith<T, R>,
+    condition: suspend (DataResult<T>) -> Boolean,
     transform: suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>
 ): ResponseLiveData<X> = chainWith(
     context = context,
@@ -177,16 +209,26 @@ fun <T, R, X> ResponseLiveData<T>.chainNotNullWith(
     context: CoroutineContext = EmptyCoroutineContext,
     other: ResponseNotNullWith<T, R>,
     condition: suspend (DataResult<T>) -> Boolean,
-    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T, R>>) -> DataResult<X>>
+    transform: ResponseTransform<T, R, X>
 ): ResponseLiveData<X> = responseLiveData(context = context) {
-    val (dispatcher, block) = transform
     internalChainNotNullWith(other::invoke, condition)
         .mapNotNull { (result, data) -> (result + dataResultSuccess(data)).onlyWithValues() }
-        .flowOn(dispatcher)
-        .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
-        .flowOn(context)
+        .applyTransformation(context, transform)
         .collect(::emit)
 }
+
+@Experimental
+fun <T, R, X> ResponseLiveData<T>.chainNotNullWith(
+    context: CoroutineContext = EmptyCoroutineContext,
+    other: ResponseNotNullWith<T, R>,
+    condition: suspend (DataResult<T>) -> Boolean,
+    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T, R>>) -> DataResult<X>>
+): ResponseLiveData<X> = chainNotNullWith(
+    context = context,
+    other = other,
+    condition = condition,
+    transform = ResponseTransform.StatusFail(transform.first, transform.second)
+)
 
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.chainNotNullWith(
@@ -204,38 +246,56 @@ fun <T, R, X> ResponseLiveData<T>.chainNotNullWith(
 
 /* region Response + Response Functions ---------------------------------------------------------------- */
 /* Nullable ------------------------------------------------------------------------------------- */
+@FunctionalInterface
+fun interface ResponseWithResponse<T, R> {
+    suspend fun invoke(result: DataResult<T>): ResponseLiveData<R>
+}
+
 @Experimental
 fun <T, R> ResponseLiveData<T>.chainWith(
     context: CoroutineContext = EmptyCoroutineContext,
-    other: suspend (DataResult<T>?) -> ResponseLiveData<R>,
-    condition: suspend (DataResult<T>?) -> Boolean,
+    other: ResponseWithResponse<T, R>,
+    condition: suspend (DataResult<T>) -> Boolean,
 ): ResponseLiveData<Pair<T?, R?>> = responseLiveData(context = context) {
-    internalChainWith(other, condition)
-        .mapNotNull { (resultA, resultB) -> resultA + resultB }
-        .collect(::emit)
+    internalChainWith(
+        condition = { result -> result?.let { condition(it) } == true },
+        other = { result -> other.invoke(requireNotNull(result)) },
+    ).mapNotNull { (resultA, resultB) -> resultA + resultB }.collect(::emit)
 }
 
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.chainWith(
     context: CoroutineContext = EmptyCoroutineContext,
-    other: suspend (DataResult<T>?) -> ResponseLiveData<R>,
-    condition: suspend (DataResult<T>?) -> Boolean,
-    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+    other: ResponseWithResponse<T, R>,
+    condition: suspend (DataResult<T>) -> Boolean,
+    transform: ResponseTransform<T?, R?, X>
 ): ResponseLiveData<X> = responseLiveData(context = context) {
-    val (dispatcher, block) = transform
-    internalChainWith(other, condition)
-        .mapNotNull { (resultA, resultB) -> resultA + resultB }
-        .flowOn(dispatcher)
-        .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
-        .flowOn(context)
+    internalChainWith(
+        condition = { result -> result?.let { condition(it) } == true },
+        other = { result -> other.invoke(requireNotNull(result)) },
+    ).mapNotNull { (resultA, resultB) -> resultA + resultB }
+        .applyTransformation(context, transform)
         .collect(::emit)
 }
 
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.chainWith(
     context: CoroutineContext = EmptyCoroutineContext,
-    other: suspend (DataResult<T>?) -> ResponseLiveData<R>,
-    condition: suspend (DataResult<T>?) -> Boolean,
+    other: ResponseWithResponse<T, R>,
+    condition: suspend (DataResult<T>) -> Boolean,
+    transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>>
+): ResponseLiveData<X> = chainWith(
+    context = context,
+    other = other,
+    condition = condition,
+    transform = ResponseTransform.StatusFail(transform.first, transform.second)
+)
+
+@Experimental
+fun <T, R, X> ResponseLiveData<T>.chainWith(
+    context: CoroutineContext = EmptyCoroutineContext,
+    other: ResponseWithResponse<T, R>,
+    condition: suspend (DataResult<T>) -> Boolean,
     transform: suspend (DataResult<Pair<T?, R?>>) -> DataResult<X>
 ): ResponseLiveData<X> = chainWith(
     context = context,
@@ -248,10 +308,10 @@ fun <T, R, X> ResponseLiveData<T>.chainWith(
 @Experimental
 fun <T, R> ResponseLiveData<T>.chainNotNullWith(
     context: CoroutineContext = EmptyCoroutineContext,
-    other: suspend (DataResult<T>) -> ResponseLiveData<R>,
+    other: ResponseWithResponse<T, R>,
     condition: suspend (DataResult<T>) -> Boolean,
 ): ResponseLiveData<Pair<T, R>> = responseLiveData(context = context) {
-    internalChainNotNullWith(other, condition)
+    internalChainNotNullWith(other::invoke, condition)
         .mapNotNull { (resultA, resultB) -> (resultA + resultB).onlyWithValues() }
         .collect(::emit)
 }
@@ -259,23 +319,33 @@ fun <T, R> ResponseLiveData<T>.chainNotNullWith(
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.chainNotNullWith(
     context: CoroutineContext = EmptyCoroutineContext,
-    other: suspend (DataResult<T>) -> ResponseLiveData<R>,
+    other: ResponseWithResponse<T, R>,
+    condition: suspend (DataResult<T>) -> Boolean,
+    transform: ResponseTransform<T, R, X>
+): ResponseLiveData<X> = responseLiveData(context = context) {
+    internalChainNotNullWith(other::invoke, condition)
+        .mapNotNull { (resultA, resultB) -> (resultA + resultB).onlyWithValues() }
+        .applyTransformation(context, transform)
+        .collect(::emit)
+}
+
+@Experimental
+fun <T, R, X> ResponseLiveData<T>.chainNotNullWith(
+    context: CoroutineContext = EmptyCoroutineContext,
+    other: ResponseWithResponse<T, R>,
     condition: suspend (DataResult<T>) -> Boolean,
     transform: Pair<CoroutineDispatcher, suspend (DataResult<Pair<T, R>>) -> DataResult<X>>
-): ResponseLiveData<X> = responseLiveData(context = context) {
-    val (dispatcher, block) = transform
-    internalChainNotNullWith(other, condition)
-        .mapNotNull { (resultA, resultB) -> (resultA + resultB).onlyWithValues() }
-        .flowOn(dispatcher)
-        .mapNotNull { result -> runCatching { block(result) }.getOrElse(::dataResultError) }
-        .flowOn(context)
-        .collect(::emit)
-}
+): ResponseLiveData<X> = chainNotNullWith(
+    context = context,
+    other = other,
+    condition = condition,
+    transform = ResponseTransform.StatusFail(transform.first, transform.second)
+)
 
 @Experimental
 fun <T, R, X> ResponseLiveData<T>.chainNotNullWith(
     context: CoroutineContext = EmptyCoroutineContext,
-    other: suspend (DataResult<T>) -> ResponseLiveData<R>,
+    other: ResponseWithResponse<T, R>,
     condition: suspend (DataResult<T>) -> Boolean,
     transform: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
 ): ResponseLiveData<X> = chainNotNullWith(

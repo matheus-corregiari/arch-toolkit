@@ -114,6 +114,19 @@ class CombineNotNullTest {
                 coVerify(exactly = 0) { mockedObserver.invoke(any()) }
             }
         )
+
+    @Test
+    fun `14 - LiveData - initialized A B - combineNotNull - transform - exception - fallback`() =
+        executeCombineTransform(
+            liveDataA = MutableLiveData("String"),
+            liveDataB = MutableLiveData(123),
+            transformException = true,
+            useFallback = true,
+            block = { _, _, _, mockedObserver ->
+                coVerify(exactly = 1) { mockedObserver.invoke("fallback") }
+            }
+        )
+
     //endregion
 
     private fun `LiveData - not initialized - combineNotNull`(context: CoroutineContext?) =
@@ -192,6 +205,7 @@ class CombineNotNullTest {
         liveDataA: MutableLiveData<String>,
         liveDataB: MutableLiveData<Int>,
         transformException: Boolean = false,
+        useFallback: Boolean = false,
         block: suspend TestScope.(
             a: MutableLiveData<String>,
             b: MutableLiveData<Int>,
@@ -208,7 +222,14 @@ class CombineNotNullTest {
             if (transformException) error("") else "${it.invocation.args[0]}|${it.invocation.args[1]}"
         }
 
-        val liveDataC = liveDataA.combineNotNull(liveDataB, Dispatchers.Main.immediate to mockedTransform)
+        val liveDataC = liveDataA.combineNotNull(
+            other = liveDataB,
+            transform = Transform.NotNull.Fallback(
+                dispatcher = Dispatchers.Main,
+                func = mockedTransform,
+                onErrorReturn = if (useFallback) ({ "fallback" }) else null
+            )
+        )
         advanceUntilIdle()
         liveDataC.observe(alwaysOnOwner, mockedObserver)
         advanceUntilIdle()

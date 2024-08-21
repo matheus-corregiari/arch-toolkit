@@ -94,120 +94,125 @@ class ChainNotNullTest {
 
     //region Transform
     @Test
-    fun `15 - LiveData - not initialized - chainNotNullWith - transform`() = executechainNotNullWithTransform(
-        liveDataA = MutableLiveData<String>(),
-        liveDataB = MutableLiveData<Int>(),
-        block = { liveDataA, liveDataB, liveData, condition, transform, observer ->
-            coVerify(exactly = 0) { condition(any()) }
-            coVerify(exactly = 0) { liveData(any()) }
-            coVerify(exactly = 0) { transform(any(), any()) }
-            coVerify(exactly = 0) { observer(any()) }
+    fun `15 - LiveData - not initialized - chainNotNullWith - transform`() =
+        executechainNotNullWithTransform(
+            liveDataA = MutableLiveData<String>(),
+            liveDataB = MutableLiveData<Int>(),
+            block = { liveDataA, liveDataB, liveData, condition, transform, observer ->
+                coVerify(exactly = 0) { condition(any()) }
+                coVerify(exactly = 0) { liveData(any()) }
+                coVerify(exactly = 0) { transform(any(), any()) }
+                coVerify(exactly = 0) { observer(any()) }
 
-            liveDataA.value = null
-            advanceUntilIdle()
-            coVerify(exactly = 0) { condition(any()) }
-            coVerify(exactly = 0) { liveData(any()) }
-            coVerify(exactly = 0) { transform(any(), any()) }
-            coVerify(exactly = 0) { observer(any()) }
+                liveDataA.value = null
+                advanceUntilIdle()
+                coVerify(exactly = 0) { condition(any()) }
+                coVerify(exactly = 0) { liveData(any()) }
+                coVerify(exactly = 0) { transform(any(), any()) }
+                coVerify(exactly = 0) { observer(any()) }
 
-            liveDataB.value = null
-            advanceUntilIdle()
-            coVerify(exactly = 0) { condition(any()) }
-            coVerify(exactly = 0) { liveData(any()) }
-            coVerify(exactly = 0) { transform(any(), any()) }
-            coVerify(exactly = 0) { observer(any()) }
+                liveDataB.value = null
+                advanceUntilIdle()
+                coVerify(exactly = 0) { condition(any()) }
+                coVerify(exactly = 0) { liveData(any()) }
+                coVerify(exactly = 0) { transform(any(), any()) }
+                coVerify(exactly = 0) { observer(any()) }
 
-            liveDataA.value = "String"
-            advanceUntilIdle()
-            coVerify(exactly = 1) { condition("String") }
-            coVerify(exactly = 1) { liveData("String") }
-            coVerify(exactly = 0) { transform(any(), any()) }
-            coVerify(exactly = 0) { observer(any()) }
+                liveDataA.value = "String"
+                advanceUntilIdle()
+                coVerify(exactly = 1) { condition("String") }
+                coVerify(exactly = 1) { liveData("String") }
+                coVerify(exactly = 0) { transform(any(), any()) }
+                coVerify(exactly = 0) { observer(any()) }
 
-            liveDataB.value = 123
-            advanceUntilIdle()
-            coVerify(exactly = 1) { condition(any()) }
-            coVerify(exactly = 1) { liveData(any()) }
-            coVerify(exactly = 1) { transform("String", 123) }
-            coVerify(exactly = 1) { observer("String|123") }
+                liveDataB.value = 123
+                advanceUntilIdle()
+                coVerify(exactly = 1) { condition(any()) }
+                coVerify(exactly = 1) { liveData(any()) }
+                coVerify(exactly = 1) { transform("String", 123) }
+                coVerify(exactly = 1) { observer("String|123") }
 
-            liveDataA.value = null
-            advanceUntilIdle()
-            coVerify(exactly = 1) { condition(any()) }
-            coVerify(exactly = 1) { liveData(any()) }
-            coVerify(exactly = 1) { transform(any(), any()) }
-            coVerify(exactly = 1) { observer(any()) }
+                liveDataA.value = null
+                advanceUntilIdle()
+                coVerify(exactly = 1) { condition(any()) }
+                coVerify(exactly = 1) { liveData(any()) }
+                coVerify(exactly = 1) { transform(any(), any()) }
+                coVerify(exactly = 1) { observer(any()) }
 
-            liveDataB.value = null
-            advanceUntilIdle()
-            coVerify(exactly = 1) { condition(any()) }
-            coVerify(exactly = 1) { liveData(any()) }
-            coVerify(exactly = 1) { transform(any(), any()) }
-            coVerify(exactly = 1) { observer(any()) }
+                liveDataB.value = null
+                advanceUntilIdle()
+                coVerify(exactly = 1) { condition(any()) }
+                coVerify(exactly = 1) { liveData(any()) }
+                coVerify(exactly = 1) { transform(any(), any()) }
+                coVerify(exactly = 1) { observer(any()) }
 
-            liveDataB.value = 123
-            advanceUntilIdle()
-            coVerify(exactly = 1) { condition(any()) }
-            coVerify(exactly = 1) { liveData(any()) }
-            coVerify(exactly = 1) { transform(any(), any()) }
-            coVerify(exactly = 1) { observer(any()) }
+                liveDataB.value = 123
+                advanceUntilIdle()
+                coVerify(exactly = 1) { condition(any()) }
+                coVerify(exactly = 1) { liveData(any()) }
+                coVerify(exactly = 1) { transform(any(), any()) }
+                coVerify(exactly = 1) { observer(any()) }
 
-            liveDataA.value = "String"
-            advanceUntilIdle()
-            coVerify(exactly = 2) { condition("String") }
-            coVerify(exactly = 2) { liveData("String") }
-            coVerify(exactly = 2) { transform("String", 123) }
-            coVerify(exactly = 2) { observer("String|123") }
-        }
-    )
-
-    @Test
-    fun `16 - LiveData - initialized A - chainNotNullWith - transform`() = executechainNotNullWithTransform(
-        liveDataA = MutableLiveData<String>(null),
-        liveDataB = MutableLiveData<Int>(),
-        block = { _, _, liveData, condition, transform, observer ->
-            coVerify(exactly = 0) { condition(any()) }
-            coVerify(exactly = 0) { liveData(any()) }
-            coVerify(exactly = 0) { transform(any(), any()) }
-            coVerify(exactly = 0) { observer(any()) }
-        }
-    )
+                liveDataA.value = "String"
+                advanceUntilIdle()
+                coVerify(exactly = 2) { condition("String") }
+                coVerify(exactly = 2) { liveData("String") }
+                coVerify(exactly = 2) { transform("String", 123) }
+                coVerify(exactly = 2) { observer("String|123") }
+            }
+        )
 
     @Test
-    fun `17 - LiveData - initialized B - chainNotNullWith - transform`() = executechainNotNullWithTransform(
-        liveDataA = MutableLiveData<String>(),
-        liveDataB = MutableLiveData<Int>(null),
-        block = { _, _, liveData, condition, transform, observer ->
-            coVerify(exactly = 0) { condition(any()) }
-            coVerify(exactly = 0) { liveData(any()) }
-            coVerify(exactly = 0) { transform(any(), any()) }
-            coVerify(exactly = 0) { observer(any()) }
-        }
-    )
+    fun `16 - LiveData - initialized A - chainNotNullWith - transform`() =
+        executechainNotNullWithTransform(
+            liveDataA = MutableLiveData<String>(null),
+            liveDataB = MutableLiveData<Int>(),
+            block = { _, _, liveData, condition, transform, observer ->
+                coVerify(exactly = 0) { condition(any()) }
+                coVerify(exactly = 0) { liveData(any()) }
+                coVerify(exactly = 0) { transform(any(), any()) }
+                coVerify(exactly = 0) { observer(any()) }
+            }
+        )
 
     @Test
-    fun `18 - LiveData - initialized A B - chainNotNullWith - transform`() = executechainNotNullWithTransform(
-        liveDataA = MutableLiveData<String>(null),
-        liveDataB = MutableLiveData<Int>(null),
-        block = { _, _, liveData, condition, transform, observer ->
-            coVerify(exactly = 0) { condition(any()) }
-            coVerify(exactly = 0) { liveData(any()) }
-            coVerify(exactly = 0) { transform(any(), any()) }
-            coVerify(exactly = 0) { observer(any()) }
-        }
-    )
+    fun `17 - LiveData - initialized B - chainNotNullWith - transform`() =
+        executechainNotNullWithTransform(
+            liveDataA = MutableLiveData<String>(),
+            liveDataB = MutableLiveData<Int>(null),
+            block = { _, _, liveData, condition, transform, observer ->
+                coVerify(exactly = 0) { condition(any()) }
+                coVerify(exactly = 0) { liveData(any()) }
+                coVerify(exactly = 0) { transform(any(), any()) }
+                coVerify(exactly = 0) { observer(any()) }
+            }
+        )
 
     @Test
-    fun `19 - LiveData - initialized A B - chainNotNullWith - transform`() = executechainNotNullWithTransform(
-        liveDataA = MutableLiveData<String>("String"),
-        liveDataB = MutableLiveData<Int>(123),
-        block = { _, _, liveData, condition, transform, observer ->
-            coVerify(exactly = 1) { condition("String") }
-            coVerify(exactly = 1) { liveData("String") }
-            coVerify(exactly = 1) { transform("String", 123) }
-            coVerify(exactly = 1) { observer("String|123") }
-        }
-    )
+    fun `18 - LiveData - initialized A B - chainNotNullWith - transform`() =
+        executechainNotNullWithTransform(
+            liveDataA = MutableLiveData<String>(null),
+            liveDataB = MutableLiveData<Int>(null),
+            block = { _, _, liveData, condition, transform, observer ->
+                coVerify(exactly = 0) { condition(any()) }
+                coVerify(exactly = 0) { liveData(any()) }
+                coVerify(exactly = 0) { transform(any(), any()) }
+                coVerify(exactly = 0) { observer(any()) }
+            }
+        )
+
+    @Test
+    fun `19 - LiveData - initialized A B - chainNotNullWith - transform`() =
+        executechainNotNullWithTransform(
+            liveDataA = MutableLiveData<String>("String"),
+            liveDataB = MutableLiveData<Int>(123),
+            block = { _, _, liveData, condition, transform, observer ->
+                coVerify(exactly = 1) { condition("String") }
+                coVerify(exactly = 1) { liveData("String") }
+                coVerify(exactly = 1) { transform("String", 123) }
+                coVerify(exactly = 1) { observer("String|123") }
+            }
+        )
 
     @Test
     fun `20 - LiveData - initialized A B - chainNotNullWith - transform - exception condition`() =
@@ -238,7 +243,7 @@ class ChainNotNullTest {
         )
 
     @Test
-    fun `22 - LiveData - initialized A B - chainNotNullWith - transform - exception transform`() =
+    fun `22 - LiveData - initialized A B - chainNotNullWith - transform - exception transform - omit`() =
         executechainNotNullWithTransform(
             liveDataA = MutableLiveData<String>("String"),
             liveDataB = MutableLiveData<Int>(123),
@@ -248,6 +253,21 @@ class ChainNotNullTest {
                 coVerify(exactly = 1) { liveData("String") }
                 coVerify(exactly = 1) { transform("String", 123) }
                 coVerify(exactly = 0) { observer(any()) }
+            }
+        )
+
+    @Test
+    fun `23 - LiveData - initialized A B - chainNotNullWith - transform - exception transform - fallback`() =
+        executechainNotNullWithTransform(
+            liveDataA = MutableLiveData<String>("String"),
+            liveDataB = MutableLiveData<Int>(123),
+            transformException = true,
+            useFallback = true,
+            block = { _, _, liveData, condition, transform, observer ->
+                coVerify(exactly = 1) { condition("String") }
+                coVerify(exactly = 1) { liveData("String") }
+                coVerify(exactly = 1) { transform("String", 123) }
+                coVerify(exactly = 1) { observer("fallback") }
             }
         )
     //endregion
@@ -436,6 +456,7 @@ class ChainNotNullTest {
         conditionException: Boolean = false,
         liveDataException: Boolean = false,
         transformException: Boolean = false,
+        useFallback: Boolean = false,
         block: suspend TestScope.(
             a: MutableLiveData<String>,
             b: MutableLiveData<Int>,
@@ -469,7 +490,15 @@ class ChainNotNullTest {
             context = EmptyCoroutineContext,
             other = mockedLiveData,
             condition = mockedCondition,
-            transform = Dispatchers.Main to mockedTransform
+            transform = if (!useFallback) {
+                Transform.NotNull.OmitFail(Dispatchers.Main, mockedTransform)
+            } else {
+                Transform.NotNull.Fallback(
+                    dispatcher = Dispatchers.Main,
+                    func = mockedTransform,
+                    onErrorReturn = { "fallback" }
+                )
+            }
         )
         liveDataC.observe(alwaysOnOwner, mockedObserver)
         advanceUntilIdle()
