@@ -13,9 +13,6 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,46 +21,41 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 /* Operator Functions --------------------------------------------------------------------------- */
-
-/**
- * Combines two [LiveData] objects using the `+` operator.
- *
- * This function merges the emissions of two [LiveData] sources into a single [LiveData] object containing pairs of values.
- *
- * @param other The other [LiveData] to combine with this [LiveData].
- * @return A [LiveData] that emits pairs of values from both [LiveData] sources.
- *
- * ### Example Usage:
- * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
- * val combinedLiveData: LiveData<Pair<Int?, String?>> = liveData1 + liveData2
- * ```
- *
- * @see [combine]
- * @see [plus]
- */
 operator fun <T, R> LiveData<T>.plus(other: LiveData<R>) = combine(other = other)
 
-/* Regular Functions ---------------------------------------------------------------------------- */
-
+/* region Regular Functions --------------------------------------------------------------------- */
 /**
- * Combines two [LiveData] objects without using coroutines.
+ * Combines this [LiveData] with another [LiveData], allowing for nullable values, and emits pairs of their values.
  *
- * This function creates a [MediatorLiveData] that merges the emissions from two [LiveData] sources into a single [LiveData].
+ * @param other The other [LiveData] whose values (nullable) will be combined with this [LiveData].
+ * @return A [LiveData] emitting pairs of values from both [LiveData] sources, with nullability allowed.
  *
- * @param other The other [LiveData] to combine with.
- * @return A [LiveData] containing pairs of values from both [LiveData] sources.
+ * This method creates a [MediatorLiveData] that listens to both [LiveData] sources. Whenever either [LiveData] emits a value,
+ * the combined value is emitted as a pair. The method allows for nullable values, meaning either value in the resulting pair
+ * can be null. It also accounts for initial values if either [LiveData] was already initialized.
+ *
+ * ### Behavior:
+ * - The method uses `AtomicBoolean` flags to ignore the first emission from each [LiveData] if they were already initialized.
+ * - If either [LiveData] is initialized, the initial pair of values is emitted immediately.
+ * - Subsequent emissions occur whenever either [LiveData] emits a new value.
  *
  * ### Example Usage:
  * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
+ * val liveData1: LiveData<Int?> = MutableLiveData(1)
+ * val liveData2: LiveData<String?> = MutableLiveData("A")
  * val combinedLiveData: LiveData<Pair<Int?, String?>> = liveData1.combine(liveData2)
+ *
+ * combinedLiveData.observe(this, Observer { pair ->
+ *     println("Combined Value: ${pair.first}, ${pair.second}")
+ * })
  * ```
  *
- * @see [combineNotNull]
- * @see [plus]
+ * ### Error Handling:
+ * - If both values are null, the method emits a pair containing `null` for each value.
+ * - The method ensures that a pair is emitted only when there's a valid change, ignoring the first emission if it was already initialized.
+ *
+ * @param T The type of the value in this [LiveData].
+ * @param R The type of the value in the other [LiveData].
  */
 fun <T, R> LiveData<T>.combine(other: LiveData<R>): LiveData<Pair<T?, R?>> {
     val ignoreA = AtomicBoolean(isInitialized)
@@ -86,22 +78,37 @@ fun <T, R> LiveData<T>.combine(other: LiveData<R>): LiveData<Pair<T?, R?>> {
 }
 
 /**
- * Combines two [LiveData] objects, ensuring both are non-null.
+ * Combines this [LiveData] with another [LiveData], requiring non-nullable values, and emits pairs of their values.
  *
- * This function merges the emissions of two [LiveData] sources into a single [LiveData] only if both values are non-null.
+ * @param other The other [LiveData] whose non-nullable values will be combined with this [LiveData].
+ * @return A [LiveData] emitting pairs of non-nullable values from both [LiveData] sources.
  *
- * @param other The other [LiveData] to combine with.
- * @return A [LiveData] containing non-null pairs of values from both [LiveData] sources.
+ * This method creates a [MediatorLiveData] that listens to both [LiveData] sources and emits pairs of their values
+ * only when both values are non-null. If either value is null, the pair is not emitted. The method also accounts for
+ * initial values if either [LiveData] was already initialized and non-null.
+ *
+ * ### Behavior:
+ * - The method uses `AtomicBoolean` flags to ignore the first emission from each [LiveData] if they were already initialized.
+ * - If either [LiveData] is initialized with a non-null value, the initial pair of values is emitted immediately.
+ * - Subsequent emissions occur whenever either [LiveData] emits a new non-null value.
  *
  * ### Example Usage:
  * ```
  * val liveData1: LiveData<Int> = MutableLiveData(1)
  * val liveData2: LiveData<String> = MutableLiveData("A")
  * val combinedLiveData: LiveData<Pair<Int, String>> = liveData1.combineNotNull(liveData2)
+ *
+ * combinedLiveData.observe(this, Observer { pair ->
+ *     println("Combined Value: ${pair.first}, ${pair.second}")
+ * })
  * ```
  *
- * @see [combine]
- * @see [combineNotNull]
+ * ### Error Handling:
+ * - If either value is null, the pair is not emitted.
+ * - The method ensures that a pair is emitted only when both values are non-null and valid.
+ *
+ * @param T The type of the value in this [LiveData].
+ * @param R The type of the value in the other [LiveData].
  */
 fun <T, R> LiveData<T>.combineNotNull(other: LiveData<R>): LiveData<Pair<T, R>> {
     val ignoreA = AtomicBoolean(isInitialized)
@@ -125,27 +132,45 @@ fun <T, R> LiveData<T>.combineNotNull(other: LiveData<R>): LiveData<Pair<T, R>> 
     }
     return mediator
 }
+/* endregion ------------------------------------------------------------------------------------ */
 
-/* Coroutine Functions -------------------------------------------------------------------------- */
-
+/* region Nullable -------------------------------------------------------------------------- */
 /**
- * Combines two [LiveData] objects using coroutines.
+ * Combines this [LiveData] with another [LiveData], allowing for nullable values, and emits pairs of their values.
  *
- * This method allows you to merge two [LiveData] sources using a coroutine context, which is useful for asynchronous operations.
+ * @param context The [CoroutineContext] to use for the coroutine. This context dictates where the combination logic will be executed,
+ * such as on [Dispatchers.IO] for background operations or [Dispatchers.Main] for UI-related tasks.
+ * @param other The other [LiveData] whose values (nullable) will be combined with this [LiveData].
+ * @return A [LiveData] emitting pairs of values from both [LiveData] sources, with nullability allowed.
  *
- * @param context The [CoroutineContext] in which to perform the combination.
- * @param other The other [LiveData] to combine with.
- * @return A [LiveData] emitting pairs of values from both LiveData sources.
+ * This method is useful when you have two [LiveData] sources that you want to combine into a single [LiveData] emitting pairs of their values,
+ * and you need to account for possible null values in either [LiveData].
+ *
+ * ### Success Case:
+ * - When either this [LiveData] or the `other` [LiveData] emits a value (nullable or non-nullable),
+ * a pair of these values is emitted by the resulting [LiveData].
+ * - Both values in the pair can be nullable, reflecting the current states of the two [LiveData] sources.
  *
  * ### Example Usage:
  * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
- * val combinedLiveData: LiveData<Pair<Int?, String?>> = liveData1.combine(Dispatchers.IO, liveData2)
+ * val liveData1: LiveData<Int?> = MutableLiveData(1)
+ * val liveData2: LiveData<String?> = MutableLiveData(null)
+ * val combinedLiveData: LiveData<Pair<Int?, String?>> = liveData1.combine(
+ *     context = Dispatchers.IO,
+ *     other = liveData2
+ * )
+ *
+ * // Observing the resulting LiveData
+ * combinedLiveData.observe(this, Observer { pair ->
+ *     println("Combined Value: ${pair.first}, ${pair.second}")
+ * })
  * ```
  *
- * @see [combineNotNull]
- * @see [plus]
+ * ### Error Handling:
+ * - If either [LiveData] emits a null value, the combination still occurs, and a pair with one or both values as null is emitted.
+ *
+ * @param T The type of the value in this [LiveData].
+ * @param R The type of the value in the other [LiveData].
  */
 fun <T, R> LiveData<T>.combine(
     context: CoroutineContext,
@@ -153,67 +178,141 @@ fun <T, R> LiveData<T>.combine(
 ): LiveData<Pair<T?, R?>> = liveData(context) { internalCombine(other).collect(::emit) }
 
 /**
- * Combines two [LiveData] objects with a transformation function using coroutines.
+ * Combines this [LiveData] with another [LiveData], applies a transformation, and emits the transformed result, allowing for nullable values.
  *
- * This method merges two [LiveData] sources and applies a transformation function to the pair of values.
+ * @param context The [CoroutineContext] to use for the coroutine. This context determines where the combination and transformation logic
+ * will be executed, allowing you to control the threading model.
+ * @param other The other [LiveData] whose values (nullable) will be combined with this [LiveData].
+ * @param transform A [Transform.Nullable] object that contains the transformation logic, including the dispatcher on which the transformation
+ * will occur, the function to apply to the paired values, and optional error handling logic.
+ * @return A [LiveData] emitting the transformed values from the possibly nullable values of both [LiveData] sources.
  *
- * @param context The [CoroutineContext] in which to perform the combination.
- * @param other The other [LiveData] to combine with.
- * @param transform A pair of [CoroutineDispatcher] and a suspend function that transforms the pair of values.
- * @return A [LiveData] emitting the transformed values.
+ * This method is useful when you want to combine two [LiveData] sources and apply a custom transformation to their paired values,
+ * while handling nullable values appropriately. The transformation is performed asynchronously, and the method provides options
+ * for error handling through the [Transform.Nullable] object.
+ *
+ * ### Success Case:
+ * - When either this [LiveData] or the `other` [LiveData] emits a value (nullable or non-nullable),
+ * the `transform` function is applied to these values, and the resulting transformed value is emitted by the resulting [LiveData].
+ *
+ * ### Failure Case:
+ * - If both values are null, the method does not emit any value unless specifically handled by the `transform` function.
+ * - If the transformation function throws an exception and error handling is not provided, the method omits the emission for that combination.
+ *
+ * ### Transform Parameter:
+ * The `transform` parameter is an instance of [Transform.Nullable], allowing you to define how the possibly
+ * nullable values from the two [LiveData] sources are transformed and how errors are handled during the transformation.
+ *
+ * ### The `Transform.Nullable` class offers several variations:
+ * - **OmitFail**:
+ *      - **Description**: Omits the result when the transformation fails, without handling the error.
+ *      - **Constructor Parameters**:
+ *           - `dispatcher`: The [CoroutineDispatcher] on which the transformation will occur. Default is [Dispatchers.IO].
+ *           - `func`: The transformation function to apply to the paired non-nullable values.
+ *      - **Example**:
+ *   ```kotlin
+ *   val transform = Transform.Nullable.OmitFail(
+ *       dispatcher = Dispatchers.Default,
+ *       func = { intValue, stringValue -> "$intValue: $stringValue" }
+ *   )
+ *   ```
+ * - **NullFail**:
+ *      - **Description**: Emits `null` when the transformation fails, without handling the error.
+ *      - **Constructor Parameters**:
+ *           - `dispatcher`: The [CoroutineDispatcher] on which the transformation will occur. Default is [Dispatchers.IO].
+ *           - `func`: The transformation function to apply to the paired nullable values.
+ *      - **Example**:
+ *   ```kotlin
+ *   val transform = Transform.Nullable.NullFail(
+ *       dispatcher = Dispatchers.IO,
+ *       func = { intValue, stringValue -> "$intValue: $stringValue" }
+ *   )
+ *   ```
+ * - **Fallback**:
+ *       - **Description**: Omits the result when the transformation fails but provides a fallback value via `onErrorReturn`.
+ *       - **Constructor Parameters**:
+ *           - `dispatcher`: The [CoroutineDispatcher] on which the transformation will occur. Default is [Dispatchers.IO].
+ *           - `func`: The transformation function to apply to the paired nullable values.
+ *           - `onErrorReturn`: A function that handles errors during transformation, allowing you to provide an alternate result.
+ *      - **Example**:
+ *   ```kotlin
+ *   val transform = Transform.Nullable.Fallback(
+ *       dispatcher = Dispatchers.IO,
+ *       func = { intValue, stringValue -> "$intValue: $stringValue" },
+ *       onErrorReturn = { error -> "Error: ${error.message}" }
+ *   )
+ *   ```
+ * - **Custom**:
+ *      - **Description**: A customizable transformation that lets you define the dispatcher, fail mode,
+ *   transformation function, and optional error handling.
+ *      - **Constructor Parameters**:
+ *           - `dispatcher`: The [CoroutineDispatcher] on which the transformation will occur.
+ *           - `failMode`: Specifies how to handle failures during transformation. Options include:
+ *                - `OMIT_WHEN_FAIL`: Omits the emission if the transformation fails.
+ *                - `NULL_WHEN_FAIL`: Emits `null` if the transformation fails.
+ *           - `func`: The transformation function to apply to the paired nullable values.
+ *           - `onErrorReturn`: An optional function to handle errors during transformation.
+ *      - **Example**:
+ *   ```kotlin
+ *   val transform = Transform.Nullable.Custom(
+ *       dispatcher = Dispatchers.Default,
+ *       failMode = Transform.Mode.OMIT_WHEN_FAIL,
+ *       func = { intValue, stringValue -> "$intValue: $stringValue" },
+ *       onErrorReturn = { error -> "Error: ${error.message}" }
+ *   )
+ *   ```
  *
  * ### Example Usage:
  * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
- * val transformedLiveData: LiveData<String?> = liveData1.combine(Dispatchers.IO, liveData2) { a, b -> "$a$b" }
+ * // Example of combining two LiveData sources, applying a transformation, and handling nullable values
+ * val liveData1: LiveData<Int?> = MutableLiveData(1)
+ * val liveData2: LiveData<String?> = MutableLiveData(null)
+ * val transformedLiveData: LiveData<String?> = liveData1.combine(
+ *     context = Dispatchers.IO,
+ *     other = liveData2,
+ *     transform = Transform.Nullable.NullFail(
+ *         func = { intValue, stringValue -> "$intValue: $stringValue" }
+ *     )
+ * )
+ *
+ * // Observing the resulting LiveData
+ * transformedLiveData.observe(this, Observer { result ->
+ *     println("Transformed Value: $result")
+ * })
  * ```
  *
- * @see [combine]
- * @see [combineNotNull]
+ * ### Error Handling:
+ * - If the transformation function throws an exception and `onErrorReturn` is provided, the fallback result is emitted.
+ * - If no error handling is provided, the emission is omitted for that combination.
+ * - Null values are handled according to the specified `failMode` in the `transform` parameter.
+ *
+ * @param T The type of the value in this [LiveData].
+ * @param R The type of the value in the other [LiveData].
+ * @param X The type of the value after applying the transformation.
+ */
+fun <T, R, X> LiveData<T>.combine(
+    context: CoroutineContext,
+    other: LiveData<R>,
+    transform: Transform.Nullable<T, R, X>
+): LiveData<X?> = liveData(context) {
+    internalCombine(other).applyTransformation(context, transform).collect(::emit)
+}
+
+/**
+ * @see LiveData.combine
  */
 fun <T, R, X> LiveData<T>.combine(
     context: CoroutineContext,
     other: LiveData<R>,
     transform: Pair<CoroutineDispatcher, suspend (T?, R?) -> X?>
-): LiveData<X?> = liveData(context) {
-    val (dispatcher, block) = transform
-    internalCombine(other)
-        .flowOn(dispatcher)
-        .map { (a, b) -> runCatching { block(a, b) }.let { it.getOrNull() to it.isFailure } }
-        .filter { (_, isFailure) -> isFailure.not() }
-        .map { (result, _) -> result }
-        .flowOn(context)
-        .collect(::emit)
-}
+): LiveData<X?> = combine(
+    context = context,
+    other = other,
+    transform = Transform.Nullable.OmitFail(transform.first, transform.second)
+)
 
 /**
- * Combines two [LiveData] objects with a transformation function using coroutines.
- *
- * @param context The [CoroutineContext] in which to perform the combination.
- * @param other The other [LiveData] to combine with.
- * @param transform A suspend function that transforms the pair of values.
- * @return A [LiveData] emitting the transformed values or `null` if the transformation fails.
- *
- * The transformation function is applied within the specified [CoroutineContext] and uses
- * `Dispatchers.IO` by default for the transformation process. If the [transform] function throws
- * an exception during its execution, the `LiveData` will simply omit the emission for that combination.
- *
- * Example usage:
- * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
- * val transformedLiveData: LiveData<String?> = liveData1.combine(Dispatchers.Main, liveData2) { a, b ->
- *     if (a != null && b != null) "$a$b" else null
- * }
- * ```
- *
- * In this example, the `combine` method merges `liveData1` and `liveData2`, and the transformation
- * function concatenates the values into a string. The result is a new `LiveData` that emits
- * `"1A"`.
- *
- * @see [LiveData.combine]
- * @see [LiveData.combineNotNull]
+ * @see LiveData.combine
  */
 fun <T, R, X> LiveData<T>.combine(
     context: CoroutineContext,
@@ -226,25 +325,19 @@ fun <T, R, X> LiveData<T>.combine(
 )
 
 /**
- * Combines two [LiveData] objects with a transformation function and an optional [CoroutineContext].
- *
- * @param other The other [LiveData] to combine with.
- * @param transform A pair consisting of a [CoroutineDispatcher] and a suspend function that transforms the pair of nullable values.
- * @return A [LiveData] emitting the transformed nullable values.
- *
- * This method combines two `LiveData` sources, where either or both may emit nullable values, and applies the provided transformation function.
- * The transformation function is executed within the specified [CoroutineDispatcher], and the combination is handled in the provided
- * [CoroutineContext] or `EmptyCoroutineContext` by default. If the transformation function throws an exception, the emission for that
- * combination is omitted, allowing the flow to continue without interruption.
- *
- * Example usage:
- * ```
- * val liveData1: LiveData<Int?> = MutableLiveData(1)
- * val liveData2: LiveData<String?> = MutableLiveData("A")
- * val transformedLiveData: LiveData<String?> = liveData1.combine(liveData2, Dispatchers.Default to { a, b -> "$a$b" })
- * ```
- *
- * @see combine
+ * @see LiveData.combine
+ */
+fun <T, R, X> LiveData<T>.combine(
+    other: LiveData<R>,
+    transform: Transform.Nullable<T, R, X>
+): LiveData<X?> = combine(
+    context = EmptyCoroutineContext,
+    other = other,
+    transform = transform
+)
+
+/**
+ * @see LiveData.combine
  */
 fun <T, R, X> LiveData<T>.combine(
     other: LiveData<R>,
@@ -256,24 +349,7 @@ fun <T, R, X> LiveData<T>.combine(
 )
 
 /**
- * Combines two [LiveData] objects with a transformation function using a default [CoroutineDispatcher].
- *
- * @param other The other [LiveData] to combine with.
- * @param transform A suspend function that transforms the pair of nullable values.
- * @return A [LiveData] emitting the transformed nullable values.
- *
- * This method combines two `LiveData` sources, where either or both may emit nullable values, and applies the provided transformation function.
- * The transformation is executed on the default [CoroutineDispatcher] (`Dispatchers.IO`). If the transformation function throws an exception,
- * the emission for that combination is omitted, allowing the flow to continue without interruption.
- *
- * Example usage:
- * ```
- * val liveData1: LiveData<Int?> = MutableLiveData(1)
- * val liveData2: LiveData<String?> = MutableLiveData("A")
- * val transformedLiveData: LiveData<String?> = liveData1.combine(liveData2) { a, b -> "$a$b" }
- * ```
- *
- * @see combine
+ * @see LiveData.combine
  */
 fun <T, R, X> LiveData<T>.combine(
     other: LiveData<R>,
@@ -282,25 +358,44 @@ fun <T, R, X> LiveData<T>.combine(
     other = other,
     transform = Dispatchers.IO to transform
 )
+/* endregion ------------------------------------------------------------------------------------ */
 
+/* region Non Nullable -------------------------------------------------------------------------- */
 /**
- * Combines two non-null [LiveData] objects using coroutines.
+ * Combines this [LiveData] with another non-nullable [LiveData] and emits a pair of their values.
  *
- * This method merges two [LiveData] sources, ensuring that both are non-null, using a coroutine context.
+ * @param context The [CoroutineContext] to use for the coroutine. This context dictates where the combination logic will be executed, such as
+ * on [Dispatchers.IO] for background operations or [Dispatchers.Main] for UI-related tasks.
+ * @param other The other [LiveData] whose non-nullable values will be combined with this [LiveData].
+ * @return A [LiveData] emitting pairs of non-nullable values from both [LiveData] sources.
  *
- * @param context The [CoroutineContext] in which to perform the combination.
- * @param other The other [LiveData] to combine with.
- * @return A [LiveData] emitting pairs of non-null values from both LiveData sources.
+ * This method is useful when you have two [LiveData] sources that you want to combine into a single [LiveData] emitting pairs of their values.
+ * It ensures that both [LiveData] sources emit non-null values before combining and emitting the result.
+ *
+ * ### Success Case:
+ * - When both this [LiveData] and the `other` [LiveData] emit non-null values, a pair of these values is emitted by the resulting [LiveData].
+ *
+ * ### Failure Case:
+ * - If either this [LiveData] or the `other` [LiveData] emits a null value, the method does not emit any value for that emission.
+ * - No combination is performed if either [LiveData] is in a null state, ensuring that only non-null pairs are emitted.
  *
  * ### Example Usage:
  * ```
  * val liveData1: LiveData<Int> = MutableLiveData(1)
  * val liveData2: LiveData<String> = MutableLiveData("A")
- * val combinedLiveData: LiveData<Pair<Int, String>> = liveData1.combineNotNull(Dispatchers.IO, liveData2)
+ * val combinedLiveData: LiveData<Pair<Int, String>> = liveData1.combineNotNull(
+ *     context = Dispatchers.IO,
+ *     other = liveData2
+ * )
+ *
+ * // Observing the resulting LiveData
+ * combinedLiveData.observe(this, Observer { pair ->
+ *     println("Combined Value: ${pair.first}, ${pair.second}")
+ * })
  * ```
  *
- * @see [combine]
- * @see [plus]
+ * @param T The type of the value in this [LiveData].
+ * @param R The type of the value in the other [LiveData].
  */
 fun <T, R> LiveData<T>.combineNotNull(
     context: CoroutineContext,
@@ -308,77 +403,109 @@ fun <T, R> LiveData<T>.combineNotNull(
 ): LiveData<Pair<T, R>> = liveData(context) { internalCombineNotNull(other).collect(::emit) }
 
 /**
- * Combines two non-null [LiveData] objects with a transformation function using coroutines.
+ * Combines this [LiveData] with another non-nullable [LiveData], applies a transformation, and emits the transformed result.
  *
- * @param context The [CoroutineContext] in which to perform the combination.
- * @param other The other [LiveData] to combine with.
- * @param transform A pair consisting of a [CoroutineDispatcher] and a suspend function that transforms the pair of non-null values.
- * @return A [LiveData] emitting the transformed non-null values.
+ * @param context The [CoroutineContext] to use for the coroutine. This context determines where the combination and transformation logic
+ * will be executed, allowing you to control the threading model.
+ * @param other The other [LiveData] whose non-nullable values will be combined with this [LiveData].
+ * @param transform A [Transform.NotNull] object that contains the transformation logic, including the dispatcher on which the transformation
+ * will occur, the function to apply to the paired values, and optional error handling logic.
+ * @return A [LiveData] emitting the transformed values from the non-nullable values of both [LiveData] sources.
  *
- * This method ensures that both [LiveData] sources emit non-null values before applying the transformation function.
- * The transformation function is applied in the specified [CoroutineDispatcher] and the flow is managed within the
- * provided [CoroutineContext]. If the transformation function throws an exception, the `LiveData` will simply omit
- * the emission for that combination.
+ * This method is useful when you want to combine two non-nullable [LiveData] sources and apply a custom transformation to their paired values.
+ * The transformation is performed asynchronously, and the method provides options for error handling through the [Transform.NotNull] object.
  *
- * Example usage:
+ * ### Success Case:
+ * - When both this [LiveData] and the `other` [LiveData] emit non-null values, the `transform` function is applied to these values,
+ * and the resulting transformed value is emitted by the resulting [LiveData].
+ *
+ * ### Failure Case:
+ * - If either this [LiveData] or the `other` [LiveData] emits a null value, the method does not emit any value for that emission.
+ * - If the transformation function throws an exception and error handling is not provided, the method omits the emission for that combination.
+ *
+ * ### Transform Parameter:
+ * The `transform` parameter is an instance of [Transform.NotNull], allowing you to define how the values from the two [LiveData]
+ * sources are transformed and how errors are handled during the transformation.
+ *
+ * ### The [Transform.NotNull] class offers several variations:
+ * - **OmitFail**:
+ *      - **Description**: Transforms the values and omits the emission if the transformation fails.
+ *      - **Constructor Parameters**:
+ *           - `dispatcher`: The [CoroutineDispatcher] on which the transformation will occur. Default is [Dispatchers.IO].
+ *           - `func`: The transformation function to apply to the paired non-nullable values.
+ *      - **Example**:
+ *   ```kotlin
+ *   val transform = Transform.NotNull.OmitFail(
+ *       dispatcher = Dispatchers.Default,
+ *       func = { intValue, stringValue -> "$intValue: $stringValue" }
+ *   )
+ *   ```
+ * - **Fallback**:
+ *      - **Description**: Transforms the values and applies a fallback function if the transformation fails.
+ *      - **Constructor Parameters**:
+ *           - `dispatcher`: The [CoroutineDispatcher] on which the transformation will occur. Default is [Dispatchers.IO].
+ *           - `func`: The transformation function to apply to the paired non-nullable values.
+ *           - `onErrorReturn`: A function that handles errors during transformation, allowing you to provide an alternate result.
+ *      - **Example**:
+ *   ```kotlin
+ *   val transform = Transform.NotNull.Fallback(
+ *       dispatcher = Dispatchers.IO,
+ *       func = { intValue, stringValue -> "$intValue: $stringValue" },
+ *       onErrorReturn = { error -> "Error: ${error.message}" }
+ *   )
+ *   ```
+ *
+ * ### Example Usage:
  * ```
+ * // Example of combining two LiveData sources, applying a transformation, and handling errors
  * val liveData1: LiveData<Int> = MutableLiveData(1)
  * val liveData2: LiveData<String> = MutableLiveData("A")
- * val transformedLiveData: LiveData<String> = liveData1.combineNotNull(Dispatchers.Main, liveData2, Dispatchers.IO to { a, b ->
- *     "$a$b"
+ * val transformedLiveData: LiveData<String> = liveData1.combineNotNull(
+ *     context = Dispatchers.IO,
+ *     other = liveData2,
+ *     transform = Transform.NotNull.OmitFail(
+ *         func = { intValue, stringValue -> "$intValue: $stringValue" }
+ *     )
+ * )
+ *
+ * // Observing the resulting LiveData
+ * transformedLiveData.observe(this, Observer { result ->
+ *     println("Transformed Value: $result")
  * })
  * ```
  *
- * In this example, `liveData1` and `liveData2` are combined only if both emit non-null values.
- * The transformation function concatenates the two values, resulting in `"1A"` being emitted by `transformedLiveData`.
+ * ### Error Handling:
+ * - If the transformation function throws an exception and `onErrorReturn` is provided, the fallback result is emitted.
+ * - If no error handling is provided, the emission is omitted for that combination.
+ * - Null values in either [LiveData] are ignored, ensuring that the combination only occurs for non-null values.
  *
- * @see [LiveData.combine]
- * @see [LiveData.combineNotNull]
- * @see [LiveData.combineNotNull]
+ * @param T The type of the value in this [LiveData].
+ * @param R The type of the value in the other [LiveData].
+ * @param X The type of the value after applying the transformation.
+ */
+fun <T, R, X> LiveData<T>.combineNotNull(
+    context: CoroutineContext,
+    other: LiveData<R>,
+    transform: Transform.NotNull<T, R, X>
+): LiveData<X> = liveData(context) {
+    internalCombineNotNull(other).applyTransformation(context, transform).collect(::emit)
+}
+
+/**
+ * @see LiveData.combineNotNull
  */
 fun <T, R, X> LiveData<T>.combineNotNull(
     context: CoroutineContext,
     other: LiveData<R>,
     transform: Pair<CoroutineDispatcher, suspend (T, R) -> X>
-): LiveData<X> = liveData(context) {
-    val (dispatcher, block) = transform
-    internalCombineNotNull(other)
-        .flowOn(dispatcher)
-        .map { (a, b) -> runCatching { block(a, b) }.let { it.getOrNull() to it.isFailure } }
-        .filter { (_, isFailure) -> isFailure.not() }
-        .mapNotNull { (result, _) -> result }
-        .flowOn(context)
-        .collect(::emit)
-}
+): LiveData<X> = combineNotNull(
+    context = context,
+    other = other,
+    transform = Transform.NotNull.OmitFail(transform.first, transform.second)
+)
 
 /**
- * Combines two non-null [LiveData] objects with a transformation function using coroutines.
- *
- * @param context The [CoroutineContext] in which to perform the combination.
- * @param other The other [LiveData] to combine with.
- * @param transform A suspend function that transforms the pair of non-null values.
- * @return A [LiveData] emitting the transformed non-null values.
- *
- * This method ensures that both [LiveData] sources emit non-null values before applying the transformation function.
- * The transformation function is applied in the specified [CoroutineContext] using `Dispatchers.IO` by default for
- * the transformation process. If the [transform] function throws an exception during its execution, the `LiveData`
- * will simply omit the emission for that combination.
- *
- * Example usage:
- * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
- * val transformedLiveData: LiveData<String> = liveData1.combineNotNull(Dispatchers.Main, liveData2) { a, b ->
- *     "$a$b"
- * }
- * ```
- *
- * In this example, the `combineNotNull` method merges `liveData1` and `liveData2`, applying the transformation function
- * to concatenate the non-null values. The result is `"1A"` being emitted by `transformedLiveData`.
- *
- * @see [LiveData.combine]
- * @see [LiveData.combineNotNull]
- * @see [LiveData.combineNotNull]
+ * @see LiveData.combineNotNull
  */
 fun <T, R, X> LiveData<T>.combineNotNull(
     context: CoroutineContext,
@@ -391,25 +518,19 @@ fun <T, R, X> LiveData<T>.combineNotNull(
 )
 
 /**
- * Combines two non-null [LiveData] objects with a transformation function and an optional [CoroutineContext].
- *
- * @param other The other [LiveData] to combine with.
- * @param transform A pair consisting of a [CoroutineDispatcher] and a suspend function that transforms the pair of non-null values.
- * @return A [LiveData] emitting the transformed non-null values.
- *
- * This method combines two `LiveData` sources, ensuring that both emit non-null values before applying the transformation function.
- * The transformation function is executed within the specified [CoroutineDispatcher], and the combination is handled in the provided
- * [CoroutineContext] or `EmptyCoroutineContext` by default. If the transformation function throws an exception, the emission for that
- * combination is omitted, allowing the flow to continue without interruption.
- *
- * Example usage:
- * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
- * val transformedLiveData: LiveData<String> = liveData1.combineNotNull(liveData2, Dispatchers.Default to { a, b -> "$a$b" })
- * ```
- *
- * @see combineNotNull
+ * @see LiveData.combineNotNull
+ */
+fun <T, R, X> LiveData<T>.combineNotNull(
+    other: LiveData<R>,
+    transform: Transform.NotNull<T, R, X>
+): LiveData<X> = combineNotNull(
+    context = EmptyCoroutineContext,
+    other = other,
+    transform = transform
+)
+
+/**
+ * @see LiveData.combineNotNull
  */
 fun <T, R, X> LiveData<T>.combineNotNull(
     other: LiveData<R>,
@@ -421,24 +542,7 @@ fun <T, R, X> LiveData<T>.combineNotNull(
 )
 
 /**
- * Combines two non-null [LiveData] objects with a transformation function using a default [CoroutineDispatcher].
- *
- * @param other The other [LiveData] to combine with.
- * @param transform A suspend function that transforms the pair of non-null values.
- * @return A [LiveData] emitting the transformed non-null values.
- *
- * This method combines two `LiveData` sources, ensuring that both emit non-null values before applying the transformation function.
- * The transformation is executed on the default [CoroutineDispatcher] (`Dispatchers.IO`). If the transformation function throws an exception,
- * the emission for that combination is omitted, allowing the flow to continue without interruption.
- *
- * Example usage:
- * ```
- * val liveData1: LiveData<Int> = MutableLiveData(1)
- * val liveData2: LiveData<String> = MutableLiveData("A")
- * val transformedLiveData: LiveData<String> = liveData1.combineNotNull(liveData2) { a, b -> "$a$b" }
- * ```
- *
- * @see combineNotNull
+ * @see LiveData.combineNotNull
  */
 fun <T, R, X> LiveData<T>.combineNotNull(
     other: LiveData<R>,
@@ -447,9 +551,9 @@ fun <T, R, X> LiveData<T>.combineNotNull(
     other = other,
     transform = Dispatchers.IO to transform
 )
+/* endregion ------------------------------------------------------------------------------------ */
 
-/* Auxiliary Functions -------------------------------------------------------------------------- */
-
+/* region Auxiliary Functions ------------------------------------------------------------------- */
 internal suspend inline fun <T, R> LiveData<T>.internalCombineNotNull(other: LiveData<R>) =
     internalCombine(other).mapNotNull { it.onlyWithValues() }
 
@@ -464,3 +568,4 @@ internal suspend inline fun <T, R> LiveData<T>.internalCombine(other: LiveData<R
         cFlow.collect(::trySend)
     }
 }
+/* endregion ------------------------------------------------------------------------------------ */

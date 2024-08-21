@@ -238,7 +238,7 @@ class ChainTest {
         )
 
     @Test
-    fun `22 - LiveData - initialized A B - chainWith - transform - exception transform`() =
+    fun `22 - LiveData - initialized A B - chainWith - transform - exception transform - omit`() =
         executeChainWithTransform(
             liveDataA = MutableLiveData<String>("String"),
             liveDataB = MutableLiveData<Int>(123),
@@ -248,6 +248,36 @@ class ChainTest {
                 coVerify(exactly = 1) { liveData("String") }
                 coVerify(exactly = 1) { transform("String", 123) }
                 coVerify(exactly = 0) { observer(any()) }
+            }
+        )
+
+    @Test
+    fun `23 - LiveData - initialized A B - chainWith - transform - exception transform - null`() =
+        executeChainWithTransform(
+            liveDataA = MutableLiveData<String>("String"),
+            liveDataB = MutableLiveData<Int>(123),
+            transformException = true,
+            failMode = Transform.Mode.NULL_WHEN_FAIL,
+            block = { _, _, liveData, condition, transform, observer ->
+                coVerify(exactly = 1) { condition("String") }
+                coVerify(exactly = 1) { liveData("String") }
+                coVerify(exactly = 1) { transform("String", 123) }
+                coVerify(exactly = 1) { observer(null) }
+            }
+        )
+
+    @Test
+    fun `24 - LiveData - initialized A B - chainWith - transform - exception transform - fallback`() =
+        executeChainWithTransform(
+            liveDataA = MutableLiveData<String>("String"),
+            liveDataB = MutableLiveData<Int>(123),
+            transformException = true,
+            useFallback = true,
+            block = { _, _, liveData, condition, transform, observer ->
+                coVerify(exactly = 1) { condition("String") }
+                coVerify(exactly = 1) { liveData("String") }
+                coVerify(exactly = 1) { transform("String", 123) }
+                coVerify(exactly = 1) { observer("fallback") }
             }
         )
     //endregion
@@ -436,6 +466,8 @@ class ChainTest {
         conditionException: Boolean = false,
         liveDataException: Boolean = false,
         transformException: Boolean = false,
+        useFallback: Boolean = false,
+        failMode: Transform.Mode = Transform.Mode.OMIT_WHEN_FAIL,
         block: suspend TestScope.(
             a: MutableLiveData<String>,
             b: MutableLiveData<Int>,
@@ -469,7 +501,12 @@ class ChainTest {
             context = EmptyCoroutineContext,
             other = mockedLiveData,
             condition = mockedCondition,
-            transform = Dispatchers.Main to mockedTransform
+            transform = Transform.Nullable.Custom(
+                dispatcher = Dispatchers.Main,
+                failMode = failMode,
+                func = mockedTransform,
+                onErrorReturn = if (useFallback) ({ "fallback" }) else null
+            )
         )
         liveDataC.observe(alwaysOnOwner, mockedObserver)
         advanceUntilIdle()

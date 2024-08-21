@@ -105,14 +105,39 @@ class CombineTest {
     )
 
     @Test
-    fun `13 - LiveData - initialized A B - combine - transform - exception`() = executeCombineTransform(
-        liveDataA = MutableLiveData("String"),
-        liveDataB = MutableLiveData(123),
-        transformException = true,
-        block = { _, _, _, mockedObserver ->
-            coVerify(exactly = 0) { mockedObserver.invoke(any()) }
-        }
-    )
+    fun `13 - LiveData - initialized A B - combine - transform - exception - omit`() =
+        executeCombineTransform(
+            liveDataA = MutableLiveData("String"),
+            liveDataB = MutableLiveData(123),
+            transformException = true,
+            block = { _, _, _, mockedObserver ->
+                coVerify(exactly = 0) { mockedObserver.invoke(any()) }
+            }
+        )
+
+    @Test
+    fun `14 - LiveData - initialized A B - combine - transform - exception - null`() =
+        executeCombineTransform(
+            liveDataA = MutableLiveData("String"),
+            liveDataB = MutableLiveData(123),
+            failMode = Transform.Mode.NULL_WHEN_FAIL,
+            transformException = true,
+            block = { _, _, _, mockedObserver ->
+                coVerify(exactly = 1) { mockedObserver.invoke(null) }
+            }
+        )
+
+    @Test
+    fun `15 - LiveData - initialized A B - combine - transform - exception - fallback`() =
+        executeCombineTransform(
+            liveDataA = MutableLiveData("String"),
+            liveDataB = MutableLiveData(123),
+            transformException = true,
+            useFallback = true,
+            block = { _, _, _, mockedObserver ->
+                coVerify(exactly = 1) { mockedObserver.invoke("fallback") }
+            }
+        )
     //endregion
 
     private fun `LiveData - not initialized - combine`(context: CoroutineContext?) = executeCombine(
@@ -187,6 +212,8 @@ class CombineTest {
         liveDataA: MutableLiveData<String>,
         liveDataB: MutableLiveData<Int>,
         transformException: Boolean = false,
+        useFallback: Boolean = false,
+        failMode: Transform.Mode = Transform.Mode.OMIT_WHEN_FAIL,
         block: suspend TestScope.(
             a: MutableLiveData<String>,
             b: MutableLiveData<Int>,
@@ -203,7 +230,15 @@ class CombineTest {
             if (transformException) error("") else "${it.invocation.args[0]}|${it.invocation.args[1]}"
         }
 
-        val liveDataC = liveDataA.combine(liveDataB, Dispatchers.Main to mockedTransform)
+        val liveDataC = liveDataA.combine(
+            other = liveDataB,
+            transform = Transform.Nullable.Custom(
+                dispatcher = Dispatchers.Main,
+                failMode = failMode,
+                func = mockedTransform,
+                onErrorReturn = if (useFallback) ({ "fallback" }) else null
+            )
+        )
         liveDataC.observe(alwaysOnOwner, mockedObserver)
         advanceUntilIdle()
         block(liveDataA, liveDataB, mockedTransform, mockedObserver)
