@@ -3,9 +3,9 @@
 android_plugin = "8.5.2"
 detekt = "1.23.3"
 ktlint = "11.6.1"
-jetbrains-kotlin = "2.0.10"
+jetbrains-kotlin = "2.0.20"
 jetbrains-kover = "0.7.4"
-google-ksp = "2.0.10-1.0.24"
+google-ksp = "2.0.20-1.0.24"
 pedrinho_publish = "0.0.2"
 dexcount = "4.0.0"
 
