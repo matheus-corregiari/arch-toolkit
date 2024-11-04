@@ -359,84 +359,13 @@ fun <T, R> LiveData<T>.chainWith(
  * @param X The type of the value after transformation.
  */
 fun <T, R, X> LiveData<T>.chainWith(
-    context: CoroutineContext,
+    context: CoroutineContext = EmptyCoroutineContext,
     other: suspend (T?) -> LiveData<R>,
     condition: suspend (T?) -> Boolean,
     transform: Transform.Nullable<T, R, X>
 ): LiveData<X?> = liveData(context) {
     internalChainWith(other, condition).applyTransformation(context, transform).collect(::emit)
 }
-
-/**
- * @see LiveData.chainWith
- */
-fun <T, R, X> LiveData<T>.chainWith(
-    context: CoroutineContext,
-    other: suspend (T?) -> LiveData<R>,
-    condition: suspend (T?) -> Boolean,
-    transform: Pair<CoroutineDispatcher, suspend (T?, R?) -> X?>
-): LiveData<X?> = chainWith(
-    context = context,
-    other = other,
-    condition = condition,
-    transform = Transform.Nullable.OmitFail(transform.first, transform.second)
-)
-
-/**
- * @see LiveData.chainWith
- */
-fun <T, R, X> LiveData<T>.chainWith(
-    context: CoroutineContext,
-    other: suspend (T?) -> LiveData<R>,
-    condition: suspend (T?) -> Boolean,
-    transform: suspend (T?, R?) -> X?
-): LiveData<X?> = chainWith(
-    context = context,
-    other = other,
-    condition = condition,
-    transform = Dispatchers.IO to transform
-)
-
-/**
- * @see LiveData.chainWith
- */
-fun <T, R, X> LiveData<T>.chainWith(
-    other: suspend (T?) -> LiveData<R>,
-    condition: suspend (T?) -> Boolean,
-    transform: Transform.Nullable<T, R, X>
-): LiveData<X?> = chainWith(
-    context = EmptyCoroutineContext,
-    other = other,
-    condition = condition,
-    transform = transform
-)
-
-/**
- * @see LiveData.chainWith
- */
-fun <T, R, X> LiveData<T>.chainWith(
-    other: suspend (T?) -> LiveData<R>,
-    condition: suspend (T?) -> Boolean,
-    transform: Pair<CoroutineDispatcher, suspend (T?, R?) -> X?>
-): LiveData<X?> = chainWith(
-    context = EmptyCoroutineContext,
-    other = other,
-    condition = condition,
-    transform = transform
-)
-
-/**
- * @see LiveData.chainWith
- */
-fun <T, R, X> LiveData<T>.chainWith(
-    other: suspend (T?) -> LiveData<R>,
-    condition: suspend (T?) -> Boolean,
-    transform: suspend (T?, R?) -> X?
-): LiveData<X?> = chainWith(
-    other = other,
-    condition = condition,
-    transform = Dispatchers.IO to transform
-)
 /* endregion ------------------------------------------------------------------------------------ */
 
 /* region Non Nullable -------------------------------------------------------------------------- */
@@ -591,7 +520,7 @@ fun <T, R> LiveData<T>.chainNotNullWith(
  * @param X The type of the value after applying the transformation.
  */
 fun <T, R, X> LiveData<T>.chainNotNullWith(
-    context: CoroutineContext,
+    context: CoroutineContext = EmptyCoroutineContext,
     other: suspend (T) -> LiveData<R>,
     condition: suspend (T) -> Boolean,
     transform: Transform.NotNull<T, R, X>
@@ -600,81 +529,10 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
         .applyTransformation(context, transform)
         .collect(::emit)
 }
-
-/**
- * @see LiveData.chainNotNullWith
- */
-fun <T, R, X> LiveData<T>.chainNotNullWith(
-    context: CoroutineContext,
-    other: suspend (T) -> LiveData<R>,
-    condition: suspend (T) -> Boolean,
-    transform: Pair<CoroutineDispatcher, suspend (T, R) -> X>
-): LiveData<X> = chainNotNullWith(
-    context = context,
-    other = other,
-    condition = condition,
-    transform = Transform.NotNull.OmitFail(transform.first, transform.second)
-)
-
-/**
- * @see LiveData.chainNotNullWith
- */
-fun <T, R, X> LiveData<T>.chainNotNullWith(
-    context: CoroutineContext,
-    other: suspend (T) -> LiveData<R>,
-    condition: suspend (T) -> Boolean,
-    transform: suspend (T, R) -> X
-): LiveData<X> = chainNotNullWith(
-    context = context,
-    other = other,
-    condition = condition,
-    transform = Dispatchers.IO to transform
-)
-
-/**
- * @see LiveData.chainNotNullWith
- */
-fun <T, R, X> LiveData<T>.chainNotNullWith(
-    other: suspend (T) -> LiveData<R>,
-    condition: suspend (T) -> Boolean,
-    transform: Transform.NotNull<T, R, X>
-): LiveData<X> = chainNotNullWith(
-    context = EmptyCoroutineContext,
-    other = other,
-    condition = condition,
-    transform = transform
-)
-
-/**
- * @see LiveData.chainNotNullWith
- */
-fun <T, R, X> LiveData<T>.chainNotNullWith(
-    other: suspend (T) -> LiveData<R>,
-    condition: suspend (T) -> Boolean,
-    transform: Pair<CoroutineDispatcher, suspend (T, R) -> X>
-): LiveData<X> = chainNotNullWith(
-    context = EmptyCoroutineContext,
-    other = other,
-    condition = condition,
-    transform = transform
-)
-
-/**
- * @see LiveData.chainNotNullWith
- */
-fun <T, R, X> LiveData<T>.chainNotNullWith(
-    other: suspend (T) -> LiveData<R>,
-    condition: suspend (T) -> Boolean,
-    transform: suspend (T, R) -> X
-): LiveData<X> = chainNotNullWith(
-    other = other,
-    condition = condition,
-    transform = Dispatchers.IO to transform
-)
 /* endregion ------------------------------------------------------------------------------------ */
 
 /* region Auxiliary Functions ------------------------------------------------------------------- */
-internal suspend inline fun <T, R> LiveData<T>.internalChainNotNullWith(
+private suspend inline fun <T, R> LiveData<T>.internalChainNotNullWith(
     noinline other: suspend (T) -> LiveData<R>,
     noinline condition: suspend (T) -> Boolean,
 ) = internalChainWith(
@@ -682,7 +540,7 @@ internal suspend inline fun <T, R> LiveData<T>.internalChainNotNullWith(
     condition = { data -> data?.let { condition(it) } ?: false }
 ).mapNotNull { it.onlyWithValues() }
 
-internal suspend inline fun <T, R> LiveData<T>.internalChainWith(
+private suspend inline fun <T, R> LiveData<T>.internalChainWith(
     noinline other: suspend (T?) -> LiveData<R>,
     noinline condition: suspend (T?) -> Boolean,
 ) = channelFlow {

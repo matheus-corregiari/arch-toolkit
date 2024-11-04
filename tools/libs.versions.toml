@@ -14,7 +14,7 @@ build-sdk-target = "35"
 build-tools = "35.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "2.0.10"
+jetbrains-kotlin = "2.0.20"
 jetbrains-coroutines = "1.8.1"
 jetbrains-serialization = "1.6.3"
 jetbrains-kover = "0.7.4"
@@ -22,25 +22,25 @@ jetbrains-kover = "0.7.4"
 ## AndroidX
 androidx-appcompat = "1.7.0"
 androidx-annotation = "1.8.2"
-androidx-constraint = "2.2.0-alpha14"
+androidx-constraint = "2.2.0-beta01"
 androidx-recyclerview = "1.3.2"
-androidx-lifecycle = "2.8.4"
+androidx-lifecycle = "2.8.6"
 androidx-window = "1.3.0"
 androidx-splash = "1.0.1"
 androidx-security = "1.0.0"
-androidx-startup = "1.1.1"
+androidx-startup = "1.2.0"
 androidx-test-core = "2.2.0"
 androidx-test-junit = "1.2.1"
 androidx-test-espresso = "3.6.1"
 
 ## AndroidX Compose
 androidx-compose-compiler = "1.4.3"
-androidx-compose-material = "1.6.8"
-androidx-compose-material3 = "1.2.1"
+androidx-compose-material = "1.7.3"
+androidx-compose-material3 = "1.3.0"
 androidx-compose-constraint = "1.0.1"
-androidx-compose-core = "1.6.8"
-androidx-compose-lifecycle = "2.8.4"
-androidx-compose-activity = "1.9.1"
+androidx-compose-core = "1.7.3"
+androidx-compose-lifecycle = "2.8.6"
+androidx-compose-activity = "1.9.2"
 
 ## SquareUp
 square-retrofit = "2.9.0"
@@ -126,7 +126,7 @@ x-normalize-001 = { group = "androidx.activity", name = "activity", version.ref 
 x-normalize-002 = { group = "androidx.annotation", name = "annotation-experimental", version = "1.4.1" }
 x-normalize-003 = { group = "androidx.arch.core", name = "core-common", version = "2.2.0" }
 x-normalize-004 = { group = "androidx.arch.core", name = "core-runtime", version = "2.2.0" }
-x-normalize-005 = { group = "androidx.collection", name = "collection", version = "1.4.3" }
+x-normalize-005 = { group = "androidx.collection", name = "collection", version = "1.4.4" }
 x-normalize-006 = { group = "androidx.core", name = "core", version = "1.13.1" }
 x-normalize-007 = { group = "androidx.core", name = "core-ktx", version = "1.13.1" }
 x-normalize-008 = { group = "androidx.customview", name = "customview", version = "1.1.0" }

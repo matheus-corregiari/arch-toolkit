@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.liveData
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
@@ -291,73 +290,12 @@ fun <T, R> LiveData<T>.combine(
  * @param X The type of the value after applying the transformation.
  */
 fun <T, R, X> LiveData<T>.combine(
-    context: CoroutineContext,
+    context: CoroutineContext = EmptyCoroutineContext,
     other: LiveData<R>,
     transform: Transform.Nullable<T, R, X>
 ): LiveData<X?> = liveData(context) {
     internalCombine(other).applyTransformation(context, transform).collect(::emit)
 }
-
-/**
- * @see LiveData.combine
- */
-fun <T, R, X> LiveData<T>.combine(
-    context: CoroutineContext,
-    other: LiveData<R>,
-    transform: Pair<CoroutineDispatcher, suspend (T?, R?) -> X?>
-): LiveData<X?> = combine(
-    context = context,
-    other = other,
-    transform = Transform.Nullable.OmitFail(transform.first, transform.second)
-)
-
-/**
- * @see LiveData.combine
- */
-fun <T, R, X> LiveData<T>.combine(
-    context: CoroutineContext,
-    other: LiveData<R>,
-    transform: suspend (T?, R?) -> X?
-): LiveData<X?> = combine(
-    context = context,
-    other = other,
-    transform = Dispatchers.IO to transform
-)
-
-/**
- * @see LiveData.combine
- */
-fun <T, R, X> LiveData<T>.combine(
-    other: LiveData<R>,
-    transform: Transform.Nullable<T, R, X>
-): LiveData<X?> = combine(
-    context = EmptyCoroutineContext,
-    other = other,
-    transform = transform
-)
-
-/**
- * @see LiveData.combine
- */
-fun <T, R, X> LiveData<T>.combine(
-    other: LiveData<R>,
-    transform: Pair<CoroutineDispatcher, suspend (T?, R?) -> X?>
-): LiveData<X?> = combine(
-    context = EmptyCoroutineContext,
-    other = other,
-    transform = transform
-)
-
-/**
- * @see LiveData.combine
- */
-fun <T, R, X> LiveData<T>.combine(
-    other: LiveData<R>,
-    transform: suspend (T?, R?) -> X?
-): LiveData<X?> = combine(
-    other = other,
-    transform = Dispatchers.IO to transform
-)
 /* endregion ------------------------------------------------------------------------------------ */
 
 /* region Non Nullable -------------------------------------------------------------------------- */
@@ -484,83 +422,22 @@ fun <T, R> LiveData<T>.combineNotNull(
  * @param X The type of the value after applying the transformation.
  */
 fun <T, R, X> LiveData<T>.combineNotNull(
-    context: CoroutineContext,
+    context: CoroutineContext = EmptyCoroutineContext,
     other: LiveData<R>,
     transform: Transform.NotNull<T, R, X>
 ): LiveData<X> = liveData(context) {
     internalCombineNotNull(other).applyTransformation(context, transform).collect(::emit)
 }
-
-/**
- * @see LiveData.combineNotNull
- */
-fun <T, R, X> LiveData<T>.combineNotNull(
-    context: CoroutineContext,
-    other: LiveData<R>,
-    transform: Pair<CoroutineDispatcher, suspend (T, R) -> X>
-): LiveData<X> = combineNotNull(
-    context = context,
-    other = other,
-    transform = Transform.NotNull.OmitFail(transform.first, transform.second)
-)
-
-/**
- * @see LiveData.combineNotNull
- */
-fun <T, R, X> LiveData<T>.combineNotNull(
-    context: CoroutineContext,
-    other: LiveData<R>,
-    transform: suspend (T, R) -> X
-): LiveData<X> = combineNotNull(
-    context = context,
-    other = other,
-    transform = Dispatchers.IO to transform
-)
-
-/**
- * @see LiveData.combineNotNull
- */
-fun <T, R, X> LiveData<T>.combineNotNull(
-    other: LiveData<R>,
-    transform: Transform.NotNull<T, R, X>
-): LiveData<X> = combineNotNull(
-    context = EmptyCoroutineContext,
-    other = other,
-    transform = transform
-)
-
-/**
- * @see LiveData.combineNotNull
- */
-fun <T, R, X> LiveData<T>.combineNotNull(
-    other: LiveData<R>,
-    transform: Pair<CoroutineDispatcher, suspend (T, R) -> X>
-): LiveData<X> = combineNotNull(
-    context = EmptyCoroutineContext,
-    other = other,
-    transform = transform
-)
-
-/**
- * @see LiveData.combineNotNull
- */
-fun <T, R, X> LiveData<T>.combineNotNull(
-    other: LiveData<R>,
-    transform: suspend (T, R) -> X
-): LiveData<X> = combineNotNull(
-    other = other,
-    transform = Dispatchers.IO to transform
-)
 /* endregion ------------------------------------------------------------------------------------ */
 
 /* region Auxiliary Functions ------------------------------------------------------------------- */
-internal suspend inline fun <T, R> LiveData<T>.internalCombineNotNull(other: LiveData<R>) =
+private suspend inline fun <T, R> LiveData<T>.internalCombineNotNull(other: LiveData<R>) =
     internalCombine(other).mapNotNull { it.onlyWithValues() }
 
 internal suspend inline fun <T, R> LiveData<T>.internalCombine(other: LiveData<R>) = channelFlow {
-    val aFlow = this@internalCombine.asFlow()
-    val bFlow = other.asFlow()
-    val cFlow: Flow<Pair<T?, R?>> = aFlow.combine(bFlow) { a, b -> (a to b) }
+    val aFlow: Flow<T> = asFlow()
+    val bFlow: Flow<R> = other.asFlow()
+    val cFlow: Flow<Pair<T?, R?>> = aFlow.combine(bFlow) { a, b -> a to b }
 
     withContext(currentCoroutineContext()) {
         launch { aFlow.collect { if (other.isInitialized.not()) trySend(it to other.value) else cancel() } }
