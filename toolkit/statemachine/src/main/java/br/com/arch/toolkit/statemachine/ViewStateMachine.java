@@ -138,7 +138,7 @@ public final class ViewStateMachine extends StateMachine<ViewStateMachine.State>
         }
 
         public State invisibles(@NonNull @IdRes final Integer... ids) {
-            goneReferences.addAll(Arrays.asList(ids));
+            invisibleReferences.addAll(Arrays.asList(ids));
             return this;
         }
 
@@ -148,7 +148,7 @@ public final class ViewStateMachine extends StateMachine<ViewStateMachine.State>
         }
 
         public State gones(@NonNull @IdRes final Integer... ids) {
-            invisibleReferences.addAll(Arrays.asList(ids));
+            goneReferences.addAll(Arrays.asList(ids));
             return this;
         }
 
