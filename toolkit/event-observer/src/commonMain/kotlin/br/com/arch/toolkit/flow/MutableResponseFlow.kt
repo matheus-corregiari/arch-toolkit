@@ -52,24 +52,24 @@ class MutableResponseFlow<T>(value: DataResult<T> = dataResultNone()) :
 
     // region Custom Emitters
     suspend fun emitSuccess() = emit(dataResultSuccess(null))
-    suspend fun tryEmitSuccess() = tryEmit(dataResultSuccess(null))
+    fun tryEmitSuccess() = tryEmit(dataResultSuccess(null))
 
     suspend fun emitData(value: T) = emit(dataResultSuccess(value))
-    suspend fun tryEmitData(value: T) = tryEmit(dataResultSuccess(value))
+    fun tryEmitData(value: T) = tryEmit(dataResultSuccess(value))
 
     suspend fun emitLoading(value: T? = null, throwable: Throwable? = null) =
         emit(dataResultLoading(value, throwable))
 
-    suspend fun tryEmitLoading(value: T? = null, throwable: Throwable? = null) =
+    fun tryEmitLoading(value: T? = null, throwable: Throwable? = null) =
         tryEmit(dataResultLoading(value, throwable))
 
     suspend fun emitError(throwable: Throwable, value: T? = null) =
         emit(dataResultError(throwable, value))
 
-    suspend fun tryEmitError(throwable: Throwable, value: T? = null) =
+    fun tryEmitError(throwable: Throwable, value: T? = null) =
         tryEmit(dataResultError(throwable, value))
 
     suspend fun emitNone() = emit(dataResultNone())
-    suspend fun tryEmitNone() = tryEmit(dataResultNone())
+    fun tryEmitNone() = tryEmit(dataResultNone())
     // endregion
 }
