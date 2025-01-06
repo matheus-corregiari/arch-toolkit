@@ -1,11 +1,13 @@
+@file:Suppress("DEPRECATION")
+
 package br.com.arch.toolkit.livedata.response
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import br.com.arch.toolkit.alwaysOnOwner
+import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
-import br.com.arch.toolkit.testSetValue
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultSuccess
@@ -41,7 +43,7 @@ class ResponseLiveDataTest {
 
     @Test
     fun `00 - init without param, should init with null value`() = runTest {
-        val liveData = ResponseLiveData<Any>()
+        val liveData = MutableResponseLiveData<Any>()
         liveData.scope(this)
         liveData.transformDispatcher(Dispatchers.Main.immediate)
 
@@ -54,7 +56,7 @@ class ResponseLiveDataTest {
     @Test
     fun `01 - init with param, should init with param value`() = runTest {
         val value = DataResult("String", null, SUCCESS)
-        val liveData = ResponseLiveData(value)
+        val liveData = MutableResponseLiveData(value)
 
         Assert.assertEquals(value, liveData.value)
         Assert.assertNull(liveData.error)
@@ -65,26 +67,26 @@ class ResponseLiveDataTest {
     @Test
     fun `02 - Should keep observer until all events has been handled`() = runTest {
         fun singleTrue() {
-            val liveData = ResponseLiveData<Any>()
+            val liveData = MutableResponseLiveData<Any>()
             liveData.transformDispatcher(Dispatchers.Main.immediate)
             liveData.observe(alwaysOnOwner) {
                 status(single = true) { /* @see ObserverWrapper Tests */ }
             }
             Assert.assertTrue(liveData.hasObservers())
-            liveData.testSetValue(dataResultLoading())
+            liveData.setValue(dataResultLoading())
             advanceUntilIdle()
             Assert.assertFalse(liveData.hasObservers())
         }
 
         fun singleFalse() {
-            val liveData = ResponseLiveData<Any>()
+            val liveData = MutableResponseLiveData<Any>()
             liveData.scope(this)
             liveData.transformDispatcher(Dispatchers.Main.immediate)
             liveData.observe(alwaysOnOwner) {
                 status(single = false) { /* @see ObserverWrapper Tests */ }
             }
             Assert.assertTrue(liveData.hasObservers())
-            liveData.testSetValue(dataResultLoading())
+            liveData.setValue(dataResultLoading())
             advanceUntilIdle()
             Assert.assertTrue(liveData.hasObservers())
         }
@@ -98,7 +100,7 @@ class ResponseLiveDataTest {
         val mockTransform: (DataResult<Int>) -> DataResult<String> = mock()
         whenever(mockTransform.invoke(any())) doReturn dataResultSuccess("String")
 
-        val liveData = ResponseLiveData<Int>()
+        val liveData = MutableResponseLiveData<Int>()
         liveData.transformDispatcher(Dispatchers.Main.immediate)
         val transformedLiveData = liveData.transform(mockTransform)
 
@@ -106,7 +108,7 @@ class ResponseLiveDataTest {
         Assert.assertNull(transformedLiveData.value)
 
         // Will change the value only after the observe
-        liveData.testSetValue(dataResultSuccess(123))
+        liveData.value = dataResultSuccess(123)
         advanceUntilIdle()
         Assert.assertEquals(dataResultSuccess(123), liveData.value)
         Assert.assertNull(transformedLiveData.value)
@@ -123,7 +125,7 @@ class ResponseLiveDataTest {
     fun `04 - onError`() = runTest {
         val error = IllegalStateException("error")
         val mockOnError: (Throwable) -> Unit = mock()
-        val liveData = ResponseLiveData<Int>()
+        val liveData = MutableResponseLiveData<Int>()
         liveData.transformDispatcher(Dispatchers.Main.immediate)
         val onErrorLiveData = liveData.onError(mockOnError)
 
@@ -132,7 +134,7 @@ class ResponseLiveDataTest {
         verifyNoInteractions(mockOnError)
 
         // Will change the value only after the observe
-        liveData.testSetValue(dataResultError(error))
+        liveData.setValue(dataResultError(error))
         advanceUntilIdle()
         Assert.assertEquals(
             dataResultError<Int>(error),
@@ -156,7 +158,7 @@ class ResponseLiveDataTest {
         val error = IllegalStateException("error")
         val mockOnErrorReturn: (Throwable) -> Int = mock()
         whenever(mockOnErrorReturn.invoke(error)) doReturn 123
-        val liveData = ResponseLiveData<Int>()
+        val liveData = MutableResponseLiveData<Int>()
         liveData.transformDispatcher(Dispatchers.Main.immediate)
         val onErrorLiveData = liveData.onErrorReturn(mockOnErrorReturn)
 
@@ -165,7 +167,7 @@ class ResponseLiveDataTest {
         verifyNoInteractions(mockOnErrorReturn)
 
         // Will change the value only after the observe
-        liveData.testSetValue(dataResultError(error))
+        liveData.setValue(dataResultError(error))
         advanceUntilIdle()
         Assert.assertEquals(
             dataResultError<Int>(error),
@@ -190,7 +192,7 @@ class ResponseLiveDataTest {
         val error2 = IllegalStateException("error2")
         val mockMapError: (Throwable) -> Throwable = mock()
         whenever(mockMapError.invoke(error)) doReturn error2
-        val liveData = ResponseLiveData<Int>()
+        val liveData = MutableResponseLiveData<Int>()
         liveData.transformDispatcher(Dispatchers.Main.immediate)
         val onErrorLiveData = liveData.mapError(mockMapError)
 
@@ -199,7 +201,7 @@ class ResponseLiveDataTest {
         verifyNoInteractions(mockMapError)
 
         // Will change the value only after the observe
-        liveData.testSetValue(dataResultError(error))
+        liveData.setValue(dataResultError(error))
         advanceUntilIdle()
         Assert.assertEquals(
             dataResultError<Int>(error),
@@ -222,7 +224,7 @@ class ResponseLiveDataTest {
     fun `07 - map`() = runTest {
         val mockMap: (Int) -> String = mock()
         whenever(mockMap.invoke(123)) doReturn "String"
-        val liveData = ResponseLiveData<Int>()
+        val liveData = MutableResponseLiveData<Int>()
         liveData.transformDispatcher(Dispatchers.Main.immediate)
         val onErrorLiveData = liveData.map(mockMap)
 
@@ -231,7 +233,7 @@ class ResponseLiveDataTest {
         verifyNoInteractions(mockMap)
 
         // Will change the value only after the observe
-        liveData.testSetValue(dataResultSuccess(123))
+        liveData.setValue(dataResultSuccess(123))
         advanceUntilIdle()
         Assert.assertEquals(
             dataResultSuccess(123),
@@ -253,7 +255,7 @@ class ResponseLiveDataTest {
     @Test
     fun `08 - onNext`() = runTest {
         val mockOnNext: (Int) -> Unit = mock()
-        val liveData = ResponseLiveData<Int>()
+        val liveData = MutableResponseLiveData<Int>()
         liveData.transformDispatcher(Dispatchers.Main.immediate)
         val onErrorLiveData = liveData.onNext(mockOnNext)
 
@@ -262,7 +264,7 @@ class ResponseLiveDataTest {
         verifyNoInteractions(mockOnNext)
 
         // Will change the value only after the observe
-        liveData.testSetValue(dataResultSuccess(123))
+        liveData.setValue(dataResultSuccess(123))
         advanceUntilIdle()
         Assert.assertEquals(
             dataResultSuccess(123),

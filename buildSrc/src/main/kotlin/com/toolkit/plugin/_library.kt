@@ -2,7 +2,7 @@ package com.toolkit.plugin
 
 import com.android.build.api.dsl.LibraryExtension
 import com.toolkit.plugin.util.androidLibrary
-import com.toolkit.plugin.util.libraries
+import com.toolkit.plugin.util.libs
 import com.toolkit.plugin.util.version
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
@@ -12,7 +12,7 @@ internal fun Project.setupAndroidLibraryModule() = with(androidLibrary) {
     commonSetup()
 
     // Setup Android Version support
-    setupVersion(libraries)
+    setupVersion(libs)
 
     // Exclusive Library Configurations
     defaultConfig {

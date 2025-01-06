@@ -6,6 +6,7 @@ import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.konan.file.File
 
 internal fun Project.setupJavadocAndSources() {
+    return
     val sourcesJar = setupSources()
     val javadocJar = setupJavadoc()
     setupArtifacts(javadocJar, sourcesJar)
@@ -13,6 +14,10 @@ internal fun Project.setupJavadocAndSources() {
     tasks.whenTaskAdded {
         when (it.name) {
             "assembleRelease" -> {
+                it.finalizedBy(sourcesJar, javadocJar)
+            }
+
+            "signJvmPublication" -> {
                 it.finalizedBy(sourcesJar, javadocJar)
             }
 

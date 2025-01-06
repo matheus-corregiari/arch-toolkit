@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+
 plugins {
     id("toolkit-multiplatform-library")
     id("toolkit-publish")
@@ -8,22 +10,38 @@ android.buildFeatures.androidResources = false
 android.buildFeatures.buildConfig = false
 
 kotlin {
+    androidTarget { publishLibraryVariants("release") }
+
     // Libraries
     sourceSets.commonMain.dependencies {
-        implementation(libraries.jetbrains.stdlib.jdk8)
-        implementation(libraries.jetbrains.coroutines.core)
-        implementation(libraries.androidx.lifecycle.livedata)
+        implementation(libs.jetbrains.stdlib.jdk8)
+        implementation(libs.jetbrains.coroutines.core)
+        implementation(libs.androidx.lifecycle.runtime)
     }
-    sourceSets.androidMain.dependencies { implementation(libraries.jetbrains.coroutines.android) }
+    sourceSets.androidMain.dependencies {
+        implementation(libs.androidx.lifecycle.livedata)
+        implementation(libs.jetbrains.coroutines.android)
+    }
 
     // Test Libraries
-    sourceSets.androidUnitTest.dependencies {
-        implementation(libraries.androidx.lifecycle.runtime)
-        implementation(libraries.androidx.test.core)
-        implementation(libraries.jetbrains.test.coroutines)
-        implementation(libraries.mockito.test.core)
-        implementation(libraries.mockito.test.kotlin)
-        implementation(libraries.mockk.test.android)
-        implementation(libraries.mockk.test.agent)
+    sourceSets.commonTest.dependencies {
+        implementation(libs.androidx.test.core)
+        implementation(libs.jetbrains.test.coroutines)
+        implementation(libs.mockito.test.core)
+        implementation(libs.mockito.test.kotlin)
+        implementation(libs.mockk.test.agent)
     }
+    sourceSets.androidUnitTest.dependencies {
+        implementation(libs.mockk.test.android)
+    }
+}
+
+afterEvaluate {
+    val javadoc = tasks.withType(Javadoc::class)
+    val sources = tasks.withType(Jar::class)
+    val sign = tasks.withType(Sign::class)
+    val androidSources = tasks.named("androidReleaseSourcesJar").get()
+    tasks.assemble.dependsOn(
+        (javadoc + sources + androidSources + sign).map { tasks.named(it.name) }
+    )
 }

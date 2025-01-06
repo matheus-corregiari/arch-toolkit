@@ -4,9 +4,8 @@ package br.com.arch.toolkit.util
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import br.com.arch.toolkit.alwaysOnOwner
-import br.com.arch.toolkit.livedata.ResponseLiveData
+import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.testSetValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -94,7 +93,7 @@ class _responseLiveDataTest {
     fun `07 - ResponseLiveData mapList`() = runTest {
         val mockMap: (Int) -> String = mock()
         whenever(mockMap.invoke(123)) doReturn "String"
-        val liveData = ResponseLiveData<List<Int>>()
+        val liveData = MutableResponseLiveData<List<Int>>()
         liveData.transformDispatcher(Dispatchers.Main.immediate)
         val onErrorLiveData = liveData.mapList(mockMap)
 
@@ -103,7 +102,7 @@ class _responseLiveDataTest {
         verifyNoInteractions(mockMap)
 
         // Will change the value only after the observe
-        liveData.testSetValue(dataResultSuccess(listOf(123)))
+        liveData.setValue(dataResultSuccess(listOf(123)))
         advanceUntilIdle()
         Assert.assertEquals(
             dataResultSuccess(listOf(123)),

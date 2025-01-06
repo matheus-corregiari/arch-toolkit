@@ -1,7 +1,7 @@
 package com.toolkit.plugin
 
 import com.toolkit.plugin.util.androidApplication
-import com.toolkit.plugin.util.libraries
+import com.toolkit.plugin.util.libs
 import com.toolkit.plugin.util.requireAll
 import com.toolkit.plugin.util.version
 import org.gradle.api.Plugin
@@ -18,12 +18,12 @@ internal class ToolkitComposePlugin : Plugin<Project> {
             }
             composeOptions {
                 kotlinCompilerExtensionVersion =
-                    target.libraries.version("androidx-compose-compiler")
+                    target.libs.version("androidx-compose-compiler")
             }
         }
         with(target.dependencies) {
-            add("implementation", target.libraries.findBundle("androidx-compose-release").get())
-            add("debugImplementation", target.libraries.findBundle("androidx-compose-debug").get())
+            add("implementation", target.libs.findBundle("androidx-compose-release").get())
+            add("debugImplementation", target.libs.findBundle("androidx-compose-debug").get())
         }
     }
 }

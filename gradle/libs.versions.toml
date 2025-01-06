@@ -20,6 +20,7 @@ jetbrains-serialization = "1.6.3"
 jetbrains-kover = "0.7.4"
 
 ## AndroidX
+androidx-plugin = "8.7.3"
 androidx-appcompat = "1.7.0"
 androidx-annotation = "1.9.1"
 androidx-constraint = "2.2.0"
@@ -51,6 +52,7 @@ square-timber = "5.0.1"
 ## Google
 google-material = "1.12.0"
 google-gson = "2.11.0"
+google-ksp = "2.0.20-1.0.24"
 
 ## Tools
 mockito = "5.6.0"
@@ -58,6 +60,8 @@ mockk = "1.13.12"
 mockito-kotlin = "5.1.0"
 junit = "4.13.2"
 robolectric = "4.9"
+ktlint = "11.6.1"
+dexcount = "4.0.0"
 
 # ------------------------------------------------------------------------------------------------ #
 [libraries]
@@ -67,15 +71,19 @@ jetbrains-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", v
 jetbrains-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "jetbrains-serialization" }
 jetbrains-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "jetbrains-coroutines" }
 jetbrains-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "jetbrains-coroutines" }
+jetbrains-kover = { group = "org.jetbrains.kotlinx", name = "kover-gradle-plugin", version.ref = "jetbrains-kover" }
+jetbrains-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "jetbrains-kotlin" }
+jetbrains-extensions = { group = "org.jetbrains.kotlin", name = "kotlin-android-extensions", version.ref = "jetbrains-kotlin" }
 jetbrains-test-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "jetbrains-coroutines" }
 
 ## Androidx
+androidx-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidx-plugin" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-constraint = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraint" }
 androidx-recycler = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidx-recyclerview" }
-androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "androidx-lifecycle" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "androidx-window" }
 androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splash" }
 androidx-security = { group = "androidx.security", name = "security-crypto", version.ref = "androidx-security" }
@@ -119,32 +127,53 @@ mockito-test-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", v
 junit-test = { group = "junit", name = "junit", version.ref = "junit" }
 robolectric-test = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
+detekt = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
+ktlint = { group = "org.jlleitschuh.gradle.ktlint-idea", name = "org.jlleitschuh.gradle.ktlint-idea.gradle.plugin", version.ref = "ktlint" }
 
 # ------------------------------------------------------------------------------------------------ #
 ## Comment this when you start to update some libraries
-x-normalize-001 = { group = "androidx.activity", name = "activity", version.ref = "androidx-compose-activity" }
-x-normalize-002 = { group = "androidx.annotation", name = "annotation-experimental", version = "1.4.1" }
-x-normalize-003 = { group = "androidx.arch.core", name = "core-common", version = "2.2.0" }
-x-normalize-004 = { group = "androidx.arch.core", name = "core-runtime", version = "2.2.0" }
-x-normalize-005 = { group = "androidx.collection", name = "collection", version = "1.4.4" }
-x-normalize-006 = { group = "androidx.core", name = "core", version = "1.13.1" }
-x-normalize-007 = { group = "androidx.core", name = "core-ktx", version = "1.13.1" }
-x-normalize-008 = { group = "androidx.customview", name = "customview", version = "1.1.0" }
-x-normalize-009 = { group = "androidx.drawerlayout", name = "drawerlayout", version = "1.2.0" }
-x-normalize-010 = { group = "androidx.lifecycle", name = "lifecycle-common", version.ref = "androidx-lifecycle" }
-x-normalize-011 = { group = "androidx.viewpager2", name = "viewpager2", version = "1.1.0" }
-x-normalize-012 = { group = "androidx.test", name = "monitor", version = "1.7.2" }
-x-normalize-013 = { group = "androidx.test", name = "runner", version = "1.6.2" }
-x-normalize-014 = { group = "com.google.auto.value", name = "auto-value-annotations", version = "1.9" }
-x-normalize-015 = { group = "com.google.code.findbugs", name = "jsr305", version = "3.0.2" }
-x-normalize-016 = { group = "com.squareup", name = "javawritter", version = "2.5.0" }
-x-normalize-017 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "jetbrains-kotlin" }
-x-normalize-018 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-common", version.ref = "jetbrains-kotlin" }
-x-normalize-019 = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "jetbrains-coroutines" }
-x-normalize-020 = { group = "org.jetbrains", name = "annotations", version = "23.0.0" }
+x-normalize-x001 = { group = "androidx.activity", name = "activity", version.ref = "androidx-compose-activity" }
+x-normalize-x002 = { group = "androidx.annotation", name = "annotation-experimental", version = "1.4.1" }
+x-normalize-x003 = { group = "androidx.arch.core", name = "core-common", version = "2.2.0" }
+x-normalize-x004 = { group = "androidx.arch.core", name = "core-runtime", version = "2.2.0" }
+x-normalize-x005 = { group = "androidx.collection", name = "collection", version = "1.4.5" }
+x-normalize-x006 = { group = "androidx.core", name = "core", version = "1.15.0" }
+x-normalize-x007 = { group = "androidx.core", name = "core-ktx", version = "1.15.0" }
+x-normalize-x008 = { group = "androidx.customview", name = "customview", version = "1.1.0" }
+x-normalize-x009 = { group = "androidx.drawerlayout", name = "drawerlayout", version = "1.2.0" }
+x-normalize-x010 = { group = "androidx.lifecycle", name = "lifecycle-common", version.ref = "androidx-lifecycle" }
+x-normalize-x011 = { group = "androidx.viewpager2", name = "viewpager2", version = "1.1.0" }
+x-normalize-x012 = { group = "androidx.test", name = "monitor", version = "1.7.2" }
+x-normalize-x013 = { group = "androidx.test", name = "runner", version = "1.6.2" }
+x-normalize-x014 = { group = "com.google.auto.value", name = "auto-value-annotations", version = "1.9" }
+x-normalize-x015 = { group = "com.google.code.findbugs", name = "jsr305", version = "3.0.2" }
+x-normalize-x016 = { group = "com.squareup", name = "javawritter", version = "2.5.0" }
+x-normalize-x017 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "jetbrains-kotlin" }
+x-normalize-x018 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-common", version.ref = "jetbrains-kotlin" }
+x-normalize-x019 = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "jetbrains-coroutines" }
+x-normalize-x020 = { group = "org.jetbrains", name = "annotations", version = "23.0.0" }
 
 # ------------------------------------------------------------------------------------------------ #
 [plugins]
+jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrains-kotlin" }
+
+## Android
+android-application = { id = "com.android.application", version.ref = "androidx-plugin" }
+android-library = { id = "com.android.library", version.ref = "androidx-plugin" }
+
+## Android
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "google-ksp" }
+
+## JetBrains
+jetbrains-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrains-kotlin" }
+jetbrains-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "jetbrains-kover" }
+jetbrains-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "jetbrains-kotlin" }
+jetbrains-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "jetbrains-kotlin" }
+
+## Tools to make my life easier
+dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint-idea", version.ref = "ktlint" }
 
 # ------------------------------------------------------------------------------------------------ #
 [bundles]

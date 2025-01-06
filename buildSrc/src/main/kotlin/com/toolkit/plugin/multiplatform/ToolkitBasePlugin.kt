@@ -22,7 +22,7 @@ internal class ToolkitBasePlugin : Plugin<Project> {
 
         with(target.multiplatform) {
             withSourcesJar(true)
-            androidTarget {}
+            androidTarget().publishLibraryVariants("release")
             jvm {}
         }
 

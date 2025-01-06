@@ -7,8 +7,8 @@ android.namespace = "br.com.arch.toolkit.delegate"
 
 dependencies {
     // Libraries
-    implementation(libraries.jetbrains.stdlib.jdk8)
-    implementation(libraries.androidx.annotation)
-    implementation(libraries.androidx.appcompat)
-    compileOnly(libraries.androidx.recycler)
+    implementation(libs.jetbrains.stdlib.jdk8)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.appcompat)
+    compileOnly(libs.androidx.recycler)
 }

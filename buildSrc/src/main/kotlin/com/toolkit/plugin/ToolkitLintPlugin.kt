@@ -8,7 +8,7 @@ import com.toolkit.plugin.util.androidLibrary
 import com.toolkit.plugin.util.applyPlugins
 import com.toolkit.plugin.util.detekt
 import com.toolkit.plugin.util.ktLint
-import com.toolkit.plugin.util.libraries
+import com.toolkit.plugin.util.libs
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import io.gitlab.arturbosch.detekt.extensions.DetektReport
@@ -24,7 +24,7 @@ internal class ToolkitLintPlugin : Plugin<Project> {
         // Detekt configuration
         target.dependencies.add(
             "detektPlugins",
-            target.libraries.findLibrary("detekt-formatting").get()
+            target.libs.findLibrary("detekt-formatting").get()
         )
         with(target.detekt) {
             parallel = true

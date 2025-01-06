@@ -10,16 +10,7 @@ dependencyResolutionManagement {
     apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
     val repositoryList: RepositoryHandler.() -> Unit by extra
     repositories(repositoryList)
-
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    versionCatalogs {
-        register("libraries") {
-            from(files("$rootDir/tools/libs.versions.toml"))
-        }
-        register("pluginLibraries") {
-            from(files("$rootDir/tools/plugin.versions.toml"))
-        }
-    }
 }
 
 // Root Project config

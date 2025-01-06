@@ -13,6 +13,7 @@ import br.com.arch.toolkit.util.responseLiveDataOf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 
+@Deprecated("Try to use chain or combine method variations")
 internal interface ResponseLiveDataMergeDelegate {
     fun start()
 
@@ -41,6 +42,7 @@ internal interface ResponseLiveDataMergeDelegate {
     ): ResponseLiveData<Pair<T, R?>>
 }
 
+@Deprecated("Try to use chain or combine method variations")
 internal class DefaultResponseLiveDataMergeDelegate : ResponseLiveDataMergeDelegate {
 
     private val mergerLiveData = MediatorLiveData<Any>()

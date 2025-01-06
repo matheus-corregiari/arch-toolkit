@@ -10,7 +10,7 @@ import com.toolkit.plugin.util.applyPlugins
 import com.toolkit.plugin.util.jacoco
 import com.toolkit.plugin.util.kover
 import com.toolkit.plugin.util.koverReport
-import com.toolkit.plugin.util.libraries
+import com.toolkit.plugin.util.libs
 import com.toolkit.plugin.util.version
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -34,7 +34,7 @@ internal class ToolkitTestPlugin : Plugin<Project> {
         }
 
         // Kover configuration
-        with(target.jacoco) { toolVersion = target.libraries.version("jacoco") }
+        with(target.jacoco) { toolVersion = target.libs.version("jacoco") }
 
         // Regular Test configuration
         kotlin.runCatching { setForApplication(target.androidApplication) }

@@ -9,15 +9,10 @@ package br.com.arch.toolkit.result
 
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
-import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.exception.DataResultException
 import br.com.arch.toolkit.exception.DataResultTransformationException
 import br.com.arch.toolkit.flow.ResponseFlow
-import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.result.DataResultStatus.ERROR
 import br.com.arch.toolkit.result.DataResultStatus.LOADING
 import br.com.arch.toolkit.result.DataResultStatus.NONE
@@ -39,7 +34,6 @@ import java.lang.Thread.UncaughtExceptionHandler
  * This is to help all treatment events without any more hell if checks
  *
  * @see DataResult
- * @see ResponseLiveData
  * @see ResponseFlow
  */
 class ObserveWrapper<T> internal constructor() {
@@ -47,7 +41,6 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * List of all events configured
      */
-    @VisibleForTesting
     internal val eventList = mutableListOf<ObserveEvent<*>>()
 
     /**
@@ -73,7 +66,9 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      * @see CoroutineScope
      */
-    private var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    internal var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        private set
+
     fun scope(scope: CoroutineScope): ObserveWrapper<T> {
         this.scope = scope
         return this
@@ -1139,31 +1134,6 @@ class ObserveWrapper<T> internal constructor() {
     //endregion
 
     //region Attach Methods
-    /**
-     * Observes until all observers on Wrapper get removed
-     *
-     * @param owner The desired Owner to observe
-     *
-     * @return The ResponseLiveData<T> attached to the Wrapper
-     */
-    @NonNull
-    internal fun attachTo(
-        @NonNull liveData: ResponseLiveData<T>,
-        @NonNull owner: LifecycleOwner
-    ): ResponseLiveData<T> {
-        val observer = object : Observer<DataResult<T>?> {
-            override fun onChanged(value: DataResult<T>?) {
-                scope.launchWithErrorTreatment {
-                    handleResult(value) { owner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) }
-                    if (eventList.isEmpty()) {
-                        liveData.removeObserver(this)
-                    }
-                }
-            }
-        }
-        liveData.observe(owner, observer)
-        return liveData
-    }
 
     /**
      * Attach this wrapper into a flow
@@ -1193,7 +1163,7 @@ class ObserveWrapper<T> internal constructor() {
     }
     //endregion
 
-    private suspend fun handleResult(
+    internal suspend fun handleResult(
         @Nullable result: DataResult<T>?,
         evaluateBeforeDispatch: suspend () -> Boolean = { true }
     ) {
@@ -1310,7 +1280,7 @@ class ObserveWrapper<T> internal constructor() {
         }
     }
 
-    private fun CoroutineScope.launchWithErrorTreatment(func: suspend () -> Unit) {
+    internal fun CoroutineScope.launchWithErrorTreatment(func: suspend () -> Unit) {
         launch(scopeUncaughtError) { func.invoke() }
     }
 

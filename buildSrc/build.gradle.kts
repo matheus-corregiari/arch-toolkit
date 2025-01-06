@@ -1,6 +1,6 @@
 plugins {
     id("java-gradle-plugin")
-    alias(pluginLibraries.plugins.jvm)
+    alias(libs.plugins.jvm)
 }
 
 kotlin { jvmToolchain(17) }
@@ -11,12 +11,12 @@ version = "1.0.0"
 dependencies {
     compileOnly(gradleApi())
 
-    implementation(pluginLibraries.androidx.plugin)
-    implementation(pluginLibraries.detekt)
-    implementation(pluginLibraries.ktlint)
-    implementation(pluginLibraries.jetbrains.plugin)
-    implementation(pluginLibraries.jetbrains.extensions)
-    implementation(pluginLibraries.jetbrains.kover)
+    implementation(libs.androidx.plugin)
+    implementation(libs.detekt)
+    implementation(libs.ktlint)
+    implementation(libs.jetbrains.plugin)
+    implementation(libs.jetbrains.extensions)
+    implementation(libs.jetbrains.kover)
 }
 
 sourceSets {

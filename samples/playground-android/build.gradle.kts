@@ -18,11 +18,11 @@ dependencies {
     implementation(project(":toolkit:delegate"))
 
     // Libraries
-    implementation(libraries.jetbrains.stdlib.jdk8)
-    implementation(libraries.androidx.annotation)
-    implementation(libraries.androidx.appcompat)
-    implementation(libraries.androidx.recycler)
-    implementation(libraries.androidx.constraint)
-    implementation(libraries.square.timber)
-    implementation(libraries.google.gson)
+    implementation(libs.jetbrains.stdlib.jdk8)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.recycler)
+    implementation(libs.androidx.constraint)
+    implementation(libs.square.timber)
+    implementation(libs.google.gson)
 }

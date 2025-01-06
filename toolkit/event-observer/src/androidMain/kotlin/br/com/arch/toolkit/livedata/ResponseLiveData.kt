@@ -3,7 +3,7 @@
     "TooManyFunctions",
     "MemberVisibilityCanBePrivate",
     "DeprecatedCallableAddReplaceWith",
-    "unused"
+    "unused", "DEPRECATION"
 )
 
 package br.com.arch.toolkit.livedata
@@ -14,10 +14,10 @@ import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
+import br.com.arch.toolkit.result.attachTo
 import br.com.arch.toolkit.util.mapNotNull
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -173,7 +173,6 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
-    @Experimental
     @Deprecated("Use combine instead")
     fun <R> mergeWith(@NonNull source: ResponseLiveData<R>): ResponseLiveData<Pair<T, R>> =
         withDelegate {
@@ -189,7 +188,6 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
-    @Experimental
     @Deprecated("Use combine instead")
     fun mergeWith(
         @NonNull tag: String,
@@ -212,7 +210,6 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
-    @Experimental
     @Deprecated("Use chainWith instead")
     fun <R> followedBy(
         @NonNull source: (T) -> ResponseLiveData<R>,
@@ -239,7 +236,6 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
-    @Experimental
     @Deprecated("Use chainWith instead")
     fun <R> followedBy(
         @NonNull source: (T) -> ResponseLiveData<R>,
@@ -255,7 +251,6 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return The ResponseLiveData<T, R>
      */
     @NonNull
-    @Experimental
     @Deprecated("Use chainWith instead")
     fun <R> followedBy(@NonNull source: (T) -> ResponseLiveData<R>) = followedBy(source) { true }
     //endregion
@@ -360,7 +355,7 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      *
      * @return A new instance of ResponseLiveData<T>
      */
-    @Experimental
+    @Deprecated("Try to use chain or combine method variations")
     private fun <R> withDelegate(func: ResponseLiveDataMergeDelegate.() -> ResponseLiveData<R>): ResponseLiveData<R> =
         synchronized(mergeLock) {
             mergeDelegate = mergeDelegate ?: DefaultResponseLiveDataMergeDelegate()

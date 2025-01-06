@@ -1,6 +1,6 @@
 plugins {
     id("toolkit-android-sample")
-    alias(pluginLibraries.plugins.jetbrains.serialization)
+    alias(libs.plugins.jetbrains.serialization)
 }
 
 android.namespace = "br.com.arch.toolkit.sample.livedata"
@@ -16,9 +16,9 @@ dependencies {
     implementation(project(":toolkit:storage"))
 
     // Libraries
-    implementation(libraries.jetbrains.stdlib.jdk8)
-    implementation(libraries.jetbrains.serialization)
-    implementation(libraries.androidx.lifecycle.livedata)
-    implementation(libraries.jetbrains.coroutines.android)
-    implementation(libraries.jetbrains.coroutines.core)
+    implementation(libs.jetbrains.stdlib.jdk8)
+    implementation(libs.jetbrains.serialization)
+    implementation(libs.androidx.lifecycle.livedata)
+    implementation(libs.jetbrains.coroutines.android)
+    implementation(libs.jetbrains.coroutines.core)
 }

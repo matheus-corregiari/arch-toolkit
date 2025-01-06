@@ -10,9 +10,9 @@ dependencies {
     implementation(project(":toolkit:storage"))
 
     // JetBrains
-    implementation(libraries.jetbrains.coroutines.android)
+    implementation(libs.jetbrains.coroutines.android)
 
     // Androidx
-    implementation(libraries.androidx.startup)
-    implementation(libraries.androidx.lifecycle.livedata)
+    implementation(libs.androidx.startup)
+    implementation(libs.androidx.lifecycle.livedata)
 }

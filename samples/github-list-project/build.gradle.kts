@@ -1,7 +1,7 @@
 plugins {
     id("toolkit-android-sample")
     // id("toolkit-compose") --> Commented until Compose finally work on API 34 -.-"
-    alias(pluginLibraries.plugins.google.ksp)
+    alias(libs.plugins.google.ksp)
 }
 
 android.namespace = "br.com.arch.toolkit.sample.github"
@@ -26,19 +26,19 @@ dependencies {
     implementation(project(":toolkit:splinter"))
 
     // Libraries
-    implementation(libraries.jetbrains.stdlib.jdk8)
-    implementation(libraries.androidx.annotation)
-    implementation(libraries.androidx.appcompat)
-    implementation(libraries.androidx.recycler)
-    implementation(libraries.androidx.splash)
-    implementation(libraries.square.retrofit.main)
-    implementation(libraries.square.retrofit.moshi)
-    implementation(libraries.square.okhttp.core)
-    implementation(libraries.square.moshi.kotlin)
-    implementation(libraries.square.timber)
-    implementation(libraries.square.okhttp.logging)
+    implementation(libs.jetbrains.stdlib.jdk8)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.recycler)
+    implementation(libs.androidx.splash)
+    implementation(libs.square.retrofit.main)
+    implementation(libs.square.retrofit.moshi)
+    implementation(libs.square.okhttp.core)
+    implementation(libs.square.moshi.kotlin)
+    implementation(libs.square.timber)
+    implementation(libs.square.okhttp.logging)
 
     // Doing evil things generating code!
-    ksp(libraries.square.moshi.codegen)
+    ksp(libs.square.moshi.codegen)
 }
 

@@ -4,15 +4,15 @@ package com.toolkit.plugin
 
 import com.toolkit.plugin.util.allDefinedDependencies
 import com.toolkit.plugin.util.applicationComponent
-import com.toolkit.plugin.util.libraries
 import com.toolkit.plugin.util.libraryComponent
+import com.toolkit.plugin.util.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 internal class ToolkitOptimizeDependenciesAndFilterTasksPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        val libraries = target.libraries
+        val libraries = target.libs
         val allDefinedLibraries = libraries.allDefinedDependencies
         target.configurations.configureEach { config ->
             config.resolutionStrategy { strategy ->

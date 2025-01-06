@@ -18,16 +18,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import com.android.build.gradle.LibraryExtension as LibraryExtension2
 
-internal val Project.libraries: VersionCatalog
+internal val Project.libs: VersionCatalog
     @Throws(IllegalStateException::class)
     get() {
-        return extensions.findByType(VersionCatalogsExtension::class.java)?.named("libraries")
-            ?: error("Cannot find libraries in version catalog!")
-    }
-internal val Project.pluginLibraries: VersionCatalog
-    @Throws(IllegalStateException::class)
-    get() {
-        return extensions.findByType(VersionCatalogsExtension::class.java)?.named("pluginLibraries")
+        return extensions.findByType(VersionCatalogsExtension::class.java)?.named("libs")
             ?: error("Cannot find libraries in version catalog!")
     }
 
@@ -103,6 +97,9 @@ internal val Project.sign: SigningExtension
 
 internal fun Project.applyPlugins(vararg id: String) {
     id.forEach {
-        plugins.apply(pluginLibraries.findPlugin(it).get().get().pluginId)
+        plugins.apply(libs.findPlugin(it).get().get().pluginId)
     }
 }
+
+internal fun Project.hasPlugins(vararg id: String) =
+    id.all { plugins.hasPlugin(libs.findPlugin(it).get().get().pluginId) }

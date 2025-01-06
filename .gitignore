@@ -1,10 +1,11 @@
+**/build
+/.kotlin
+.gradle
+/.idea
+/build/
 *.log
 *.iml
-.gradle
 /local.properties
-/.idea
 .DS_Store
-/build
-/.kotlin
 /captures
 .externalNativeBuild

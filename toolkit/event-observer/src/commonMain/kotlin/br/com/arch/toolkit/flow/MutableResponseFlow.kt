@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * Constructor for initializing with a value
  *
- * @param value The initial value for this MutableResponseLiveData
+ * @param value The initial value for this MutableResponseFlow
  *
  * @return An instance of ResponseFlow<T> with a default value set
  */

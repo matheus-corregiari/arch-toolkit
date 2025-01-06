@@ -10,10 +10,10 @@ dependencies {
     implementation(project(":toolkit:event-observer"))
 
     // Libraries
-    compileOnly(libraries.jetbrains.stdlib.jdk8)
-    compileOnly(libraries.jetbrains.coroutines.core)
-    compileOnly(libraries.jetbrains.coroutines.android)
-    compileOnly(libraries.androidx.lifecycle.livedata)
-    compileOnly(libraries.square.retrofit.main)
-    compileOnly(libraries.square.timber)
+    compileOnly(libs.jetbrains.stdlib.jdk8)
+    compileOnly(libs.jetbrains.coroutines.core)
+    compileOnly(libs.jetbrains.coroutines.android)
+    compileOnly(libs.androidx.lifecycle.livedata)
+    compileOnly(libs.square.retrofit.main)
+    compileOnly(libs.square.timber)
 }
