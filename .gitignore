@@ -5,8 +5,6 @@
 /.idea
 .DS_Store
 /build
-**/build
-*/build
+/.kotlin
 /captures
 .externalNativeBuild
-toolkit/build/

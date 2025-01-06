@@ -1,23 +1,29 @@
 plugins {
-    id("toolkit-android-library")
+    id("toolkit-multiplatform-library")
     id("toolkit-publish")
 }
 
-android.namespace = "br.com.arch.toolkit.livedata"
+android.namespace = "br.com.arch.toolkit.eventObserver"
+android.buildFeatures.androidResources = false
+android.buildFeatures.buildConfig = false
 
-dependencies {
+kotlin {
     // Libraries
-    implementation(libraries.jetbrains.stdlib.jdk8)
-    implementation(libraries.jetbrains.coroutines.core)
-    implementation(libraries.jetbrains.coroutines.android)
-    implementation(libraries.androidx.lifecycle.livedata)
+    sourceSets.commonMain.dependencies {
+        implementation(libraries.jetbrains.stdlib.jdk8)
+        implementation(libraries.jetbrains.coroutines.core)
+        implementation(libraries.androidx.lifecycle.livedata)
+    }
+    sourceSets.androidMain.dependencies { implementation(libraries.jetbrains.coroutines.android) }
 
     // Test Libraries
-    testImplementation(libraries.androidx.lifecycle.runtime)
-    testImplementation(libraries.androidx.test.core)
-    testImplementation(libraries.jetbrains.test.coroutines)
-    testImplementation(libraries.mockito.test.core)
-    testImplementation(libraries.mockito.test.kotlin)
-    testImplementation(libraries.mockk.test.android)
-    testImplementation(libraries.mockk.test.agent)
+    sourceSets.androidUnitTest.dependencies {
+        implementation(libraries.androidx.lifecycle.runtime)
+        implementation(libraries.androidx.test.core)
+        implementation(libraries.jetbrains.test.coroutines)
+        implementation(libraries.mockito.test.core)
+        implementation(libraries.mockito.test.kotlin)
+        implementation(libraries.mockk.test.android)
+        implementation(libraries.mockk.test.agent)
+    }
 }

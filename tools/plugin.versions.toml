@@ -6,7 +6,6 @@ ktlint = "11.6.1"
 jetbrains-kotlin = "2.0.20"
 jetbrains-kover = "0.7.4"
 google-ksp = "2.0.20-1.0.24"
-pedrinho_publish = "0.0.2"
 dexcount = "4.0.0"
 
 # ------------------------------------------------------------------------------------------------ #
@@ -45,4 +44,3 @@ jetbrains-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", ve
 dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint-idea", version.ref = "ktlint" }
-pedrinho_publish = { id = "io.github.pedro-bachiega.sonatype-maven-publish", version.ref = "pedrinho_publish" }

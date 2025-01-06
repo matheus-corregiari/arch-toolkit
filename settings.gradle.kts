@@ -1,13 +1,13 @@
 @file:Suppress("UnstableApiUsage")
 
 pluginManagement {
-    apply(from = "$rootDir/plugin/repositories.gradle.kts")
+    apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
     val repositoryList: RepositoryHandler.() -> Unit by extra
     repositories(repositoryList)
 }
 
 dependencyResolutionManagement {
-    apply(from = "$rootDir/plugin/repositories.gradle.kts")
+    apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
     val repositoryList: RepositoryHandler.() -> Unit by extra
     repositories(repositoryList)
 
@@ -24,9 +24,6 @@ dependencyResolutionManagement {
 
 // Root Project config
 rootProject.name = "Arch Toolkit"
-
-// Plugins --> The Dev just want to be happy
-includeBuild("plugin")
 
 // Toolkit Libraries
 include(":toolkit:delegate")
