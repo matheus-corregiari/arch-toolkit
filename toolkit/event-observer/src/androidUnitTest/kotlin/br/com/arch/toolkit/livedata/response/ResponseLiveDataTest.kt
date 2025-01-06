@@ -1,11 +1,8 @@
-@file:Suppress("DEPRECATION")
-
 package br.com.arch.toolkit.livedata.response
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
-import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import br.com.arch.toolkit.util.dataResultError
@@ -283,69 +280,4 @@ class ResponseLiveDataTest {
         verifyBlocking(mockOnNext) { invoke(123) }
     }
 
-    @Test
-    fun `09 - mergeWith - plus`() = runTest {
-        val liveDataA = ResponseLiveData(dataResultSuccess(123))
-        val liveDataB = ResponseLiveData(dataResultSuccess("String"))
-        val liveDataMerge = liveDataA.mergeWith(liveDataB)
-
-        Assert.assertEquals(dataResultSuccess(123), liveDataA.value)
-        Assert.assertEquals(dataResultSuccess("String"), liveDataB.value)
-        Assert.assertEquals(dataResultSuccess(123 to "String"), liveDataMerge.value)
-    }
-
-    @Test
-    fun `10 - mergeWith with tag`() = runTest {
-        val liveDataA = ResponseLiveData(dataResultSuccess(123))
-        val liveDataB = ResponseLiveData(dataResultSuccess("String"))
-        val liveDataMerge = liveDataA.mergeWith("tagA", "tagB" to liveDataB)
-
-        Assert.assertEquals(dataResultSuccess(123), liveDataA.value)
-        Assert.assertEquals(dataResultSuccess("String"), liveDataB.value)
-        Assert.assertEquals(
-            dataResultSuccess(
-                mapOf(
-                    "tagA" to 123,
-                    "tagB" to "String",
-                )
-            ),
-            liveDataMerge.value
-        )
-    }
-
-    @Test
-    fun `11 - followedBy - both success`() = runTest {
-        val liveDataA = ResponseLiveData(dataResultSuccess(123))
-        liveDataA.transformDispatcher(Dispatchers.Main.immediate)
-
-        val liveDataB = ResponseLiveData(dataResultSuccess("String"))
-        val liveDataMerge = liveDataA.followedBy { liveDataB }
-
-        Assert.assertEquals(dataResultSuccess(123), liveDataA.value)
-        Assert.assertEquals(dataResultSuccess("String"), liveDataB.value)
-        Assert.assertNull(liveDataMerge.value)
-        liveDataMerge.observe(alwaysOnOwner) { status { /* Do Nothing*/ } }
-
-        advanceUntilIdle()
-
-        Assert.assertEquals(dataResultSuccess(123 to "String"), liveDataMerge.value)
-    }
-
-    @Test
-    fun `12 - followedBy - one success, other loading`() = runTest {
-        val liveDataA = ResponseLiveData(dataResultSuccess(123))
-        liveDataA.transformDispatcher(Dispatchers.Main.immediate)
-
-        val liveDataB = ResponseLiveData<String>(dataResultLoading())
-        val liveDataMerge = liveDataA.followedBy { liveDataB }
-
-        Assert.assertEquals(dataResultSuccess(123), liveDataA.value)
-        Assert.assertEquals(dataResultLoading<String>(), liveDataB.value)
-        Assert.assertNull(liveDataMerge.value)
-        liveDataMerge.observe(alwaysOnOwner) { status { /* Do Nothing*/ } }
-
-        advanceUntilIdle()
-
-        Assert.assertEquals(dataResultLoading<Pair<Int, String>>(), liveDataMerge.value)
-    }
 }
