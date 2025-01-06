@@ -30,6 +30,4 @@ include(":toolkit:statemachine")
 val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"
 if (isIdeBuild) {
     include(":samples:github-list-project")
-    include(":samples:playground")
-    include(":samples:playground-android")
 }

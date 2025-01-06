@@ -3,7 +3,7 @@
     "TooManyFunctions",
     "MemberVisibilityCanBePrivate",
     "DeprecatedCallableAddReplaceWith",
-    "unused", "DEPRECATION"
+    "unused"
 )
 
 package br.com.arch.toolkit.livedata
@@ -36,7 +36,6 @@ import kotlinx.coroutines.SupervisorJob
 open class ResponseLiveData<T> : LiveData<DataResult<T>> {
 
     private var mergeLock = Object()
-    private var mergeDelegate: ResponseLiveDataMergeDelegate? = null
 
     protected var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         private set
@@ -92,16 +91,6 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      * @return An instance of ResponseLiveData<T> with a default value set
      */
     constructor(value: DataResult<T>) : super(value)
-
-    override fun onActive() {
-        super.onActive()
-        mergeDelegate?.start()
-    }
-
-    override fun onInactive() {
-        super.onInactive()
-        mergeDelegate?.stop()
-    }
 
     //region Mappers
     /**
@@ -164,95 +153,6 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
         liveData.swapSource(this, { it }, null, onErrorReturn)
         return liveData
     }
-
-    /**
-     * Combines the result of this ResponseLiveData with a second one
-     *
-     * @param source The source this ResponseLiveData will be combined with
-     *
-     * @return The ResponseLiveData<T, R>
-     */
-    @NonNull
-    @Deprecated("Use combine instead")
-    fun <R> mergeWith(@NonNull source: ResponseLiveData<R>): ResponseLiveData<Pair<T, R>> =
-        withDelegate {
-            merge(this@ResponseLiveData, source, scope, transformDispatcher)
-        }
-
-    /**
-     * Combines the result of this ResponseLiveData with multiple ones
-     *
-     * @param tag The tag this ResponseLiveData will be marked with
-     * @param sources The sources this ResponseLiveData will be combined with
-     *
-     * @return The ResponseLiveData<T, R>
-     */
-    @NonNull
-    @Deprecated("Use combine instead")
-    fun mergeWith(
-        @NonNull tag: String,
-        @NonNull vararg sources: Pair<String, ResponseLiveData<*>>
-    ): ResponseLiveData<Map<String, *>> = withDelegate {
-        merge(
-            scope,
-            transformDispatcher,
-            sources.toMutableList().apply { add(0, tag to this@ResponseLiveData) }
-        )
-    }
-
-    /**
-     * Combines the result of this ResponseLiveData with a second one after the first success
-     * only if the established condition is fulfilled
-     *
-     * @param source The source this ResponseLiveData will be combined with
-     * @param condition The condition for this merge to succeed
-     *
-     * @return The ResponseLiveData<T, R>
-     */
-    @NonNull
-    @Deprecated("Use chainWith instead")
-    fun <R> followedBy(
-        @NonNull source: (T) -> ResponseLiveData<R>,
-        @NonNull condition: (T) -> Boolean,
-        @NonNull successOnConditionError: Boolean
-    ): ResponseLiveData<Pair<T, R?>> = withDelegate {
-        followedBy(
-            this@ResponseLiveData,
-            source,
-            scope,
-            transformDispatcher,
-            condition,
-            successOnConditionError
-        )
-    }
-
-    /**
-     * Combines the result of this ResponseLiveData with a second one after the first success
-     * only if the established condition is fulfilled
-     *
-     * @param source The source this ResponseLiveData will be combined with
-     * @param condition The condition for this merge to succeed
-     *
-     * @return The ResponseLiveData<T, R>
-     */
-    @NonNull
-    @Deprecated("Use chainWith instead")
-    fun <R> followedBy(
-        @NonNull source: (T) -> ResponseLiveData<R>,
-        @NonNull condition: (T) -> Boolean
-    ): ResponseLiveData<Pair<T, R>> =
-        followedBy(source, condition, false).map { it.first to it.second!! }
-
-    /**
-     * Combines the result of this ResponseLiveData with a second one after the first success
-     *
-     * @param source The source this ResponseLiveData will be combined with
-     *
-     * @return The ResponseLiveData<T, R>
-     */
-    @NonNull
-    @Deprecated("Use chainWith instead")
-    fun <R> followedBy(@NonNull source: (T) -> ResponseLiveData<R>) = followedBy(source) { true }
     //endregion
 
     //region Observability
@@ -349,16 +249,4 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      */
     @NonNull
     private fun newWrapper() = ObserveWrapper<T>()
-
-    /**
-     * Creates synchronously a instance of mergeDelegate
-     *
-     * @return A new instance of ResponseLiveData<T>
-     */
-    @Deprecated("Try to use chain or combine method variations")
-    private fun <R> withDelegate(func: ResponseLiveDataMergeDelegate.() -> ResponseLiveData<R>): ResponseLiveData<R> =
-        synchronized(mergeLock) {
-            mergeDelegate = mergeDelegate ?: DefaultResponseLiveDataMergeDelegate()
-            return func.invoke(requireNotNull(mergeDelegate))
-        }
 }
