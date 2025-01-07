@@ -14,7 +14,7 @@ android {
 
 dependencies {
     // Other Modules
-    implementation(project(":toolkit:delegate"))
+    implementation(project(":toolkit:android:delegate"))
 
     // Libraries
     implementation(libs.jetbrains.stdlib.jdk8)

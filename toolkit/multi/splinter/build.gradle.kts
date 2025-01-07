@@ -7,7 +7,7 @@ android.namespace = "br.com.arch.toolkit.splinter"
 
 dependencies {
     // Other Modules
-    implementation(project(":toolkit:event-observer"))
+    implementation(project(":toolkit:multi:event-observer"))
 
     // Libraries
     compileOnly(libs.jetbrains.stdlib.jdk8)

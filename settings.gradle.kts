@@ -17,14 +17,14 @@ dependencyResolutionManagement {
 rootProject.name = "Arch Toolkit"
 
 // Toolkit Libraries
-include(":toolkit:delegate")
-include(":toolkit:event-observer")
-include(":toolkit:foldable")
-include(":toolkit:recycler-adapter")
-include(":toolkit:splinter")
-include(":toolkit:storage")
-include(":toolkit:util")
-include(":toolkit:statemachine")
+include(":toolkit:multi:event-observer")
+include(":toolkit:multi:splinter")
+include(":toolkit:android:delegate")
+include(":toolkit:android:foldable")
+include(":toolkit:android:recycler-adapter")
+include(":toolkit:android:storage")
+include(":toolkit:android:util")
+include(":toolkit:android:statemachine")
 
 // Samples
 val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"

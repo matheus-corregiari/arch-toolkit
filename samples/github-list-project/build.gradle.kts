@@ -19,11 +19,11 @@ androidComponents.beforeVariants {
 
 dependencies {
     // Other Modules
-    implementation(project(":toolkit:delegate"))
-    implementation(project(":toolkit:event-observer"))
-    implementation(project(":toolkit:recycler-adapter"))
-    implementation(project(":toolkit:statemachine"))
-    implementation(project(":toolkit:splinter"))
+    implementation(project(":toolkit:multi:event-observer"))
+    implementation(project(":toolkit:multi:splinter"))
+    implementation(project(":toolkit:android:delegate"))
+    implementation(project(":toolkit:android:recycler-adapter"))
+    implementation(project(":toolkit:android:statemachine"))
 
     // Libraries
     implementation(libs.jetbrains.stdlib.jdk8)
