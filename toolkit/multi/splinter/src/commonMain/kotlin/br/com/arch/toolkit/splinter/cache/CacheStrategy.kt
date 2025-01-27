@@ -1,22 +1,12 @@
 package br.com.arch.toolkit.splinter.cache
 
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import br.com.arch.toolkit.splinter.RegularResponseDataHolder
 
 /**
  *
  */
-sealed class CacheStrategy<T>(val id: String) {
-
-    private val _flow = MutableStateFlow<T?>(null)
-    val flow: Flow<T?> get() = _flow.asSharedFlow()
-
-    private val _liveData = MutableLiveData<T?>(null)
-    val liveData: LiveData<T?> get() = _liveData
+sealed class CacheStrategy<T>(val id: String) : RegularResponseDataHolder<T>() {
 
     internal abstract val localData: T?
     internal abstract val localVersion: DataVersion?
@@ -43,8 +33,7 @@ sealed class CacheStrategy<T>(val id: String) {
         } else {
             delete()
         }
-        _flow.emit(data)
-        _liveData.postValue(data)
+        set(data)
     }
 
     @WorkerThread

@@ -5,10 +5,6 @@ package br.com.arch.toolkit.splinter
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import br.com.arch.toolkit.annotation.Experimental
-import br.com.arch.toolkit.flow.MutableResponseFlow
-import br.com.arch.toolkit.flow.ResponseFlow
-import br.com.arch.toolkit.livedata.MutableResponseLiveData
-import br.com.arch.toolkit.livedata.ResponseLiveData
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.splinter.extension.invokeCatching
 import br.com.arch.toolkit.splinter.strategy.MirrorFlow
@@ -22,64 +18,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * Evil class that knows how to handle events asynchronously
  *
  * It uses a DataResult to wrap the responses and tells the observer what is going on inside this evil class
  */
-class Splinter<RETURN : Any> internal constructor(
-    private val id: String,
-    private val quiet: Boolean
-) : DefaultLifecycleObserver {
+class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
+    ResultResponseDataHolder<RETURN>(), DefaultLifecycleObserver {
 
-    //region Return Types
-    /**
-     * Flow that streams all data emitted from this instance of Splinter
-     */
-    @OptIn(Experimental::class)
-    private val _flow = MutableResponseFlow<RETURN>()
-
-    @OptIn(Experimental::class)
-    val flow: ResponseFlow<RETURN>
-        get() = _flow.shareIn(
-            scope = config.scope,
-            started = SharingStarted.WhileSubscribed(),
-        )
-
-    /**
-     * LiveData that streams all data emitted from this instance of Splinter
-     */
-    private val _liveData = MutableResponseLiveData<RETURN>()
-    val liveData: ResponseLiveData<RETURN> get() = _liveData
-
-    /**
-     * Last emitted DataResult
-     */
-    @OptIn(Experimental::class)
-    fun get() = _flow.value
-
-    /**
-     * Last emitted Data inside the last emitted DataResult
-     */
-    val data: RETURN? get() = get().data
-
-    /**
-     * Last emitted Throwable inside the last emitted DataResult
-     */
-    val error: Throwable? get() = get().error
-
-    /**
-     * Last emitted Status inside the last emitted DataResult
-     */
-    val status: DataResultStatus get() = get().status
-    //endregion
+    internal val logger = Logger(id, quiet)
+    override val scope = { config.scope }
 
     //region Jobs, Coroutines and Locks
     private val lock = Object()
@@ -127,7 +79,7 @@ class Splinter<RETURN : Any> internal constructor(
              **/
             ExecutionPolicy.WAIT_IF_RUNNING -> {
                 if (isRunning) {
-                    logInfo("[Execute] Already running, let's enjoy the same running operation!")
+                    logger.logInfo("[Execute] Already running, let's enjoy the same running operation!")
                     return@synchronized this
                 }
             }
@@ -142,24 +94,24 @@ class Splinter<RETURN : Any> internal constructor(
              * @see ExecutionPolicy
              **/
             ExecutionPolicy.CANCEL_RUNNING_AND_RESTART -> if (isRunning) {
-                logInfo("[Execute] Oh no! It's running! Let's cancel it and start again!")
+                logger.logInfo("[Execute] Oh no! It's running! Let's cancel it and start again!")
                 reset()
             }
         }
 
         if (isRunning.not()) {
             if (job.isActive || job.isCompleted || job.isCancelled) {
-                logInfo("[Execute] Creating a new job!")
+                logger.logInfo("[Execute] Creating a new job!")
                 job = newJob()
             }
             if (job.start()) {
                 /* This means that the job has been started with success ^^ */
             } else {
-                logInfo("[Execute] Unable to start job, let's try again")
+                logger.logInfo("[Execute] Unable to start job, let's try again")
                 return@synchronized execute()
             }
         } else {
-            logInfo("[Execute] Unable to complete execution, let's try again")
+            logger.logInfo("[Execute] Unable to complete execution, let's try again")
             return@synchronized execute()
         }
 
@@ -171,12 +123,11 @@ class Splinter<RETURN : Any> internal constructor(
      */
     @OptIn(Experimental::class)
     fun reset() {
-        logWarning("[Reset] Reset!")
+        logger.logWarning("[Reset] Reset!")
         if (isRunning) {
             cancel()
         }
-        _flow.value = dataResultNone()
-        _liveData.value = dataResultNone()
+        trySet(dataResultNone())
     }
 
     /**
@@ -186,12 +137,12 @@ class Splinter<RETURN : Any> internal constructor(
      */
     fun cancel() = kotlin.runCatching {
         if (job.isActive || job.isCancelled.not()) {
-            job.cancel("Cancel operation id: $id")
-            logWarning("[Cancel] Canceled with success!")
+            job.cancel("Cancel operation id: ${logger.id}")
+            logger.logWarning("[Cancel] Canceled with success!")
             onCancel?.invokeCatching()
         }
     }.onFailure {
-        logWarning("[Cancel] Cancel failed!", it)
+        logger.logWarning("[Cancel] Cancel failed!", it)
     }.getOrDefault(Unit)
 
     /**
@@ -201,43 +152,10 @@ class Splinter<RETURN : Any> internal constructor(
      */
     override fun onDestroy(owner: LifecycleOwner) {
         if (isRunning && status == DataResultStatus.LOADING) {
-            logWarning("[Cancel] Canceling job using lifecycle callback onDestroy!")
+            logger.logWarning("[Cancel] Canceling job using lifecycle callback onDestroy!")
             cancel()
         }
     }
-
-    /**
-     * Log level INFO
-     */
-    internal fun logInfo(message: String, error: Throwable? = null) =
-        if (quiet) {
-            Unit
-        } else {
-            Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]")
-                .i(error, message)
-        }
-
-    /**
-     * Log level ERROR
-     */
-    internal fun logError(message: String, error: Throwable? = null) =
-        if (quiet) {
-            Unit
-        } else {
-            Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]")
-                .e(error, message)
-        }
-
-    /**
-     * Log level WARN
-     */
-    internal fun logWarning(message: String, error: Throwable? = null) =
-        if (quiet) {
-            Unit
-        } else {
-            Timber.tag(if (id.isBlank()) "Splinter" else "Splinter[$id]")
-                .w(error, message)
-        }
 
     /**
      * Creates a new job to create a new operation from scratch!
@@ -245,9 +163,9 @@ class Splinter<RETURN : Any> internal constructor(
     @OptIn(Experimental::class)
     private fun newJob(): Job = config.scope.launch(start = CoroutineStart.LAZY) {
         kotlin.runCatching {
-            logInfo("[Job] Job started!")
+            logger.logInfo("[Job] Job started!")
             flow {
-                logInfo("[Job] Flow started!")
+                logger.logInfo("[Job] Flow started!")
                 if (config.policy == ExecutionPolicy.WAIT_IF_RUNNING) {
                     synchronized(operationLock) { /* - */ }
                 }
@@ -255,7 +173,7 @@ class Splinter<RETURN : Any> internal constructor(
                 requireNotNull(config.strategy) { "You Must set a strategy to run" }
                     .execute(this, this@Splinter)
             }.catch { flowFailure ->
-                logError("[Job] Something went wrong inside the operation", flowFailure)
+                logger.logError("[Job] Something went wrong inside the operation", flowFailure)
                 if (status != DataResultStatus.SUCCESS) {
                     requireNotNull(config.strategy) { "You Must set a strategy to run" }.flowError(
                         flowFailure,
@@ -263,9 +181,9 @@ class Splinter<RETURN : Any> internal constructor(
                         this@Splinter
                     )
                 }
-            }.onEach(_liveData::postValue).collect { _flow.emit(it) }
+            }.collect(::set)
         }.onFailure { majorFailure ->
-            logError("[Job] Major failure inside operation!", majorFailure)
+            logger.logError("[Job] Major failure inside operation!", majorFailure)
             if (status != DataResultStatus.SUCCESS) {
                 flow {
                     requireNotNull(config.strategy) { "You Must set a strategy to run" }.majorError(
@@ -273,10 +191,10 @@ class Splinter<RETURN : Any> internal constructor(
                         this,
                         this@Splinter
                     )
-                }.onEach(_liveData::postValue).collect { _flow.emit(it) }
+                }.collect(::set)
             }
         }
-        logInfo("[Job] Finished!")
+        logger.logInfo("[Job] Finished!")
     }
 
     /**
