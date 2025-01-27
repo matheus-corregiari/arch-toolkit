@@ -13,14 +13,17 @@ internal fun RepositoryHandler.createLocalPathRepository(project: Project) = mav
     maven.url = project.uri(project.rootProject.layout.buildDirectory.asFile.get().absolutePath)
 }
 
-internal fun RepositoryHandler.createSonatypeRepository(project: Project) = maven { maven ->
-    maven.name = "Sonatype"
-    maven.url = project.uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-    maven.credentials { cred ->
-        cred.username =
-            System.getenv("OSSRH_USERNAME") ?: (project.properties["OSSRH_USERNAME"] as String)
-        cred.password =
-            System.getenv("OSSRH_PASSWORD") ?: (project.properties["OSSRH_PASSWORD"] as String)
+internal fun RepositoryHandler.createSonatypeRepository(project: Project) {
+    if (project.missing("OSSRH_USERNAME", "OSSRH_PASSWORD")) return
+    maven { maven ->
+        maven.name = "Sonatype"
+        maven.url = project.uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+        maven.credentials { cred ->
+            cred.username =
+                System.getenv("OSSRH_USERNAME") ?: (project.properties["OSSRH_USERNAME"] as String)
+            cred.password =
+                System.getenv("OSSRH_PASSWORD") ?: (project.properties["OSSRH_PASSWORD"] as String)
+        }
     }
 }
 

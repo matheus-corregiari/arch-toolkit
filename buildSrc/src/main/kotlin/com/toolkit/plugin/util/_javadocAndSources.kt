@@ -18,7 +18,7 @@ private fun Project.setupJavadoc() {
         task.from(dokka.flatMap(DokkaTask::outputDirectory))
         task.archiveClassifier.set("javadoc")
         task.archiveFileName.set("${task.project.name}-release-javadoc.jar")
-    }.get()
+    }
 }
 
 private fun Project.setupSources() {

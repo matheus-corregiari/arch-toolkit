@@ -43,5 +43,8 @@ fun <T : Any> executeSplinter(
  * @return The ResponseFlow receiving updates from the Splinter
  */
 @Experimental
-fun <T : Any> splinterFlow(id: String = "", quiet: Boolean = false, request: suspend () -> T) =
-    executeSplinter(id, quiet, request).flow
+fun <T : Any> splinterFlow(
+    id: String = "",
+    quiet: Boolean = false,
+    request: suspend () -> T
+) = executeSplinter(id, quiet, request).flow
