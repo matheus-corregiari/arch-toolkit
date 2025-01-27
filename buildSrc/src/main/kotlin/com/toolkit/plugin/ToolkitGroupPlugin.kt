@@ -13,9 +13,7 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
         target.applyPlugins("jetbrains-kover")
 
         // Try to unify coverage reports
-        target.subprojects.onEach {
-            target.dependencies.add("kover", it)
-        }
+        target.subprojects.onEach { target.dependencies.add("kover", it) }
 
         // Generate file containing all modules with publish plugin attached
         target.tasks.register("publishModules") {
@@ -23,21 +21,27 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
             // Store target directory into a variable to avoid project reference in the configuration cache
             val directory = target.layout.buildDirectory.get()
             val file = directory.file("modules.txt").asFile
-            val publishLibraries = target.subprojects
-                .filter { it.plugins.hasPlugin("toolkit-publish") }
-                .map { "toolkit:${it.name}" }
+            val publishAndroidLibraries = target.allAndroid()
+            val publishMultiplatformLibraries = target.allMultiplatform()
             it.doLast { _ ->
                 Files.createDirectories(directory.asFile.toPath())
                 val json = JsonArray()
-                publishLibraries.onEach(json::add)
+                publishAndroidLibraries.onEach(json::add)
+                publishMultiplatformLibraries.onEach(json::add)
 
-                if (file.exists().not()) {
-                    file.createNewFile()
-                }
+                if (file.exists().not()) file.createNewFile()
                 file.writeText(json.toString())
                 println("Publish module list generated at: $file")
                 println(json.toString())
             }
         }
     }
+
+    private fun Project.allAndroid(prefix: String = "toolkit"): List<String> =
+        if (plugins.hasPlugin("toolkit-android-publish")) listOf("$prefix:$name")
+        else subprojects.flatMap { it.allAndroid("$prefix:$name") }
+
+    private fun Project.allMultiplatform(prefix: String = "toolkit"): List<String> =
+        if (plugins.hasPlugin("toolkit-multiplatform-publish")) listOf("$prefix:$name")
+        else subprojects.flatMap { it.allAndroid("$prefix:$name") }
 }

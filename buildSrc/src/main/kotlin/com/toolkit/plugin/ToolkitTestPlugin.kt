@@ -9,7 +9,6 @@ import com.toolkit.plugin.util.androidLibrary
 import com.toolkit.plugin.util.applyPlugins
 import com.toolkit.plugin.util.jacoco
 import com.toolkit.plugin.util.kover
-import com.toolkit.plugin.util.koverReport
 import com.toolkit.plugin.util.libs
 import com.toolkit.plugin.util.version
 import org.gradle.api.Plugin
@@ -27,11 +26,11 @@ internal class ToolkitTestPlugin : Plugin<Project> {
                 disable()
             }
         }
-        with(target.koverReport) {
-            defaults { reports ->
-                reports.mergeWith("debug")
-            }
-        }
+//        with(target.koverReport) {
+//            defaults { reports ->
+//                reports.mergeWith("debug")
+//            }
+//        }
 
         // Kover configuration
         with(target.jacoco) { toolVersion = target.libs.version("jacoco") }

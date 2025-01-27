@@ -7,7 +7,7 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
-import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
+//import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -50,10 +50,10 @@ internal val Project.kover: KoverProjectExtension
     get() = extensions.findByType(KoverProjectExtension::class.java)
         ?: error("Project do not implement kover plugin!")
 
-internal val Project.koverReport: KoverReportExtension
-    @Throws(IllegalStateException::class)
-    get() = extensions.findByType(KoverReportExtension::class.java)
-        ?: error("Project do not implement kover plugin!")
+//internal val Project.koverReport: KoverReportExtension
+//    @Throws(IllegalStateException::class)
+//    get() = extensions.findByType(KoverReportExtension::class.java)
+//        ?: error("Project do not implement kover plugin!")
 
 internal val Project.androidLibrary: LibraryExtension
     @Throws(IllegalStateException::class)

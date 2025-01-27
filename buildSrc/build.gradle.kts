@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.jetbrains.plugin)
     implementation(libs.jetbrains.extensions)
     implementation(libs.jetbrains.kover)
+    implementation(libs.jetbrains.dokka)
 }
 
 sourceSets {
@@ -50,6 +51,12 @@ gradlePlugin {
             description = "All default config"
             implementationClass = "com.toolkit.plugin.android.ToolkitBasePlugin"
         }
+        create("toolkit-android-publish") {
+            id = "toolkit-android-publish"
+            displayName = "Toolkit Publish Plugin"
+            description = "Enables and configure publish for module"
+            implementationClass = "com.toolkit.plugin.android.ToolkitPublishPlugin"
+        }
         //endregion
 
         //region Multiplatform
@@ -61,18 +68,18 @@ gradlePlugin {
             implementationClass = "com.toolkit.plugin.multiplatform.ToolkitLibraryPlugin"
         }
 
-        create("toolkit-multiplatform-sample") {
-            id = "toolkit-multiplatform-sample"
-            displayName = "Toolkit Sample Plugin"
-            description = "Plug and play for modules to show the world the wonders of tomorrow!"
-            implementationClass = "com.toolkit.plugin.multiplatform.ToolkitSamplePlugin"
-        }
-
         create("toolkit-multiplatform-base") {
             id = "toolkit-multiplatform-base"
             displayName = "Toolkit Base Plugin"
             description = "All default config"
             implementationClass = "com.toolkit.plugin.multiplatform.ToolkitBasePlugin"
+        }
+
+        create("toolkit-multiplatform-publish") {
+            id = "toolkit-multiplatform-publish"
+            displayName = "Toolkit Publish Plugin"
+            description = "Enables and configure publish for module"
+            implementationClass = "com.toolkit.plugin.multiplatform.ToolkitPublishPlugin"
         }
         //endregion
 
@@ -111,13 +118,6 @@ gradlePlugin {
             displayName = "Toolkit Group Plugin"
             description = "Enables and configure group for module"
             implementationClass = "com.toolkit.plugin.ToolkitGroupPlugin"
-        }
-
-        create("toolkit-publish") {
-            id = "toolkit-publish"
-            displayName = "Toolkit Publish Plugin"
-            description = "Enables and configure publish for module"
-            implementationClass = "com.toolkit.plugin.ToolkitPublishPlugin"
         }
         //endregion
     }
