@@ -1,6 +1,6 @@
 plugins {
     id("toolkit-android-library")
-    id("toolkit-publish")
+    id("toolkit-android-publish")
 }
 
 android.namespace = "br.com.arch.toolkit.delegate"
