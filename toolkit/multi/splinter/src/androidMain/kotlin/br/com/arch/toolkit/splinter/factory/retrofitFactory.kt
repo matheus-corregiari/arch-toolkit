@@ -99,7 +99,7 @@ private sealed class Adapter<T, R>(
     private val id: String,
     private val quiet: Boolean,
     private val responseType: Type,
-    private val kClass: Class<T>
+    kClass: Class<T>
 ) : CallAdapter<T, R> {
 
     class AsSplinter<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
@@ -131,9 +131,7 @@ private sealed class Adapter<T, R>(
             error("Error executing request ${response.message()}")
         }
     }.onCancel {
-        if (call.isExecuted.not() && call.isCanceled.not()) {
-            call.cancel()
-        }
+        if (call.isExecuted.not() && call.isCanceled.not()) call.cancel()
     }
 
     @Throws(IOException::class)
