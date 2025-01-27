@@ -1,5 +1,6 @@
 package com.toolkit.plugin.android
 
+import com.toolkit.plugin.util.attachAllTasksIntoAssembleRelease
 import com.toolkit.plugin.util.configurePom
 import com.toolkit.plugin.util.createLocalPathRepository
 import com.toolkit.plugin.util.createSonatypeRepository
@@ -67,6 +68,9 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
                 }
             }
         }
+
+        // Attach all needed tasks into assembleRelease task
+        target.attachAllTasksIntoAssembleRelease()
 
         // Setup Signing
         if (target.missing("signing.keyId", "signing.password", "signing.secretKeyRingFile")) {

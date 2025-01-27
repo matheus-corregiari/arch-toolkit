@@ -1,19 +1,26 @@
 plugins {
-    id("toolkit-android-library")
-    id("toolkit-publish")
+    id("toolkit-multiplatform-library")
+    id("toolkit-multiplatform-publish")
 }
 
 android.namespace = "br.com.arch.toolkit.splinter"
+android.buildFeatures.androidResources = false
+android.buildFeatures.buildConfig = false
 
-dependencies {
-    // Other Modules
-    implementation(project(":toolkit:multi:event-observer"))
-
+kotlin {
     // Libraries
-    compileOnly(libs.jetbrains.stdlib.jdk8)
-    compileOnly(libs.jetbrains.coroutines.core)
-    compileOnly(libs.jetbrains.coroutines.android)
-    compileOnly(libs.androidx.lifecycle.livedata)
-    compileOnly(libs.square.retrofit.main)
-    compileOnly(libs.square.timber)
+    sourceSets.commonMain.dependencies {
+        implementation(project(":toolkit:multi:event-observer"))
+
+        implementation(libs.jetbrains.coroutines.core)
+        implementation(libs.androidx.lifecycle.runtime)
+        implementation(libs.androidx.annotation)
+    }
+    sourceSets.androidMain.dependencies {
+        implementation(libs.androidx.lifecycle.livedata)
+        implementation(libs.jetbrains.coroutines.android)
+        implementation(libs.square.timber)
+        compileOnly(libs.square.okhttp.core)
+        compileOnly(libs.square.retrofit.main)
+    }
 }

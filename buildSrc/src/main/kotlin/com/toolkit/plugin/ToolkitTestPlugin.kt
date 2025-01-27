@@ -26,11 +26,6 @@ internal class ToolkitTestPlugin : Plugin<Project> {
                 disable()
             }
         }
-//        with(target.koverReport) {
-//            defaults { reports ->
-//                reports.mergeWith("debug")
-//            }
-//        }
 
         // Kover configuration
         with(target.jacoco) { toolVersion = target.libs.version("jacoco") }

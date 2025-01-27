@@ -7,16 +7,17 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
-//import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.jvm.tasks.Jar
+import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
-import com.android.build.gradle.LibraryExtension as LibraryExtension2
 
 internal val Project.libs: VersionCatalog
     @Throws(IllegalStateException::class)
@@ -50,19 +51,9 @@ internal val Project.kover: KoverProjectExtension
     get() = extensions.findByType(KoverProjectExtension::class.java)
         ?: error("Project do not implement kover plugin!")
 
-//internal val Project.koverReport: KoverReportExtension
-//    @Throws(IllegalStateException::class)
-//    get() = extensions.findByType(KoverReportExtension::class.java)
-//        ?: error("Project do not implement kover plugin!")
-
 internal val Project.androidLibrary: LibraryExtension
     @Throws(IllegalStateException::class)
     get() = extensions.findByType(LibraryExtension::class.java)
-        ?: error("Project do not implement android-library plugin!")
-
-internal val Project.androidLibrary2: LibraryExtension2
-    @Throws(IllegalStateException::class)
-    get() = extensions.findByType(LibraryExtension2::class.java)
         ?: error("Project do not implement android-library plugin!")
 
 internal val Project.androidApplication: ApplicationExtension
@@ -95,11 +86,22 @@ internal val Project.sign: SigningExtension
     get() = extensions.findByType(SigningExtension::class.java)
         ?: error("Project do not implement signing plugin!")
 
-internal fun Project.applyPlugins(vararg id: String) {
-    id.forEach {
-        plugins.apply(libs.findPlugin(it).get().get().pluginId)
-    }
-}
+internal fun Project.applyPlugins(vararg id: String) =
+    id.forEach { plugins.apply(libs.findPlugin(it).get().get().pluginId) }
 
 internal fun Project.hasPlugins(vararg id: String) =
     id.all { plugins.hasPlugin(libs.findPlugin(it).get().get().pluginId) }
+
+internal fun Project.attachAllTasksIntoAssembleRelease() = afterEvaluate { project ->
+    val all = project.tasks.filter { task ->
+        when (task) {
+            is Jar, is Sign, is Javadoc -> when {
+                task.name.contains("debug", true) -> false
+                else -> true
+            }
+
+            else -> false
+        }
+    }.map { project.tasks.named(it.name) }
+    project.tasks.findByName("assembleRelease")?.dependsOn(all)
+}
