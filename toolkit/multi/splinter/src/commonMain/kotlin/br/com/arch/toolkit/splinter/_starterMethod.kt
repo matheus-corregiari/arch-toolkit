@@ -26,27 +26,11 @@ fun <T : Any> splinter(
  *
  * @return A new Splinter
  */
-fun <T : Any> oneShotDonatello(
+fun <T : Any> executeSplinter(
     id: String = "",
     quiet: Boolean = false,
     request: suspend () -> T
 ) = splinter(id, quiet) { oneShotStrategy { request(request) } }.execute()
-
-/**
- * Method that creates Splinter instance and execute it,
- * returning the LiveData to you for observation
- *
- * @param id - Used to identify the logs from this splinter in logcat
- * @param quiet - Used to turn on/off the logs inside logcat
- * @param request - The request block to make your request
- *
- * @return The ResponseLiveData receiving updates from the Splinter
- */
-fun <T : Any> oneShotMichelangelo(
-    id: String = "",
-    quiet: Boolean = false,
-    request: suspend () -> T
-) = oneShotDonatello(id, quiet, request).liveData
 
 /**
  * Method that creates Splinter instance and execute it,
@@ -59,5 +43,5 @@ fun <T : Any> oneShotMichelangelo(
  * @return The ResponseFlow receiving updates from the Splinter
  */
 @Experimental
-fun <T : Any> oneShotLeonardo(id: String = "", quiet: Boolean = false, request: suspend () -> T) =
-    oneShotDonatello(id, quiet, request).flow
+fun <T : Any> splinterFlow(id: String = "", quiet: Boolean = false, request: suspend () -> T) =
+    executeSplinter(id, quiet, request).flow

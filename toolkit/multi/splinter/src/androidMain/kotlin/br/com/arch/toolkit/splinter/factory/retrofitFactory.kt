@@ -3,7 +3,7 @@ package br.com.arch.toolkit.splinter.factory
 import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.ResponseLiveData
-import br.com.arch.toolkit.splinter.oneShotDonatello
+import br.com.arch.toolkit.splinter.executeSplinter
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Response
@@ -121,7 +121,7 @@ private sealed class Adapter<T, R>(
 
     override fun responseType() = responseType
 
-    protected fun executeWithSplinter(call: Call<T>) = oneShotDonatello(id, quiet) {
+    fun executeWithSplinter(call: Call<T>) = executeSplinter(id, quiet) {
         val response = makeRequest(call)
         if (response.isSuccessful) {
             requireNotNull(response.body()) {
