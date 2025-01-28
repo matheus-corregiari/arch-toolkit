@@ -1,6 +1,7 @@
 package com.toolkit.plugin.multiplatform
 
 import com.toolkit.plugin.util.attachAllTasksIntoAssembleRelease
+import com.toolkit.plugin.util.configurePom
 import com.toolkit.plugin.util.createLocalPathRepository
 import com.toolkit.plugin.util.createSonatypeRepository
 import com.toolkit.plugin.util.missing
@@ -16,8 +17,12 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.plugins.signing.Sign
+import org.jetbrains.kotlin.konan.file.File
 
 internal class ToolkitPublishPlugin : Plugin<Project> {
+
+    private val Project.javadoc: String?
+        get() = "$projectDir/build/libs/$name-release-javadoc.jar".takeIf { File(it).exists }
 
     override fun apply(target: Project) {
         target.requireAny(
@@ -52,6 +57,14 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
                     pub.groupId = target.properties["GROUP"] as String
                     pub.artifactId = "${target.name}$suffix"
                     pub.version = target.versionName
+
+                    target.javadoc?.let { file ->
+                        pub.artifact(file) { artifact ->
+                            artifact.classifier = "javadoc"
+                            artifact.extension = "jar"
+                        }
+                    }
+                    pub.pom { target.configurePom(it, false) }
                 }
             }
         }

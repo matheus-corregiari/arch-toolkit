@@ -27,7 +27,7 @@ internal fun RepositoryHandler.createSonatypeRepository(project: Project) {
     }
 }
 
-internal fun Project.configurePom(pom: MavenPom) {
+internal fun Project.configurePom(pom: MavenPom, addDependencies: Boolean) {
     // Main Configuration
     if (pom.name.orNull.isNullOrBlank() && hasProperty("NAME")) {
         pom.name.set(properties["NAME"] as String)
@@ -69,6 +69,7 @@ internal fun Project.configurePom(pom: MavenPom) {
         ci.url.set("${pom.url.orNull}/actions")
     }
 
+    if (addDependencies.not()) return
     val mapOfConfigurations = mapOf(
         "runtime" to "implementation",
         "compile" to "api",
