@@ -16,14 +16,14 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
         target.subprojects.onEach { target.dependencies.add("kover", it) }
 
         // Generate file containing all modules with publish plugin attached
-        target.tasks.register("publishModules") {
-            it.group = "groupTask"
+        target.tasks.register("publishModules") { task ->
+            task.group = "groupTask"
             // Store target directory into a variable to avoid project reference in the configuration cache
-            val directory = target.layout.buildDirectory.get()
+            val directory = task.project.layout.buildDirectory.get()
             val file = directory.file("modules.txt").asFile
-            val publishAndroidLibraries = target.allAndroid()
-            val publishMultiplatformLibraries = target.allMultiplatform()
-            it.doLast { _ ->
+            val publishAndroidLibraries = task.project.allAndroid()
+            val publishMultiplatformLibraries = task.project.allMultiplatform()
+            task.doLast { _ ->
                 Files.createDirectories(directory.asFile.toPath())
                 val json = JsonArray()
                 publishAndroidLibraries.onEach(json::add)
@@ -39,9 +39,11 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
 
     private fun Project.allAndroid(prefix: String = "toolkit"): List<String> =
         if (plugins.hasPlugin("toolkit-android-publish")) listOf("$prefix:$name")
-        else subprojects.flatMap { it.allAndroid("$prefix:$name") }
+        else subprojects.filter { it.subprojects.isEmpty() }
+            .flatMap { it.allAndroid("$prefix:android") }
 
     private fun Project.allMultiplatform(prefix: String = "toolkit"): List<String> =
         if (plugins.hasPlugin("toolkit-multiplatform-publish")) listOf("$prefix:$name")
-        else subprojects.flatMap { it.allAndroid("$prefix:$name") }
+        else subprojects.filter { it.subprojects.isEmpty() }
+            .flatMap { it.allMultiplatform("$prefix:multi") }
 }

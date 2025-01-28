@@ -23,7 +23,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
     private val Project.aar: String?
         get() = "$projectDir/build/outputs/aar/$name-release.aar".takeIf { File(it).exists }
     private val Project.javadoc: String?
-        get() = "$projectDir/build/libs/$name-javadoc.jar".takeIf { File(it).exists }
+        get() = "$projectDir/build/libs/$name-release-javadoc.jar".takeIf { File(it).exists }
     private val Project.sources: String?
         get() = "$projectDir/build/libs/$name-release-sources.jar".takeIf { File(it).exists }
 

@@ -13,7 +13,6 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.jvm.tasks.Jar
-import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -95,7 +94,7 @@ internal fun Project.hasPlugins(vararg id: String) =
 internal fun Project.attachAllTasksIntoAssembleRelease() = afterEvaluate { project ->
     val all = project.tasks.filter { task ->
         when (task) {
-            is Jar, is Sign, is Javadoc -> when {
+            is Jar, is Javadoc -> when {
                 task.name.contains("debug", true) -> false
                 else -> true
             }
