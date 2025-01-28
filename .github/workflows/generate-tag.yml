@@ -69,4 +69,4 @@ jobs:
         run: ./gradlew :${{ matrix.module }}:assembleRelease
 
       - name: Publish ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:publishToolkitPublicationToSonatypeRepository
+        run: ./gradlew :${{ matrix.module }}:publishAllPublicationsToSonatypeRepository
