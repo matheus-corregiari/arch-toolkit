@@ -64,7 +64,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
                             artifact.extension = "jar"
                         }
                     }
-                    pub.pom { target.configurePom(it) }
+                    pub.pom { target.configurePom(it, true) }
                 }
             }
         }
