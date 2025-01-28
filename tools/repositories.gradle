@@ -1,5 +1,0 @@
-ext.repositoryList = {
-    google()
-    mavenCentral()
-    gradlePluginPortal()
-}
