@@ -9,7 +9,7 @@ import com.toolkit.plugin.util.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-internal class ToolkitOptimizeDependenciesAndFilterTasksPlugin : Plugin<Project> {
+internal class ToolkitOptimizePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         val libraries = target.libs

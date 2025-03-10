@@ -15,6 +15,6 @@ dependencies {
     implementation(libs.androidx.security)
     implementation(libs.androidx.startup)
 
-    // Tools
-    implementation(libs.square.timber)
+    // Other Module depedencies
+    implementation(project(":toolkit:multi:lumber"))
 }

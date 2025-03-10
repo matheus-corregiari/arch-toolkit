@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import br.com.arch.toolkit.lumber.Lumber
 import br.com.arch.toolkit.storage.StorageType
 import br.com.arch.toolkit.storage.util.edit
 import br.com.arch.toolkit.storage.util.get
 import br.com.arch.toolkit.storage.util.set
-import timber.log.Timber
 
 /**
  * This code defines a class called SharedPrefStorage that implements an interface called KeyValueStorage. This class is designed to store key-value pairs using Android's SharedPreferences system. Let's break down the code step by step:
@@ -149,10 +149,10 @@ sealed class SharedPrefStorage(
     override fun keys(): List<String> = sharedPref.all.keys.toList()
 
     private fun log(error: Throwable, message: String) {
-        Timber.tag("[Storage $name]").e(error, message)
+        Lumber.tag("[Storage $name]").error(error, message)
     }
 
     private fun log(message: String) {
-        Timber.tag("[Storage $name]").i(message)
+        Lumber.tag("[Storage $name]").info(message)
     }
 }
