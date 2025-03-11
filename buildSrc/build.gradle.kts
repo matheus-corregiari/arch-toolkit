@@ -11,13 +11,26 @@ version = "1.0.0"
 dependencies {
     compileOnly(gradleApi())
 
-    implementation(libs.androidx.plugin)
-    implementation(libs.detekt)
-    implementation(libs.ktlint)
-    implementation(libs.jetbrains.plugin)
-    implementation(libs.jetbrains.extensions)
-    implementation(libs.jetbrains.kover)
-    implementation(libs.jetbrains.dokka)
+    implementation(libs.androidx.plugin) {
+    }
+    implementation(libs.detekt) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
+    }
+    implementation(libs.ktlint) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
+    }
+    implementation(libs.jetbrains.plugin) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
+    }
+    implementation(libs.jetbrains.extensions) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
+    }
+    implementation(libs.jetbrains.kover) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
+    }
+    implementation(libs.jetbrains.dokka) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
+    }
 }
 
 sourceSets {
@@ -33,8 +46,7 @@ gradlePlugin {
         create("toolkit-android-library") {
             id = "toolkit-android-library"
             displayName = "Toolkit Library Plugin"
-            description =
-                "Plug and play for modules those should be a exported library to the world!"
+            description = "Plug and play for modules those should be a exported library!"
             implementationClass = "com.toolkit.plugin.android.ToolkitLibraryPlugin"
         }
 
@@ -88,8 +100,7 @@ gradlePlugin {
             id = "toolkit-optimize"
             displayName = "Toolkit Optimization Plugin"
             description = "Optimize dependencies"
-            implementationClass =
-                "com.toolkit.plugin.ToolkitOptimizeDependenciesAndFilterTasksPlugin"
+            implementationClass = "com.toolkit.plugin.ToolkitOptimizePlugin"
         }
 
         create("toolkit-compose") {

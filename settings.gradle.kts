@@ -19,6 +19,7 @@ rootProject.name = "Arch Toolkit"
 // Toolkit Libraries
 include(":toolkit:multi:event-observer")
 include(":toolkit:multi:splinter")
+include(":toolkit:multi:lumber")
 include(":toolkit:android:delegate")
 include(":toolkit:android:foldable")
 include(":toolkit:android:recycler-adapter")

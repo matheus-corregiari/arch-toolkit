@@ -6,8 +6,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.arch.toolkit.delegate.viewProvider
+import br.com.arch.toolkit.lumber.DebugTree
+import br.com.arch.toolkit.lumber.Lumber
 import br.com.arch.toolkit.sample.github.ui.xml.list.withoutPagination.RepositoryListActivity
-import timber.log.Timber
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.plant(Timber.DebugTree())
+        Lumber.plant(DebugTree())
         buttonCompose.setOnClickListener { onComposeFlowClick() }
         buttonXmlWithoutPagination.setOnClickListener { onXmlFlowClick() }
     }

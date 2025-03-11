@@ -46,21 +46,21 @@ class OneShot<RESULT : Any> : Strategy<RESULT>() {
         kotlin.runCatching {
             withTimeout(config.maxDuration.inWholeMilliseconds) {
                 config.cacheStrategy?.let { cache ->
-                    executor.logger.logInfo("\t[OneShot] Cache - Not set =(")
+                    executor.logger.info("\t[OneShot] Cache - Not set =(")
 
                     remoteVersion = cache.newVersion()
-                    executor.logger.logInfo("\t\t[Cache] - New version - $remoteVersion")
+                    executor.logger.info("\t\t[Cache] - New version - $remoteVersion")
 
                     cache.localData?.let { local ->
-                        executor.logger.logInfo("\t\t[Cache] - Local Data - $local")
+                        executor.logger.info("\t\t[Cache] - Local Data - $local")
 
                         val howToProceed = cache.howToProceed(remoteVersion, local)
-                        executor.logger.logInfo("\t\t[Cache] - How to proceed - $howToProceed")
+                        executor.logger.info("\t\t[Cache] - How to proceed - $howToProceed")
                         when (howToProceed) {
                             /* This means the cache is still valid! */
                             CacheStrategy.HowToProceed.STOP_FLOW_AND_DISPATCH_CACHE -> {
                                 remoteVersion = cache.localVersion
-                                executor.logger.logInfo(
+                                executor.logger.info(
                                     "\t\t[Cache] - " +
                                         "Dispatching Local data and finish - " +
                                         "Local version: $remoteVersion"
@@ -70,53 +70,53 @@ class OneShot<RESULT : Any> : Strategy<RESULT>() {
 
                             /* This means the cache is old, need to be refreshed, but we can still display it! */
                             CacheStrategy.HowToProceed.DISPATCH_CACHE -> {
-                                executor.logger.logInfo("\t\t[Cache] Do some pre-load stuff")
+                                executor.logger.info("\t\t[Cache] Do some pre-load stuff")
                                 localData = local
                             }
 
                             /* This means the cache is to old, even to display it, so let's ignore it =( */
                             CacheStrategy.HowToProceed.IGNORE_CACHE -> {
-                                executor.logger.logInfo("\t\t[Cache] - Not valid, let the show goes on")
+                                executor.logger.info("\t\t[Cache] - Not valid, let the show goes on")
                                 /* Nothing */
                             }
                         }
-                    } ?: executor.logger.logInfo("\t\t[OneShot] Cache - No local data =(")
-                } ?: executor.logger.logInfo("\t[OneShot] Cache - Not set =(")
+                    } ?: executor.logger.info("\t\t[OneShot] Cache - No local data =(")
+                } ?: executor.logger.info("\t[OneShot] Cache - Not set =(")
 
                 if (localData == null) {
-                    executor.logger.logInfo("\t[OneShot] Emit - Loading")
+                    executor.logger.info("\t[OneShot] Emit - Loading")
                 } else {
-                    executor.logger.logInfo("\t[OneShot] Emit - Loading with data! - $localData")
+                    executor.logger.info("\t[OneShot] Emit - Loading with data! - $localData")
                 }
                 collector.emitLoading(localData)
 
                 config.beforeRequest?.invokeCatching()
-                    ?.onSuccess { executor.logger.logInfo("\t[OneShot] Before Request - Success!") }
-                    ?.onFailure { executor.logger.logError("\t[OneShot] Before Request - Error!", it) }
+                    ?.onSuccess { executor.logger.info("\t[OneShot] Before Request - Success!") }
+                    ?.onFailure { executor.logger.error("\t[OneShot] Before Request - Error!", it) }
 
                 requireNotNull(config.request) { " " }.invoke()
             }
         }.onSuccess { data ->
-            executor.logger.logInfo("\t[OneShot] Executed with success, data: $data")
+            executor.logger.info("\t[OneShot] Executed with success, data: $data")
             config.afterRequest?.invokeCatching(data)
-                ?.onSuccess { executor.logger.logInfo("\t[OneShot] After Request - Success!") }
-                ?.onFailure { executor.logger.logError("\t[OneShot] After Request - Error!", it) }
+                ?.onSuccess { executor.logger.info("\t[OneShot] After Request - Success!") }
+                ?.onFailure { executor.logger.error("\t[OneShot] After Request - Error!", it) }
 
             handleMinDuration(timeInMillisBeforeStart, executor)
 
-            executor.logger.logInfo("\t[OneShot] Emit - Success Data! - $data")
+            executor.logger.info("\t[OneShot] Emit - Success Data! - $data")
             collector.emitData(data)
 
             remoteVersion?.runCatching { config.cacheStrategy?.update(this, data) }
-                ?.onSuccess { executor.logger.logInfo("\t\t[Cache] Save - Success!") }
-                ?.onFailure { executor.logger.logError("\t\t[Cache] Save - Error!", it) }
+                ?.onSuccess { executor.logger.info("\t\t[Cache] Save - Success!") }
+                ?.onFailure { executor.logger.error("\t\t[Cache] Save - Error!", it) }
         }.onFailure { error ->
             handleMinDuration(timeInMillisBeforeStart, executor)
             if (executor.status != DataResultStatus.SUCCESS) {
-                executor.logger.logError("\t[OneShot] Emit - Error! - $error")
+                executor.logger.error("\t[OneShot] Emit - Error! - $error")
                 flowError(error, collector, executor)
             } else {
-                executor.logger.logWarning("\t[OneShot] Got some error but I did not emit it - $error")
+                executor.logger.warn("\t[OneShot] Got some error but I did not emit it - $error")
             }
         }
     }
@@ -140,12 +140,12 @@ class OneShot<RESULT : Any> : Strategy<RESULT>() {
         when {
             /* This means that we need to wait the delta time to reach the minDuration set inside config*/
             delta > 0 -> {
-                executor.logger.logInfo("\t[OneShot] Execution time ${operationDuration}ms, need to wait more ${delta}ms")
+                executor.logger.info("\t[OneShot] Execution time ${operationDuration}ms, need to wait more ${delta}ms")
                 delay(delta)
             }
 
             /* This means that the operation already surpassed the minDuration, so we don't need to wait */
-            delta <= 0 -> executor.logger.logInfo("\t[OneShot] Execution time ${operationDuration}ms")
+            delta <= 0 -> executor.logger.info("\t[OneShot] Execution time ${operationDuration}ms")
         }
     }
 

@@ -5,6 +5,7 @@ package br.com.arch.toolkit.splinter
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import br.com.arch.toolkit.annotation.Experimental
+import br.com.arch.toolkit.lumber.Lumber
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.splinter.extension.invokeCatching
 import br.com.arch.toolkit.splinter.strategy.MirrorFlow
@@ -27,10 +28,13 @@ import kotlinx.coroutines.launch
  *
  * It uses a DataResult to wrap the responses and tells the observer what is going on inside this evil class
  */
-class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
+class Splinter<RETURN : Any> internal constructor(
+    private val id: String,
+    private val quiet: Boolean
+) :
     ResultResponseDataHolder<RETURN>(), DefaultLifecycleObserver {
 
-    internal val logger = Logger(id, quiet)
+    internal val logger: Lumber.Oak get() = Lumber.tag(id).quiet(quiet)
     override val scope = { config.scope }
 
     //region Jobs, Coroutines and Locks
@@ -79,7 +83,7 @@ class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
              **/
             ExecutionPolicy.WAIT_IF_RUNNING -> {
                 if (isRunning) {
-                    logger.logInfo("[Execute] Already running, let's enjoy the same running operation!")
+                    logger.info("[Execute] Already running, let's enjoy the same running operation!")
                     return@synchronized this
                 }
             }
@@ -94,24 +98,24 @@ class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
              * @see ExecutionPolicy
              **/
             ExecutionPolicy.CANCEL_RUNNING_AND_RESTART -> if (isRunning) {
-                logger.logInfo("[Execute] Oh no! It's running! Let's cancel it and start again!")
+                logger.info("[Execute] Oh no! It's running! Let's cancel it and start again!")
                 reset()
             }
         }
 
         if (isRunning.not()) {
             if (job.isActive || job.isCompleted || job.isCancelled) {
-                logger.logInfo("[Execute] Creating a new job!")
+                logger.info("[Execute] Creating a new job!")
                 job = newJob()
             }
             if (job.start()) {
                 /* This means that the job has been started with success ^^ */
             } else {
-                logger.logInfo("[Execute] Unable to start job, let's try again")
+                logger.info("[Execute] Unable to start job, let's try again")
                 return@synchronized execute()
             }
         } else {
-            logger.logInfo("[Execute] Unable to complete execution, let's try again")
+            logger.info("[Execute] Unable to complete execution, let's try again")
             return@synchronized execute()
         }
 
@@ -123,7 +127,7 @@ class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
      */
     @OptIn(Experimental::class)
     fun reset() {
-        logger.logWarning("[Reset] Reset!")
+        logger.warn("[Reset] Reset!")
         if (isRunning) {
             cancel()
         }
@@ -137,12 +141,12 @@ class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
      */
     fun cancel() = kotlin.runCatching {
         if (job.isActive || job.isCancelled.not()) {
-            job.cancel("Cancel operation id: ${logger.id}")
-            logger.logWarning("[Cancel] Canceled with success!")
+            job.cancel("Cancel operation id: $id")
+            logger.warn("[Cancel] Canceled with success!")
             onCancel?.invokeCatching()
         }
     }.onFailure {
-        logger.logWarning("[Cancel] Cancel failed!", it)
+        logger.warn("[Cancel] Cancel failed!", it)
     }.getOrDefault(Unit)
 
     /**
@@ -152,7 +156,7 @@ class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
      */
     override fun onDestroy(owner: LifecycleOwner) {
         if (isRunning && status == DataResultStatus.LOADING) {
-            logger.logWarning("[Cancel] Canceling job using lifecycle callback onDestroy!")
+            logger.warn("[Cancel] Canceling job using lifecycle callback onDestroy!")
             cancel()
         }
     }
@@ -163,9 +167,9 @@ class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
     @OptIn(Experimental::class)
     private fun newJob(): Job = config.scope.launch(start = CoroutineStart.LAZY) {
         kotlin.runCatching {
-            logger.logInfo("[Job] Job started!")
+            logger.info("[Job] Job started!")
             flow {
-                logger.logInfo("[Job] Flow started!")
+                logger.info("[Job] Flow started!")
                 if (config.policy == ExecutionPolicy.WAIT_IF_RUNNING) {
                     synchronized(operationLock) { /* - */ }
                 }
@@ -173,7 +177,7 @@ class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
                 requireNotNull(config.strategy) { "You Must set a strategy to run" }
                     .execute(this, this@Splinter)
             }.catch { flowFailure ->
-                logger.logError("[Job] Something went wrong inside the operation", flowFailure)
+                logger.error("[Job] Something went wrong inside the operation", flowFailure)
                 if (status != DataResultStatus.SUCCESS) {
                     requireNotNull(config.strategy) { "You Must set a strategy to run" }.flowError(
                         flowFailure,
@@ -183,7 +187,7 @@ class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
                 }
             }.collect(::set)
         }.onFailure { majorFailure ->
-            logger.logError("[Job] Major failure inside operation!", majorFailure)
+            logger.error("[Job] Major failure inside operation!", majorFailure)
             if (status != DataResultStatus.SUCCESS) {
                 flow {
                     requireNotNull(config.strategy) { "You Must set a strategy to run" }.majorError(
@@ -194,7 +198,7 @@ class Splinter<RETURN : Any> internal constructor(id: String, quiet: Boolean) :
                 }.collect(::set)
             }
         }
-        logger.logInfo("[Job] Finished!")
+        logger.info("[Job] Finished!")
     }
 
     /**
