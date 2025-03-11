@@ -34,7 +34,7 @@ class Splinter<RETURN : Any> internal constructor(
 ) :
     ResultResponseDataHolder<RETURN>(), DefaultLifecycleObserver {
 
-    internal val logger: Lumber.Oak get() = Lumber.apply { tag(id);quiet(quiet) }
+    internal val logger: Lumber.Oak get() = Lumber.tag(id).quiet(quiet)
     override val scope = { config.scope }
 
     //region Jobs, Coroutines and Locks
