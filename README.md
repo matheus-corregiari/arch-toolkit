@@ -16,12 +16,17 @@ all of them, I'm bringing one by one.
 
 ###### For now:
 
-- **[Statemachine](toolkit/statemachine)** - A simple way to handle view change states
-- **[Recycler-Adapter](toolkit/recycler-adapter)** - A Recycler Adapter implementation using Custom
+KMP
+- **[Splinter](toolkit/multi/splinter)** - WIP
+- **[Event Observer](toolkit/multi/event-observer)** - WIP
+- **[Lumber](toolkit/multi/lumber)** - WIP
+
+Android
+- **[Statemachine](toolkit/android/statemachine)** - A simple way to handle view change states
+- **[Recycler-Adapter](toolkit/android/recycler-adapter)** - A Recycler Adapter implementation using Custom
   Views and a "bind" interface
-- **[Event Observer](toolkit/event-observer)** - Way to observe async events with LiveData and Flow
-- **[Delegate](toolkit/delegate)** - Some custom implementations for delegated properties
-- **[Foldable](toolkit/foldable)** - Extensions to facilitate handling foldable state changes
+- **[Delegate](toolkit/android/delegate)** - Some custom implementations for delegated properties
+- **[Foldable](toolkit/android/foldable)** - Extensions to facilitate handling foldable state changes
 
 ###### In progress:
 
