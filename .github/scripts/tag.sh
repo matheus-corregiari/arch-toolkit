@@ -21,7 +21,7 @@ if [ -z "$matched_message" ]; then
 fi
 
 # Get version in message
-version=$(sed -E 's?.+(release|hotfix)/([0-9]+.[0-9]+.[0-9]+)?\2?g' <<< "$matched_message")
+version=$(sed -E 's?.+(release|hotfix)/([0-9]+.[0-9]+.[0-9]+)?\2?g' <<< "$matched_message" | head -n1)
 echo "Tag: $version"
 
 # Create and push tag
