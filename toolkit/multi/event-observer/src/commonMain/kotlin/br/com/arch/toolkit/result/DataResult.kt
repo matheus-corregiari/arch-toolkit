@@ -287,7 +287,7 @@ data class DataResult<T>(
     fun <R> transform(transform: (T) -> R): DataResult<R> = data?.runCatching {
         DataResult(transform(this), error, status)
     }?.getOrElse { error ->
-        DataResult<R>(null, error, status)
+        DataResult<R>(null, error, DataResultStatus.ERROR)
     } ?: DataResult(null, error, status)
 
     /**

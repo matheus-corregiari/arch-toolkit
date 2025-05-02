@@ -31,11 +31,13 @@ class LongTransformTest {
 
     private class StoppableObserver : LifecycleOwner {
         private val registry = LifecycleRegistry(this)
+
+        init {
+            registry.currentState = Lifecycle.State.RESUMED
+        }
+
         override val lifecycle: Lifecycle
-            get() {
-                registry.currentState = Lifecycle.State.RESUMED
-                return registry
-            }
+            get() = registry
 
         fun stop() {
             registry.currentState = Lifecycle.State.DESTROYED
