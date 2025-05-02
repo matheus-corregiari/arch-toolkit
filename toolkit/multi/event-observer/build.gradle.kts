@@ -19,13 +19,13 @@ kotlin {
 
     // Test Libraries
     sourceSets.commonTest.dependencies {
-        implementation(libs.androidx.test.core)
         implementation(libs.jetbrains.test.coroutines)
         implementation(libs.mockito.test.core)
         implementation(libs.mockito.test.kotlin)
         implementation(libs.mockk.test.agent)
     }
     sourceSets.androidUnitTest.dependencies {
+        implementation(libs.androidx.test.core)
         implementation(libs.mockk.test.android)
     }
 }

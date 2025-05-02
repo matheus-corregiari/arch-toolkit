@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.jvm)
 }
 
-kotlin { jvmToolchain(17) }
+kotlin { jvmToolchain(21) }
 
 group = "com.toolkit.plugin"
 version = "1.0.0"

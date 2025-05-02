@@ -11,6 +11,7 @@ import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Experimental
+@OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 open class ResponseFlow<T> : StateFlow<DataResult<T>> {
 
     protected val innerFlow: MutableStateFlow<DataResult<T>>
