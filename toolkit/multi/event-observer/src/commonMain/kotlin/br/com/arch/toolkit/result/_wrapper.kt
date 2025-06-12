@@ -2,21 +2,17 @@
     "KotlinNullnessAnnotation",
     "TooManyFunctions",
     "CyclomaticComplexMethod",
-    "UNCHECKED_CAST"
+    "UNCHECKED_CAST",
 )
 
 package br.com.arch.toolkit.result
 
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
-import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.exception.DataResultException
 import br.com.arch.toolkit.exception.DataResultTransformationException
 import br.com.arch.toolkit.flow.ResponseFlow
-import br.com.arch.toolkit.result.DataResultStatus.ERROR
-import br.com.arch.toolkit.result.DataResultStatus.LOADING
-import br.com.arch.toolkit.result.DataResultStatus.NONE
-import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
+import br.com.arch.toolkit.result.EventDataStatus.DoesNotMatter
 import br.com.arch.toolkit.util.dataResultError
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -37,7 +33,6 @@ import java.lang.Thread.UncaughtExceptionHandler
  * @see ResponseFlow
  */
 class ObserveWrapper<T> internal constructor() {
-
     /**
      * List of all events configured
      */
@@ -46,11 +41,12 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Big "catch" to handle unexpected exceptions inside the executions of the events
      */
-    private val scopeUncaughtError = CoroutineExceptionHandler { _, throwable ->
-        val thread = Thread.currentThread()
-        thread.uncaughtExceptionHandler = DataResultUncaughtExceptionHandler()
-        thread.uncaughtExceptionHandler?.uncaughtException(thread, throwable)
-    }
+    private val scopeUncaughtError =
+        CoroutineExceptionHandler { _, throwable ->
+            val thread = Thread.currentThread()
+            thread.uncaughtExceptionHandler = DataResultUncaughtExceptionHandler()
+            thread.uncaughtExceptionHandler?.uncaughtException(thread, throwable)
+        }
 
     /**
      * Scope to run all the events
@@ -89,48 +85,13 @@ class ObserveWrapper<T> internal constructor() {
      * @see CoroutineDispatcher
      */
     private var transformDispatcher: CoroutineDispatcher = Dispatchers.IO
+
     fun transformDispatcher(dispatcher: CoroutineDispatcher): ObserveWrapper<T> {
         transformDispatcher = dispatcher
         return this
     }
 
     //region Loading
-    /**
-     * Observes only the Loading Status
-     *
-     * ## Usage:
-     * ```kotlin
-     * val dataResult = dataResultSuccess("data")
-     * dataResult.unwrap {
-     *     loading(single = true /* default - false */, observer = { loading ->
-     *         if(loading) {
-     *             // Display Loading
-     *         } else {
-     *             // Hide Loading
-     *         }
-     *     })
-     *}
-     * ```
-     *
-     * @param single If true, will execute only until the first non-LOADING status, Default: false
-     * @param observer Will receive true when the actual value has the LOADING status, false otherwise
-     *
-     * @see DataResult
-     * @see DataResultStatus
-     * @see ObserveWrapper.loading
-     * @see ObserveWrapper.hideLoading
-     * @see ObserveWrapper.showLoading
-     *
-     * @return ObserveWrapper`<T>`
-     */
-    @NonNull
-    fun loading(
-        @NonNull single: Boolean = false,
-        @NonNull observer: suspend (Boolean) -> Unit
-    ): ObserveWrapper<T> {
-        eventList.add(LoadingEvent(observer, single, EventDataStatus.DOESNT_MATTER))
-        return this
-    }
 
     /**
      * Observes only the Loading Status, receives true when status is LOADING and false when status sis non-LOADING
@@ -139,18 +100,22 @@ class ObserveWrapper<T> internal constructor() {
      * ```kotlin
      * val dataResult = dataResultSuccess("data")
      * dataResult.unwrap {
-     *     loading(single = true /* default - false */, withData = false, observer = { loading ->
-     *         if(loading) {
-     *             // Display Loading
-     *         } else {
-     *             // Hide Loading
+     *     loading(
+     *         single = true /* default - false */,
+     *         dataStatus = EventDataStatus.WithData /* default - EventDataStatus.DoesNotMatter */,
+     *         observer = { loading ->
+     *             if(loading) {
+     *                 // Display Loading
+     *             } else {
+     *                 // Hide Loading
+     *             }
      *         }
-     *     })
+     *     )
      *}
      * ```
      *
      * @param single If true, will execute only until the first non-LOADING status, Default: false
-     * @param withData If true, will execute only with NonNull data
+     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
      * @param observer Will receive true when the actual value has the LOADING status, false otherwise
      *
      * @see DataResult
@@ -164,10 +129,10 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun loading(
         @NonNull single: Boolean = false,
-        @NonNull withData: Boolean,
-        @NonNull observer: suspend (Boolean) -> Unit
+        @NonNull dataStatus: EventDataStatus = DoesNotMatter,
+        @NonNull observer: suspend (Boolean) -> Unit,
     ): ObserveWrapper<T> {
-        eventList.add(LoadingEvent(observer, single, getEventDataStatus(withData)))
+        eventList.add(LoadingEvent(observer, single, dataStatus))
         return this
     }
 
@@ -178,13 +143,18 @@ class ObserveWrapper<T> internal constructor() {
      * ```kotlin
      * val dataResult = dataResultSuccess("data")
      * dataResult.unwrap {
-     *     showLoading(single = true /* default - false */, observer = {
-     *         // Display Loading
-     *     })
+     *     showLoading(
+     *         single = true /* default - false */,
+     *         dataStatus = EventDataStatus.WithData /* default - EventDataStatus.DoesNotMatter */,
+     *         observer = {
+     *             // Display Loading
+     *         }
+     *     )
      *}
      * ```
      *
      * @param single If true, will execute only until the first LOADING status, Default: false
+     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
      * @param observer Will be called when the actual value has the LOADING status
      *
      * @see DataResult
@@ -198,44 +168,10 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun showLoading(
         @NonNull single: Boolean = false,
-        @NonNull observer: suspend () -> Unit
+        @NonNull dataStatus: EventDataStatus = DoesNotMatter,
+        @NonNull observer: suspend () -> Unit,
     ): ObserveWrapper<T> {
-        eventList.add(ShowLoadingEvent(observer, single, EventDataStatus.DOESNT_MATTER))
-        return this
-    }
-
-    /**
-     * Observes when the DataResult has the Loading Status
-     *
-     * ## Usage:
-     * ```kotlin
-     * val dataResult = dataResultSuccess("data")
-     * dataResult.unwrap {
-     *     showLoading(single = true /* default - false */, withData = false, observer = {
-     *         // Display Loading
-     *     })
-     *}
-     * ```
-     *
-     * @param single If true, will execute only until the first LOADING status, Default: false
-     * @param withData If true, will execute only with the status LOADING and with NonNull data
-     * @param observer Will be called when the actual value has the LOADING status
-     *
-     * @see DataResult
-     * @see DataResultStatus
-     * @see ObserveWrapper.loading
-     * @see ObserveWrapper.hideLoading
-     * @see ObserveWrapper.showLoading
-     *
-     * @return ObserveWrapper`<T>`
-     */
-    @NonNull
-    fun showLoading(
-        @NonNull single: Boolean = false,
-        @NonNull withData: Boolean,
-        @NonNull observer: suspend () -> Unit
-    ): ObserveWrapper<T> {
-        eventList.add(ShowLoadingEvent(observer, single, getEventDataStatus(withData)))
+        eventList.add(ShowLoadingEvent(observer, single, dataStatus))
         return this
     }
 
@@ -246,13 +182,18 @@ class ObserveWrapper<T> internal constructor() {
      * ```kotlin
      * val dataResult = dataResultSuccess("data")
      * dataResult.unwrap {
-     *     hideLoading(single = true /* default - false */, observer = {
-     *         // Hide Loading
-     *     })
+     *     hideLoading(
+     *         single = true /* default - false */,
+     *         dataStatus = EventDataStatus.WithData /* default - EventDataStatus.DoesNotMatter */,
+     *         observer = {
+     *             // Hide Loading
+     *         }
+     *     )
      *}
      * ```
      *
      * @param single If true, will execute only until the first non-LOADING status, Default: false
+     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
      * @param observer Will be called when the actual value hasn't the LOADING status
      *
      * @see DataResult
@@ -266,44 +207,10 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun hideLoading(
         @NonNull single: Boolean = false,
-        @NonNull observer: suspend () -> Unit
+        @NonNull dataStatus: EventDataStatus = DoesNotMatter,
+        @NonNull observer: suspend () -> Unit,
     ): ObserveWrapper<T> {
-        eventList.add(HideLoadingEvent(observer, single, EventDataStatus.DOESNT_MATTER))
-        return this
-    }
-
-    /**
-     * Observes when the DataResult does not have the Loading Status
-     *
-     * ## Usage:
-     * ```kotlin
-     * val dataResult = dataResultSuccess("data")
-     * dataResult.unwrap {
-     *     hideLoading(single = true /* default - false */, withData = false, observer = {
-     *         // Hide Loading
-     *     })
-     *}
-     * ```
-     *
-     * @param single If true, will execute only until the first non-LOADING status, Default: false
-     * @param withData If true, will execute only with the status non-LOADING and with NonNull data
-     * @param observer Will be called when the actual value hasn't the LOADING status
-     *
-     * @see DataResult
-     * @see DataResultStatus
-     * @see ObserveWrapper.loading
-     * @see ObserveWrapper.hideLoading
-     * @see ObserveWrapper.showLoading
-     *
-     * @return ObserveWrapper`<T>`
-     */
-    @NonNull
-    fun hideLoading(
-        @NonNull single: Boolean = false,
-        @NonNull withData: Boolean,
-        @NonNull observer: suspend () -> Unit
-    ): ObserveWrapper<T> {
-        eventList.add(HideLoadingEvent(observer, single, getEventDataStatus(withData)))
+        eventList.add(HideLoadingEvent(observer, single, dataStatus))
         return this
     }
     //endregion
