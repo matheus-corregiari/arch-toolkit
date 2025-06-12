@@ -1120,18 +1120,11 @@ class ObserveWrapperTest_errorWithThrowable {
         crossinline block: suspend (wrapper: ObserveWrapper<T>) -> Unit
     ) = runTest {
         val wrapper = ObserveWrapper<T>()
-        if (single) {
-            wrapper.error(
-                single = true,
-                withData = withData,
-                observer = mockedError
-            )
-        } else {
-            wrapper.error(
-                withData = withData,
-                observer = mockedError
-            )
-        }
+        wrapper.error(
+            single = single,
+            dataStatus = if (withData) EventDataStatus.WithData else EventDataStatus.WithoutData,
+            observer = mockedError
+        )
         verifyNoInteractions(mockedError)
         assertEquals(1, wrapper.eventList.size)
 
