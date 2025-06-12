@@ -1120,12 +1120,11 @@ class ObserveWrapperTest_success {
         crossinline block: suspend (wrapper: ObserveWrapper<T>) -> Unit
     ) = runTest {
         val wrapper = ObserveWrapper<T>()
-
-        if (single) {
-            wrapper.success(single = true, withData = withData, observer = mockedSuccess)
-        } else {
-            wrapper.success(withData = withData, observer = mockedSuccess)
-        }
+        wrapper.success(
+            single = single,
+            dataStatus = if (withData) EventDataStatus.WithData else EventDataStatus.WithoutData,
+            observer = mockedSuccess
+        )
         verifyNoInteractions(mockedSuccess)
         assertEquals(1, wrapper.eventList.size)
 

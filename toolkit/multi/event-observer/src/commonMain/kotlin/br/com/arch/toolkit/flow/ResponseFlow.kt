@@ -1,7 +1,8 @@
+@file:OptIn(ExperimentalForInheritanceCoroutinesApi::class)
+
 package br.com.arch.toolkit.flow
 
 import androidx.annotation.NonNull
-import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
@@ -24,8 +25,6 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@Experimental
-@OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 open class ResponseFlow<T> : StateFlow<DataResult<T>> {
 
     protected val innerFlow: MutableStateFlow<DataResult<T>>

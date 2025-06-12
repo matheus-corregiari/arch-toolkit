@@ -1240,20 +1240,12 @@ class ObserveWrapperTest_errorWithTransformer {
     ) = runTest {
         val wrapper = ObserveWrapper<T>()
         wrapper.transformDispatcher(Dispatchers.Main.immediate)
-        if (single) {
-            wrapper.error(
-                single = true,
-                withData = withData,
-                transformer = mockedTransformer,
-                observer = mockedError
-            )
-        } else {
-            wrapper.error(
-                transformer = mockedTransformer,
-                withData = withData,
-                observer = mockedError
-            )
-        }
+        wrapper.error(
+            single = single,
+            dataStatus = if (withData) EventDataStatus.WithData else EventDataStatus.WithoutData,
+            transformer = mockedTransformer,
+            observer = mockedError
+        )
         verifyNoInteractions(mockedError)
         assertEquals(1, wrapper.eventList.size)
 

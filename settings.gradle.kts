@@ -18,6 +18,7 @@ rootProject.name = "Arch Toolkit"
 
 // Toolkit Libraries
 include(":toolkit:multi:event-observer")
+include(":toolkit:multi:event-observer-compose")
 include(":toolkit:multi:splinter")
 include(":toolkit:multi:lumber")
 include(":toolkit:android:delegate")

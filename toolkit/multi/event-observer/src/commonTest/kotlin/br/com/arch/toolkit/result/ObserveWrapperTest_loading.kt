@@ -1121,11 +1121,11 @@ class ObserveWrapperTest_loading {
         crossinline block: suspend (wrapper: ObserveWrapper<T>) -> Unit
     ) = runTest {
         val wrapper = ObserveWrapper<T>()
-        if (single) {
-            wrapper.loading(single = true, withData = withData, observer = mockedLoading)
-        } else {
-            wrapper.loading(withData = withData, observer = mockedLoading)
-        }
+        wrapper.loading(
+            single = single,
+            dataStatus = if (withData) EventDataStatus.WithData else EventDataStatus.WithoutData,
+            observer = mockedLoading
+        )
         verifyNoInteractions(mockedLoading)
         assertEquals(1, wrapper.eventList.size)
 
