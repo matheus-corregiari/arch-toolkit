@@ -9,3 +9,6 @@ ktlint_code_style = android
 ktlint_standard_no-wildcard-imports = enabled
 ktlint_standard_import-ordering = enabled
 ktlint_standard_filename = disabled
+ktlint_standard_function-naming = disabled
+ktlint_standard_function-signature = disabled
+ktlint_standard_multiline-expression-wrapping = disabled

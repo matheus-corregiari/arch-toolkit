@@ -29,9 +29,8 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.requireAny(
-            "toolkit-android-publish",
-            "toolkit-android-library",
-            "toolkit-multiplatform-library"
+            currentPluginName = "toolkit-android-publish",
+            names = arrayOf("toolkit-android-library")
         )
         target.plugins.apply("maven-publish")
 

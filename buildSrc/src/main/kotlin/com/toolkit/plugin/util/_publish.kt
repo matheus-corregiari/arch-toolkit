@@ -93,7 +93,10 @@ private fun Node.addDependency(dependency: Dependency, scope: String) {
 
     if (projectDependency != null) {
         val publishExtension = projectDependency.publishing
-        publishExtension.publications.filterIsInstance<MavenPublication>().onEach { pub ->
+        val allMaven = publishExtension.publications.filterIsInstance<MavenPublication>()
+        val pub = allMaven.firstOrNull { it.artifactId.endsWith("-android") }
+            ?: allMaven.firstOrNull()
+        pub?.let {
             val node = appendNode("dependency")
             node.appendNode("groupId", pub.groupId)
             node.appendNode("artifactId", pub.artifactId)
