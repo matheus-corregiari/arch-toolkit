@@ -216,44 +216,6 @@ class ObserveWrapper<T> internal constructor() {
     //endregion
 
     //region Error
-    /**
-     * Observes when the DataResult has the Error Status
-     *
-     * ## Usage:
-     * ```kotlin
-     * fun onError() {
-     *     // Handle Error
-     * }
-     *
-     * val dataResult = dataResultSuccess("data")
-     * dataResult.unwrap {
-     *     error(single = true /* default - false */, observer = ::onError)
-     *}
-     * ```
-     *
-     * @param single If true, will execute only until the first ERROR status, Default: false
-     * @param observer Will be called when the actual value has the ERROR status
-     *
-     * @see DataResult
-     * @see DataResultStatus
-     * @see ObserveWrapper.error
-     *
-     * @return ObserveWrapper`<T>`
-     */
-    @NonNull
-    fun error(
-        @NonNull single: Boolean = false,
-        @NonNull observer: suspend () -> Unit
-    ): ObserveWrapper<T> {
-        eventList.add(
-            ErrorEvent(
-                WrapObserver<Throwable, Any>(emptyObserver = observer),
-                single,
-                EventDataStatus.DOESNT_MATTER
-            )
-        )
-        return this
-    }
 
     /**
      * Observes when the DataResult has the Error Status
@@ -266,12 +228,16 @@ class ObserveWrapper<T> internal constructor() {
      *
      * val dataResult = dataResultSuccess("data")
      * dataResult.unwrap {
-     *     error(single = true /* default - false */, withData = false, observer = ::onError)
+     *     error(
+     *         single = true /* default - false */,
+     *         dataStatus = EventDataStatus.WithData /* default - EventDataStatus.DoesNotMatter */,
+     *         observer = ::onError
+     *     )
      *}
      * ```
      *
      * @param single If true, will execute only until the first ERROR status, Default: false
-     * @param withData If true, will execute only with the status ERROR and with NonNull data
+     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
      * @param observer Will be called when the actual value has the ERROR status
      *
      * @see DataResult
@@ -283,15 +249,15 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun error(
         @NonNull single: Boolean = false,
-        @NonNull withData: Boolean,
-        @NonNull observer: suspend () -> Unit
+        @NonNull dataStatus: EventDataStatus = DoesNotMatter,
+        @NonNull observer: suspend () -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(
             ErrorEvent(
-                WrapObserver<Throwable, Any>(emptyObserver = observer),
-                single,
-                getEventDataStatus(withData)
-            )
+                wrapper = WrapObserver<Throwable, Any>(emptyObserver = observer),
+                single = single,
+                dataStatus = dataStatus,
+            ),
         )
         return this
     }
@@ -303,13 +269,18 @@ class ObserveWrapper<T> internal constructor() {
      * ```kotlin
      * val dataResult = dataResultSuccess("data")
      * dataResult.unwrap {
-     *     error(single = true /* default - false */, observer = { error ->
-     *         // Handle Error
-     *     })
+     *     error(
+     *         single = true /* default - false */,
+     *         dataStatus = EventDataStatus.WithData /* default - EventDataStatus.DoesNotMatter */,
+     *         observer = { error ->
+     *             // Handle Error
+     *         }
+     *     )
      *}
      * ```
      *
      * @param single If true, will execute only until the first ERROR status, Default: false
+     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
      * @param observer Will receive the not null error when the actual value has the ERROR status
      *
      * @see DataResult
@@ -321,53 +292,15 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun error(
         @NonNull single: Boolean = false,
-        @NonNull observer: suspend (Throwable) -> Unit
+        @NonNull dataStatus: EventDataStatus = DoesNotMatter,
+        @NonNull observer: suspend (Throwable) -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(
             ErrorEvent(
-                WrapObserver<Throwable, Any>(observer = observer),
-                single,
-                EventDataStatus.DOESNT_MATTER
-            )
-        )
-        return this
-    }
-
-    /**
-     * Observes when the DataResult has the Error Status and have error
-     *
-     * ## Usage:
-     * ```kotlin
-     * val dataResult = dataResultSuccess("data")
-     * dataResult.unwrap {
-     *     error(single = true /* default - false */, withData = false, observer = { error ->
-     *         // Handle Error
-     *     })
-     *}
-     * ```
-     *
-     * @param single If true, will execute only until the first ERROR status, Default: false
-     * @param withData If true, will execute only with the status ERROR and with NonNull data
-     * @param observer Will receive the not null error when the actual value has the ERROR status
-     *
-     * @see DataResult
-     * @see DataResultStatus
-     * @see ObserveWrapper.error
-     *
-     * @return ObserveWrapper`<T>`
-     */
-    @NonNull
-    fun error(
-        @NonNull single: Boolean = false,
-        @NonNull withData: Boolean,
-        @NonNull observer: suspend (Throwable) -> Unit
-    ): ObserveWrapper<T> {
-        eventList.add(
-            ErrorEvent(
-                WrapObserver<Throwable, Any>(observer = observer),
-                single,
-                getEventDataStatus(withData)
-            )
+                wrapper = WrapObserver<Throwable, Any>(observer = observer),
+                single = single,
+                dataStatus = dataStatus,
+            ),
         )
         return this
     }
@@ -382,8 +315,9 @@ class ObserveWrapper<T> internal constructor() {
      * dataResult.unwrap {
      *     error(
      *         single = true /* default - false */,
-     *        transformer = ::transform,
-     *        observer = { transformedError ->
+     *         dataStatus = EventDataStatus.WithData /* default - EventDataStatus.DoesNotMatter */,
+     *         transformer = ::transform,
+     *         observer = { transformedError ->
      *             // Handle Transformed Error
      *         }
      *     )
@@ -391,6 +325,7 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      *
      * @param single If true, will execute only until the first ERROR status, Default: false
+     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
      * @param transformer Transform the Throwable into R before deliver it to the observer
      * @param observer Will receive the not null transformed error when the actual value has the ERROR status
      *
@@ -403,68 +338,20 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun <R> error(
         @NonNull single: Boolean = false,
+        @NonNull dataStatus: EventDataStatus = DoesNotMatter,
         @NonNull transformer: suspend (Throwable) -> R,
-        @NonNull observer: suspend (R) -> Unit
+        @NonNull observer: suspend (R) -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(
             ErrorEvent(
-                WrapObserver(
-                    transformer = transformer,
-                    transformerObserver = observer
-                ),
-                single,
-                EventDataStatus.DOESNT_MATTER
-            )
-        )
-        return this
-    }
-
-    /**
-     * Observes when the DataResult has the Error Status and have error
-     *
-     * ```kotlin
-     * fun transform(error: Throwable): String = error.message
-     *
-     * val dataResult = dataResultSuccess("data")
-     * dataResult.unwrap {
-     *     error(
-     *         single = true /* default - false */,
-     *        withData = false,
-     *        transformer = ::transform,
-     *        observer = { transformedError ->
-     *             // Handle Transformed Error
-     *         }
-     *     )
-     *}
-     * ```
-     *
-     * @param single If true, will execute only until the first ERROR status, Default: false
-     * @param withData If true, will execute only with the status ERROR and with NonNull data
-     * @param transformer Transform the Throwable into R before deliver it to the observer
-     * @param observer Will receive the not null transformed error when the actual value has the ERROR status
-     *
-     * @see DataResult
-     * @see DataResultStatus
-     * @see ObserveWrapper.error
-     *
-     * @return ObserveWrapper`<T>`
-     */
-    @NonNull
-    fun <R> error(
-        @NonNull single: Boolean = false,
-        @NonNull withData: Boolean,
-        @NonNull transformer: suspend (Throwable) -> R,
-        @NonNull observer: suspend (R) -> Unit
-    ): ObserveWrapper<T> {
-        eventList.add(
-            ErrorEvent(
-                WrapObserver(
-                    transformer = transformer,
-                    transformerObserver = observer
-                ),
-                single,
-                getEventDataStatus(withData)
-            )
+                wrapper =
+                    WrapObserver(
+                        transformer = transformer,
+                        transformerObserver = observer,
+                    ),
+                single = single,
+                dataStatus = dataStatus,
+            ),
         )
         return this
     }
