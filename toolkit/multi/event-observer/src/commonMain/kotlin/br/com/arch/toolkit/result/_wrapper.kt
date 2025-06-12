@@ -402,14 +402,18 @@ class ObserveWrapper<T> internal constructor() {
      * ```kotlin
      * val dataResult = dataResultSuccess("data")
      * dataResult.unwrap {
-     *     success(single = true /* default - false */, withData = false, observer = {
-     *         // Handle Success
-     *     })
+     *     success(
+     *         single = true /* default - false */,
+     *         dataStatus = EventDataStatus.WithData /* default - EventDataStatus.DoesNotMatter */,
+     *         observer = {
+     *             // Handle Success
+     *         }
+     *     )
      *}
      * ```
      *
      * @param single If true, will execute only until the first SUCCESS status, Default: false
-     * @param withData If true, will execute only with the status SUCCESS and with NonNull data
+     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
      * @param observer Will be called when the actual value has the SUCCESS status
      *
      * @see DataResult
@@ -421,21 +425,22 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun success(
         @NonNull single: Boolean = false,
-        @NonNull withData: Boolean,
-        @NonNull observer: suspend () -> Unit
+        @NonNull dataStatus: EventDataStatus = DoesNotMatter,
+        @NonNull observer: suspend () -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(
             SuccessEvent(
-                WrapObserver<Void, Any>(emptyObserver = observer),
-                single,
-                getEventDataStatus(withData)
-            )
+                wrapper = WrapObserver<Void, Any>(emptyObserver = observer),
+                single = single,
+                dataStatus = dataStatus,
+            ),
         )
         return this
     }
     //endregion
 
     //region Data
+
     /**
      * Observes when the DataResult has data
      *
@@ -463,7 +468,7 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun data(
         @NonNull single: Boolean = false,
-        @NonNull observer: suspend (T) -> Unit
+        @NonNull observer: suspend (T) -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(DataEvent(WrapObserver<T, Any>(observer = observer), single))
         return this
@@ -502,22 +507,23 @@ class ObserveWrapper<T> internal constructor() {
     fun <R> data(
         @NonNull single: Boolean = false,
         @NonNull transformer: suspend (T) -> R,
-        @NonNull observer: suspend (R) -> Unit
+        @NonNull observer: suspend (R) -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(
             DataEvent(
                 WrapObserver(
                     transformer = transformer,
-                    transformerObserver = observer
+                    transformerObserver = observer,
                 ),
-                single
-            )
+                single,
+            ),
         )
         return this
     }
     //endregion
 
     //region Result
+
     /**
      * Observes the DataResult
      *
@@ -545,13 +551,13 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun result(
         @NonNull single: Boolean = false,
-        @NonNull observer: suspend (DataResult<T>) -> Unit
+        @NonNull observer: suspend (DataResult<T>) -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(
             ResultEvent(
                 WrapObserver<DataResult<T>, Any>(observer = observer),
-                single
-            )
+                single,
+            ),
         )
         return this
     }
@@ -588,22 +594,23 @@ class ObserveWrapper<T> internal constructor() {
     fun <R> result(
         @NonNull single: Boolean = false,
         @NonNull transformer: suspend (DataResult<T>) -> R,
-        @NonNull observer: suspend (R) -> Unit
+        @NonNull observer: suspend (R) -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(
             ResultEvent(
                 WrapObserver(
                     transformer = transformer,
-                    transformerObserver = observer
+                    transformerObserver = observer,
                 ),
-                single
-            )
+                single,
+            ),
         )
         return this
     }
     //endregion
 
     //region Status
+
     /**
      * Observes the Status
      *
@@ -631,13 +638,13 @@ class ObserveWrapper<T> internal constructor() {
     @NonNull
     fun status(
         @NonNull single: Boolean = false,
-        @NonNull observer: suspend (DataResultStatus) -> Unit
+        @NonNull observer: suspend (DataResultStatus) -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(
             StatusEvent(
                 WrapObserver<DataResultStatus, Any>(observer = observer),
-                single
-            )
+                single,
+            ),
         )
         return this
     }
@@ -674,16 +681,16 @@ class ObserveWrapper<T> internal constructor() {
     fun <R> status(
         @NonNull single: Boolean = false,
         @NonNull transformer: suspend (DataResultStatus) -> R,
-        @NonNull observer: suspend (R) -> Unit
+        @NonNull observer: suspend (R) -> Unit,
     ): ObserveWrapper<T> {
         eventList.add(
             StatusEvent(
                 WrapObserver(
                     transformer = transformer,
-                    transformerObserver = observer
+                    transformerObserver = observer,
                 ),
-                single
-            )
+                single,
+            ),
         )
         return this
     }
