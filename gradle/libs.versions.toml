@@ -14,7 +14,7 @@ build-sdk-target = "36"
 build-tools = "36.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "2.1.21"
+jetbrains-kotlin = "2.2.0"
 jetbrains-compose = "1.8.1"
 jetbrains-coroutines = "1.10.2"
 jetbrains-serialization = "1.8.1"
