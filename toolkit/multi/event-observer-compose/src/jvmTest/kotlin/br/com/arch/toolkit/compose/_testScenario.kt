@@ -1,16 +1,35 @@
+@file:Suppress("Filename")
+
 package br.com.arch.toolkit.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.runComposeUiTest
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.EventDataStatus
+
+// Setup a fake LifecycleOwner
+val alwaysOnOwner = object : LifecycleOwner {
+    override val lifecycle = object : Lifecycle() {
+        override val currentState: State = State.RESUMED
+
+        override fun addObserver(observer: LifecycleObserver) = Unit
+
+        override fun removeObserver(observer: LifecycleObserver) = Unit
+    }
+}
 
 @OptIn(ExperimentalTestApi::class)
 fun <T> scenario(
@@ -19,9 +38,16 @@ fun <T> scenario(
     assert: ComposeUiTest.() -> Unit,
 ) = runComposeUiTest {
     val flow = ResponseFlow(result)
-    val comp = flow.composable
-    setContent { Column { comp.Unwrap(config) } }
+    val comp by flow.collectAsComposableState()
+    setContent {
+        CompositionLocalProvider(LocalLifecycleOwner provides alwaysOnOwner) {
+            Column {
+                comp.Unwrap(config)
+            }
+        }
+    }
     assert.invoke(this)
+    waitForIdle()
 }
 
 val stringConfig: @Composable ComposableDataResult<String>.() -> Unit = {

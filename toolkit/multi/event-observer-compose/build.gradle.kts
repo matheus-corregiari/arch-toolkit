@@ -10,7 +10,7 @@ plugins {
 }
 
 android.namespace = "br.com.arch.toolkit.eventObserver.compose"
-android.buildFeatures.androidResources = false
+android.androidResources { enable = false }
 android.buildFeatures.buildConfig = false
 
 kotlin {
@@ -21,6 +21,7 @@ kotlin {
 
         // Libraries
         implementation(libs.jetbrains.coroutines.core)
+        implementation(libs.androidx.compose.lifecycle)
         implementation(compose.runtime)
         implementation(compose.animation)
     }
