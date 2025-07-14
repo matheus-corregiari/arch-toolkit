@@ -6,8 +6,9 @@ import br.com.arch.toolkit.splinter.RegularResponseDataHolder
 /**
  *
  */
-sealed class CacheStrategy<T>(val id: String) : RegularResponseDataHolder<T>() {
-
+sealed class CacheStrategy<T>(
+    val id: String,
+) : RegularResponseDataHolder<T>() {
     internal abstract val localData: T?
     internal abstract val localVersion: DataVersion?
 
@@ -37,23 +38,23 @@ sealed class CacheStrategy<T>(val id: String) : RegularResponseDataHolder<T>() {
     }
 
     @WorkerThread
-    internal suspend fun howToProceed(remoteVersion: DataVersion?, local: T?) = kotlin.runCatching {
+    internal suspend fun howToProceed(remoteVersion: DataVersion?, local: T?) = runCatching {
         when {
-            /**/
+            //
             remoteVersion == null -> {
                 update(null, null)
                 HowToProceed.IGNORE_CACHE
             }
 
-            /**/
+            //
             local != null && isLocalValid(remoteVersion, local) ->
                 HowToProceed.STOP_FLOW_AND_DISPATCH_CACHE
 
-            /**/
+            //
             local != null && isLocalDisplayable(remoteVersion, local) ->
                 HowToProceed.DISPATCH_CACHE
 
-            /**/
+            //
             else -> {
                 update(null, null)
                 HowToProceed.IGNORE_CACHE
@@ -67,11 +68,13 @@ sealed class CacheStrategy<T>(val id: String) : RegularResponseDataHolder<T>() {
     internal enum class HowToProceed {
         IGNORE_CACHE,
         STOP_FLOW_AND_DISPATCH_CACHE,
-        DISPATCH_CACHE
+        DISPATCH_CACHE,
     }
 
     /**
      *
      */
-    internal data class DataVersion(val version: String)
+    internal data class DataVersion(
+        val version: String,
+    )
 }

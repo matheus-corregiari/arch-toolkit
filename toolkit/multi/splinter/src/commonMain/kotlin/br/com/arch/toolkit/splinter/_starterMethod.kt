@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.splinter
 
-import br.com.arch.toolkit.annotation.Experimental
+import br.com.arch.toolkit.splinter.strategy.OneShot
 
 /**
  * Method that creates a simple Splinter instance
@@ -14,7 +14,7 @@ import br.com.arch.toolkit.annotation.Experimental
 fun <T : Any> splinter(
     id: String = "",
     quiet: Boolean = false,
-    config: Splinter<T>.Config.() -> Unit
+    config: Splinter<T>.Config.() -> Unit,
 ) = Splinter<T>(id, quiet).config(config)
 
 /**
@@ -29,8 +29,8 @@ fun <T : Any> splinter(
 fun <T : Any> executeSplinter(
     id: String = "",
     quiet: Boolean = false,
-    request: suspend () -> T
-) = splinter(id, quiet) { oneShotStrategy { request(request) } }.execute()
+    request: suspend OneShot.OperationContext<T>.() -> T,
+) = splinter(id, quiet) { oneShotStrategy { operation(request) } }.execute()
 
 /**
  * Method that creates Splinter instance and execute it,
@@ -42,9 +42,8 @@ fun <T : Any> executeSplinter(
  *
  * @return The ResponseFlow receiving updates from the Splinter
  */
-@Experimental
 fun <T : Any> splinterFlow(
     id: String = "",
     quiet: Boolean = false,
-    request: suspend () -> T
+    request: suspend OneShot.OperationContext<T>.() -> T,
 ) = executeSplinter(id, quiet, request).flow

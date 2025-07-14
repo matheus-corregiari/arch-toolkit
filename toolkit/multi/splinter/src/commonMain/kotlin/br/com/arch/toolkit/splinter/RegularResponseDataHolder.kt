@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 expect abstract class RegularResponseDataHolder<T> internal constructor() {
-
     //region Observable Return Types
     protected val _flow: MutableStateFlow<T?>
     val flow: Flow<T?>
@@ -14,7 +13,9 @@ expect abstract class RegularResponseDataHolder<T> internal constructor() {
 
     //region Functions
     fun get(): T?
+
     protected suspend fun set(value: T?)
+
     protected fun trySet(value: T?)
     //endregion
 }
