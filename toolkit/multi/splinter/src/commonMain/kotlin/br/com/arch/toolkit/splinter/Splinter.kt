@@ -31,11 +31,13 @@ import kotlinx.coroutines.launch
 class Splinter<RETURN : Any> internal constructor(
     private val id: String,
     private val quiet: Boolean,
-) : ResultResponseDataHolder<RETURN>(),
-    DefaultLifecycleObserver {
+) : DefaultLifecycleObserver,
+    ResultHolder<RETURN> by ResultHolderImpl(
+        scope = { config.scope },
+        running = { isRunning },
+    ) {
+
     internal val logger: Lumber.Oak get() = Lumber.tag(id).quiet(quiet)
-    override val scope = { config.scope }
-    override val running = { isRunning }
 
     //region Jobs, Coroutines and Locks
     private val lock = Object()
@@ -44,6 +46,12 @@ class Splinter<RETURN : Any> internal constructor(
     private val supervisorJob = SupervisorJob()
     private var job: Job = Job().apply(CompletableJob::complete)
     private var onCancel: (() -> Unit)? = null
+    //endregion
+
+    //region Return Types
+    val data: RETURN? get() = get().data
+    val error: Throwable? get() = get().error
+    val status: DataResultStatus get() = get().status
     //endregion
 
     /**
@@ -239,9 +247,7 @@ class Splinter<RETURN : Any> internal constructor(
 
         fun owner(owner: LifecycleOwner) = apply {
             this.lifecycleOwner?.lifecycle?.removeObserver(this@Splinter)
-
             this.lifecycleOwner = owner
-
             owner.lifecycle.removeObserver(this@Splinter)
             owner.lifecycle.addObserver(this@Splinter)
         }

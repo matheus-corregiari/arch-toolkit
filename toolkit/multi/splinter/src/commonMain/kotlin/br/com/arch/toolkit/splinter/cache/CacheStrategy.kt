@@ -1,14 +1,15 @@
 package br.com.arch.toolkit.splinter.cache
 
 import androidx.annotation.WorkerThread
-import br.com.arch.toolkit.splinter.RegularResponseDataHolder
+import br.com.arch.toolkit.splinter.RegularHolder
+import br.com.arch.toolkit.splinter.RegularHolderImpl
 
 /**
  *
  */
 sealed class CacheStrategy<T>(
     val id: String,
-) : RegularResponseDataHolder<T>() {
+) : RegularHolder<T?> by RegularHolderImpl() {
     internal abstract val localData: T?
     internal abstract val localVersion: DataVersion?
 
