@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions")
 @file:OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 
 package br.com.arch.toolkit.flow
@@ -26,7 +27,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 open class ResponseFlow<T> : StateFlow<DataResult<T>> {
-
     protected val innerFlow: MutableStateFlow<DataResult<T>>
 
     protected var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -49,7 +49,7 @@ open class ResponseFlow<T> : StateFlow<DataResult<T>> {
         value: DataResult<T>,
         scope: CoroutineScope,
         dispatcher: CoroutineDispatcher,
-        mirror: Flow<DataResult<T>>
+        mirror: Flow<DataResult<T>>,
     ) : this(value) {
         this.scope = scope
         this.transformDispatcher = dispatcher
@@ -96,7 +96,7 @@ open class ResponseFlow<T> : StateFlow<DataResult<T>> {
         value = value,
         scope = scope,
         dispatcher = transformDispatcher,
-        mirror = innerFlow.shareIn(scope, started, replay)
+        mirror = innerFlow.shareIn(scope, started, replay),
     )
 
     /**
@@ -106,7 +106,17 @@ open class ResponseFlow<T> : StateFlow<DataResult<T>> {
         value = value,
         scope = scope,
         dispatcher = transformDispatcher,
-        mirror = other
+        mirror = other,
+    )
+
+    /**
+     *
+     */
+    fun cold(until: suspend (DataResult<T>) -> Boolean) = ColdResponseFlow(
+        scope = scope,
+        dispatcher = transformDispatcher,
+        mirror = this,
+        until = until,
     )
 
     /**
@@ -121,7 +131,7 @@ open class ResponseFlow<T> : StateFlow<DataResult<T>> {
             withContext(transformDispatcher) {
                 dataResultSuccess(it.let(transform))
             }
-        }.catch { emit(dataResultError(it)) }
+        }.catch { emit(dataResultError(it)) },
     )
 
     /**
