@@ -31,13 +31,17 @@ import kotlinx.coroutines.launch
 class Splinter<RETURN : Any> internal constructor(
     private val id: String,
     private val quiet: Boolean,
-) : DefaultLifecycleObserver,
-    ResultHolder<RETURN> by ResultHolderImpl(
-        scope = { config.scope },
-        running = { isRunning },
-    ) {
+    private val holder: TargetResultHolderImpl<RETURN> = TargetResultHolderImpl(),
+    private val dataSetter: DataSetter<DataResult<RETURN>> = holder.setter(),
+) : DefaultLifecycleObserver, TargetResultHolder<RETURN> by holder {
 
-    internal val logger: Lumber.Oak get() = Lumber.tag(id).quiet(quiet)
+    init {
+        holder.scope = { config.scope }
+        holder.running = { isRunning }
+    }
+
+    internal val logger: Lumber.Oak
+        get() = Lumber.tag(id).quiet(quiet)
 
     //region Jobs, Coroutines and Locks
     private val lock = Object()
@@ -46,12 +50,6 @@ class Splinter<RETURN : Any> internal constructor(
     private val supervisorJob = SupervisorJob()
     private var job: Job = Job().apply(CompletableJob::complete)
     private var onCancel: (() -> Unit)? = null
-    //endregion
-
-    //region Return Types
-    val data: RETURN? get() = get().data
-    val error: Throwable? get() = get().error
-    val status: DataResultStatus get() = get().status
     //endregion
 
     /**
@@ -138,7 +136,7 @@ class Splinter<RETURN : Any> internal constructor(
         if (isRunning) {
             cancel()
         }
-        trySet(dataResultNone())
+        dataSetter.trySet(dataResultNone())
     }
 
     /**
@@ -200,7 +198,7 @@ class Splinter<RETURN : Any> internal constructor(
                         this@Splinter,
                     )
                 }
-            }.collect(::set)
+            }.collect(dataSetter::set)
         }.onFailure { majorFailure ->
             logger.error("[Job] Major failure inside operation!", majorFailure)
             if (status != DataResultStatus.SUCCESS) {
@@ -210,7 +208,7 @@ class Splinter<RETURN : Any> internal constructor(
                         this,
                         this@Splinter,
                     )
-                }.collect(::set)
+                }.collect(dataSetter::set)
             }
         }
         logger.info("[Job] Finished!")

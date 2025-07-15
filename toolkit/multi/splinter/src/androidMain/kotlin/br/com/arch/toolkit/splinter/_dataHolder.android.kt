@@ -3,27 +3,12 @@
 package br.com.arch.toolkit.splinter
 
 import androidx.lifecycle.LiveData
-import br.com.arch.toolkit.flow.ColdResponseFlow
-import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.ResponseLiveData
-import br.com.arch.toolkit.result.DataResult
-import kotlinx.coroutines.flow.Flow
 
-actual interface DataHolder<T> {
-    actual fun get(): T
-
-    actual suspend fun set(value: T)
-
-    actual fun trySet(value: T): Boolean
-}
-
-actual interface RegularHolder<T> : DataHolder<T?> {
-    val liveData: LiveData<T?>
-    actual val flow: Flow<T?>
-}
-
-actual interface ResultHolder<T> : DataHolder<DataResult<T>> {
+actual interface TargetResultHolder<T> : ResultHolder<T> {
     val liveData: ResponseLiveData<T>
-    actual val flow: ResponseFlow<T>
-    actual val coldFlow: ColdResponseFlow<T>
+}
+
+actual interface TargetRegularHolder<T> : RegularHolder<T> {
+    val liveData: LiveData<T?>
 }

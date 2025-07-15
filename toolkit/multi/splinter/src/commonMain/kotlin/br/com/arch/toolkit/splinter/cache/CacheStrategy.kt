@@ -1,15 +1,19 @@
 package br.com.arch.toolkit.splinter.cache
 
 import androidx.annotation.WorkerThread
-import br.com.arch.toolkit.splinter.RegularHolder
-import br.com.arch.toolkit.splinter.RegularHolderImpl
+import br.com.arch.toolkit.splinter.DataSetter
+import br.com.arch.toolkit.splinter.TargetRegularHolder
+import br.com.arch.toolkit.splinter.TargetRegularHolderImpl
 
 /**
  *
  */
 sealed class CacheStrategy<T>(
     val id: String,
-) : RegularHolder<T?> by RegularHolderImpl() {
+    internal val holder: TargetRegularHolderImpl<T> = TargetRegularHolderImpl(),
+    internal val setter: DataSetter<T?> = holder.setter()
+) : TargetRegularHolder<T> by holder {
+
     internal abstract val localData: T?
     internal abstract val localVersion: DataVersion?
 
@@ -35,7 +39,7 @@ sealed class CacheStrategy<T>(
         } else {
             delete()
         }
-        set(data)
+        setter.set(data)
     }
 
     @WorkerThread
