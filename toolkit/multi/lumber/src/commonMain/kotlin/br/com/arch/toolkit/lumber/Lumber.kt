@@ -1,5 +1,9 @@
 package br.com.arch.toolkit.lumber
 
+import br.com.arch.toolkit.lumber.Lumber.OakWood.quiet
+import br.com.arch.toolkit.lumber.Lumber.OakWood.tag
+
+
 /**
  * # Lumber - A Lightweight Logging Library for Android and Kotlin Multiplatform (KMP)
  *
@@ -25,7 +29,6 @@ package br.com.arch.toolkit.lumber
  * @since 1.0
  */
 class Lumber private constructor() {
-
     init {
         throw AssertionError("No instances allowed.")
     }
@@ -50,7 +53,6 @@ class Lumber private constructor() {
      * ```
      */
     abstract class Oak {
-
         private val explicitTag = ThreadLocal<String?>()
         private val explicitQuiet = ThreadLocal<Boolean?>()
 
@@ -70,8 +72,11 @@ class Lumber private constructor() {
          * @return The tag to be used for the log message.
          */
         protected open val tag: String?
-            get() = explicitTag.get().takeIf { it.isNullOrBlank().not() }
-                ?.also { explicitTag.remove() } ?: Throwable().stackTrace
+            get() = explicitTag
+                .get()
+                .takeIf { it.isNullOrBlank().not() }
+                ?.also { explicitTag.remove() } ?: Throwable()
+                .stackTrace
                 .first { it.className !in fqcnIgnore }
                 .let(::createStackElementTag)
 
@@ -131,6 +136,7 @@ class Lumber private constructor() {
         }
 
         //region Verbose
+
         /** Log a verbose message with optional format args. */
         open fun verbose(message: String?, vararg args: Any?) =
             verbose(error = null, message = message, args = args)
@@ -144,6 +150,7 @@ class Lumber private constructor() {
         //endregion
 
         //region Debug
+
         /** Log a debug message with optional format args. */
         open fun debug(message: String?, vararg args: Any?) =
             debug(error = null, message = message, args = args)
@@ -157,6 +164,7 @@ class Lumber private constructor() {
         //endregion
 
         //region Info
+
         /** Log an info message with optional format args. */
         open fun info(message: String?, vararg args: Any?) =
             info(error = null, message = message, args = args)
@@ -170,6 +178,7 @@ class Lumber private constructor() {
         //endregion
 
         //region Warn
+
         /** Log a warning message with optional format args. */
         open fun warn(message: String?, vararg args: Any?) =
             warn(error = null, message = message, args = args)
@@ -183,6 +192,7 @@ class Lumber private constructor() {
         //endregion
 
         //region Error
+
         /** Log an error message with optional format args. */
         open fun error(message: String?, vararg args: Any?) =
             error(error = null, message = message, args = args)
@@ -196,6 +206,7 @@ class Lumber private constructor() {
         //endregion
 
         //region Assert
+
         /** Log an assert message with optional format args. */
         open fun wtf(message: String?, vararg args: Any?) =
             wtf(error = null, message = message, args = args)
@@ -209,6 +220,7 @@ class Lumber private constructor() {
         //endregion
 
         //region Raw Log
+
         /** Log at `priority` a message with optional format args. */
         open fun log(level: Level, message: String?, vararg args: Any?) =
             log(level = level, error = null, message = message, args = args)
@@ -233,7 +245,10 @@ class Lumber private constructor() {
         protected abstract fun log(level: Level, tag: String?, message: String, error: Throwable?)
 
         private fun prepareLog(
-            level: Level, error: Throwable?, message: String?, vararg args: Any?
+            level: Level,
+            error: Throwable?,
+            message: String?,
+            vararg args: Any?,
         ) {
             // Consume tag even when message is not loggable so that next message is correctly tagged.
             val tag = tag
@@ -246,13 +261,23 @@ class Lumber private constructor() {
                 formattedMessage = error.stackTraceToString()
             } else {
                 if (args.isNotEmpty()) formattedMessage = formattedMessage.format(*args)
-                if (error != null) formattedMessage += "\n" + error.stackTraceToString()
+                if (error != null) formattedMessage += "\n\n" + error.stackTraceToString()
             }
             if (formattedMessage.length <= MAX_LOG_LENGTH) {
-                log(level, tag, formattedMessage, error)
+                log(
+                    level = level,
+                    tag = tag,
+                    message = formattedMessage,
+                    error = null,
+                )
             } else {
                 formattedMessage.chunked(MAX_LOG_LENGTH).forEachIndexed { index, part ->
-                    log(level, tag?.let { "$it #$index" }, part, error)
+                    log(
+                        level = level,
+                        tag = tag?.let { "$it #$index" },
+                        message = part,
+                        error = null,
+                    )
                 }
             }
         }
@@ -287,7 +312,6 @@ class Lumber private constructor() {
      * to all individual Oak trees, by leveraging synchronized collections and thread-local storage.
      */
     companion object OakWood : Oak() {
-
         // Holds all the planted Oak trees.
         private val trees = mutableListOf<Oak>()
 
@@ -301,12 +325,11 @@ class Lumber private constructor() {
          */
         val treeCount: Int get() = treeArray.size
 
-        override fun log(level: Level, tag: String?, message: String, error: Throwable?) {
+        override fun log(level: Level, tag: String?, message: String, error: Throwable?): Unit =
             throw IllegalStateException(
                 "Couldn't be possible to reach here, " +
-                        "this is a empty impl from Oak that distributes to other Oaks"
+                    "this is a empty impl from Oak that distributes to other Oaks",
             )
-        }
 
         /**
          * Dispatches the log message to all planted Oaks.

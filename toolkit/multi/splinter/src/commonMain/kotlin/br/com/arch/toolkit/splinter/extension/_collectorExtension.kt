@@ -19,7 +19,8 @@ suspend fun <T> FlowCollector<DataResult<T>>.emitData(data: T) = emit(dataResult
  *
  * @see dataResultLoading
  */
-suspend fun <T> FlowCollector<DataResult<T>>.emitLoading(data: T? = null) = emit(dataResultLoading(data))
+suspend fun <T> FlowCollector<DataResult<T>>.emitLoading(data: T? = null) =
+    emit(dataResultLoading(data))
 
 /**
  * Emits a error data

@@ -19,7 +19,10 @@ import br.com.arch.toolkit.splinter.Splinter as SplinterExec
  * @param id - Used to identify the logs from this splinter in logcat
  * @param quiet - Used to turn on/off the logs inside logcat
  */
-annotation class SplinterConfig(val id: String = "", val quiet: Boolean = false)
+annotation class SplinterConfig(
+    val id: String = "",
+    val quiet: Boolean = false,
+)
 
 /**
  * This evil class is responsible to teach Retrofit how to deliver a Splinter, ResponseLiveData or ResponseFlow
@@ -30,7 +33,7 @@ class SplinterFactory : CallAdapter.Factory() {
     override fun get(
         returnType: Type,
         annotations: Array<Annotation>,
-        retrofit: Retrofit
+        retrofit: Retrofit,
     ): CallAdapter<*, *>? {
         val returnClass = getRawType(returnType).takeIf {
             it in listOf(
@@ -99,23 +102,29 @@ private sealed class Adapter<T, R>(
     private val id: String,
     private val quiet: Boolean,
     private val responseType: Type,
-    kClass: Class<T>
+    kClass: Class<T>,
 ) : CallAdapter<T, R> {
-
-    class AsSplinter<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
-        Adapter<T, SplinterExec<T>>(annotation.id, annotation.quiet, responseType, kClass) {
+    class AsSplinter<T : Any>(
+        annotation: SplinterConfig,
+        responseType: Type,
+        kClass: Class<T>,
+    ) : Adapter<T, SplinterExec<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call)
     }
 
-    class AsLiveData<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
-        Adapter<T, ResponseLiveData<T>>(annotation.id, annotation.quiet, responseType, kClass) {
+    class AsLiveData<T : Any>(
+        annotation: SplinterConfig,
+        responseType: Type,
+        kClass: Class<T>,
+    ) : Adapter<T, ResponseLiveData<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call).liveData
     }
 
-    @Experimental
-    class AsFlow<T : Any>(annotation: SplinterConfig, responseType: Type, kClass: Class<T>) :
-        Adapter<T, ResponseFlow<T>>(annotation.id, annotation.quiet, responseType, kClass) {
-        @OptIn(Experimental::class)
+    class AsFlow<T : Any>(
+        annotation: SplinterConfig,
+        responseType: Type,
+        kClass: Class<T>,
+    ) : Adapter<T, ResponseFlow<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call).flow
     }
 
@@ -135,11 +144,9 @@ private sealed class Adapter<T, R>(
     }
 
     @Throws(IOException::class)
-    private fun <T> makeRequest(call: Call<T>): Response<T> {
-        return if (call.isExecuted) {
-            call.clone().execute()
-        } else {
-            call.execute()
-        }
+    private fun <T> makeRequest(call: Call<T>): Response<T> = if (call.isExecuted) {
+        call.clone().execute()
+    } else {
+        call.execute()
     }
 }

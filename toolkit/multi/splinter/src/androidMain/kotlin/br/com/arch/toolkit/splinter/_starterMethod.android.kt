@@ -1,5 +1,7 @@
 package br.com.arch.toolkit.splinter
 
+import br.com.arch.toolkit.splinter.strategy.OneShot
+
 /**
  * Method that creates Splinter instance and execute it,
  * returning the LiveData to you for observation
@@ -13,5 +15,5 @@ package br.com.arch.toolkit.splinter
 fun <T : Any> splinterLiveData(
     id: String = "",
     quiet: Boolean = false,
-    request: suspend () -> T
+    request: suspend OneShot.OperationContext<T>.() -> T,
 ) = executeSplinter(id, quiet, request).liveData

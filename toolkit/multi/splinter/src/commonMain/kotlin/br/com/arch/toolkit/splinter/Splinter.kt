@@ -1,11 +1,11 @@
-@file:Suppress("TooManyFunctions")
+@file:Suppress("TooManyFunctions", "MemberVisibilityCanBePrivate")
 
 package br.com.arch.toolkit.splinter
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.lumber.Lumber
+import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.splinter.extension.invokeCatching
 import br.com.arch.toolkit.splinter.strategy.MirrorFlow
@@ -30,12 +30,18 @@ import kotlinx.coroutines.launch
  */
 class Splinter<RETURN : Any> internal constructor(
     private val id: String,
-    private val quiet: Boolean
-) :
-    ResultResponseDataHolder<RETURN>(), DefaultLifecycleObserver {
+    private val quiet: Boolean,
+    private val holder: TargetResultHolderImpl<RETURN> = TargetResultHolderImpl(),
+    private val dataSetter: DataSetter<DataResult<RETURN>> = holder.setter(),
+) : DefaultLifecycleObserver, TargetResultHolder<RETURN> by holder {
 
-    internal val logger: Lumber.Oak get() = Lumber.tag(id).quiet(quiet)
-    override val scope = { config.scope }
+    init {
+        holder.scope = { config.scope }
+        holder.running = { isRunning }
+    }
+
+    internal val logger: Lumber.Oak
+        get() = Lumber.tag(id).quiet(quiet)
 
     //region Jobs, Coroutines and Locks
     private val lock = Object()
@@ -109,7 +115,7 @@ class Splinter<RETURN : Any> internal constructor(
                 job = newJob()
             }
             if (job.start()) {
-                /* This means that the job has been started with success ^^ */
+                // This means that the job has been started with success ^^
             } else {
                 logger.info("[Execute] Unable to start job, let's try again")
                 return@synchronized execute()
@@ -125,13 +131,12 @@ class Splinter<RETURN : Any> internal constructor(
     /**
      * Reset the value inside the observables to the initial state
      */
-    @OptIn(Experimental::class)
     fun reset() {
         logger.warn("[Reset] Reset!")
         if (isRunning) {
             cancel()
         }
-        trySet(dataResultNone())
+        dataSetter.trySet(dataResultNone())
     }
 
     /**
@@ -139,7 +144,7 @@ class Splinter<RETURN : Any> internal constructor(
      *
      * Warning: This will throw a message with status ERROR
      */
-    fun cancel() = kotlin.runCatching {
+    fun cancel() = runCatching {
         if (job.isActive || job.isCancelled.not()) {
             job.cancel("Cancel operation id: $id")
             logger.warn("[Cancel] Canceled with success!")
@@ -148,6 +153,15 @@ class Splinter<RETURN : Any> internal constructor(
     }.onFailure {
         logger.warn("[Cancel] Cancel failed!", it)
     }.getOrDefault(Unit)
+
+    /**
+     * Await the end of the operation
+     */
+    suspend fun await(): DataResult<RETURN> {
+        if (isRunning.not()) return get()
+        job.join()
+        return get()
+    }
 
     /**
      * Lifecycle callback to automatically stop this operation if the observed lifecycle goes away
@@ -164,9 +178,8 @@ class Splinter<RETURN : Any> internal constructor(
     /**
      * Creates a new job to create a new operation from scratch!
      */
-    @OptIn(Experimental::class)
     private fun newJob(): Job = config.scope.launch(start = CoroutineStart.LAZY) {
-        kotlin.runCatching {
+        runCatching {
             logger.info("[Job] Job started!")
             flow {
                 logger.info("[Job] Flow started!")
@@ -182,10 +195,10 @@ class Splinter<RETURN : Any> internal constructor(
                     requireNotNull(config.strategy) { "You Must set a strategy to run" }.flowError(
                         flowFailure,
                         this,
-                        this@Splinter
+                        this@Splinter,
                     )
                 }
-            }.collect(::set)
+            }.collect(dataSetter::set)
         }.onFailure { majorFailure ->
             logger.error("[Job] Major failure inside operation!", majorFailure)
             if (status != DataResultStatus.SUCCESS) {
@@ -193,9 +206,9 @@ class Splinter<RETURN : Any> internal constructor(
                     requireNotNull(config.strategy) { "You Must set a strategy to run" }.majorError(
                         majorFailure,
                         this,
-                        this@Splinter
+                        this@Splinter,
                     )
-                }.collect(::set)
+                }.collect(dataSetter::set)
             }
         }
         logger.info("[Job] Finished!")
@@ -205,8 +218,8 @@ class Splinter<RETURN : Any> internal constructor(
      * This hold every single configuration inside splinter!
      */
     inner class Config internal constructor() {
-
         //region Scope
+
         /**
          * Scope to define where we are running this operation inside the coroutine
          *
@@ -220,6 +233,7 @@ class Splinter<RETURN : Any> internal constructor(
         //endregion
 
         //region LifecycleOwner
+
         /**
          * The owner to observe
          *
@@ -231,15 +245,14 @@ class Splinter<RETURN : Any> internal constructor(
 
         fun owner(owner: LifecycleOwner) = apply {
             this.lifecycleOwner?.lifecycle?.removeObserver(this@Splinter)
-
             this.lifecycleOwner = owner
-
             owner.lifecycle.removeObserver(this@Splinter)
             owner.lifecycle.addObserver(this@Splinter)
         }
         //endregion
 
         //region Strategy
+
         /**
          * Tells splinter how to execute the operation!
          *
@@ -274,6 +287,7 @@ class Splinter<RETURN : Any> internal constructor(
         //endregion
 
         //region Execution Policy
+
         /**
          * This instance is really evil in form of a Enum!
          *
@@ -295,7 +309,6 @@ class Splinter<RETURN : Any> internal constructor(
      * Tells the Splinter instance how to behave when you press the Execution button(method HUEHUE)
      */
     enum class ExecutionPolicy {
-
         /**
          * When something trigger the execute() method, if this instance is already running
          * it will just return the splinter and let the river flow like always
@@ -306,6 +319,6 @@ class Splinter<RETURN : Any> internal constructor(
          * When something trigger the execute() method, if this instance is already running
          * it will cancel the running job and restart from the beginning
          */
-        CANCEL_RUNNING_AND_RESTART // Default
+        CANCEL_RUNNING_AND_RESTART, // Default
     }
 }

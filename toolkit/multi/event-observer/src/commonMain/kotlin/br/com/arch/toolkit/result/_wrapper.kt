@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Thread.UncaughtExceptionHandler
@@ -911,8 +912,8 @@ class ObserveWrapper<T> internal constructor() {
      */
     @NonNull
     internal fun attachTo(
-        @NonNull flow: ResponseFlow<T>,
-    ): ResponseFlow<T> {
+        @NonNull flow: Flow<DataResult<T>>,
+    ): Flow<DataResult<T>> {
         scope.launchWithErrorTreatment { flow.collect(::handleResult) }
         return flow
     }
@@ -967,7 +968,11 @@ class ObserveWrapper<T> internal constructor() {
                 // Handle HideLoading
                 event is HideLoadingEvent && result.isLoading.not() ->
                     event.run {
-                        wrapper.handle(result.isLoading, transformDispatcher, evaluateBeforeDispatch)
+                        wrapper.handle(
+                            result.isLoading,
+                            transformDispatcher,
+                            evaluateBeforeDispatch,
+                        )
                     }
 
                 // Handle Error

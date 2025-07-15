@@ -1,8 +1,8 @@
 @file:Suppress("TooManyFunctions")
+@file:OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 
 package br.com.arch.toolkit.flow
 
-import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
@@ -22,10 +22,9 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * @return An instance of ResponseFlow<T> with a default value set
  */
-@Experimental
-@OptIn(ExperimentalForInheritanceCoroutinesApi::class)
-class MutableResponseFlow<T>(value: DataResult<T> = dataResultNone()) :
-    ResponseFlow<T>(value), MutableStateFlow<DataResult<T>> {
+class MutableResponseFlow<T>(
+    value: DataResult<T> = dataResultNone(),
+) : ResponseFlow<T>(value), MutableStateFlow<DataResult<T>> {
 
     override fun scope(scope: CoroutineScope) =
         super.scope(scope) as MutableResponseFlow<T>
@@ -36,7 +35,7 @@ class MutableResponseFlow<T>(value: DataResult<T> = dataResultNone()) :
     // region Override standard flow methods
     override var value: DataResult<T>
         get() = super.value
-        public set(value) {
+        set(value) {
             super.value = value
         }
 
@@ -49,14 +48,17 @@ class MutableResponseFlow<T>(value: DataResult<T> = dataResultNone()) :
     override fun resetReplayCache() = innerFlow.resetReplayCache()
 
     override fun tryEmit(value: DataResult<T>) = innerFlow.tryEmit(value)
+
     override suspend fun emit(value: DataResult<T>) = innerFlow.emit(value)
     // endregion
 
     // region Custom Emitters
     suspend fun emitSuccess() = emit(dataResultSuccess(null))
+
     fun tryEmitSuccess() = tryEmit(dataResultSuccess(null))
 
     suspend fun emitData(value: T) = emit(dataResultSuccess(value))
+
     fun tryEmitData(value: T) = tryEmit(dataResultSuccess(value))
 
     suspend fun emitLoading(value: T? = null, throwable: Throwable? = null) =
@@ -72,6 +74,7 @@ class MutableResponseFlow<T>(value: DataResult<T> = dataResultNone()) :
         tryEmit(dataResultError(throwable, value))
 
     suspend fun emitNone() = emit(dataResultNone())
+
     fun tryEmitNone() = tryEmit(dataResultNone())
     // endregion
 }

@@ -23,4 +23,8 @@ kotlin {
         compileOnly(libs.square.okhttp.core)
         compileOnly(libs.square.retrofit.main)
     }
+    sourceSets.commonTest.dependencies {
+        implementation(libs.junit.test)
+        implementation(libs.jetbrains.test.coroutines)
+    }
 }

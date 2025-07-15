@@ -19,7 +19,7 @@ abstract class Strategy<RESULT : Any> {
     @WorkerThread
     abstract suspend fun execute(
         collector: FlowCollector<DataResult<RESULT>>,
-        executor: Splinter<RESULT>
+        executor: Splinter<RESULT>,
     )
 
     /**
@@ -29,7 +29,7 @@ abstract class Strategy<RESULT : Any> {
     open suspend fun flowError(
         error: Throwable,
         collector: FlowCollector<DataResult<RESULT>>,
-        executor: Splinter<RESULT>
+        executor: Splinter<RESULT>,
     ) = collector.emitError(error)
 
     /**
@@ -39,11 +39,10 @@ abstract class Strategy<RESULT : Any> {
     open suspend fun majorError(
         error: Throwable,
         collector: FlowCollector<DataResult<RESULT>>,
-        executor: Splinter<RESULT>
+        executor: Splinter<RESULT>,
     ) = flowError(error, collector, executor)
 
     companion object {
-
         /**
          * Helper method that creates a OneShot strategy and configure it
          *
@@ -60,6 +59,7 @@ abstract class Strategy<RESULT : Any> {
          *
          * @return br.com.arch.toolkit.splinter.strategy.MirrorFlow
          */
-        fun <T : Any> mirrorFlow(config: MirrorFlow<T>.Config.() -> Unit) = MirrorFlow<T>().config(config)
+        fun <T : Any> mirrorFlow(config: MirrorFlow<T>.Config.() -> Unit) =
+            MirrorFlow<T>().config(config)
     }
 }

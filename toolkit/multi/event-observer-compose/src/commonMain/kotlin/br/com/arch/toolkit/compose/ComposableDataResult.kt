@@ -15,10 +15,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.arch.toolkit.compose.observable.ComposeObservable
 import br.com.arch.toolkit.compose.observable.DataObservable
 import br.com.arch.toolkit.compose.observable.EmptyObservable
@@ -43,12 +45,15 @@ import kotlin.time.DurationUnit
 /**
  * Entry point for observing a [ResponseFlow] of [DataResult] in Arch Toolkit.
  *
- * Provides a fluent, declarative API to react to loading, error, data and list states
- * via composable callbacks.
+ * Provides a fluent, declarative API to react to loading, error, data, and list states
+ * via composable callbacks. This class also supports animations for the appearance and
+ * disappearance of these states through the [AnimationConfig] class.
  *
- * @param resultFlow the source [ResponseFlow] emitting [DataResult] values
+ * @param T The type of data held by the [DataResult].
+ * @property resultFlow The source [ResponseFlow] emitting [DataResult] values.
  * @see ResponseFlow
  * @see DataResult
+ * @see AnimationConfig
  */
 class ComposableDataResult<T> internal constructor(
     private val resultFlow: ResponseFlow<T>,
@@ -58,9 +63,11 @@ class ComposableDataResult<T> internal constructor(
     private val observableList = mutableListOf<ComposeObservable<T, *>>()
 
     /**
-     * Configures animation parameters for all subsequent composable callbacks.
+     * Configures animation parameters for all subsequent composable callbacks that are
+     * managed by this [ComposableDataResult] instance.
      *
      * Example:
+     *
      * ```kotlin
      * comp.animation {
      *   enabled = true
@@ -68,8 +75,11 @@ class ComposableDataResult<T> internal constructor(
      * }
      * ```
      *
-     * @param config DSL block to customize the [AnimationConfig]
-     * @return this [ComposableDataResult] for chaining
+     * By default, animations are enabled with predefined fade-in and fade-out transitions.
+     * You can disable animations or customize the enter/exit transitions and their durations.
+     *
+     * @param config A DSL block to customize the [AnimationConfig] for this instance.
+     * @return This [ComposableDataResult] instance for chaining further configurations.
      * @see AnimationConfig
      */
     fun animation(config: AnimationConfig.() -> Unit) = apply { animationConfig.config() }
@@ -90,7 +100,8 @@ class ComposableDataResult<T> internal constructor(
      * @return this [ComposableDataResult] for chaining
      * @see ObserveWrapper
      */
-    fun outsideComposable(config: ObserveWrapper<T>.() -> Unit) = apply { notComposableBlock = config }
+    fun outsideComposable(config: ObserveWrapper<T>.() -> Unit) =
+        apply { notComposableBlock = config }
 
     // region Success
 
@@ -225,10 +236,9 @@ class ComposableDataResult<T> internal constructor(
      * @see DataResultStatus
      */
     @Composable
-    fun OnData(func: @Composable (T) -> Unit) =
-        apply {
-            observableList.add(DataObservable { data, _, _ -> func(data) })
-        }
+    fun OnData(func: @Composable (T) -> Unit) = apply {
+        observableList.add(DataObservable { data, _, _ -> func(data) })
+    }
 
     /**
      * Renders the given @Composable block when data is available, also providing the [DataResultStatus].
@@ -238,10 +248,9 @@ class ComposableDataResult<T> internal constructor(
      * @see DataResultStatus
      */
     @Composable
-    fun OnData(func: @Composable (T, DataResultStatus) -> Unit) =
-        apply {
-            observableList.add(DataObservable { data, status, _ -> func(data, status) })
-        }
+    fun OnData(func: @Composable (T, DataResultStatus) -> Unit) = apply {
+        observableList.add(DataObservable { data, status, _ -> func(data, status) })
+    }
 
     /**
      * Renders the given @Composable block when data is available, providing data, status, and optional error.
@@ -251,10 +260,9 @@ class ComposableDataResult<T> internal constructor(
      * @see DataResultStatus
      */
     @Composable
-    fun OnData(func: @Composable (T, DataResultStatus, Throwable?) -> Unit) =
-        apply {
-            observableList.add(DataObservable(func))
-        }
+    fun OnData(func: @Composable (T, DataResultStatus, Throwable?) -> Unit) = apply {
+        observableList.add(DataObservable(func))
+    }
 
     // endregion
 
@@ -281,7 +289,8 @@ class ComposableDataResult<T> internal constructor(
      * @return this [ComposableDataResult] for chaining
      */
     @Composable
-    fun OnNotEmpty(func: @Composable (T) -> Unit) = apply { observableList.add(NotEmptyObservable(func)) }
+    fun OnNotEmpty(func: @Composable (T) -> Unit) =
+        apply { observableList.add(NotEmptyObservable(func)) }
 
     /**
      * Renders the given @Composable block when the data list contains exactly one item.
@@ -290,7 +299,8 @@ class ComposableDataResult<T> internal constructor(
      * @return this [ComposableDataResult] for chaining
      */
     @Composable
-    fun <R> OnSingle(func: @Composable (R) -> Unit) = apply { observableList.add(SingleObservable(func)) }
+    fun <R> OnSingle(func: @Composable (R) -> Unit) =
+        apply { observableList.add(SingleObservable(func)) }
 
     /**
      * Renders the given @Composable block when the data list contains more than one item.
@@ -316,21 +326,29 @@ class ComposableDataResult<T> internal constructor(
      * }
      * ```
      *
-     * @param func a @Composable receiver on this [ComposableDataResult] to set up callbacks
-     * @see Unwrap()
+     * @param config A @Composable receiver on this [ComposableDataResult] to set up callbacks.
+     * @param lifecycle The [LifecycleOwner] to be used for collecting the [resultFlow].
+     *                  Defaults to [LocalLifecycleOwner.current].
+     * @see Unwrap(LifecycleOwner)
      */
     @Composable
-    fun Unwrap(func: @Composable ComposableDataResult<T>.() -> Unit) {
-        func()
-        Unwrap()
+    fun Unwrap(
+        config: @Composable ComposableDataResult<T>.() -> Unit,
+        lifecycle: LifecycleOwner = LocalLifecycleOwner.current,
+    ) {
+        config()
+        Unwrap(lifecycle)
     }
 
     /**
      * Starts collecting the underlying [ResponseFlow] and dispatches all configured callbacks.
+     * This method is lifecycle-aware and uses the provided [LifecycleOwner] (or
+     * [LocalLifecycleOwner.current] by default) to manage the collection of the flow.
      *
-     * Must be the last call in your chain.
+     * Must be the last call in your chain if not using the DSL-style `Unwrap` overload.
      *
      * Example:
+     *
      * ```kotlin
      * comp
      *   .OnShowLoading { … }
@@ -339,12 +357,12 @@ class ComposableDataResult<T> internal constructor(
      *   .Unwrap()
      * ```
      *
-     * @see ResponseFlow.collectAsState
+     * @see ResponseFlow.collect
      * @see ObserveWrapper
      */
     @Composable
-    fun Unwrap() {
-        val result by resultFlow.collectAsState()
+    fun Unwrap(lifecycle: LifecycleOwner = LocalLifecycleOwner.current) {
+        val result by resultFlow.collectAsStateWithLifecycle(lifecycle)
         val animationConfig = remember { animationConfig }
 
         LaunchedEffect(this, result) {
@@ -372,30 +390,65 @@ class ComposableDataResult<T> internal constructor(
     //endregion
 
     /**
-     * Holds animation configuration for this ComposableDataResult.
+     * Holds animation configuration for the composable states managed by [ComposableDataResult].
+     *
+     * This class allows for enabling/disabling animations, customizing the [Modifier]
+     * applied during animations, and defining specific [EnterTransition] and [ExitTransition]
+     * effects.
+     *
+     * Default animations are fade-in and fade-out. The default enter animation includes a delay
+     * matching the default exit animation's duration, which can help create a sequential
+     * animation effect when one composable state replaces another within the Unwrap block.
+     *
+     * @property enabled Whether animations are active for the composable blocks.
+     *           Defaults to [AnimationConfig.Defaults.enabledByDefault].
+     * @property animationModifier A [Modifier] to be applied to the `AnimatedVisibility`
+     *           wrapper if animations are enabled.
+     * @property enterAnimation The [EnterTransition] to use when a composable block becomes visible.
+     *           Defaults to a `fadeIn` animation.
+     * @property exitAnimation The [ExitTransition] to use when a composable block becomes hidden.
+     *           Defaults to a `fadeOut` animation.
+     * @see ComposableDataResult.animation
      */
     class AnimationConfig internal constructor() {
         var enabled: Boolean = enabledByDefault
         var animationModifier = Modifier
-        var enterAnimation: EnterTransition =
-            fadeIn(
-                animationSpec =
-                    tween(
-                        durationMillis = defaultEnterDuration.toInt(DurationUnit.MILLISECONDS),
-                        delayMillis = defaultExitDuration.toInt(DurationUnit.MILLISECONDS),
-                    ),
-            )
+        var enterAnimation: EnterTransition = fadeIn(
+            animationSpec = tween(
+                durationMillis = defaultEnterDuration.toInt(DurationUnit.MILLISECONDS),
+                // Delays enter to potentially run after a preceding exit animation completes
+                delayMillis = defaultExitDuration.toInt(DurationUnit.MILLISECONDS),
+            ),
+        )
         var exitAnimation: ExitTransition =
             fadeOut(
-                animationSpec =
-                    tween(
-                        durationMillis = defaultExitDuration.toInt(DurationUnit.MILLISECONDS),
-                    ),
+                animationSpec = tween(
+                    durationMillis = defaultExitDuration.toInt(DurationUnit.MILLISECONDS),
+                ),
             )
 
+        /**
+         * Provides default values for [AnimationConfig] properties.
+         * These can be overridden globally before any [ComposableDataResult] instance
+         * creates its [AnimationConfig].
+         */
         companion object Defaults {
+            /**
+             * Determines if animations are enabled by default for new [AnimationConfig] instances.
+             * Default value is `true`.
+             */
             var enabledByDefault = true
+
+            /**
+             * The default duration for enter animations if not specified otherwise in [enterAnimation].
+             * Default value is 450 milliseconds.
+             */
             var defaultEnterDuration: Duration = 450.milliseconds
+
+            /**
+             * The default duration for exit animations if not specified otherwise in [exitAnimation].
+             * Default value is 450 milliseconds.
+             */
             var defaultExitDuration: Duration = 450.milliseconds
         }
     }
