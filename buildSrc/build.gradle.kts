@@ -12,6 +12,7 @@ dependencies {
     compileOnly(gradleApi())
 
     implementation(libs.androidx.plugin) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
     implementation(libs.detekt) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
@@ -29,6 +30,12 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
     implementation(libs.jetbrains.dokka) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
+    }
+    implementation(libs.jetbrains.dokka) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
+    }
+    implementation(libs.vanniktech.publish) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
 }
