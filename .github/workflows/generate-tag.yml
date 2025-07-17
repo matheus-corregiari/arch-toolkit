@@ -60,6 +60,8 @@ jobs:
           # Sonatype Credentials
           ossrh_username: ${{ secrets.OSSRH_USERNAME }}
           ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
+          mavencentral_username: ${{ secrets.MAVEN_CENTRAL_USERNAME}}
+          mavencentral_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD}}
 
           # Sign Credentials
           sign_keyid: ${{ secrets.SIGN_KEYID }}
@@ -67,7 +69,7 @@ jobs:
           sign_filename: ${{ secrets.SIGN_FILENAME }}
 
       - name: Build ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:assembleRelease
+        run: ./gradlew :${{ matrix.module }}:assemble
 
       - name: Publish ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:publishAllPublicationsToSonatypeRepository
+        run: ./gradlew :${{ matrix.module }}:publishAndReleaseToMavenCentral
