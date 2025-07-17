@@ -1,28 +1,21 @@
 package com.toolkit.plugin.multiplatform
 
-import com.toolkit.plugin.util.attachAllTasksIntoAssembleRelease
+import com.toolkit.plugin.util.androidLibrary
+import com.toolkit.plugin.util.applyPlugins
 import com.toolkit.plugin.util.configurePom
 import com.toolkit.plugin.util.createLocalPathRepository
-import com.toolkit.plugin.util.createSonatypeRepository
-import com.toolkit.plugin.util.missing
 import com.toolkit.plugin.util.multiplatform
 import com.toolkit.plugin.util.publishing
 import com.toolkit.plugin.util.requireAny
-import com.toolkit.plugin.util.setupJavadocAndSources
-import com.toolkit.plugin.util.sign
+import com.toolkit.plugin.util.vanniktechPublish
 import com.toolkit.plugin.util.versionName
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
-import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
-import org.gradle.plugins.signing.Sign
-import org.jetbrains.kotlin.konan.file.File
 
 internal class ToolkitPublishPlugin : Plugin<Project> {
-
-    private val Project.javadoc: String?
-        get() = "$projectDir/build/libs/$name-release-javadoc.jar".takeIf { File(it).exists }
 
     override fun apply(target: Project) {
         target.requireAny(
@@ -30,21 +23,29 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
             "toolkit-multiplatform-library",
             "toolkit-multiplatform-publish"
         )
-        target.plugins.apply("maven-publish")
 
-        with(target.multiplatform){
+        // Applying necessary plugins
+        target.plugins.apply("maven-publish")
+        target.applyPlugins("jetbrains-dokka", "vanniktech-publish")
+
+        // Setup Android Variant
+        with(target.androidLibrary) {
+            publishing.singleVariant("release") {
+                withSourcesJar()
+                withJavadocJar()
+            }
+        }
+
+        // Setup Multiplatform properly
+        with(target.multiplatform) {
             withSourcesJar(true)
             androidTarget().publishLibraryVariants("release")
         }
 
-        // Setup Javadoc and sources artifacts
-        target.setupJavadocAndSources()
-
-        // Setup Publishing
+        // Setup Default Publishing
         with(target.publishing) {
             repositories { repo ->
                 repo.createLocalPathRepository(target)
-                repo.createSonatypeRepository(target)
             }
 
             publications { container ->
@@ -57,33 +58,20 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
                     pub.groupId = target.properties["GROUP"] as String
                     pub.artifactId = "${target.name}$suffix"
                     pub.version = target.versionName
-
-                    target.javadoc?.let { file ->
-                        pub.artifact(file) { artifact ->
-                            artifact.classifier = "javadoc"
-                            artifact.extension = "jar"
-                        }
-                    }
                     pub.pom { target.configurePom(it, false) }
                 }
             }
         }
 
-        // Attach all needed tasks into assembleRelease task
-        target.attachAllTasksIntoAssembleRelease()
-
-        // Setup Signing
-        if (target.missing("signing.keyId", "signing.password", "signing.secretKeyRingFile")) {
-            println("Missing env variables")
-            return
-        }
-        target.plugins.apply("signing")
-        target.tasks.withType(AbstractPublishToMaven::class.java).configureEach {
-            it.dependsOn(it.project.tasks.withType(Sign::class.java))
-        }
-        with(target.sign) {
-            sign(target.publishing.publications)
-            setRequired { target.gradle.taskGraph.allTasks.any { (it is PublishToMavenRepository) } }
+        // Setup Custom Publishing
+        with(target.vanniktechPublish) {
+            configure(
+                KotlinMultiplatform(
+                    javadocJar = JavadocJar.Dokka("dokkaHtml"),
+                    sourcesJar = true,
+                    androidVariantsToPublish = listOf("release"),
+                )
+            )
         }
     }
 }

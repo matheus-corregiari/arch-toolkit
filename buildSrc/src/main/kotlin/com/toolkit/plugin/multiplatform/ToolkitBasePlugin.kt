@@ -16,7 +16,7 @@ internal class ToolkitBasePlugin : Plugin<Project> {
         target.kotlinExtension.jvmToolchain(projectJavaVersionCode)
 
         with(target.multiplatform) {
-            androidTarget()
+            androidTarget {}
             jvm {}
         }
 

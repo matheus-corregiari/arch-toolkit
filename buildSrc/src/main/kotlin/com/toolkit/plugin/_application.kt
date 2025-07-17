@@ -16,7 +16,8 @@ internal fun Project.setupAndroidApplicationModule() = with(androidApplication) 
         versionCode = libs.version("build-version-code").toInt()
         versionName = libs.version("build-version-name")
 
-        resourceConfigurations.add("en")
+        @Suppress("UnstableApiUsage")
+        androidResources.localeFilters.add("en")
     }
     buildTypes.maybeCreate("release").apply { isMinifyEnabled = true }
     buildFeatures.buildConfig = true
