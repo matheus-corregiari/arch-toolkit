@@ -1098,10 +1098,10 @@ class ObserveWrapper<T> internal constructor() {
 }
 
 internal class WrapObserver<T, V>(
-    @Nullable val observer: (suspend (T) -> Unit)? = null,
-    @Nullable val emptyObserver: (suspend () -> Unit)? = null,
-    @Nullable val transformer: (suspend (T) -> V)? = null,
-    @Nullable val transformerObserver: (suspend (V) -> Unit)? = null,
+    @param:Nullable val observer: (suspend (T) -> Unit)? = null,
+    @param:Nullable val emptyObserver: (suspend () -> Unit)? = null,
+    @param:Nullable val transformer: (suspend (T) -> V)? = null,
+    @param:Nullable val transformerObserver: (suspend (V) -> Unit)? = null,
 ) {
     suspend fun handle(
         @Nullable data: T?,
@@ -1160,9 +1160,9 @@ internal class WrapObserver<T, V>(
 }
 
 internal sealed class ObserveEvent<T>(
-    @NonNull val wrapper: WrapObserver<T, *>,
-    @NonNull val single: Boolean,
-    @NonNull val dataStatus: EventDataStatus,
+    @param:NonNull val wrapper: WrapObserver<T, *>,
+    @param:NonNull val single: Boolean,
+    @param:NonNull val dataStatus: EventDataStatus,
 )
 
 private class LoadingEvent(

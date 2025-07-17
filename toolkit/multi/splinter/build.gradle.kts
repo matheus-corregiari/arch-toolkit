@@ -4,7 +4,7 @@ plugins {
 }
 
 android.namespace = "br.com.arch.toolkit.splinter"
-android.buildFeatures.androidResources = false
+android.androidResources.enable = false
 android.buildFeatures.buildConfig = false
 
 kotlin {

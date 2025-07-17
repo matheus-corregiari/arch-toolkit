@@ -4,7 +4,7 @@ plugins {
 }
 
 android.namespace = "br.com.arch.toolkit.lumber"
-android.buildFeatures.androidResources = false
+android.androidResources.enable = false
 android.buildFeatures.buildConfig = false
 
 kotlin {
