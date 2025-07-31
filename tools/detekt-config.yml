@@ -307,7 +307,7 @@ naming:
     allowedPattern: '^(is|has|are)'
   ClassNaming:
     active: true
-    classPattern: '((^[A-Z]){1}|[_]{1}[a-z]|[a-z]{1})([a-zA-Z0-9]{2,}).*'
+    classPattern: '(?:(?:[A-Z]){1}|(?:[_]{1}[a-z]{1}))(?:[a-zA-Z0-9]*)(?:[Test_][a-zA-Z0-9]*)?'
   ConstructorParameterNaming:
     active: true
     parameterPattern: '[a-z][A-Za-z0-9]*'

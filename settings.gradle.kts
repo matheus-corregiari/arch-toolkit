@@ -10,7 +10,7 @@ dependencyResolutionManagement {
     apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
     val repositoryList: RepositoryHandler.() -> Unit by extra
     repositories(repositoryList)
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
 }
 
 // Root Project config
@@ -31,5 +31,8 @@ include(":toolkit:android:statemachine")
 // Samples
 val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"
 if (isIdeBuild) {
-    include(":samples:github-list-project")
+    include(":samples:github-list-project:shared")
+    include(":samples:github-list-project:target:android")
+    include(":samples:github-list-project:target:desktop")
+    include(":samples:github-list-project:target:web")
 }
