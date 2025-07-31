@@ -19,11 +19,9 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Thread.UncaughtExceptionHandler
+import kotlin.coroutines.coroutineContext
 
 /**
  * Wrapper to handle the DataResult`<T>`
@@ -42,12 +40,12 @@ class ObserveWrapper<T> internal constructor() {
     /**
      * Big "catch" to handle unexpected exceptions inside the executions of the events
      */
-    private val scopeUncaughtError =
-        CoroutineExceptionHandler { _, throwable ->
-            val thread = Thread.currentThread()
-            thread.uncaughtExceptionHandler = DataResultUncaughtExceptionHandler()
-            thread.uncaughtExceptionHandler?.uncaughtException(thread, throwable)
-        }
+    private val exceptionHandler = DataResultUncaughtExceptionHandler()
+    private val uncaughtHandler = CoroutineExceptionHandler { _, throwable ->
+        val thread = Thread.currentThread()
+        thread.uncaughtExceptionHandler = exceptionHandler
+        exceptionHandler.uncaughtException(thread, throwable)
+    }
 
     /**
      * Scope to run all the events
@@ -116,7 +114,8 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      *
      * @param single If true, will execute only until the first non-LOADING status, Default: false
-     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
+     * @param dataStatus Defines whether this event should be evaluated only when data is present,
+     * absent, or ignored. Default: DoesNotMatter
      * @param observer Will receive true when the actual value has the LOADING status, false otherwise
      *
      * @see DataResult
@@ -155,7 +154,8 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      *
      * @param single If true, will execute only until the first LOADING status, Default: false
-     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
+     * @param dataStatus Defines whether this event should be evaluated only when data is present,
+     * absent, or ignored. Default: DoesNotMatter
      * @param observer Will be called when the actual value has the LOADING status
      *
      * @see DataResult
@@ -194,7 +194,8 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      *
      * @param single If true, will execute only until the first non-LOADING status, Default: false
-     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
+     * @param dataStatus Defines whether this event should be evaluated only when data is present,
+     * absent, or ignored. Default: DoesNotMatter
      * @param observer Will be called when the actual value hasn't the LOADING status
      *
      * @see DataResult
@@ -238,7 +239,8 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      *
      * @param single If true, will execute only until the first ERROR status, Default: false
-     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
+     * @param dataStatus Defines whether this event should be evaluated only when data is present,
+     * absent, or ignored. Default: DoesNotMatter
      * @param observer Will be called when the actual value has the ERROR status
      *
      * @see DataResult
@@ -281,7 +283,8 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      *
      * @param single If true, will execute only until the first ERROR status, Default: false
-     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
+     * @param dataStatus Defines whether this event should be evaluated only when data is present,
+     * absent, or ignored. Default: DoesNotMatter
      * @param observer Will receive the not null error when the actual value has the ERROR status
      *
      * @see DataResult
@@ -326,7 +329,8 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      *
      * @param single If true, will execute only until the first ERROR status, Default: false
-     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
+     * @param dataStatus Defines whether this event should be evaluated only when data is present,
+     * absent, or ignored. Default: DoesNotMatter
      * @param transformer Transform the Throwable into R before deliver it to the observer
      * @param observer Will receive the not null transformed error when the actual value has the ERROR status
      *
@@ -378,7 +382,8 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      *
      * @param single If true, will execute only until the first SUCCESS status, Default: false
-     * @param dataStatus Defines whether this event should be evaluated only when data is present, absent, or ignored. Default: DoesNotMatter
+     * @param dataStatus Defines whether this event should be evaluated only when data is present,
+     * absent, or ignored. Default: DoesNotMatter
      * @param observer Will be called when the actual value has the SUCCESS status
      *
      * @see DataResult
@@ -903,20 +908,10 @@ class ObserveWrapper<T> internal constructor() {
 
     //region Attach Methods
 
-    /**
-     * Attach this wrapper into a flow
-     *
-     * @param flow The desired Flow to observe
-     *
-     * @return The Flow<DataResult<T>> attached to the Wrapper
-     */
+    /** MISSING */
     @NonNull
-    internal fun attachTo(
-        @NonNull flow: Flow<DataResult<T>>,
-    ): Flow<DataResult<T>> {
-        scope.launchWithErrorTreatment { flow.collect(::handleResult) }
-        return flow
-    }
+    internal fun suspendFunc(@NonNull func: suspend ObserveWrapper<T>.() -> Unit) =
+        scope.launchWithErrorTreatment { func() }
 
     /**
      * Attach this wrapper into a DataResult Instance
@@ -926,14 +921,11 @@ class ObserveWrapper<T> internal constructor() {
      * @return The DataResult<T> attached to the Wrapper
      */
     @NonNull
-    internal fun attachTo(
-        @NonNull dataResult: DataResult<T>,
-    ): DataResult<T> {
-        scope.launchWithErrorTreatment { handleResult(dataResult) }
-        return dataResult
-    }
+    internal fun attachTo(@NonNull dataResult: DataResult<T>) =
+        apply { suspendFunc { handleResult(dataResult) } }
     //endregion
 
+    @Suppress("LongMethod")
     internal suspend fun handleResult(
         @Nullable result: DataResult<T>?,
         evaluateBeforeDispatch: suspend () -> Boolean = { true },
@@ -943,96 +935,98 @@ class ObserveWrapper<T> internal constructor() {
         eventList.iterate(result) { event ->
             return@iterate when {
                 // Handle None
-                result.isNone ->
-                    (event as? NoneEvent)?.run {
-                        wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
-                    } == true
+                result.isNone -> (event as? NoneEvent)?.wrapper?.handle(
+                    data = null,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch
+                ) == true
 
                 // Handle Loading
-                event is LoadingEvent ->
-                    event.run {
-                        wrapper.handle(
-                            result.isLoading,
-                            transformDispatcher,
-                            evaluateBeforeDispatch,
-                        ) &&
-                            result.isLoading.not()
-                    }
+                event is LoadingEvent -> event.wrapper.handle(
+                    data = result.isLoading,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch,
+                ) && result.isLoading.not()
 
                 // Handle ShowLoading
-                event is ShowLoadingEvent && result.isLoading ->
-                    event.run {
-                        wrapper.handle(true, transformDispatcher, evaluateBeforeDispatch)
-                    }
+                event is ShowLoadingEvent && result.isLoading -> event.wrapper.handle(
+                    data = true,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch
+                )
 
                 // Handle HideLoading
-                event is HideLoadingEvent && result.isLoading.not() ->
-                    event.run {
-                        wrapper.handle(
-                            result.isLoading,
-                            transformDispatcher,
-                            evaluateBeforeDispatch,
-                        )
-                    }
+                event is HideLoadingEvent && result.isLoading.not() -> event.wrapper.handle(
+                    data = result.isLoading,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch,
+                )
 
                 // Handle Error
-                event is ErrorEvent && result.isError ->
-                    event.run {
-                        wrapper.handle(result.error, transformDispatcher, evaluateBeforeDispatch)
-                    }
+                event is ErrorEvent && result.isError -> event.wrapper.handle(
+                    data = result.error,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch
+                )
 
                 // Handle Success
-                event is SuccessEvent && result.isSuccess ->
-                    event.run {
-                        wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
-                    }
+                event is SuccessEvent && result.isSuccess -> event.wrapper.handle(
+                    data = null,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch
+                )
 
                 // Handle Data
-                event is DataEvent ->
-                    (event as DataEvent<T>).wrapper.let {
-                        it.handle(
-                            result.data,
-                            transformDispatcher,
-                            evaluateBeforeDispatch,
-                        ) &&
-                            (result.data != null)
-                    }
+                event is DataEvent -> (event as DataEvent<T>).wrapper.handle(
+                    data = result.data,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch,
+                ) && (result.data != null)
 
                 // Handle Empty
-                event is EmptyEvent && result.isListType && result.isEmpty ->
-                    event.run {
-                        wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
-                    }
+                event is EmptyEvent && result.isListType && result.isEmpty -> event.wrapper.handle(
+                    data = null,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch
+                )
 
                 // Handle Not Empty
                 event is NotEmptyEvent && result.isListType && result.isNotEmpty ->
-                    event.run {
-                        wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
-                    }
+                    event.wrapper.handle(
+                        data = null,
+                        dispatcher = transformDispatcher,
+                        evaluate = evaluateBeforeDispatch
+                    )
 
                 // Handle One Item
                 event is OneItemEvent && result.isListType && result.hasOneItem ->
-                    event.run {
-                        wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
-                    }
+                    event.wrapper.handle(
+                        data = null,
+                        dispatcher = transformDispatcher,
+                        evaluate = evaluateBeforeDispatch
+                    )
 
                 // Handle Many Items
                 event is ManyItemsEvent && result.isListType && result.hasManyItems ->
-                    event.run {
-                        wrapper.handle(null, transformDispatcher, evaluateBeforeDispatch)
-                    }
+                    event.wrapper.handle(
+                        data = null,
+                        dispatcher = transformDispatcher,
+                        evaluate = evaluateBeforeDispatch
+                    )
 
                 // Handle Result
-                event is ResultEvent<*> ->
-                    (event as ResultEvent<T>).run {
-                        wrapper.handle(result, transformDispatcher, evaluateBeforeDispatch)
-                    }
+                event is ResultEvent<*> -> (event as ResultEvent<T>).wrapper.handle(
+                    data = result,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch
+                )
 
                 // Handle Status
-                event is StatusEvent ->
-                    event.run {
-                        wrapper.handle(result.status, transformDispatcher, evaluateBeforeDispatch)
-                    }
+                event is StatusEvent -> event.wrapper.handle(
+                    data = result.status,
+                    dispatcher = transformDispatcher,
+                    evaluate = evaluateBeforeDispatch
+                )
 
                 else -> false
             }
@@ -1055,43 +1049,39 @@ class ObserveWrapper<T> internal constructor() {
     }
 
     internal fun CoroutineScope.launchWithErrorTreatment(func: suspend () -> Unit) {
-        launch(scopeUncaughtError) { func.invoke() }
+        fun Result<*>.catch() = onFailure { uncaughtHandler.handleException(coroutineContext, it) }
+        runCatching { launch(uncaughtHandler) { runCatching { func() }.catch() } }.catch()
     }
 
-    private inner class DataResultUncaughtExceptionHandler : UncaughtExceptionHandler {
-        override fun uncaughtException(
-            thread: Thread,
-            uncaughtError: Throwable,
-        ) {
-            when (uncaughtError) {
+    private inner class DataResultUncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
+        @Throws(DataResultException::class)
+        override fun uncaughtException(thread: Thread, error: Throwable) {
+            when (error) {
                 is DataResultException,
-                is DataResultTransformationException,
-                -> throw uncaughtError
+                is DataResultTransformationException -> throw error
             }
 
-            when (val cause = uncaughtError.cause) {
+            when (val cause = error.cause) {
                 is DataResultException,
-                is DataResultTransformationException,
-                -> throw cause
+                is DataResultTransformationException -> throw cause
             }
 
             if (eventList.none { it is ErrorEvent }) {
                 throw DataResultException(
-                    "Any error event found, please add one error { ... } to retry",
-                    uncaughtError,
+                    message = "Any error event found, please add one error { ... } to retry",
+                    error = error,
                 )
             }
 
-            scope.launch(scopeUncaughtError) {
-                kotlin
-                    .runCatching {
-                        handleResult(dataResultError(uncaughtError))
-                    }.onFailure {
-                        throw DataResultException(
-                            "Error retried but without any success",
-                            uncaughtError,
-                        )
-                    }
+            suspendFunc {
+                runCatching {
+                    handleResult(dataResultError(error))
+                }.onFailure {
+                    throw DataResultException(
+                        message = "Error retried but without any success",
+                        error = error
+                    )
+                }
             }
         }
     }
@@ -1139,17 +1129,16 @@ internal class WrapObserver<T, V>(
                 }
 
             val catch = CoroutineExceptionHandler { _, error -> throw error }
-            withContext(currentCoroutineContext() + catch) {
+            withContext(coroutineContext + catch) {
                 if (evaluate.invoke()) {
-                    result
-                        .onSuccess {
-                            transformerObserver.invoke(it)
-                        }.onFailure {
-                            throw DataResultTransformationException(
-                                "Error performing transformation",
-                                it,
-                            )
-                        }
+                    result.onSuccess {
+                        transformerObserver.invoke(it)
+                    }.onFailure {
+                        throw DataResultTransformationException(
+                            message = "Error performing transformation",
+                            error = it
+                        )
+                    }
                     true
                 } else {
                     false
@@ -1169,27 +1158,31 @@ private class LoadingEvent(
     @NonNull observer: suspend (Boolean) -> Unit,
     @NonNull single: Boolean,
     @NonNull dataStatus: EventDataStatus,
-) : ObserveEvent<Boolean>(WrapObserver<Boolean, Any>(observer), single, dataStatus)
+) : ObserveEvent<Boolean>(
+    wrapper = WrapObserver<Boolean, Any>(observer),
+    single = single,
+    dataStatus = dataStatus
+)
 
 private class ShowLoadingEvent(
     @NonNull observer: suspend () -> Unit,
     @NonNull single: Boolean,
     @NonNull dataStatus: EventDataStatus,
 ) : ObserveEvent<Boolean>(
-        WrapObserver<Boolean, Any>(emptyObserver = observer),
-        single,
-        dataStatus,
-    )
+    wrapper = WrapObserver<Boolean, Any>(emptyObserver = observer),
+    single = single,
+    dataStatus = dataStatus,
+)
 
 private class HideLoadingEvent(
     @NonNull observer: suspend () -> Unit,
     @NonNull single: Boolean,
     @NonNull dataStatus: EventDataStatus,
 ) : ObserveEvent<Boolean>(
-        WrapObserver<Boolean, Any>(emptyObserver = observer),
-        single,
-        dataStatus,
-    )
+    wrapper = WrapObserver<Boolean, Any>(emptyObserver = observer),
+    single = single,
+    dataStatus = dataStatus,
+)
 
 private class ErrorEvent(
     @NonNull wrapper: WrapObserver<Throwable, *>,

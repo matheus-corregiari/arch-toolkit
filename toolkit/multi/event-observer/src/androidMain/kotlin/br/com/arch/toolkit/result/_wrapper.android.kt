@@ -16,14 +16,12 @@ import br.com.arch.toolkit.livedata.ResponseLiveData
  * Observes until all observers on Wrapper get removed
  *
  * @param owner The desired Owner to observe
- *
- * @return The ResponseLiveData<T> attached to the Wrapper
  */
 @NonNull
 internal fun <T> ObserveWrapper<T>.attachTo(
     @NonNull liveData: ResponseLiveData<T>,
     @NonNull owner: LifecycleOwner
-): ResponseLiveData<T> {
+) {
     val observer = object : Observer<DataResult<T>?> {
         override fun onChanged(value: DataResult<T>?) {
             scope.launchWithErrorTreatment {
@@ -35,5 +33,4 @@ internal fun <T> ObserveWrapper<T>.attachTo(
         }
     }
     liveData.observe(owner, observer)
-    return liveData
 }

@@ -13,7 +13,6 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
@@ -23,6 +22,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Custom implementation of LiveData made to help the data handling with needs the interpretation of:
@@ -218,20 +218,16 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
      *
      * @param owner The desired Owner to observe
      * @param wrapperConfig The function to configure the wrapper before observe it
-     *
-     * @return The ResponseLiveData<T>
      */
     @NonNull
     fun observe(
         @NonNull owner: LifecycleOwner,
         @NonNull wrapperConfig: ObserveWrapper<T>.() -> Unit
-    ): ResponseLiveData<T> {
-        return newWrapper()
-            .scope(scope)
-            .transformDispatcher(transformDispatcher)
-            .apply(wrapperConfig)
-            .attachTo(this, owner)
-    }
+    ) = ObserveWrapper<T>()
+        .scope(scope)
+        .transformDispatcher(transformDispatcher)
+        .apply(wrapperConfig)
+        .attachTo(liveData = this, owner = owner)
 
     /**
      * @see br.com.arch.toolkit.util.safePostValue
@@ -244,9 +240,13 @@ open class ResponseLiveData<T> : LiveData<DataResult<T>> {
         }
     }
 
-    /**
-     * @return A new instance of ObserveWrapper<T>
-     */
-    @NonNull
-    private fun newWrapper() = ObserveWrapper<T>()
+    companion object {
+        fun <T> from(flow: Flow<DataResult<T>>) = responseLiveData {
+            flow.collect { emit(it) }
+        }
+
+        fun <T> fromFlow(flow: Flow<T>) = responseLiveData {
+            flow.collect { emitData(it) }
+        }
+    }
 }
