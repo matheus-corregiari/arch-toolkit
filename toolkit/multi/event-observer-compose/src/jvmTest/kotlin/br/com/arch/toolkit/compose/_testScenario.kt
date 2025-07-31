@@ -42,7 +42,7 @@ fun <T> scenario(
     setContent {
         CompositionLocalProvider(LocalLifecycleOwner provides alwaysOnOwner) {
             Column {
-                comp.Unwrap(config)
+                comp.Unwrap { config() }
             }
         }
     }

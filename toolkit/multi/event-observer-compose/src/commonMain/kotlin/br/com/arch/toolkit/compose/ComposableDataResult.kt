@@ -38,6 +38,8 @@ import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.EventDataStatus
 import br.com.arch.toolkit.result.EventDataStatus.DoesNotMatter
 import br.com.arch.toolkit.result.ObserveWrapper
+import br.com.arch.toolkit.util.dataResultNone
+import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
@@ -56,7 +58,7 @@ import kotlin.time.DurationUnit
  * @see AnimationConfig
  */
 class ComposableDataResult<T> internal constructor(
-    private val resultFlow: ResponseFlow<T>,
+    private val resultFlow: Flow<DataResult<T>>,
 ) {
     private val animationConfig = AnimationConfig()
     private var notComposableBlock: (ObserveWrapper<T>.() -> Unit)? = null
@@ -333,8 +335,8 @@ class ComposableDataResult<T> internal constructor(
      */
     @Composable
     fun Unwrap(
-        config: @Composable ComposableDataResult<T>.() -> Unit,
         lifecycle: LifecycleOwner = LocalLifecycleOwner.current,
+        config: @Composable ComposableDataResult<T>.() -> Unit,
     ) {
         config()
         Unwrap(lifecycle)
@@ -362,7 +364,7 @@ class ComposableDataResult<T> internal constructor(
      */
     @Composable
     fun Unwrap(lifecycle: LifecycleOwner = LocalLifecycleOwner.current) {
-        val result by resultFlow.collectAsStateWithLifecycle(lifecycle)
+        val result by resultFlow.collectAsStateWithLifecycle(dataResultNone(), lifecycle)
         val animationConfig = remember { animationConfig }
 
         LaunchedEffect(this, result) {

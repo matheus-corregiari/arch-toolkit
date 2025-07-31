@@ -8,6 +8,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.result.DataResult
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Creates a [ComposableDataResult] from this [DataResult], enabling declarative observation
@@ -45,7 +46,7 @@ val <T> DataResult<T>.composable: ComposableDataResult<T>
  * @return A [ComposableDataResult] to chain Compose callbacks.
  * @see ComposableDataResult
  */
-val <T> ResponseFlow<T>.composable: ComposableDataResult<T>
+val <T> Flow<DataResult<T>>.composable: ComposableDataResult<T>
     get() = ComposableDataResult(this)
 
 /**
@@ -64,7 +65,7 @@ val <T> ResponseFlow<T>.composable: ComposableDataResult<T>
  * @receiver The [ResponseFlow] to collect.
  * @return A [State] whose value is always the latest [ComposableDataResult] instance.
  */
-fun <T> ResponseFlow<T>.collectAsComposableState(): State<ComposableDataResult<T>> =
+fun <T> Flow<DataResult<T>>.collectAsComposableState(): State<ComposableDataResult<T>> =
     derivedStateOf(neverEqualPolicy()) { composable }
 
 /**
@@ -86,11 +87,10 @@ fun <T> ResponseFlow<T>.collectAsComposableState(): State<ComposableDataResult<T
  * @return A [State] that updates its value on every flow emission.
  */
 @Composable
-fun <T> ResponseFlow<T>.produceComposableState(): State<ComposableDataResult<T>> {
+fun <T> Flow<DataResult<T>>.produceComposableState(): State<ComposableDataResult<T>> {
     // Initialize with the current wrapper
     val initial = remember { composable }
-    val initialValue = remember { value }
-    return produceState(initial, this, initialValue) {
+    return produceState(initial, this) {
         this@produceState.value = composable
     }
 }

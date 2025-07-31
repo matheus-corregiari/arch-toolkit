@@ -2,9 +2,10 @@ package br.com.arch.toolkit.compose
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.asFlow
-import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.ResponseLiveData
+import br.com.arch.toolkit.result.DataResult
 
 /**
  * Wraps this [ResponseLiveData] as a [ComposableDataResult], for Compose-driven UI updates.
@@ -17,8 +18,8 @@ import br.com.arch.toolkit.livedata.ResponseLiveData
  *
  * @see ComposableDataResult
  */
-val <T> ResponseLiveData<T>.composable: ComposableDataResult<T>
-    get() = ComposableDataResult(ResponseFlow<T>().mirror(asFlow()))
+val <T> LiveData<DataResult<T>>.composable: ComposableDataResult<T>
+    get() = ComposableDataResult(asFlow())
 
 /**
  * Collects this [ResponseLiveData] as a Compose [State] of [ComposableDataResult], updating on each change.
@@ -32,4 +33,4 @@ val <T> ResponseLiveData<T>.composable: ComposableDataResult<T>
  * @return a [State] holding the latest [ComposableDataResult]
  * @see ComposableDataResult
  */
-fun <T> ResponseLiveData<T>.collectAsComposableState() = derivedStateOf { composable }
+fun <T> LiveData<DataResult<T>>.collectAsComposableState() = derivedStateOf { composable }
