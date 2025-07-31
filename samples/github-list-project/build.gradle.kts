@@ -1,6 +1,5 @@
 plugins {
     id("toolkit-android-sample")
-    // id("toolkit-compose") --> Commented until Compose finally work on API 34 -.-"
     alias(libs.plugins.google.ksp)
 }
 
