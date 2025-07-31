@@ -10,11 +10,11 @@ dependencyResolutionManagement {
     apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
     val repositoryList: RepositoryHandler.() -> Unit by extra
     repositories(repositoryList)
-    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
 }
 
 // Root Project config
-rootProject.name = "Arch Toolkit"
+rootProject.name = "arch-toolkit"
 
 // Toolkit Libraries
 include(":toolkit:multi:event-observer")

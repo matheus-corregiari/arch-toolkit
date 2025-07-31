@@ -66,6 +66,7 @@ dexcount = "4.0.0"
 slf4j = "2.0.17"
 ajalt-mordant = "3.0.2"
 vanniktech-publish = "0.34.0"
+node = "7.1.0"
 
 # ------------------------------------------------------------------------------------------------ #
 [libraries]
@@ -192,6 +193,7 @@ dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint-idea", version.ref = "ktlint" }
 vanniktech-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-publish" }
+node = { id = "com.github.node-gradle.node", version.ref = "node" }
 
 # ------------------------------------------------------------------------------------------------ #
 [bundles]

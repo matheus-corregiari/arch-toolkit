@@ -1,4 +1,4 @@
-package com.toolkit.plugin.wasm
+package com.toolkit.plugin.web
 
 import com.toolkit.plugin.util.applyPlugins
 import com.toolkit.plugin.util.projectJavaVersionCode

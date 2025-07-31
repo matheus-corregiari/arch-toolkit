@@ -86,11 +86,11 @@ gradlePlugin {
         //endregion
 
         //region Wasm
-        create("toolkit-wasm-sample") {
-            id = "toolkit-wasm-sample"
+        create("toolkit-web-sample") {
+            id = "toolkit-web-sample"
             displayName = "Toolkit Sample Plugin"
             description = "Plug and play for modules to show the world the wonders of tomorrow!"
-            implementationClass = "com.toolkit.plugin.wasm.ToolkitSamplePlugin"
+            implementationClass = "com.toolkit.plugin.web.ToolkitSamplePlugin"
         }
         //endregion
 
