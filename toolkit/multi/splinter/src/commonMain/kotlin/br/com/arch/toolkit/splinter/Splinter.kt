@@ -1,4 +1,9 @@
-@file:Suppress("TooManyFunctions", "MemberVisibilityCanBePrivate")
+@file:Suppress(
+    "TooManyFunctions",
+    "unused",
+    "CanBeParameter"
+)
+@file:OptIn(ExperimentalAtomicApi::class, ExperimentalTime::class)
 
 package br.com.arch.toolkit.splinter
 
@@ -6,319 +11,419 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import br.com.arch.toolkit.lumber.Lumber
 import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.splinter.Splinter.ExecutionPolicy.CancelWhenHasRunningBeforeStart
+import br.com.arch.toolkit.splinter.Splinter.ExecutionPolicy.IgnoreWhenHasRunningOperations
+import br.com.arch.toolkit.splinter.Splinter.ExecutionPolicy.ParallelQueue
+import br.com.arch.toolkit.splinter.Splinter.ExecutionPolicy.SequentialQueue
+import br.com.arch.toolkit.splinter.Splinter.StopPolicy.OnLifecycle
+import br.com.arch.toolkit.splinter.extension.incrementAsId
+import br.com.arch.toolkit.splinter.extension.info
 import br.com.arch.toolkit.splinter.extension.invokeCatching
-import br.com.arch.toolkit.splinter.strategy.MirrorFlow
-import br.com.arch.toolkit.splinter.strategy.OneShot
+import br.com.arch.toolkit.splinter.extension.lazyJob
+import br.com.arch.toolkit.splinter.extension.tryError
+import br.com.arch.toolkit.splinter.extension.tryInfo
 import br.com.arch.toolkit.splinter.strategy.Strategy
-import br.com.arch.toolkit.util.dataResultNone
-import kotlinx.coroutines.CompletableJob
+import br.com.arch.toolkit.util.dataResultError
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.plusAssign
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
-/**
- * Evil class that knows how to handle events asynchronously
- *
- * It uses a DataResult to wrap the responses and tells the observer what is going on inside this evil class
- */
-class Splinter<RETURN : Any> internal constructor(
+class Splinter<RETURN> internal constructor(
     private val id: String,
-    private val quiet: Boolean,
-    private val holder: TargetResultHolderImpl<RETURN> = TargetResultHolderImpl(),
-    private val dataSetter: DataSetter<DataResult<RETURN>> = holder.setter(),
-) : DefaultLifecycleObserver, TargetResultHolder<RETURN> by holder {
+    private val config: Config<RETURN>,
+    private val strategy: Strategy<RETURN>,
+    val resultHolder: ResponseDataHolder<RETURN> = ResultHolder(),
+    val messageHolder: DataHolder<Message> = MessageHolder()
+) {
 
     init {
-        holder.scope = { config.scope }
-        holder.running = { isRunning }
+        (resultHolder as ResultHolder).init(this)
+        (messageHolder as MessageHolder).init(this)
     }
 
-    internal val logger: Lumber.Oak
-        get() = Lumber.tag(id).quiet(quiet)
-
-    //region Jobs, Coroutines and Locks
-    private val lock = Object()
-    private val operationLock = Object()
-    private val config = Config()
-    private val supervisorJob = SupervisorJob()
-    private var job: Job = Job().apply(CompletableJob::complete)
-    private var onCancel: (() -> Unit)? = null
+    /**
+     * Atomic Holders
+     */
+    //region Atomic Holders
+    private val operationCount = AtomicInt(0)
+    private val operationStartedCount = AtomicInt(0)
+    private val operationCompletedCount = AtomicInt(0)
+    private val eventCount = AtomicInt(0)
+    private val logCount = AtomicInt(0)
     //endregion
 
     /**
-     * Flag that indicates if this Splinter is running or not!
+     * Flows that holds everything
      */
-    val isRunning: Boolean get() = supervisorJob.isActive && job.isActive
+    //region Flows
+    private val apprenticeFlow = MutableSharedFlow<Apprentice<RETURN>>(
+        replay = 10, extraBufferCapacity = 5, onBufferOverflow = BufferOverflow.SUSPEND
+    )
+    internal val dataFlow = MutableSharedFlow<DataResult<RETURN>>(
+        replay = 500, extraBufferCapacity = 50, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    internal val logFlow = MutableSharedFlow<Message>(
+        replay = 500, extraBufferCapacity = 50, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    //endregion
 
     /**
-     * Executed when this running splinter gets canceled
-     *
-     * @See Splinter.cancel
+     * Auxiliary Fields
      */
-    fun onCancel(func: () -> Unit) = apply { onCancel = func }
+    //region Auxiliary Fields
+    private val lock = Object()
+    private val logger: Lumber.Oak get() = Lumber.tag(id).quiet(config.quiet)
+    private val observer = object : DefaultLifecycleObserver {
+        init {
+            config.lifecycleOwner?.lifecycle?.addObserver(this)
+        }
+
+        override fun onDestroy(owner: LifecycleOwner) {
+            if (config.stopPolicy == OnLifecycle) {
+                logger.warn("[Splinter] Killed due lifecycle")
+                kill()
+            } else {
+                logger.warn("[Splinter] Canceled due lifecycle")
+                cancel()
+            }
+        }
+    }
+    private val exceptionHandler = CoroutineExceptionHandler { context, throwable ->
+        logFlow.tryError("[Splinter] Major failed detected", throwable)
+        dataFlow.tryEmit(dataResultError(throwable))
+    }
+    //endregion
 
     /**
-     * Block that configure how this splinter will work ^^
-     *
-     * @see Splinter.Config
+     * Coroutine Running Jobs
      */
-    fun config(config: Config.() -> Unit) = apply { this.config.run(config) }
+    //region Jobs
+    private val masterJob = SupervisorJob().apply {
+        invokeOnCompletion { logger.warn("[Splinter] Master job stopped") }
+    }
+    private val logJob by createJob(tag = "Log", scope = CoroutineScope(Unconfined)) {
+        val eventCountJob = launch { dataFlow.collect { eventCount.plusAssign(1) } }
+        val logCountJob = launch { logFlow.collect { logCount.plusAssign(1) } }
+        if (config.quiet) listOf(eventCountJob, logCountJob).joinAll()
+        else logFlow.collect { logger.log(it.level, it.error, it.indentedMessage) }
+    }
+
+    private val collectJob by createJob(tag = "Collect", scope = config.scope) {
+        apprenticeFlow.collect { apprentice ->
+            val state = if (apprentice.start()) "Started!" else "Collect!"
+            logFlow.info("[Splinter] - Apprentice ${apprentice.id} - $state")
+            operationStartedCount.plusAssign(1)
+            val log = launch { logFlow.emitAll(apprentice.logChannel) }
+            val data = launch { dataFlow.emitAll(apprentice.dataChannel) }
+            runCatching { listOf(log, data).joinAll() }
+            apprentice.stop()
+            operationCompletedCount.plusAssign(1)
+            logFlow.info("[Splinter] - Apprentice ${apprentice.id} - Finished!")
+            if (config.stopPolicy == StopPolicy.AfterFirstExecution) {
+                logFlow.info("[Splinter] - Killing after first execution!")
+                kill()
+            }
+        }
+    }
+    //endregion
 
     /**
-     * Execute with all configurations using the execution policy and strategy
-     *
-     * @see Splinter.ExecutionPolicy
-     * @see Strategy
+     * Useful flags
      */
-    fun execute(): Splinter<RETURN> = synchronized(lock) {
-        when (config.policy) {
-            /**
-             * When the code enter here, means that we need to check
-             * if the job is already running
-             *
-             * If it is running, we do nothing and return
-             *
-             * @see ExecutionPolicy
-             **/
-            ExecutionPolicy.WAIT_IF_RUNNING -> {
-                if (isRunning) {
-                    logger.info("[Execute] Already running, let's enjoy the same running operation!")
-                    return@synchronized this
+    //region Flags
+    val isKilled: Boolean get() = masterJob.isActive.not()
+    val isRunning: Boolean get() = !isKilled && (hasRunningApprentice || isStarting || moreCreatedThenCompleted)
+    val isStarting: Boolean get() = moreCreatedThenStarted
+    val hasRunningApprentice: Boolean
+        get() = apprenticeFlow.replayCache.any(Apprentice<RETURN>::isRunning)
+
+    private val moreCreatedThenStarted: Boolean
+        get() = operationCount.load() > operationStartedCount.load()
+    private val moreCreatedThenCompleted: Boolean
+        get() = operationCount.load() > operationCompletedCount.load()
+    //endregion
+
+    fun execute() = synchronized(lock) {
+        if (shouldProceedToExecute().not()) return@synchronized
+        if (logJob.start()) logger.warn("[Splinter] - Log - Started")
+        if (collectJob.start()) logger.warn("[Splinter] - Collect - Started")
+        apprenticeFlow.tryEmit(
+            value = Apprentice(
+                id = operationCount.incrementAsId(),
+                scope = config.scope + masterJob,
+                holder = resultHolder,
+                strategy = strategy,
+            ).also { apprentice ->
+                if (config.policy == ParallelQueue) {
+                    logFlow.tryInfo("[Splinter] - Apprentice ${apprentice.id} - Started!")
+                    apprentice.start()
+                } else {
+                    logFlow.tryInfo("[Splinter] - Apprentice ${apprentice.id} - Enqueued!")
                 }
             }
+        )
+    }.let { resultHolder }
 
-            /**
-             * When the code enter here, means that we need to check
-             * if the job is already running
-             *
-             * If it is running, we must cancel it and let the method
-             * continue to create a new job
-             *
-             * @see ExecutionPolicy
-             **/
-            ExecutionPolicy.CANCEL_RUNNING_AND_RESTART -> if (isRunning) {
-                logger.info("[Execute] Oh no! It's running! Let's cancel it and start again!")
-                reset()
-            }
-        }
-
-        if (isRunning.not()) {
-            if (job.isActive || job.isCompleted || job.isCancelled) {
-                logger.info("[Execute] Creating a new job!")
-                job = newJob()
-            }
-            if (job.start()) {
-                // This means that the job has been started with success ^^
-            } else {
-                logger.info("[Execute] Unable to start job, let's try again")
-                return@synchronized execute()
-            }
-        } else {
-            logger.info("[Execute] Unable to complete execution, let's try again")
-            return@synchronized execute()
-        }
-
-        return@synchronized this
-    }
-
-    /**
-     * Reset the value inside the observables to the initial state
-     */
-    fun reset() {
-        logger.warn("[Reset] Reset!")
-        if (isRunning) {
-            cancel()
-        }
-        dataSetter.trySet(dataResultNone())
-    }
-
-    /**
-     * Cancel running execution
-     *
-     * Warning: This will throw a message with status ERROR
-     */
     fun cancel() = runCatching {
-        if (job.isActive || job.isCancelled.not()) {
-            job.cancel("Cancel operation id: $id")
-            logger.warn("[Cancel] Canceled with success!")
-            onCancel?.invokeCatching()
+        if (isRunning.not()) return@runCatching
+        val runningApprentices = apprenticeFlow.replayCache
+            .filter { it.isRunning && it.isClosing.not() }
+            .ifEmpty { return@runCatching }
+        for (apprentice in runningApprentices) {
+            logFlow.tryInfo("[Splinter] Cancel - ${apprentice.id}")
+            apprentice.cancel()
         }
-    }.onFailure {
-        logger.warn("[Cancel] Cancel failed!", it)
+        config.onCancel?.invokeCatching()
     }.getOrDefault(Unit)
 
-    /**
-     * Await the end of the operation
-     */
-    suspend fun await(): DataResult<RETURN> {
-        if (isRunning.not()) return get()
-        job.join()
-        return get()
-    }
-
-    /**
-     * Lifecycle callback to automatically stop this operation if the observed lifecycle goes away
-     *
-     * This only works if you set the lifecycle owner inside the configuration block ;)
-     */
-    override fun onDestroy(owner: LifecycleOwner) {
-        if (isRunning && status == DataResultStatus.LOADING) {
-            logger.warn("[Cancel] Canceling job using lifecycle callback onDestroy!")
-            cancel()
-        }
-    }
-
-    /**
-     * Creates a new job to create a new operation from scratch!
-     */
-    private fun newJob(): Job = config.scope.launch(start = CoroutineStart.LAZY) {
+    fun kill(): ResponseDataHolder<RETURN> = synchronized(lock) {
         runCatching {
-            logger.info("[Job] Job started!")
-            flow {
-                logger.info("[Job] Flow started!")
-                if (config.policy == ExecutionPolicy.WAIT_IF_RUNNING) {
-                    synchronized(operationLock) { /* - */ }
+            if (isKilled) return@synchronized resultHolder
+            if (isRunning) cancel()
+            for (apprentice in apprenticeFlow.replayCache) apprentice.stop()
+            masterJob.cancel()
+            logger.warn("[Splinter] Game over!")
+        }.getOrDefault(Unit)
+        return@synchronized resultHolder
+    }
+
+    suspend fun await(): DataResult<RETURN> {
+        if (isRunning.not()) return resultHolder.get()
+        for (apprentice in apprenticeFlow.replayCache) apprentice.await()
+        masterJob.children.dropWhile { it == collectJob || it == logJob }
+            .forEach { runCatching { it.join() } }
+        return resultHolder.get()
+    }
+
+    @Suppress("MagicNumber")
+    override fun toString() = """
+        ------------------------------------------------------------
+        ${"| [Splinter $id] - Statistics ".padEnd(60, '-')}
+        ------------------------------------------------------------
+        | - Counters:
+        |     - created ---> ${operationCount.load()}
+        |     - started ---> ${operationStartedCount.load()}
+        |     - completed -> ${operationCompletedCount.load()}
+        |     - cache -----> ${apprenticeFlow.replayCache.size}
+        |     - event -----> ${eventCount.load()}
+        |     - log -------> ${logCount.load()}
+        ------------------------------------------------------------
+        | - Jobs:
+        |     - master --> ${masterJob.isActive}
+        |     - log -----> ${operationCount.load() != 0 && logJob.isActive}
+        |     - collect -> ${operationCount.load() != 0 && collectJob.isActive}
+        |     - children -> ${
+        masterJob.children.mapIndexed { i, job -> "[$i] - ${job.isActive}" }.toList()
+    }
+        ------------------------------------------------------------
+        | - Data:
+        |     - status -> ${resultHolder.status}
+        |     - data ---> ${resultHolder.data}
+        |     - error --> ${resultHolder.error}       
+        ------------------------------------------------------------
+        | - Flags:
+        |     - isRunning ----------------> $isRunning
+        |     - isKilled -----------------> $isKilled
+        |     - isStarting ---------------> $isStarting
+        |     - hasRunningApprentice -----> $hasRunningApprentice
+        |     - moreCreatedThenStarted ---> $moreCreatedThenStarted
+        |     - moreCreatedThenCompleted -> $moreCreatedThenCompleted
+        ------------------------------------------------------------
+    """.trimIndent().trimStart()
+
+    /* -------------------------------------------------------------------------------------------*/
+    /* Private Methods -----------------------------------------------------------------------------------*/
+    /* -------------------------------------------------------------------------------------------*/
+    //region Private methods
+    @Suppress("CyclomaticComplexMethod")
+    private fun shouldProceedToExecute(): Boolean {
+        val shouldProceed = AtomicBoolean(true)
+        when {
+            isKilled -> {
+                logger.warn("[Splinter] Already dead - skipping")
+                shouldProceed.store(false)
+            }
+
+            operationCount.load() > 0 && config.stopPolicy == StopPolicy.AfterFirstExecution -> {
+                logger.warn("[Splinter] Should die after first execution - skipping")
+                shouldProceed.store(false)
+            }
+
+            else -> when (config.policy) {
+                ParallelQueue, SequentialQueue -> if (isStarting || isRunning)
+                    logFlow.tryInfo("[Splinter] Adding to execution queue")
+
+                IgnoreWhenHasRunningOperations -> if (isStarting || isRunning) {
+                    logFlow.tryInfo("[Splinter] Already running - skipping")
+                    shouldProceed.store(false)
                 }
 
-                requireNotNull(config.strategy) { "You Must set a strategy to run" }
-                    .execute(this, this@Splinter)
-            }.catch { flowFailure ->
-                logger.error("[Job] Something went wrong inside the operation", flowFailure)
-                if (status != DataResultStatus.SUCCESS) {
-                    requireNotNull(config.strategy) { "You Must set a strategy to run" }.flowError(
-                        flowFailure,
-                        this,
-                        this@Splinter,
-                    )
+                CancelWhenHasRunningBeforeStart -> when {
+                    isStarting -> {
+                        logFlow.tryInfo("[Splinter] - Has starting execution - skipping")
+                        shouldProceed.store(false)
+                    }
+
+                    isRunning -> {
+                        logFlow.tryInfo("[Splinter] Canceling and add to execution queue")
+                        cancel()
+                    }
                 }
-            }.collect(dataSetter::set)
-        }.onFailure { majorFailure ->
-            logger.error("[Job] Major failure inside operation!", majorFailure)
-            if (status != DataResultStatus.SUCCESS) {
-                flow {
-                    requireNotNull(config.strategy) { "You Must set a strategy to run" }.majorError(
-                        majorFailure,
-                        this,
-                        this@Splinter,
-                    )
-                }.collect(dataSetter::set)
             }
         }
-        logger.info("[Job] Finished!")
+        return shouldProceed.load()
     }
 
-    /**
-     * This hold every single configuration inside splinter!
-     */
-    inner class Config internal constructor() {
-        //region Scope
+    private inline fun createJob(
+        tag: String,
+        scope: CoroutineScope,
+        crossinline func: suspend CoroutineScope.() -> Unit
+    ) = (scope + masterJob + exceptionHandler).lazyJob(
+        onCreate = { println("[Splinter] - $tag - Created") },
+        job = {
+            logger.warn("[Splinter] - $tag - Initialized")
+            func()
+        },
+        onComplete = { logger.warn("[Splinter] - $tag - Completed") }
+    )
+    //endregion
 
-        /**
-         * Scope to define where we are running this operation inside the coroutine
-         *
-         * The default will be a regular CoroutineScope with the IO Dispatcher <3
-         */
-        internal var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-            private set
-
-        fun scope(scope: CoroutineScope) = apply { this.scope = scope }
-
-        //endregion
-
-        //region LifecycleOwner
-
-        /**
-         * The owner to observe
-         *
-         * If you set this configuration, the splinter will add himself as observer and automatically
-         * stop the operation (if running) when the lifecycle get destroyed
-         */
-        internal var lifecycleOwner: LifecycleOwner? = null
-            private set
-
-        fun owner(owner: LifecycleOwner) = apply {
-            this.lifecycleOwner?.lifecycle?.removeObserver(this@Splinter)
-            this.lifecycleOwner = owner
-            owner.lifecycle.removeObserver(this@Splinter)
-            owner.lifecycle.addObserver(this@Splinter)
-        }
-        //endregion
-
-        //region Strategy
-
-        /**
-         * Tells splinter how to execute the operation!
-         *
-         * Basically, Splinter knows how to emit result data inside a LiveData or a Flow
-         * This Strategy tells him HOW to emit
-         *
-         * Can be a OneShot... a Polling... a Stream... Ho knows hehehe
-         */
-        internal var strategy: Strategy<RETURN>? = null
-            private set
-
-        inline fun strategy(crossinline strategy: () -> Strategy<RETURN>) =
-            strategy(strategy.invoke())
-
-        fun strategy(strategy: Strategy<RETURN>) = apply {
-            this.strategy = strategy
+    /* -------------------------------------------------------------------------------------------*/
+    /* Classes -----------------------------------------------------------------------------------*/
+    /* -------------------------------------------------------------------------------------------*/
+    //region Classes
+    @ConsistentCopyVisibility
+    data class Config<T> private constructor(
+        val scope: CoroutineScope,
+        val quiet: Boolean,
+        val lifecycleOwner: LifecycleOwner?,
+        val policy: ExecutionPolicy,
+        val stopPolicy: StopPolicy,
+        val onCancel: (() -> Unit)?
+    ) {
+        companion object Creator {
+            operator fun <T> invoke(config: Builder<T>.() -> Unit = {}) =
+                Builder<T>().apply(config).build()
         }
 
-        /**
-         * Define and configure a OneShot strategy to this splinter
-         */
-        fun oneShotStrategy(strategyConfig: OneShot<RETURN>.Config.() -> Unit) = apply {
-            this.strategy = Strategy.oneShot(strategyConfig)
+        class Builder<T> internal constructor() {
+
+            private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+            private var quiet: Boolean = true
+            private var lifecycleOwner: LifecycleOwner? = null
+            private var policy: ExecutionPolicy = IgnoreWhenHasRunningOperations
+            private var stopPolicy: StopPolicy = OnLifecycle
+            private var onCancel: (() -> Unit)? = null
+
+            fun scope(scope: CoroutineScope) = apply { this.scope = scope }
+            fun logging(enabled: Boolean) = apply { this.quiet = enabled.not() }
+            fun owner(owner: LifecycleOwner) = apply { this.lifecycleOwner = owner }
+            fun policy(policy: ExecutionPolicy) = apply { this.policy = policy }
+            fun stop(policy: StopPolicy) = apply { this.stopPolicy = policy }
+            fun invokeOnCancel(listener: () -> Unit) = apply { this.onCancel = listener }
+
+            internal fun build() = Config<T>(
+                scope = scope,
+                quiet = quiet,
+                lifecycleOwner = lifecycleOwner,
+                policy = policy,
+                stopPolicy = stopPolicy,
+                onCancel = onCancel,
+            )
         }
-
-        /**
-         * Define and configure a MirrorFlow strategy to this splinter
-         */
-        fun mirrorFlowStrategy(strategyConfig: MirrorFlow<RETURN>.Config.() -> Unit) = apply {
-            this.strategy = Strategy.mirrorFlow(strategyConfig)
-        }
-        //endregion
-
-        //region Execution Policy
-
-        /**
-         * This instance is really evil in form of a Enum!
-         *
-         * This tells this splinter how it should proceed in case something calls the execute method
-         * in case this splinter is already running \o/
-         */
-        internal var policy: ExecutionPolicy = ExecutionPolicy.CANCEL_RUNNING_AND_RESTART
-            private set
-
-        fun policy(policy: ExecutionPolicy) = apply {
-            this.policy = policy
-        }
-        //endregion
     }
 
-    /**
-     * This policy enum class serve only for one thing!
-     *
-     * Tells the Splinter instance how to behave when you press the Execution button(method HUEHUE)
-     */
+    @ConsistentCopyVisibility
+    data class Message private constructor(
+        val level: Lumber.Level,
+        val message: String?,
+        val error: Throwable?,
+        val timestamp: Long = Clock.System.now().toEpochMilliseconds()
+    ) {
+
+        internal val indentedMessage = message?.indented()
+
+        private fun String?.messageTag(): String? {
+            if (isNullOrBlank()) return null
+            val matches = "(\\[.*])".toRegex().findAll(this)
+            return matches.firstOrNull()?.groupValues?.firstOrNull()
+        }
+
+        private fun String?.indented(): String? {
+            val messageTag = messageTag() ?: return this
+            val indent =
+                identMap.firstNotNullOfOrNull { (regex, indent) -> if (regex.matches(messageTag)) indent else null }
+            return indent + this
+        }
+
+        companion object Creator {
+
+            private val identMap = mapOf(
+                Regex("(\\[Splinter])") to "",
+                Regex("(\\[Apprentice #[0-9]{3}])") to "-- ",
+                Regex("(\\[OneShot])") to "-- -- ",
+                Regex("(\\[Mirror])") to "-- -- ",
+                Regex("(\\[Polling])") to "-- -- ",
+                Regex("(\\[Cache])") to "-- -- -- ",
+                Regex("(\\[.*])") to "-- -- -- -- ",
+            )
+
+            fun info(message: String) = Message(
+                level = Lumber.Level.Info, message = message, error = null
+            )
+
+            fun warn(message: String) = Message(
+                level = Lumber.Level.Warn, message = message, error = null
+            )
+
+            fun error(message: String, error: Throwable?) = Message(
+                level = Lumber.Level.Error, message = message, error = error
+            )
+
+            fun debug(message: String) = Message(
+                level = Lumber.Level.Debug, message = message, error = null
+            )
+
+            fun verbose(message: String) = Message(
+                level = Lumber.Level.Verbose, message = message, error = null
+            )
+
+            fun assert(message: String) = Message(
+                level = Lumber.Level.Assert, message = message, error = null
+            )
+        }
+    }
+    //endregion
+
+    /* -------------------------------------------------------------------------------------------*/
+    /* Enums -------------------------------------------------------------------------------------*/
+    /* -------------------------------------------------------------------------------------------*/
+    //region Enums
     enum class ExecutionPolicy {
-        /**
-         * When something trigger the execute() method, if this instance is already running
-         * it will just return the splinter and let the river flow like always
-         */
-        WAIT_IF_RUNNING,
-
-        /**
-         * When something trigger the execute() method, if this instance is already running
-         * it will cancel the running job and restart from the beginning
-         */
-        CANCEL_RUNNING_AND_RESTART, // Default
+        ParallelQueue,
+        SequentialQueue,
+        IgnoreWhenHasRunningOperations, // Default
+        CancelWhenHasRunningBeforeStart
     }
+
+    enum class StopPolicy {
+        UntilRequest,
+        AfterFirstExecution,
+        OnLifecycle, // Default
+    }
+    //endregion
 }
