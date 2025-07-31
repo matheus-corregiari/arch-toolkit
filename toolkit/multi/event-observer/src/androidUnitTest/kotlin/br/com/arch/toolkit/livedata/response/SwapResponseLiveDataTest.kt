@@ -1,6 +1,7 @@
 package br.com.arch.toolkit.livedata.response
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.exception.DataResultTransformationException
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
@@ -10,10 +11,8 @@ import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.util.dataResultLoading
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -27,13 +26,11 @@ import org.mockito.kotlin.verifyNoInteractions
 @OptIn(ExperimentalCoroutinesApi::class)
 class SwapResponseLiveDataTest {
 
-    @Rule
-    @JvmField
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     @Test
     fun `00 - init without param, should init with null value`() = runTest {

@@ -4,13 +4,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
@@ -21,13 +19,11 @@ import org.junit.runners.MethodSorters
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LongTransformTest {
 
-    @Rule
-    @JvmField
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     private class StoppableObserver : LifecycleOwner {
         private val registry = LifecycleRegistry(this)

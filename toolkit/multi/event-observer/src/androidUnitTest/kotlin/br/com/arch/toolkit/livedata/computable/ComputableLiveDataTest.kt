@@ -1,13 +1,11 @@
 package br.com.arch.toolkit.livedata.computable
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.util.observeNotNull
 import br.com.arch.toolkit.util.observeSingle
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.Before
 import org.junit.FixMethodOrder
@@ -24,13 +22,11 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ComputableLiveDataTest {
 
-    @Rule
-    @JvmField
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     private lateinit var mockedObserver: (Any) -> Unit
     private lateinit var computeObserver: () -> Unit

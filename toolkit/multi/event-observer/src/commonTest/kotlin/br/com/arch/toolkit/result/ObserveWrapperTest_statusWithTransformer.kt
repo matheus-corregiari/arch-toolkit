@@ -2,19 +2,19 @@
 
 package br.com.arch.toolkit.result
 
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.result.DataResultStatus.ERROR
 import br.com.arch.toolkit.result.DataResultStatus.LOADING
 import br.com.arch.toolkit.result.DataResultStatus.NONE
 import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.FixMethodOrder
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
 import org.mockito.kotlin.any
@@ -33,9 +33,8 @@ class ObserveWrapperTest_statusWithTransformer {
     private val mockedStatus: (Int) -> Unit = mock()
     private val mockedTransformer: (DataResultStatus) -> Int = mock()
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     @Before
     fun init() {

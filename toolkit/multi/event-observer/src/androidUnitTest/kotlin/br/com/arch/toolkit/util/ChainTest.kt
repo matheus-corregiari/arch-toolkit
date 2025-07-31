@@ -3,17 +3,16 @@ package br.com.arch.toolkit.util
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.alwaysOnOwner
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
@@ -28,9 +27,8 @@ class ChainTest {
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     //region No Coroutine
     @Test

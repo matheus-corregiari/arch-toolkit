@@ -3,15 +3,14 @@
 package br.com.arch.toolkit.util
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.result.DataResultStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.FixMethodOrder
 import org.junit.Rule
@@ -31,9 +30,8 @@ class _responseLiveDataTest {
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     @Test
     fun `01 - responseLiveDataOf - value`() = runTest {

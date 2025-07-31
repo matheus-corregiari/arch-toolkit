@@ -2,16 +2,15 @@
 
 package br.com.arch.toolkit.result
 
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultNone
 import br.com.arch.toolkit.util.dataResultSuccess
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.FixMethodOrder
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
 
@@ -47,9 +46,8 @@ class DataResultTest_getterAndSetters {
     private val resultMapNotEmpty = dataResultSuccess(mapOf("a" to "a"))
     private val resultSequenceNotEmpty = dataResultSuccess(sequenceOf("a"))
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     @Test
     fun `0 - HasData`() {

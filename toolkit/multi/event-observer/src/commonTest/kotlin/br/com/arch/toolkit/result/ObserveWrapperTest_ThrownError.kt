@@ -2,25 +2,18 @@
 
 package br.com.arch.toolkit.result
 
-import br.com.arch.toolkit.disableExceptionCheck
-import br.com.arch.toolkit.enableExceptionCheck
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.exception.DataResultException
 import br.com.arch.toolkit.exception.DataResultTransformationException
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert
-import org.junit.Before
 import org.junit.FixMethodOrder
-import org.junit.Ignore
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
 import org.mockito.kotlin.any
@@ -37,7 +30,6 @@ import org.mockito.kotlin.whenever
  * without giving me any other option to do that
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-@Ignore("this test can only be run manually, because it will only work if it's the first test to run.")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ObserveWrapperTest_ThrownError {
 
@@ -55,17 +47,8 @@ class ObserveWrapperTest_ThrownError {
         error = error
     )
 
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher(TestCoroutineScheduler()))
-        enableExceptionCheck()
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-        disableExceptionCheck()
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     //region Data Error Thrown Scenarios
     @Test

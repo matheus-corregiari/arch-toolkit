@@ -1,6 +1,7 @@
 package br.com.arch.toolkit.livedata.response
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
 import br.com.arch.toolkit.result.DataResult
@@ -10,10 +11,8 @@ import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Assert
 import org.junit.FixMethodOrder
 import org.junit.Rule
@@ -30,13 +29,11 @@ import org.mockito.kotlin.whenever
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ResponseLiveDataTest {
 
-    @Rule
-    @JvmField
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     @Test
     fun `00 - init without param, should init with null value`() = runTest {

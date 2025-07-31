@@ -2,6 +2,7 @@
 
 package br.com.arch.toolkit.result
 
+import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultNone
@@ -9,12 +10,11 @@ import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.FixMethodOrder
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
 import org.mockito.kotlin.any
@@ -64,9 +64,8 @@ class DataResultTest_unwrapers {
     private val transformError: (Throwable) -> Int = mock()
     private val mockedTransformedError: (Int) -> Unit = mock()
 
-    init {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
+    @get:Rule
+    val rule = MainDispatcherRule()
 
     @Before
     fun before() {

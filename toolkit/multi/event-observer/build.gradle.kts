@@ -14,6 +14,7 @@ kotlin {
         implementation(libs.androidx.lifecycle.runtime)
     }
     sourceSets.androidMain.dependencies {
+        implementation(libs.jetbrains.coroutines.android)
         implementation(libs.androidx.lifecycle.livedata)
     }
 
