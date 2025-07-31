@@ -1,6 +1,6 @@
 plugins {
     id("java-gradle-plugin")
-    alias(libs.plugins.jvm)
+    alias(libs.plugins.jetbrains.kotlin.jvm)
 }
 
 kotlin { jvmToolchain(21) }
@@ -27,9 +27,6 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
     implementation(libs.jetbrains.kover) {
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
-    }
-    implementation(libs.jetbrains.dokka) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
     implementation(libs.jetbrains.dokka) {
@@ -70,11 +67,30 @@ gradlePlugin {
             description = "All default config"
             implementationClass = "com.toolkit.plugin.android.ToolkitBasePlugin"
         }
+
         create("toolkit-android-publish") {
             id = "toolkit-android-publish"
             displayName = "Toolkit Publish Plugin"
             description = "Enables and configure publish for module"
             implementationClass = "com.toolkit.plugin.android.ToolkitPublishPlugin"
+        }
+        //endregion
+
+        //region Desktop
+        create("toolkit-desktop-sample") {
+            id = "toolkit-desktop-sample"
+            displayName = "Toolkit Sample Plugin"
+            description = "Plug and play for modules to show the world the wonders of tomorrow!"
+            implementationClass = "com.toolkit.plugin.desktop.ToolkitSamplePlugin"
+        }
+        //endregion
+
+        //region Wasm
+        create("toolkit-wasm-sample") {
+            id = "toolkit-wasm-sample"
+            displayName = "Toolkit Sample Plugin"
+            description = "Plug and play for modules to show the world the wonders of tomorrow!"
+            implementationClass = "com.toolkit.plugin.wasm.ToolkitSamplePlugin"
         }
         //endregion
 
@@ -138,5 +154,17 @@ gradlePlugin {
             implementationClass = "com.toolkit.plugin.ToolkitGroupPlugin"
         }
         //endregion
+    }
+}
+
+val normalize = (1..22)
+    .map { libs.create("x-normalize-x${it.toString().padStart(3, '0')}").get() }
+    .map { module -> "${module.group}:${module.name}:${module.versionConstraint.requiredVersion}:" }
+
+configurations.configureEach {
+    resolutionStrategy {
+        failOnVersionConflict()
+        preferProjectModules()
+        setForcedModules(normalize)
     }
 }

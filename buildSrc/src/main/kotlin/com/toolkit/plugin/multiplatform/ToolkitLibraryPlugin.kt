@@ -1,6 +1,6 @@
 package com.toolkit.plugin.multiplatform
 
-import com.toolkit.plugin.setupAndroidLibraryModule
+import com.toolkit.plugin.android.setupAndroidLibraryModule
 import com.toolkit.plugin.util.applyPlugins
 import org.gradle.api.Plugin
 import org.gradle.api.Project

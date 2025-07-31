@@ -1,4 +1,4 @@
-package com.toolkit.plugin
+package com.toolkit.plugin.android
 
 import com.android.build.api.dsl.LibraryExtension
 import com.toolkit.plugin.util.androidLibrary

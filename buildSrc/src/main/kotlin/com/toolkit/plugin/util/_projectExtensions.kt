@@ -90,4 +90,5 @@ internal val Project.sign: SigningExtension
         ?: error("Project do not implement signing plugin!")
 
 internal fun Project.applyPlugins(vararg id: String) =
-    id.forEach { plugins.apply(libs.findPlugin(it).get().get().pluginId) }
+    id.map { libs.findPlugin(it).get().get().pluginId }
+        .forEach { if (plugins.hasPlugin(it).not()) plugins.apply(it) }

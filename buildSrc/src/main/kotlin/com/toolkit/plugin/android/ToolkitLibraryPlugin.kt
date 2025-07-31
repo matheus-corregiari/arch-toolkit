@@ -1,7 +1,5 @@
 package com.toolkit.plugin.android
 
-import com.toolkit.plugin.regularSourceSets
-import com.toolkit.plugin.setupAndroidLibraryModule
 import com.toolkit.plugin.util.androidLibrary
 import com.toolkit.plugin.util.applyPlugins
 import org.gradle.api.Plugin
