@@ -3,7 +3,7 @@ package br.com.arch.toolkit.splinter.factory
 import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.ResponseLiveData
-import br.com.arch.toolkit.splinter.executeSplinter
+import br.com.arch.toolkit.splinter.splinterExecuteRequest
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Response
@@ -102,7 +102,7 @@ private sealed class Adapter<T, R>(
     private val id: String,
     private val quiet: Boolean,
     private val responseType: Type,
-    kClass: Class<T>,
+    private val kClass: Class<T>,
 ) : CallAdapter<T, R> {
     class AsSplinter<T : Any>(
         annotation: SplinterConfig,
@@ -130,18 +130,24 @@ private sealed class Adapter<T, R>(
 
     override fun responseType() = responseType
 
-    fun executeWithSplinter(call: Call<T>) = executeSplinter(id, quiet) {
-        val response = makeRequest(call)
-        if (response.isSuccessful) {
-            requireNotNull(response.body()) {
-                "Unable to get response Body from response: ${response.raw().body?.string()}"
+    fun executeWithSplinter(call: Call<T>) = splinterExecuteRequest(
+        id = id,
+        config = {
+            logging(quiet.not())
+            stop(SplinterExec.StopPolicy.AfterFirstExecution)
+            invokeOnCancel { if (call.isExecuted.not() && call.isCanceled.not()) call.cancel() }
+        },
+        request = {
+            val response = makeRequest(call)
+            if (response.isSuccessful) {
+                requireNotNull(response.body()) {
+                    "Unable to get response Body from response: ${response.raw().body.string()}"
+                }
+            } else {
+                error("Error executing request ${response.message()}")
             }
-        } else {
-            error("Error executing request ${response.message()}")
         }
-    }.onCancel {
-        if (call.isExecuted.not() && call.isCanceled.not()) call.cancel()
-    }
+    )
 
     @Throws(IOException::class)
     private fun <T> makeRequest(call: Call<T>): Response<T> = if (call.isExecuted) {
