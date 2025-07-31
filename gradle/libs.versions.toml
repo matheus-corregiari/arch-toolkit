@@ -30,11 +30,11 @@ androidx-recyclerview = "1.4.0"
 androidx-lifecycle = "2.9.2"
 androidx-window = "1.4.0"
 androidx-splash = "1.0.1"
-androidx-security = "1.0.0"
+androidx-security = "1.1.0"
 androidx-startup = "1.2.0"
 androidx-test-core = "2.2.0"
-androidx-test-junit = "1.2.1"
-androidx-test-espresso = "3.6.1"
+androidx-test-junit = "1.3.0"
+androidx-test-espresso = "3.7.0"
 
 ## AndroidX Compose
 androidx-compose-compiler = "1.5.10"
@@ -56,9 +56,9 @@ google-gson = "2.13.1"
 google-ksp = "2.2.0-2.0.2"
 
 ## Tools
-mockito = "5.18.0"
-mockk = "1.14.4"
-mockito-kotlin = "5.4.0"
+mockito = "5.7.0"
+mockk = "1.14.5"
+mockito-kotlin = "6.0.0"
 junit = "4.13.2"
 robolectric = "4.15.1"
 ktlint = "11.6.1"
@@ -141,7 +141,7 @@ detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", 
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 ktlint = { module = "org.jlleitschuh.gradle.ktlint-idea:org.jlleitschuh.gradle.ktlint-idea.gradle.plugin", version.ref = "ktlint" }
 ajalt-mordant = { module = "com.github.ajalt.mordant:mordant", version.ref = "ajalt-mordant" }
-vanniktech-publish = { module = "com.vanniktech:gradle-maven-publish-plugin" , version.ref = "vanniktech-publish"}
+vanniktech-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-publish" }
 
 # ------------------------------------------------------------------------------------------------ #
 ## Comment this when you start to update some libraries
@@ -156,20 +156,20 @@ x-normalize-x008 = { module = "androidx.customview:customview", version = "1.2.0
 x-normalize-x009 = { module = "androidx.drawerlayout:drawerlayout", version = "1.2.0" }
 x-normalize-x010 = { module = "androidx.lifecycle:lifecycle-common", version.ref = "androidx-lifecycle" }
 x-normalize-x011 = { module = "androidx.viewpager2:viewpager2", version = "1.1.0" }
-x-normalize-x012 = { module = "androidx.test:monitor", version = "1.7.2" }
-x-normalize-x013 = { module = "androidx.test:runner", version = "1.6.2" }
+x-normalize-x012 = { module = "androidx.test:monitor", version = "1.8.0" }
+x-normalize-x013 = { module = "androidx.test:runner", version = "1.7.0" }
 x-normalize-x014 = { module = "com.google.auto.value:auto-value-annotations", version = "1.11.0" }
 x-normalize-x015 = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 x-normalize-x016 = { module = "com.squareup:javawritter", version = "2.5.0" }
 x-normalize-x017 = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "jetbrains-kotlin" }
 x-normalize-x018 = { module = "org.jetbrains.kotlin:kotlin-stdlib-common", version.ref = "jetbrains-kotlin" }
 x-normalize-x019 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "jetbrains-coroutines" }
-x-normalize-x020 = { module = "org.jetbrains:annotations", version = "26.0.2" }
+x-normalize-x020 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "jetbrains-serialization" }
+x-normalize-x021 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm", version.ref = "jetbrains-serialization" }
+x-normalize-x022 = { module = "org.jetbrains:annotations", version = "26.0.2" }
 
 # ------------------------------------------------------------------------------------------------ #
 [plugins]
-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrains-kotlin" }
-
 ## Android
 android-application = { id = "com.android.application", version.ref = "androidx-plugin" }
 android-library = { id = "com.android.library", version.ref = "androidx-plugin" }
@@ -178,7 +178,8 @@ android-library = { id = "com.android.library", version.ref = "androidx-plugin" 
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "google-ksp" }
 
 ## JetBrains
-jetbrains-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrains-kotlin" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "jetbrains-kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrains-kotlin" }
 jetbrains-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "jetbrains-kover" }
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "jetbrains-dokka" }
 jetbrains-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "jetbrains-kotlin" }
@@ -190,7 +191,7 @@ jetbrains-compose-kotlin = { id = "org.jetbrains.compose", version.ref = "jetbra
 dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint-idea", version.ref = "ktlint" }
-vanniktech-publish = { id = "com.vanniktech.maven.publish" , version.ref = "vanniktech-publish"}
+vanniktech-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-publish" }
 
 # ------------------------------------------------------------------------------------------------ #
 [bundles]
