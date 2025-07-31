@@ -52,8 +52,8 @@ actual open class DebugTree : Lumber.Oak() {
             Lumber.Level.Error -> TextColors.brightRed
             Lumber.Level.Warn -> TextColors.brightYellow
             Lumber.Level.Info -> TextColors.brightBlue
-            Lumber.Level.Debug -> TextColors.gray
-            Lumber.Level.Verbose -> TextColors.gray
+            Lumber.Level.Debug -> TextColors.brightGreen
+            Lumber.Level.Verbose -> TextColors.brightMagenta
             Lumber.Level.Assert -> TextColors.brightCyan
         }
 
