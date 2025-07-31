@@ -1,21 +1,23 @@
 package br.com.arch.toolkit.splinter.cache
 
 import androidx.annotation.WorkerThread
-import br.com.arch.toolkit.splinter.DataSetter
-import br.com.arch.toolkit.splinter.TargetRegularHolder
-import br.com.arch.toolkit.splinter.TargetRegularHolderImpl
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  *
  */
-sealed class CacheStrategy<T>(
-    val id: String,
-    internal val holder: TargetRegularHolderImpl<T> = TargetRegularHolderImpl(),
-    internal val setter: DataSetter<T?> = holder.setter()
-) : TargetRegularHolder<T> by holder {
+sealed class CacheStrategy<T>(val id: String) {
 
     internal abstract val localData: T?
     internal abstract val localVersion: DataVersion?
+
+    //region Getters
+    private val _flow = MutableStateFlow<T?>(null)
+    val flow: Flow<T?> get() = _flow.asSharedFlow()
+    fun get(): T? = _flow.value
+    //endregion
 
     @WorkerThread
     internal abstract suspend fun save(version: DataVersion, data: T)
@@ -39,7 +41,7 @@ sealed class CacheStrategy<T>(
         } else {
             delete()
         }
-        setter.set(data)
+        _flow.emit(data)
     }
 
     @WorkerThread

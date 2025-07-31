@@ -2,45 +2,21 @@ package br.com.arch.toolkit.splinter.strategy
 
 import androidx.annotation.WorkerThread
 import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.splinter.ResponseDataHolder
 import br.com.arch.toolkit.splinter.Splinter
-import br.com.arch.toolkit.splinter.extension.emitError
-import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.channels.Channel
 
 /**
  * Main class that defines how the Splinter will work to emit the events!
  */
-abstract class Strategy<RESULT : Any> {
+abstract class Strategy<RESULT> {
 
-    /**
-     * Here, all the magic happens
-     *
-     * This method will implement how the job inside splinter should run
-     */
     @WorkerThread
     abstract suspend fun execute(
-        collector: FlowCollector<DataResult<RESULT>>,
-        executor: Splinter<RESULT>,
+        holder: ResponseDataHolder<RESULT>,
+        dataChannel: Channel<DataResult<RESULT>>,
+        logChannel: Channel<Splinter.Message>,
     )
-
-    /**
-     * In case of error inside the job, some uncaught exception on flow, this method will trigger inside splinter
-     */
-    @WorkerThread
-    open suspend fun flowError(
-        error: Throwable,
-        collector: FlowCollector<DataResult<RESULT>>,
-        executor: Splinter<RESULT>,
-    ) = collector.emitError(error)
-
-    /**
-     * In case of major error inside the job, some uncaught exception on job, this method will trigger inside splinter
-     */
-    @WorkerThread
-    open suspend fun majorError(
-        error: Throwable,
-        collector: FlowCollector<DataResult<RESULT>>,
-        executor: Splinter<RESULT>,
-    ) = flowError(error, collector, executor)
 
     companion object {
         /**
@@ -50,7 +26,7 @@ abstract class Strategy<RESULT : Any> {
          *
          * @return br.com.arch.toolkit.splinter.strategy.OneShot
          */
-        fun <T : Any> oneShot(config: OneShot<T>.Config.() -> Unit) = OneShot<T>().config(config)
+        fun <T> oneShot(config: OneShot.Config.Builder<T>.() -> Unit) = OneShot(config)
 
         /**
          * Helper method that creates a MirrorFlow strategy and configure it
@@ -59,7 +35,11 @@ abstract class Strategy<RESULT : Any> {
          *
          * @return br.com.arch.toolkit.splinter.strategy.MirrorFlow
          */
-        fun <T : Any> mirrorFlow(config: MirrorFlow<T>.Config.() -> Unit) =
-            MirrorFlow<T>().config(config)
+        fun <T> mirrorFlow(config: MirrorFlow.Config.Builder<T>.() -> Unit) = MirrorFlow(config)
+
+        /**
+         *
+         */
+        fun <T> polling(config: Polling.Config.Builder<T>.() -> Unit) = Polling(config)
     }
 }
