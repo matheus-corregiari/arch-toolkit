@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ComposeUiTest
@@ -16,7 +15,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.EventDataStatus
 
@@ -37,20 +35,18 @@ fun <T> scenario(
     config: @Composable ComposableDataResult<T>.() -> Unit,
     assert: ComposeUiTest.() -> Unit,
 ) = runComposeUiTest {
-    val flow = ResponseFlow(result)
-    val comp by flow.collectAsComposableState()
     setContent {
         CompositionLocalProvider(LocalLifecycleOwner provides alwaysOnOwner) {
-            Column {
-                comp.Unwrap { config() }
-            }
+            Column { result.composable.Unwrap(config) }
         }
     }
-    assert.invoke(this)
+    runOnIdle { assert.invoke(this) }
     waitForIdle()
 }
 
 val stringConfig: @Composable ComposableDataResult<String>.() -> Unit = {
+    animation { enabled = false }
+
     // Data
     OnData { data ->
         Text(data, modifier = Modifier.testTag("dataTag1"))

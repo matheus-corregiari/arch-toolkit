@@ -37,7 +37,7 @@ import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.EventDataStatus
 import br.com.arch.toolkit.result.EventDataStatus.DoesNotMatter
 import br.com.arch.toolkit.result.ObserveWrapper
-import br.com.arch.toolkit.result.unwrap
+import br.com.arch.toolkit.util.unwrap
 import kotlinx.coroutines.flow.Flow
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration
@@ -361,7 +361,7 @@ data class ComposableDataResult<T> internal constructor(
         LaunchedEffect(this) { result.unwrap { notComposableBlock?.invoke(this) } }
         val animationConfig = remember { animationConfig }
         val state: DataResult<T>? by result.collectAsStateWithLifecycle(null)
-        val resultState = state.takeIf { it?.isNone == false } ?: return
+        val resultState = state?.takeIf { it.isNone.not() } ?: return
         observableList.forEachIndexed { index, observable ->
             if (animationConfig.enabled) {
                 AnimatedVisibility(

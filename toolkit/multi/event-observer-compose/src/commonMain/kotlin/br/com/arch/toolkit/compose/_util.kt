@@ -1,6 +1,5 @@
 package br.com.arch.toolkit.compose
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import br.com.arch.toolkit.flow.ResponseFlow
@@ -61,7 +60,6 @@ val <T> Flow<DataResult<T>>.composable: ComposableDataResult<T> get() = Composab
  * @receiver The [ResponseFlow] to collect.
  * @return A [State] whose value is always the latest [ComposableDataResult] instance.
  */
-@Composable
 fun <T> Flow<DataResult<T>>.collectAsComposableState(): State<ComposableDataResult<T>> {
     return derivedStateOf { composable }
 }
