@@ -4,6 +4,7 @@
     "FunctionNaming",
     "TooManyFunctions",
 )
+@file:OptIn(ExperimentalAtomicApi::class)
 
 package br.com.arch.toolkit.compose
 
@@ -18,8 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.arch.toolkit.compose.observable.ComposeObservable
 import br.com.arch.toolkit.compose.observable.DataObservable
@@ -38,8 +37,9 @@ import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.EventDataStatus
 import br.com.arch.toolkit.result.EventDataStatus.DoesNotMatter
 import br.com.arch.toolkit.result.ObserveWrapper
-import br.com.arch.toolkit.util.dataResultNone
+import br.com.arch.toolkit.result.unwrap
 import kotlinx.coroutines.flow.Flow
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
@@ -57,8 +57,9 @@ import kotlin.time.DurationUnit
  * @see DataResult
  * @see AnimationConfig
  */
-class ComposableDataResult<T> internal constructor(
-    private val resultFlow: Flow<DataResult<T>>,
+@ConsistentCopyVisibility
+data class ComposableDataResult<T> internal constructor(
+    private val result: Flow<DataResult<T>>,
 ) {
     private val animationConfig = AnimationConfig()
     private var notComposableBlock: (ObserveWrapper<T>.() -> Unit)? = null
@@ -329,23 +330,16 @@ class ComposableDataResult<T> internal constructor(
      * ```
      *
      * @param config A @Composable receiver on this [ComposableDataResult] to set up callbacks.
-     * @param lifecycle The [LifecycleOwner] to be used for collecting the [resultFlow].
-     *                  Defaults to [LocalLifecycleOwner.current].
      * @see Unwrap(LifecycleOwner)
      */
     @Composable
-    fun Unwrap(
-        lifecycle: LifecycleOwner = LocalLifecycleOwner.current,
-        config: @Composable ComposableDataResult<T>.() -> Unit,
-    ) {
+    fun Unwrap(config: @Composable ComposableDataResult<T>.() -> Unit) {
         config()
-        Unwrap(lifecycle)
+        Unwrap()
     }
 
     /**
      * Starts collecting the underlying [ResponseFlow] and dispatches all configured callbacks.
-     * This method is lifecycle-aware and uses the provided [LifecycleOwner] (or
-     * [LocalLifecycleOwner.current] by default) to manage the collection of the flow.
      *
      * Must be the last call in your chain if not using the DSL-style `Unwrap` overload.
      *
@@ -363,29 +357,23 @@ class ComposableDataResult<T> internal constructor(
      * @see ObserveWrapper
      */
     @Composable
-    fun Unwrap(lifecycle: LifecycleOwner = LocalLifecycleOwner.current) {
-        val result by resultFlow.collectAsStateWithLifecycle(dataResultNone(), lifecycle)
+    fun Unwrap() {
+        LaunchedEffect(this) { result.unwrap { notComposableBlock?.invoke(this) } }
         val animationConfig = remember { animationConfig }
-
-        LaunchedEffect(this, result) {
-            result.unwrap {
-                observableList.forEach { with(it) { attachToWrapper(result) } }
-                notComposableBlock?.invoke(this)
-            }
-        }
-
+        val state: DataResult<T>? by result.collectAsStateWithLifecycle(null)
+        val resultState = state.takeIf { it?.isNone == false } ?: return
         observableList.forEachIndexed { index, observable ->
             if (animationConfig.enabled) {
                 AnimatedVisibility(
                     label = "observable - ${index.toString().padStart(3, '0')}",
-                    visible = observable.hasVisibleContent(result),
+                    visible = observable.hasVisibleContent(resultState),
                     modifier = animationConfig.animationModifier,
                     enter = animationConfig.enterAnimation,
                     exit = animationConfig.exitAnimation,
-                    content = { observable.observe() },
+                    content = { observable.observe(resultState) },
                 )
             } else {
-                observable.observe()
+                if (observable.hasVisibleContent(resultState)) observable.observe(resultState)
             }
         }
     }

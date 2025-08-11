@@ -2,7 +2,6 @@ package br.com.arch.toolkit.compose.observable
 
 import androidx.compose.runtime.Composable
 import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.ObserveWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -21,35 +20,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 internal sealed class ComposeObservable<T, R> {
     /**
-     * Backing flow that holds the latest value to be rendered.
-     * Subclasses emit into this flow when new content is ready.
-     */
-    protected val flow = MutableStateFlow<R?>(null)
-
-    /**
-     * Attaches this observable to an [ObserveWrapper] so it can react
-     * to each emitted [DataResult].
-     *
-     * Implementations should call wrapper APIs (e.g. `OnData`, `OnError`)
-     * and update [flow] accordingly.
-     *
-     * @receiver the [ObserveWrapper] managing callbacks for [DataResult]
-     * @param result the incoming [DataResult] to observe
-     */
-    abstract fun ObserveWrapper<T>.attachToWrapper(result: DataResult<T>)
-
-    /**
      * Determines whether this observable currently has content to display.
      *
      * @param result the [DataResult] being evaluated
-     * @return `true` if [flow] contains a non-null value ready for Compose
      */
     abstract fun hasVisibleContent(result: DataResult<T>): Boolean
 
     /**
-     * Invoked inside a @Composable context to render UI based on [flow].
+     * Invoked inside a @Composable context to render UI based on [result].
      *
-     * Subclasses should collect from [flow] and display non-null values,
+     * Subclasses should collect from [result] and display non-null values,
      * for example:
      * ```kotlin
      * flow.collectAsState().value?.let { content -> /* render content */ }
@@ -57,5 +37,5 @@ internal sealed class ComposeObservable<T, R> {
      */
     @Composable
     @Suppress("ComposableNaming")
-    abstract fun observe()
+    abstract fun observe(result: DataResult<T>)
 }
