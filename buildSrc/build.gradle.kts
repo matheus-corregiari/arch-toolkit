@@ -157,8 +157,8 @@ gradlePlugin {
     }
 }
 
-val normalize = (1..22)
-    .map { libs.create("x-normalize-x${it.toString().padStart(3, '0')}").get() }
+val normalize = (1..21)
+    .mapNotNull { libs.create("x-normalize-x${it.toString().padStart(3, '0')}").orNull }
     .map { module -> "${module.group}:${module.name}:${module.versionConstraint.requiredVersion}:" }
 
 configurations.configureEach {
