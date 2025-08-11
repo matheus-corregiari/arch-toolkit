@@ -68,5 +68,4 @@ open class ResponseStateFlow<T> internal constructor(
         ): ResponseStateFlow<T> = ResponseFlow.fromFlow(flow = flow, transform = transform)
             .state(started = started, initial = initial)
     }
-
 }

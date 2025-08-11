@@ -1,4 +1,5 @@
-@file:Suppress("TooManyFunctions") @file:OptIn(ExperimentalForInheritanceCoroutinesApi::class)
+@file:Suppress("TooManyFunctions")
+@file:OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 
 package br.com.arch.toolkit.flow
 
@@ -45,11 +46,14 @@ open class ResponseFlow<T> internal constructor(
 
     /* MUAHAHA */
     fun observe(
-        owner: LifecycleOwner, wrapper: ObserveWrapper<T>.() -> Unit
+        owner: LifecycleOwner,
+        wrapper: ObserveWrapper<T>.() -> Unit
     ) = ObserveWrapper<T>().scope(owner.lifecycleScope).transformDispatcher(transformDispatcher)
         .apply(wrapper).suspendFunc {
             owner.lifecycle.repeatOnLifecycle(
-                state = Lifecycle.State.STARTED, block = { collect(::handleResult) })
+                state = Lifecycle.State.STARTED,
+                block = { collect(::handleResult) }
+            )
         }
 
     fun <R> map(transform: (T) -> R) = from(flow = innerFlow, transform = transform)
@@ -93,19 +97,25 @@ open class ResponseFlow<T> internal constructor(
         fun <T> from(flow: Flow<DataResult<T>>): ResponseFlow<T> = ResponseFlow(innerFlow = flow)
 
         fun <T, R> from(
-            flow: Flow<DataResult<R>>, transform: (R) -> T
-        ): ResponseFlow<T> = ResponseFlow(innerFlow = flow.map { it.transform(transform) }
-            .catch { emit(dataResultError(it)) })
+            flow: Flow<DataResult<R>>,
+            transform: (R) -> T
+        ): ResponseFlow<T> = ResponseFlow(
+            innerFlow = flow
+                .map { it.transform(transform) }
+                .catch { emit(dataResultError(it)) }
+        )
 
         fun <T> fromFlow(flow: Flow<T>): ResponseFlow<T> = from(
             flow = flow.map(::dataResultSuccess)
         )
 
         fun <T, R> fromFlow(
-            flow: Flow<R>, transform: suspend (R) -> T
-        ): ResponseFlow<T> =
-            ResponseFlow<T>(
-                innerFlow = flow.map { transform(it) }.map(::dataResultSuccess)
-                    .catch { emit(dataResultError(it)) })
+            flow: Flow<R>,
+            transform: suspend (R) -> T
+        ): ResponseFlow<T> = ResponseFlow<T>(
+            innerFlow = flow
+                .map { dataResultSuccess<T>(transform(it)) }
+                .catch { emit(dataResultError<T>(it)) }
+        )
     }
 }

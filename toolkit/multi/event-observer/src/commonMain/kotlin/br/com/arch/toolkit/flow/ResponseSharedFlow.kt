@@ -87,7 +87,8 @@ open class ResponseSharedFlow<T> internal constructor(
             started: SharingStarted = SharingStarted.WhileSubscribed(),
             replay: Int = (flow as? SharedFlow<R>)?.replayCache?.size
                 ?: (flow as? StateFlow<R>)?.replayCache?.size
-                ?: 0, transform: suspend (R) -> T
+                ?: 0,
+            transform: suspend (R) -> T
         ): ResponseSharedFlow<T> = fromFlow(flow, transform)
             .shared(started = started, replay = replay)
     }
