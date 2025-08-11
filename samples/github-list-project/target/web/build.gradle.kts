@@ -59,7 +59,3 @@ kotlin {
         implementation(compose.runtime)
     }
 }
-
-compose.experimental {
-    web.application {}
-}
