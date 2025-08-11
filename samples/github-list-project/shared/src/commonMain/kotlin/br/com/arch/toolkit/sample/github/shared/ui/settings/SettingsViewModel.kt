@@ -1,0 +1,15 @@
+package br.com.arch.toolkit.sample.github.shared.ui.settings
+
+import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModel
+import br.com.arch.toolkit.sample.github.shared.structure.repository.SettingsRepository
+
+class SettingsViewModel(
+    private val repository: SettingsRepository,
+) : ViewModel() {
+    @Composable
+    fun themeMode() = repository.themeMode.asMutableState()
+
+    @Composable
+    fun contrastMode() = repository.contrastMode.asMutableState()
+}
