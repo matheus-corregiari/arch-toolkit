@@ -61,9 +61,7 @@ class ObserveWrapper<T> internal constructor() {
      * ```
      * @see CoroutineScope
      */
-    internal var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        private set
-
+    private var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     fun scope(scope: CoroutineScope): ObserveWrapper<T> {
         this.scope = scope
         return this

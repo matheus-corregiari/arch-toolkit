@@ -17,6 +17,9 @@ kotlin {
         implementation(libs.jetbrains.coroutines.android)
         implementation(libs.androidx.lifecycle.livedata)
     }
+    sourceSets.jvmMain.dependencies {
+        implementation(libs.jetbrains.coroutines.jvm)
+    }
 
     // Test Libraries
     sourceSets.commonTest.dependencies {

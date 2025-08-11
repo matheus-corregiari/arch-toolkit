@@ -307,11 +307,10 @@ data class DataResult<T>(
      * }
      * ```
      */
-    fun unwrap(config: ObserveWrapper<T>.() -> Unit) =
-        ObserveWrapper<T>().also {
-            scope?.let(it::scope)
-            transformDispatcher?.let(it::transformDispatcher)
-        }.apply(config).attachTo(this)
+    fun unwrap(config: ObserveWrapper<T>.() -> Unit) = ObserveWrapper<T>().also {
+        scope?.let(it::scope)
+        transformDispatcher?.let(it::transformDispatcher)
+    }.apply(config).attachTo(this)
 
     //region Data
 

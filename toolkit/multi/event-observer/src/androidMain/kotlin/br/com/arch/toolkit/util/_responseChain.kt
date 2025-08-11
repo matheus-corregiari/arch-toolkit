@@ -79,7 +79,7 @@ fun <T, R, X> LiveData<T>.chainNotNullWith(
 
 /* region Response + LiveData Functions ---------------------------------------------------------------- */
 @FunctionalInterface
-fun interface ResponseWith<T, R> {
+interface ResponseWith<T, R> {
     suspend fun invoke(result: DataResult<T>): LiveData<R>
 }
 
@@ -138,7 +138,7 @@ fun <T, R, X> ResponseLiveData<T>.chainNotNullWith(
 
 /* region Response + Response Functions --------------------------------------------------------- */
 @FunctionalInterface
-fun interface ResponseWithResponse<T, R> {
+interface ResponseWithResponse<T, R> {
     suspend fun invoke(result: DataResult<T>): ResponseLiveData<R>
 }
 

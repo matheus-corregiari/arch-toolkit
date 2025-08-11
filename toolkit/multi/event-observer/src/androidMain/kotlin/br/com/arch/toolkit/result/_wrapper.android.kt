@@ -24,11 +24,10 @@ internal fun <T> ObserveWrapper<T>.attachTo(
 ) {
     val observer = object : Observer<DataResult<T>?> {
         override fun onChanged(value: DataResult<T>?) {
-            scope.launchWithErrorTreatment {
+            val observer = this
+            suspendFunc {
                 handleResult(value) { owner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) }
-                if (this@attachTo.eventList.isEmpty()) {
-                    liveData.removeObserver(this)
-                }
+                if (eventList.isEmpty()) liveData.removeObserver(observer)
             }
         }
     }
