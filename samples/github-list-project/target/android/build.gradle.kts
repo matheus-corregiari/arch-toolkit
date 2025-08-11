@@ -13,10 +13,19 @@ android {
     }
 }
 
-dependencies{
-    // Regular Dependencies
-    implementation(libs.androidx.compose.activity)
-    implementation(libs.jetbrains.coroutines.android)
+dependencies {
+    // Arch Toolkit Dependencies
+    implementation(project(":samples:github-list-project:shared"))
+    implementation(project(":toolkit:multi:lumber"))
+
+    // Jetbrains Compose Tools
     implementation(compose.runtime)
     implementation(compose.material3)
+
+    // Other Dependencies
+    implementation(libs.google.material)
+    implementation(libs.androidx.compose.activity)
+    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.jetbrains.coroutines.android)
+    implementation(libs.di.koin.android)
 }
