@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <!--  Github List  -->
+    <string name="sample_github_list_title">Github Repository List</string>
+    <string name="sample_github_list_description">Listing and searching repositories</string>
+    <string name="sample_github_list_last_updated">Last updated at: %1$s</string>
+
+    <!--  Settings  -->
+    <string name="sample_settings_title">Settings</string>
+    <string name="sample_settings_description">Groups of configuration settings</string>
+    <string name="sample_settings_theme">Theme</string>
+    <string name="sample_settings_contrast">Contrast</string>
+</resources>
