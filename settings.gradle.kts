@@ -10,7 +10,7 @@ dependencyResolutionManagement {
     apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
     val repositoryList: RepositoryHandler.() -> Unit by extra
     repositories(repositoryList)
-    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
 }
 
 // Root Project config
