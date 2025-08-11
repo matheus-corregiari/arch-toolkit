@@ -3,7 +3,8 @@ package br.com.arch.toolkit.splinter.factory
 import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.livedata.ResponseLiveData
-import br.com.arch.toolkit.splinter.splinterExecuteRequest
+import br.com.arch.toolkit.splinter.splinter
+import br.com.arch.toolkit.splinter.strategy.Strategy
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Response
@@ -104,12 +105,14 @@ private sealed class Adapter<T, R>(
     private val responseType: Type,
     private val kClass: Class<T>,
 ) : CallAdapter<T, R> {
+
     class AsSplinter<T : Any>(
         annotation: SplinterConfig,
         responseType: Type,
         kClass: Class<T>,
     ) : Adapter<T, SplinterExec<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call)
+            .also(SplinterExec<T>::execute)
     }
 
     class AsLiveData<T : Any>(
@@ -117,7 +120,7 @@ private sealed class Adapter<T, R>(
         responseType: Type,
         kClass: Class<T>,
     ) : Adapter<T, ResponseLiveData<T>>(annotation.id, annotation.quiet, responseType, kClass) {
-        override fun adapt(call: Call<T>) = executeWithSplinter(call).liveData
+        override fun adapt(call: Call<T>) = executeWithSplinter(call).execute().liveData
     }
 
     class AsFlow<T : Any>(
@@ -125,26 +128,28 @@ private sealed class Adapter<T, R>(
         responseType: Type,
         kClass: Class<T>,
     ) : Adapter<T, ResponseFlow<T>>(annotation.id, annotation.quiet, responseType, kClass) {
-        override fun adapt(call: Call<T>) = executeWithSplinter(call).flow
+        override fun adapt(call: Call<T>) = executeWithSplinter(call).execute().flow
     }
 
     override fun responseType() = responseType
 
-    fun executeWithSplinter(call: Call<T>) = splinterExecuteRequest(
+    fun executeWithSplinter(call: Call<T>) = splinter(
         id = id,
         config = {
             logging(quiet.not())
             stop(SplinterExec.StopPolicy.AfterFirstExecution)
             invokeOnCancel { if (call.isExecuted.not() && call.isCanceled.not()) call.cancel() }
         },
-        request = {
-            val response = makeRequest(call)
-            if (response.isSuccessful) {
-                requireNotNull(response.body()) {
-                    "Unable to get response Body from response: ${response.raw().body.string()}"
+        strategy = Strategy.oneShot {
+            request {
+                val response = makeRequest(call)
+                if (response.isSuccessful) {
+                    requireNotNull(response.body()) {
+                        "Unable to get response Body from response: ${response.raw().body.string()}"
+                    }
+                } else {
+                    error("Error executing request ${response.message()}")
                 }
-            } else {
-                error("Error executing request ${response.message()}")
             }
         }
     )

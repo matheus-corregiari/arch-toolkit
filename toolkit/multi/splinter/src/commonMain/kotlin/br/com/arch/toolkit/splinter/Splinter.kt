@@ -46,7 +46,7 @@ class Splinter<RETURN> internal constructor(
     private val id: String,
     private val config: Config<RETURN>,
     private val strategy: Strategy<RETURN>,
-    val resultHolder: ResponseDataHolder<RETURN> = ResultHolder(),
+    val resultHolder: TargetDataHolder<RETURN> = ResultHolder(),
     val messageHolder: DataHolder<Message> = MessageHolder()
 ) {
 
@@ -323,7 +323,7 @@ class Splinter<RETURN> internal constructor(
         class Builder<T> internal constructor() {
 
             private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-            private var quiet: Boolean = true
+            private var quiet: Boolean = false
             private var lifecycleOwner: LifecycleOwner? = null
             private var policy: ExecutionPolicy = IgnoreWhenHasRunningOperations
             private var stopPolicy: StopPolicy = OnLifecycle
