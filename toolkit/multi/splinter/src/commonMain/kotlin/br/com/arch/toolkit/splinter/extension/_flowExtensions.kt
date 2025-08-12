@@ -2,7 +2,6 @@ package br.com.arch.toolkit.splinter.extension
 
 import br.com.arch.toolkit.splinter.Splinter
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.channelFlow
@@ -34,11 +33,11 @@ internal fun <T> Flow<T>.cold(
             if (isClosedForSend.not()) close()
         }
         collect {
-            trySendBlocking(it)
+            trySend(it)
             if (splinter.isRunning.not()) close()
         }
     } else {
-        default().onEach { trySendBlocking(it) }
+        default().onEach { trySend(it) }
         close()
     }
 }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.sync.Mutex
 internal const val MAX_LOG_LENGTH = 4000
 internal const val MAX_TAG_LENGTH = 25
 
-fun <T> Mutex.synchronized(key: Any, block: () -> T) = try {
+internal fun <T> Mutex.synchronized(key: Any, block: () -> T) = try {
     holdsLock(owner = key)
     block()
 } finally {

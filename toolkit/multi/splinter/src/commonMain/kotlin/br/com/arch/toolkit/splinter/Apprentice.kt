@@ -6,6 +6,7 @@ import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.splinter.extension.error
 import br.com.arch.toolkit.splinter.extension.info
 import br.com.arch.toolkit.splinter.extension.lazyJob
+import br.com.arch.toolkit.splinter.extension.synchronized
 import br.com.arch.toolkit.splinter.strategy.Strategy
 import br.com.arch.toolkit.util.dataResultError
 import kotlinx.coroutines.CompletableDeferred
@@ -15,6 +16,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.SUSPEND
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.sync.Mutex
 
 internal class Apprentice<T>(
     val id: String,
@@ -22,7 +24,8 @@ internal class Apprentice<T>(
     private val holder: ResponseDataHolder<T>,
     private val strategy: Strategy<T>,
 ) {
-    private val lock = Any()
+    private val lock = this
+    private val mutex = Mutex()
     private val completableDeferred = CompletableDeferred<Unit>()
     val dataChannel = Channel<DataResult<T>>(capacity = BUFFERED, onBufferOverflow = SUSPEND)
     val logChannel = Channel<Splinter.Message>(capacity = BUFFERED, onBufferOverflow = SUSPEND)
@@ -50,14 +53,14 @@ internal class Apprentice<T>(
     val isRunning get() = job.isActive || completableDeferred.isActive
     val isClosing get() = job.isActive.not() && completableDeferred.isActive
 
-    fun start() = synchronized(lock) { job.start() }
+    fun start() = mutex.synchronized(lock) { job.start() }
 
-    fun stop() = synchronized(lock) {
+    fun stop() = mutex.synchronized(lock) {
         cancel()
         completableDeferred.complete(Unit)
     }
 
-    fun cancel() = synchronized(lock) {
+    fun cancel() = mutex.synchronized(lock) {
         if (isRunning.not()) return@synchronized
         if (job.isActive.not()) return@synchronized
         logChannel.info("[Apprentice $id] Cancel")

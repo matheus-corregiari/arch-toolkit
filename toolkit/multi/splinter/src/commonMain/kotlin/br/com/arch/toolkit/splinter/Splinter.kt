@@ -20,13 +20,13 @@ import br.com.arch.toolkit.splinter.extension.incrementAsId
 import br.com.arch.toolkit.splinter.extension.info
 import br.com.arch.toolkit.splinter.extension.invokeCatching
 import br.com.arch.toolkit.splinter.extension.lazyJob
+import br.com.arch.toolkit.splinter.extension.synchronized
 import br.com.arch.toolkit.splinter.extension.tryError
 import br.com.arch.toolkit.splinter.extension.tryInfo
 import br.com.arch.toolkit.splinter.strategy.Strategy
 import br.com.arch.toolkit.util.dataResultError
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.sync.Mutex
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -71,13 +72,19 @@ class Splinter<RETURN> internal constructor(
      */
     //region Flows
     private val apprenticeFlow = MutableSharedFlow<Apprentice<RETURN>>(
-        replay = 10, extraBufferCapacity = 5, onBufferOverflow = BufferOverflow.SUSPEND
+        replay = 10,
+        extraBufferCapacity = 5,
+        onBufferOverflow = BufferOverflow.SUSPEND
     )
     internal val dataFlow = MutableSharedFlow<DataResult<RETURN>>(
-        replay = 500, extraBufferCapacity = 50, onBufferOverflow = BufferOverflow.DROP_OLDEST
+        replay = 500,
+        extraBufferCapacity = 50,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
     internal val logFlow = MutableSharedFlow<Message>(
-        replay = 500, extraBufferCapacity = 50, onBufferOverflow = BufferOverflow.DROP_OLDEST
+        replay = 500,
+        extraBufferCapacity = 50,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
     //endregion
 
@@ -85,7 +92,8 @@ class Splinter<RETURN> internal constructor(
      * Auxiliary Fields
      */
     //region Auxiliary Fields
-    private val lock = Object()
+    private val mutex = Mutex()
+    private val lock: Any = this
     private val logger: Lumber.Oak get() = Lumber.tag(id).quiet(config.quiet)
     private val observer = object : DefaultLifecycleObserver {
         init {
@@ -118,8 +126,11 @@ class Splinter<RETURN> internal constructor(
     private val logJob by createJob(tag = "Log", scope = CoroutineScope(Unconfined)) {
         val eventCountJob = launch { dataFlow.collect { eventCount.plusAssign(1) } }
         val logCountJob = launch { logFlow.collect { logCount.plusAssign(1) } }
-        if (config.quiet) listOf(eventCountJob, logCountJob).joinAll()
-        else logFlow.collect { logger.log(it.level, it.error, it.indentedMessage) }
+        if (config.quiet) {
+            listOf(eventCountJob, logCountJob).joinAll()
+        } else {
+            logFlow.collect { logger.log(it.level, it.error, it.indentedMessage) }
+        }
     }
 
     private val collectJob by createJob(tag = "Collect", scope = config.scope) {
@@ -157,7 +168,7 @@ class Splinter<RETURN> internal constructor(
         get() = operationCount.load() > operationCompletedCount.load()
     //endregion
 
-    fun execute() = synchronized(lock) {
+    fun execute() = mutex.synchronized(lock) {
         if (shouldProceedToExecute().not()) return@synchronized
         if (logJob.start()) logger.warn("[Splinter] - Log - Started")
         if (collectJob.start()) logger.warn("[Splinter] - Collect - Started")
@@ -190,7 +201,7 @@ class Splinter<RETURN> internal constructor(
         config.onCancel?.invokeCatching()
     }.getOrDefault(Unit)
 
-    fun kill(): ResponseDataHolder<RETURN> = synchronized(lock) {
+    fun kill(): ResponseDataHolder<RETURN> = mutex.synchronized(lock) {
         runCatching {
             if (isKilled) return@synchronized resultHolder
             if (isRunning) cancel()
@@ -264,8 +275,9 @@ class Splinter<RETURN> internal constructor(
             }
 
             else -> when (config.policy) {
-                ParallelQueue, SequentialQueue -> if (isStarting || isRunning)
+                ParallelQueue, SequentialQueue -> if (isStarting || isRunning) {
                     logFlow.tryInfo("[Splinter] Adding to execution queue")
+                }
 
                 IgnoreWhenHasRunningOperations -> if (isStarting || isRunning) {
                     logFlow.tryInfo("[Splinter] Already running - skipping")
@@ -310,9 +322,9 @@ class Splinter<RETURN> internal constructor(
     data class Config<T> private constructor(
         val scope: CoroutineScope,
         val quiet: Boolean,
-        val lifecycleOwner: LifecycleOwner?,
         val policy: ExecutionPolicy,
         val stopPolicy: StopPolicy,
+        val lifecycleOwner: LifecycleOwner?,
         val onCancel: (() -> Unit)?
     ) {
         companion object Creator {
@@ -322,26 +334,26 @@ class Splinter<RETURN> internal constructor(
 
         class Builder<T> internal constructor() {
 
-            private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-            private var quiet: Boolean = false
+            private var scope: CoroutineScope = SplinterDefaults.scope
+            private var quiet: Boolean = SplinterDefaults.quiet
+            private var policy: ExecutionPolicy = SplinterDefaults.policy
+            private var stopPolicy: StopPolicy = SplinterDefaults.stopPolicy
             private var lifecycleOwner: LifecycleOwner? = null
-            private var policy: ExecutionPolicy = IgnoreWhenHasRunningOperations
-            private var stopPolicy: StopPolicy = OnLifecycle
             private var onCancel: (() -> Unit)? = null
 
             fun scope(scope: CoroutineScope) = apply { this.scope = scope }
             fun logging(enabled: Boolean) = apply { this.quiet = enabled.not() }
-            fun owner(owner: LifecycleOwner) = apply { this.lifecycleOwner = owner }
             fun policy(policy: ExecutionPolicy) = apply { this.policy = policy }
             fun stop(policy: StopPolicy) = apply { this.stopPolicy = policy }
+            fun owner(owner: LifecycleOwner) = apply { this.lifecycleOwner = owner }
             fun invokeOnCancel(listener: () -> Unit) = apply { this.onCancel = listener }
 
             internal fun build() = Config<T>(
                 scope = scope,
                 quiet = quiet,
-                lifecycleOwner = lifecycleOwner,
                 policy = policy,
                 stopPolicy = stopPolicy,
+                lifecycleOwner = lifecycleOwner,
                 onCancel = onCancel,
             )
         }
@@ -382,29 +394,23 @@ class Splinter<RETURN> internal constructor(
                 Regex("(\\[.*])") to "-- -- -- -- ",
             )
 
-            fun info(message: String) = Message(
-                level = Lumber.Level.Info, message = message, error = null
-            )
+            fun info(message: String) =
+                Message(level = Lumber.Level.Info, message = message, error = null)
 
-            fun warn(message: String) = Message(
-                level = Lumber.Level.Warn, message = message, error = null
-            )
+            fun warn(message: String) =
+                Message(level = Lumber.Level.Warn, message = message, error = null)
 
-            fun error(message: String, error: Throwable?) = Message(
-                level = Lumber.Level.Error, message = message, error = error
-            )
+            fun error(message: String, error: Throwable?) =
+                Message(level = Lumber.Level.Error, message = message, error = error)
 
-            fun debug(message: String) = Message(
-                level = Lumber.Level.Debug, message = message, error = null
-            )
+            fun debug(message: String) =
+                Message(level = Lumber.Level.Debug, message = message, error = null)
 
-            fun verbose(message: String) = Message(
-                level = Lumber.Level.Verbose, message = message, error = null
-            )
+            fun verbose(message: String) =
+                Message(level = Lumber.Level.Verbose, message = message, error = null)
 
-            fun assert(message: String) = Message(
-                level = Lumber.Level.Assert, message = message, error = null
-            )
+            fun assert(message: String) =
+                Message(level = Lumber.Level.Assert, message = message, error = null)
         }
     }
     //endregion

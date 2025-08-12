@@ -1,6 +1,5 @@
 package br.com.arch.toolkit.splinter.cache
 
-import androidx.annotation.WorkerThread
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -19,22 +18,16 @@ sealed class CacheStrategy<T>(val id: String) {
     fun get(): T? = _flow.value
     //endregion
 
-    @WorkerThread
     internal abstract suspend fun save(version: DataVersion, data: T)
 
-    @WorkerThread
     internal abstract suspend fun delete()
 
-    @WorkerThread
     internal abstract suspend fun isLocalDisplayable(version: DataVersion, data: T): Boolean
 
-    @WorkerThread
     internal abstract suspend fun isLocalValid(version: DataVersion, data: T): Boolean
 
-    @WorkerThread
     internal abstract suspend fun newVersion(): DataVersion?
 
-    @WorkerThread
     internal suspend fun update(version: DataVersion?, data: T?) {
         if (version != null && data != null) {
             save(version, data)
@@ -44,7 +37,6 @@ sealed class CacheStrategy<T>(val id: String) {
         _flow.emit(data)
     }
 
-    @WorkerThread
     internal suspend fun howToProceed(remoteVersion: DataVersion?, local: T?) = runCatching {
         when {
             //

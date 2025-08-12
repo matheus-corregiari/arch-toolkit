@@ -1,6 +1,5 @@
 package br.com.arch.toolkit.splinter.strategy
 
-import androidx.annotation.WorkerThread
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.splinter.ResponseDataHolder
 import br.com.arch.toolkit.splinter.Splinter
@@ -11,7 +10,6 @@ import kotlinx.coroutines.channels.Channel
  */
 abstract class Strategy<RESULT> {
 
-    @WorkerThread
     abstract suspend fun execute(
         holder: ResponseDataHolder<RESULT>,
         dataChannel: Channel<DataResult<RESULT>>,

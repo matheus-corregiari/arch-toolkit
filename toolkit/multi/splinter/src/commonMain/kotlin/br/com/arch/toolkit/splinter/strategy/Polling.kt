@@ -8,7 +8,6 @@
 
 package br.com.arch.toolkit.splinter.strategy
 
-import androidx.annotation.WorkerThread
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.splinter.ResponseDataHolder
 import br.com.arch.toolkit.splinter.Splinter
@@ -32,7 +31,6 @@ class Polling<T> private constructor(
     private val config: Config<T>
 ) : Strategy<T>() {
 
-    @WorkerThread
     override suspend fun execute(
         holder: ResponseDataHolder<T>,
         dataChannel: Channel<DataResult<T>>,

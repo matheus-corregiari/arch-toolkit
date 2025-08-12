@@ -63,7 +63,7 @@ google-ksp = "2.2.0-2.0.2"
 di-koin = "4.1.0"
 
 ## Tools
-mockito = "5.7.0"
+mockito = "5.18.0"
 mockk = "1.14.5"
 mockito-kotlin = "6.0.0"
 junit = "4.13.2"
