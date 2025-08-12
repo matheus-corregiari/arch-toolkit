@@ -53,6 +53,8 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
                     val suffix = when {
                         pub.name.contains("android") -> "-android"
                         pub.name.contains("jvm") -> "-jvm"
+                        pub.name.contains("wasm") -> "-wasm-js"
+                        pub.name.contains("js") -> "-js"
                         else -> ""
                     }
                     pub.groupId = target.properties["GROUP"] as String

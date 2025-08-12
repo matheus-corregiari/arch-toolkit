@@ -1,8 +1,10 @@
+@file:Suppress("unused", "TooManyFunctions")
+
 package br.com.arch.toolkit.lumber
 
 import br.com.arch.toolkit.lumber.Lumber.OakWood.quiet
 import br.com.arch.toolkit.lumber.Lumber.OakWood.tag
-
+import kotlinx.coroutines.sync.Mutex
 
 /**
  * # Lumber - A Lightweight Logging Library for Android and Kotlin Multiplatform (KMP)
@@ -53,15 +55,16 @@ class Lumber private constructor() {
      * ```
      */
     abstract class Oak {
-        private val explicitTag = ThreadLocal<String?>()
-        private val explicitQuiet = ThreadLocal<Boolean?>()
 
-        private val fqcnIgnore = listOfNotNull(
-            Lumber::class.java.name,
-            Level::class.java.name,
-            OakWood::class.java.name,
-            Oak::class.java.name,
-            DebugTree::class.java.name,
+        private val explicitTag = ThreadSafe<String?>()
+        private val explicitQuiet = ThreadSafe<Boolean?>()
+
+        private val fqcnIgnore = setOfNotNull(
+            Lumber::class.simpleName,
+            Level::class.simpleName,
+            OakWood::class.simpleName,
+            Oak::class.simpleName,
+            DebugTree::class.simpleName,
         )
 
         /**
@@ -75,10 +78,8 @@ class Lumber private constructor() {
             get() = explicitTag
                 .get()
                 .takeIf { it.isNullOrBlank().not() }
-                ?.also { explicitTag.remove() } ?: Throwable()
-                .stackTrace
-                .first { it.className !in fqcnIgnore }
-                .let(::createStackElementTag)
+                ?.also { explicitTag.remove() }
+                ?: defaultTag(fqcnIgnore)
 
         /**
          * A flag to determine if the log message should be suppressed.
@@ -264,37 +265,18 @@ class Lumber private constructor() {
                 if (error != null) formattedMessage += "\n\n" + error.stackTraceToString()
             }
             if (formattedMessage.length <= MAX_LOG_LENGTH) {
-                log(
-                    level = level,
-                    tag = tag,
-                    message = formattedMessage,
-                    error = null,
-                )
+                log(level = level, tag = tag, message = formattedMessage, error = null)
             } else {
-                formattedMessage.chunked(MAX_LOG_LENGTH).forEachIndexed { index, part ->
-                    log(
-                        level = level,
-                        tag = tag?.let { "$it #$index" },
-                        message = part,
-                        error = null,
-                    )
-                }
+                formattedMessage.chunked(MAX_LOG_LENGTH)
+                    .forEachIndexed { index, part ->
+                        log(
+                            level = level,
+                            tag = tag?.let { "$it #$index" },
+                            message = part,
+                            error = null,
+                        )
+                    }
             }
-        }
-
-        /**
-         * Extract the tag which should be used for the message from the `element`. By default
-         * this will use the class name without any anonymous class suffixes (e.g., `Foo$1`
-         * becomes `Foo`).
-         *
-         * Note: This will not be called if a [manual tag][.tag] was specified.
-         */
-        private fun createStackElementTag(element: StackTraceElement): String {
-            var tag = element.className.substringAfterLast('.')
-            val matcher = ANONYMOUS_CLASS_PATTERN.matcher(tag)
-            if (matcher.find()) tag = matcher.replaceAll("")
-            tag = if (tag.length <= MAX_TAG_LENGTH) tag else tag.substring(0, MAX_TAG_LENGTH)
-            return "$tag:${element.methodName}"
         }
     }
 
@@ -313,23 +295,17 @@ class Lumber private constructor() {
      */
     companion object OakWood : Oak() {
         // Holds all the planted Oak trees.
-        private val trees = mutableListOf<Oak>()
-
-        // Synchronized read-only array to avoid concurrent modification issues
-        @Volatile
-        private var treeArray = emptyArray<Oak>()
+        private val trees = mutableSetOf<Oak>()
+        private val mutex = Mutex()
 
         /**
          * The number of currently planted Oak trees.
          * @return the count of Oak trees in the forest.
          */
-        val treeCount: Int get() = treeArray.size
+        val treeCount: Int get() = trees.size
 
         override fun log(level: Level, tag: String?, message: String, error: Throwable?): Unit =
-            throw IllegalStateException(
-                "Couldn't be possible to reach here, " +
-                    "this is a empty impl from Oak that distributes to other Oaks",
-            )
+            error(message = "This is a empty impl from Oak that distributes to other Oaks")
 
         /**
          * Dispatches the log message to all planted Oaks.
@@ -347,7 +323,7 @@ class Lumber private constructor() {
          * ```
          */
         override fun log(level: Level, error: Throwable?, message: String?, vararg args: Any?) {
-            treeArray.forEach {
+            trees.forEach {
                 it.log(level = level, error = error, message = message, args = args)
             }
         }
@@ -384,7 +360,7 @@ class Lumber private constructor() {
          */
         override fun tag(tag: String): Oak {
             // Propagate the tag to all Oaks.
-            treeArray.forEach { it.tag(tag) }
+            trees.forEach { it.tag(tag) }
             return this
         }
 
@@ -404,7 +380,7 @@ class Lumber private constructor() {
          */
         override fun quiet(quiet: Boolean): Oak {
             // Propagate the quiet flag to all Oaks.
-            treeArray.forEach { it.quiet(quiet) }
+            trees.forEach { it.quiet(quiet) }
             return this
         }
 
@@ -423,10 +399,7 @@ class Lumber private constructor() {
          */
         fun plant(tree: Oak) = apply {
             require(tree !== this) { "Cannot plant Lumber itself." }
-            synchronized(trees) {
-                trees.add(tree)
-                treeArray = trees.toTypedArray() // Rebuild the treeArray to ensure consistency.
-            }
+            mutex.synchronized(trees) { trees.add(tree) }
         }
 
         /**
@@ -445,12 +418,8 @@ class Lumber private constructor() {
          * ```
          */
         fun plant(vararg trees: Oak) = apply {
-            synchronized(this.trees) {
-                trees.forEach { require(it !== this) { "Cannot plant Lumber itself." } }
-                // Rebuild the treeArray to ensure consistency.
-                this.trees.addAll(trees)
-                treeArray = this.trees.toTypedArray()
-            }
+            trees.forEach { require(it !== this) { "Cannot plant Lumber itself." } }
+            mutex.synchronized(trees) { this.trees.addAll(trees) }
         }
 
         /**
@@ -466,11 +435,7 @@ class Lumber private constructor() {
          * ```
          */
         fun uproot(tree: Oak) = apply {
-            synchronized(trees) {
-                if (trees.remove(tree)) {
-                    treeArray = trees.toTypedArray() // Rebuild the treeArray after removal.
-                }
-            }
+            mutex.synchronized(trees) { trees.remove(tree) }
         }
 
         /**
@@ -483,10 +448,7 @@ class Lumber private constructor() {
          * ```
          */
         fun uprootAll() = apply {
-            synchronized(trees) {
-                trees.clear()
-                treeArray = emptyArray() // Reset the treeArray to an empty array.
-            }
+            mutex.synchronized(trees) { trees.clear() }
         }
 
         /**
@@ -501,8 +463,6 @@ class Lumber private constructor() {
          * forest.forEach { oak -> oak.debug("Inspecting Oak: ${oak.javaClass.simpleName}") }
          * ```
          */
-        fun forest(): List<Oak> = synchronized(trees) {
-            return trees.toList() // Return a safe, read-only copy of the list.
-        }
+        fun forest(): List<Oak> = trees.toList()
     }
 }
