@@ -51,7 +51,7 @@ sealed class Transform<T, R, X> {
 
     sealed class Nullable<T, R, X> : Transform<T?, R?, X?>() {
         class OmitFail<T, R, X>(
-            override val dispatcher: CoroutineDispatcher= Dispatchers.IO,
+            override val dispatcher: CoroutineDispatcher= Dispatchers.Default,
             override val func: suspend (T?, R?) -> X?
         ) : Nullable<T, R, X>() {
             override val failMode: Mode = Mode.OMIT_WHEN_FAIL
@@ -59,7 +59,7 @@ sealed class Transform<T, R, X> {
         }
 
         class NullFail<T, R, X>(
-            override val dispatcher: CoroutineDispatcher= Dispatchers.IO,
+            override val dispatcher: CoroutineDispatcher= Dispatchers.Default,
             override val func: suspend (T?, R?) -> X?
         ) : Nullable<T, R, X>() {
             override val failMode: Mode = Mode.NULL_WHEN_FAIL
@@ -67,7 +67,7 @@ sealed class Transform<T, R, X> {
         }
 
         class Fallback<T, R, X>(
-            override val dispatcher: CoroutineDispatcher= Dispatchers.IO,
+            override val dispatcher: CoroutineDispatcher= Dispatchers.Default,
             override val func: suspend (T?, R?) -> X?,
             override val onErrorReturn: suspend (Throwable) -> X?
         ) : Nullable<T, R, X>() {
@@ -75,7 +75,7 @@ sealed class Transform<T, R, X> {
         }
 
         class Custom<T, R, X>(
-            override val dispatcher: CoroutineDispatcher= Dispatchers.IO,
+            override val dispatcher: CoroutineDispatcher= Dispatchers.Default,
             override val failMode: Mode,
             override val func: suspend (T?, R?) -> X?,
             override val onErrorReturn: (suspend (Throwable) -> X?)?
@@ -84,7 +84,7 @@ sealed class Transform<T, R, X> {
 
     sealed class NotNull<T, R, X> : Transform<T, R, X>() {
         class OmitFail<T, R, X>(
-            override val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+            override val dispatcher: CoroutineDispatcher = Dispatchers.Default,
             override val func: suspend (T, R) -> X
         ) : NotNull<T, R, X>() {
             override val failMode: Mode = Mode.OMIT_WHEN_FAIL
@@ -92,7 +92,7 @@ sealed class Transform<T, R, X> {
         }
 
         class Fallback<T, R, X>(
-            override val dispatcher: CoroutineDispatcher= Dispatchers.IO,
+            override val dispatcher: CoroutineDispatcher= Dispatchers.Default,
             override val func: suspend (T, R) -> X,
             override val onErrorReturn: (suspend (Throwable) -> X)?
         ) : NotNull<T, R, X>() {

@@ -34,7 +34,7 @@ open class ResponseFlow<T> internal constructor(
 ) : Flow<DataResult<T>> by innerFlow {
 
     private var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private var transformDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private var transformDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     fun scope(scope: CoroutineScope) = apply { this.scope = scope }
     fun transformDispatcher(dispatcher: CoroutineDispatcher) =

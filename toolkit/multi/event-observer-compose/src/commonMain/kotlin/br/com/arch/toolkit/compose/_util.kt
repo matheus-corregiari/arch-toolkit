@@ -60,6 +60,4 @@ val <T> Flow<DataResult<T>>.composable: ComposableDataResult<T> get() = Composab
  * @receiver The [ResponseFlow] to collect.
  * @return A [State] whose value is always the latest [ComposableDataResult] instance.
  */
-fun <T> Flow<DataResult<T>>.collectAsComposableState(): State<ComposableDataResult<T>> {
-    return derivedStateOf { composable }
-}
+fun <T> Flow<DataResult<T>>.collectAsComposableState() = derivedStateOf { composable }
