@@ -71,5 +71,13 @@ kotlin {
             implementation(libs.jetbrains.coroutines.jvm)
             implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate-desktop:2.9.2")
         }
+
+        jsMain.dependencies {
+            implementation(compose.html.core)
+        }
+
+        wasmJsMain.dependencies {
+            implementation(compose.html.core)
+        }
     }
 }

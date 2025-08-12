@@ -46,6 +46,15 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
+        // Sample Modules
+        implementation(project(":samples:github-list-project:shared"))
+
+        // Arch Toolkit Dependencies
+        implementation(project(":toolkit:multi:lumber"))
+        implementation(project(":toolkit:multi:splinter"))
+        implementation(project(":toolkit:multi:event-observer"))
+        implementation(project(":toolkit:multi:event-observer-compose"))
+
         implementation(compose.runtime)
         implementation(compose.material3)
         implementation(compose.ui)
