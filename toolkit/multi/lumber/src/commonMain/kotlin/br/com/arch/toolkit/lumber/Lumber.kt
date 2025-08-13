@@ -60,11 +60,11 @@ class Lumber private constructor() {
         private val explicitQuiet = ThreadSafe<Boolean?>()
 
         private val fqcnIgnore = setOfNotNull(
-            Lumber::class.simpleName,
-            Level::class.simpleName,
-            OakWood::class.simpleName,
-            Oak::class.simpleName,
-            DebugTree::class.simpleName,
+            Lumber::class.qualifiedName,
+            Level::class.qualifiedName,
+            OakWood::class.qualifiedName,
+            Oak::class.qualifiedName,
+            DebugTree::class.qualifiedName,
         )
 
         /**
@@ -139,96 +139,102 @@ class Lumber private constructor() {
         //region Verbose
 
         /** Log a verbose message with optional format args. */
-        open fun verbose(message: String?, vararg args: Any?) =
-            verbose(error = null, message = message, args = args)
+        open fun verbose(message: String, vararg args: Any?) =
+            log(level = Level.Verbose, message = message, args = args)
 
         /** Log a verbose exception. */
-        open fun verbose(error: Throwable?) = verbose(error = error, message = null)
+        open fun verbose(error: Throwable) =
+            log(level = Level.Verbose, error = error)
 
         /** Log a verbose exception and a message with optional format args. */
-        open fun verbose(error: Throwable?, message: String?, vararg args: Any?) =
+        open fun verbose(error: Throwable, message: String, vararg args: Any?) =
             log(level = Level.Verbose, error = error, message = message, args = args)
         //endregion
 
         //region Debug
 
         /** Log a debug message with optional format args. */
-        open fun debug(message: String?, vararg args: Any?) =
-            debug(error = null, message = message, args = args)
+        open fun debug(message: String, vararg args: Any?) =
+            log(level = Level.Debug, message = message, args = args)
 
         /** Log a debug exception and a message with optional format args. */
-        open fun debug(error: Throwable?) = debug(error = error, message = null)
+        open fun debug(error: Throwable) =
+            log(level = Level.Debug, error = error)
 
         /** Log a debug exception. */
-        open fun debug(error: Throwable?, message: String?, vararg args: Any?) =
+        open fun debug(error: Throwable, message: String, vararg args: Any?) =
             log(level = Level.Debug, error = error, message = message, args = args)
         //endregion
 
         //region Info
 
         /** Log an info message with optional format args. */
-        open fun info(message: String?, vararg args: Any?) =
-            info(error = null, message = message, args = args)
+        open fun info(message: String, vararg args: Any?) =
+            log(level = Level.Info, message = message, args = args)
 
         /** Log an info exception and a message with optional format args. */
-        open fun info(error: Throwable?) = info(error = error, message = null)
+        open fun info(error: Throwable) =
+            log(level = Level.Info, error = null, message = null, args = emptyArray())
 
         /** Log an info exception. */
-        open fun info(error: Throwable?, message: String?, vararg args: Any?) =
+        open fun info(error: Throwable, message: String, vararg args: Any?) =
             log(level = Level.Info, error = error, message = message, args = args)
         //endregion
 
         //region Warn
 
         /** Log a warning message with optional format args. */
-        open fun warn(message: String?, vararg args: Any?) =
-            warn(error = null, message = message, args = args)
+        open fun warn(message: String, vararg args: Any?) =
+            log(level = Level.Warn, message = message, args = args)
 
         /** Log a warning exception and a message with optional format args. */
-        open fun warn(error: Throwable?) = warn(error = error, message = null)
+        open fun warn(error: Throwable) =
+            log(level = Level.Warn, error = error)
 
         /** Log a warning exception. */
-        open fun warn(error: Throwable?, message: String?, vararg args: Any?) =
+        open fun warn(error: Throwable, message: String, vararg args: Any?) =
             log(level = Level.Warn, error = error, message = message, args = args)
         //endregion
 
         //region Error
 
         /** Log an error message with optional format args. */
-        open fun error(message: String?, vararg args: Any?) =
-            error(error = null, message = message, args = args)
+        open fun error(message: String, vararg args: Any?) =
+            log(level = Level.Error, message = message, args = args)
 
         /** Log an error exception and a message with optional format args. */
-        open fun error(error: Throwable?) = error(error = error, message = null)
+        open fun error(error: Throwable) =
+            log(level = Level.Error, error = error)
 
         /** Log an error exception. */
-        open fun error(error: Throwable?, message: String?, vararg args: Any?) =
+        open fun error(error: Throwable, message: String, vararg args: Any?) =
             log(level = Level.Error, error = error, message = message, args = args)
         //endregion
 
         //region Assert
 
         /** Log an assert message with optional format args. */
-        open fun wtf(message: String?, vararg args: Any?) =
-            wtf(error = null, message = message, args = args)
+        open fun wtf(message: String, vararg args: Any?) =
+            log(level = Level.Assert, message = message, args = args)
 
         /** Log an assert exception and a message with optional format args. */
-        open fun wtf(error: Throwable?) = wtf(error = error, message = null)
+        open fun wtf(error: Throwable) =
+            log(level = Level.Assert, error = error)
 
         /** Log an assert exception. */
-        open fun wtf(error: Throwable?, message: String?, vararg args: Any?) =
+        open fun wtf(error: Throwable, message: String, vararg args: Any?) =
             log(level = Level.Assert, error = error, message = message, args = args)
         //endregion
 
         //region Raw Log
 
         /** Log at `priority` a message with optional format args. */
-        open fun log(level: Level, message: String?, vararg args: Any?) =
+        open fun log(level: Level, message: String, vararg args: Any?) =
             log(level = level, error = null, message = message, args = args)
 
         /** Log at `priority` an exception and a message with optional format args. */
-        open fun log(level: Level, error: Throwable?) =
-            log(level = level, error = error, message = null)
+        open fun log(level: Level, error: Throwable) =
+            log(level = level, error = error, message = null, args = emptyArray())
 
         /** Log at `priority` an exception. */
         open fun log(level: Level, error: Throwable?, message: String?, vararg args: Any?) =
@@ -265,7 +271,7 @@ class Lumber private constructor() {
                 if (error != null) formattedMessage += "\n\n" + error.stackTraceToString()
             }
             if (formattedMessage.length <= MAX_LOG_LENGTH) {
-                log(level = level, tag = tag, message = formattedMessage, error = null)
+                log(level = level, tag = tag, message = formattedMessage, error = error)
             } else {
                 formattedMessage.chunked(MAX_LOG_LENGTH)
                     .forEachIndexed { index, part ->
@@ -273,7 +279,7 @@ class Lumber private constructor() {
                             level = level,
                             tag = tag?.let { "$it #$index" },
                             message = part,
-                            error = null,
+                            error = error,
                         )
                     }
             }
@@ -385,24 +391,6 @@ class Lumber private constructor() {
         }
 
         /**
-         * Plants a new logging tree into the forest.
-         *
-         * @param tree An implementation of the Oak class to be added to the logging system.
-         * @throws IllegalArgumentException if trying to plant the same OakWood instance.
-         *
-         * ## Example:
-         * ```kotlin
-         * val consoleOak = ConsoleOak() // A custom Oak implementation
-         * Lumber.plant(consoleOak) // Adds consoleOak to the forest
-         * Lumber.debug("Message to consoleOak")
-         * ```
-         */
-        fun plant(tree: Oak) = apply {
-            require(tree !== this) { "Cannot plant Lumber itself." }
-            mutex.synchronized(trees) { trees.add(tree) }
-        }
-
-        /**
          * Plants new logging trees into the forest.
          * Accepts one or more Oak instances and adds them to the logging system.
          *
@@ -417,9 +405,9 @@ class Lumber private constructor() {
          * Lumber.debug("Message to consoleOak and fileOak")
          * ```
          */
-        fun plant(vararg trees: Oak) = apply {
+        fun plant(tree: Oak, vararg trees: Oak) = apply {
             trees.forEach { require(it !== this) { "Cannot plant Lumber itself." } }
-            mutex.synchronized(trees) { this.trees.addAll(trees) }
+            mutex.synchronized(trees) { this.trees.addAll(listOf(tree, *trees)) }
         }
 
         /**

@@ -7,8 +7,9 @@ actual class ThreadSafe<T> actual constructor() : ThreadLocal<T>()
 @Suppress("ThrowingExceptionsWithoutMessageOrCause")
 actual fun defaultTag(exclude: Set<String>): String? = Throwable()
     .stackTrace
-    .first { it.className !in exclude }
-    .let(::createStackElementTag)
+    .drop(1)
+    .firstOrNull { it.className.replace("$", ".") !in exclude }
+    ?.let(::createStackElementTag)
 
 actual fun String.format(vararg args: Any?): String = String.format(this, *args)
 
@@ -24,6 +25,6 @@ private fun createStackElementTag(element: StackTraceElement): String {
     val matcher = "(\\$\\d+)+$".toPattern().matcher(tag)
     if (matcher.find()) tag = matcher.replaceAll("")
     tag = tag.chunked(MAX_TAG_LENGTH).first()
-    return "$tag:${element.methodName}"
+    return "$tag:${element.methodName.replace(" ", "-")}"
 }
 
