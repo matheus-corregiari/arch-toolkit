@@ -1,7 +1,29 @@
 package br.com.arch.toolkit.lumber
 
-@JsFun("() => (new Error()).stack ?? ''")
-external fun jsStack(): String
+@Suppress("unused")
+internal fun jsLog(message: String): Unit = js(
+    code = """{
+        console.log(message);
+    }"""
+)
 
-@JsFun("(lvl, msg) => { const c = console; (c[lvl] ?? c.log).call(c, msg); }")
-external fun jsConsole(lvl: String, msg: String)
+@Suppress("unused")
+internal fun jsLogInfo(message: String): Unit = js(
+    code = """{
+        console.info(message);
+    }"""
+)
+
+@Suppress("unused")
+internal fun jsLogWarn(message: String): Unit = js(
+    code = """{
+        console.warn(message);
+    }"""
+)
+
+@Suppress("unused")
+internal fun jsLogError(message: String): Unit = js(
+    code = """{
+        console.error(message);
+    }"""
+)
