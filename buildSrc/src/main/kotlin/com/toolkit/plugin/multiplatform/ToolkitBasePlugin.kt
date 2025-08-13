@@ -20,7 +20,10 @@ internal class ToolkitBasePlugin : Plugin<Project> {
         with(target.multiplatform) {
             androidTarget {}
             jvm {}
-            wasmJs { binaries.library() }
+            wasmJs {
+                browser { testTask { it.useKarma { useChromeHeadless() } } }
+                binaries.library()
+            }
         }
 
         target.plugins.apply("toolkit-optimize")

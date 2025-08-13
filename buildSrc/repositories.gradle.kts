@@ -22,6 +22,18 @@ val repositoryList: RepositoryHandler.() -> Unit = {
         }
         filter { includeModule("com.yarnpkg", "yarn") }
     }
+    exclusiveContent {
+        forRepository {
+            ivy {
+                url = uri("https://github.com/WebAssembly/binaryen/releases/download")
+                patternLayout {
+                    artifact("version_[revision]/[artifact]-version_[revision]-[classifier].[ext]")
+                }
+                metadataSources { artifact() }
+            }
+        }
+        filter { includeModule("com.github.webassembly", "binaryen") }
+    }
 }
 
 extra["repositoryList"] = repositoryList

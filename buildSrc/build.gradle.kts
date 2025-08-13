@@ -95,6 +95,14 @@ gradlePlugin {
         //endregion
 
         //region Multiplatform
+        create("toolkit-multiplatform-sample") {
+            id = "toolkit-multiplatform-sample"
+            displayName = "Toolkit Sample Plugin"
+            description =
+                "Plug and play for modules those should be a exported library to the world!"
+            implementationClass = "com.toolkit.plugin.multiplatform.ToolkitSamplePlugin"
+        }
+
         create("toolkit-multiplatform-library") {
             id = "toolkit-multiplatform-library"
             displayName = "Toolkit Library Plugin"

@@ -1,5 +1,5 @@
 plugins {
-    id("toolkit-multiplatform-library")
+    id("toolkit-multiplatform-sample")
     id("kotlin-parcelize")
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.ktorfit)
@@ -64,20 +64,10 @@ kotlin {
         androidMain.dependencies {
             implementation(project(":toolkit:android:util"))
             implementation(libs.jetbrains.coroutines.android)
-            implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate-android:2.9.2")
         }
 
         jvmMain.dependencies {
             implementation(libs.jetbrains.coroutines.jvm)
-            implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate-desktop:2.9.2")
-        }
-
-        jsMain.dependencies {
-            implementation(compose.html.core)
-        }
-
-        wasmJsMain.dependencies {
-            implementation(compose.html.core)
         }
     }
 }
