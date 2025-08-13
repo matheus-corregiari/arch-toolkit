@@ -9,30 +9,21 @@ android.buildFeatures.buildConfig = false
 
 kotlin {
     // Libraries
-    @Suppress("unused")
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.jetbrains.coroutines.core)
-            }
-        }
-        val javaMain by creating {
-            dependsOn(commonMain)
-        }
-        val kotlinMain by creating {
-            dependsOn(commonMain)
-        }
-        val androidMain by getting {
+        // Common Setup
+        commonMain.dependencies { implementation(libs.jetbrains.coroutines.core) }
+        commonTest.dependencies { implementation(libs.jetbrains.kotlin.test) }
+
+        // Custom source Setup
+        val javaMain by creating { dependsOn(commonMain.get()) }
+        val kotlinMain by creating { dependsOn(commonMain.get()) }
+
+        // Target Setup
+        androidMain { dependsOn(javaMain) }
+        jvmMain {
             dependsOn(javaMain)
+            dependencies { implementation(libs.ajalt.mordant) }
         }
-        val jvmMain by getting {
-            dependsOn(javaMain)
-            dependencies {
-                implementation(libs.slf4j.core)
-                implementation(libs.slf4j.simple)
-                implementation(libs.ajalt.mordant)
-            }
-        }
-        val wasmJsMain by getting { dependsOn(kotlinMain) }
+        wasmJsMain { dependsOn(kotlinMain) }
     }
 }
