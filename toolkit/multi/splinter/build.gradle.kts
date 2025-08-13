@@ -26,6 +26,6 @@ kotlin {
     sourceSets.jvmMain.dependencies {}
     sourceSets.commonTest.dependencies {
         implementation(libs.junit.test)
-        implementation(libs.jetbrains.test.coroutines)
+        implementation(libs.jetbrains.coroutines.test)
     }
 }

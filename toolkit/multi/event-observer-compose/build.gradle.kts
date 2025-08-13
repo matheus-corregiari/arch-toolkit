@@ -31,9 +31,8 @@ kotlin {
 
     // Test Libraries
     sourceSets.commonTest.dependencies {
-        implementation(libs.jetbrains.test.coroutines)
+        implementation(libs.jetbrains.coroutines.test)
         implementation(libs.junit.test)
-        implementation(libs.mockk.test.agent)
         implementation(compose.material3)
         implementation(compose.uiTest)
     }
