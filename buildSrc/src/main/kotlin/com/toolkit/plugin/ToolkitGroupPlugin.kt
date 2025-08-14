@@ -1,6 +1,5 @@
 package com.toolkit.plugin
 
-import com.toolkit.plugin.util.applyPlugins
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.com.google.gson.JsonArray
@@ -10,10 +9,6 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.evaluationDependsOnChildren()
-        target.applyPlugins("jetbrains-kover")
-
-        // Try to unify coverage reports
-        target.subprojects.onEach { target.dependencies.add("kover", it) }
 
         // Generate file containing all modules with publish plugin attached
         target.tasks.register("publishModules") { task ->

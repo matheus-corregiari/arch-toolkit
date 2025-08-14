@@ -26,9 +26,6 @@ dependencies {
     implementation(libs.jetbrains.extensions) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
-    implementation(libs.jetbrains.kover) {
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
-    }
     implementation(libs.jetbrains.dokka) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }

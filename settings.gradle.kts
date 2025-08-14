@@ -36,3 +36,9 @@ if (isIdeBuild) {
     include(":samples:github-list-project:target:desktop")
     include(":samples:github-list-project:target:web")
 }
+
+plugins {
+    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.1"
+}
+
+kover { enableCoverage() }

@@ -6,9 +6,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.toolkit.plugin.util.androidApplication
 import com.toolkit.plugin.util.androidLibrary
-import com.toolkit.plugin.util.applyPlugins
 import com.toolkit.plugin.util.jacoco
-import com.toolkit.plugin.util.kover
 import com.toolkit.plugin.util.libs
 import com.toolkit.plugin.util.version
 import org.gradle.api.Plugin
@@ -18,14 +16,6 @@ internal class ToolkitTestPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.plugins.apply("jacoco")
-        target.applyPlugins("jetbrains-kover")
-
-        // Kover configuration
-        with(target.kover) {
-            if (target.plugins.hasPlugin("android-application")) {
-                disable()
-            }
-        }
 
         // Kover configuration
         with(target.jacoco) { toolVersion = target.libs.version("jacoco") }
