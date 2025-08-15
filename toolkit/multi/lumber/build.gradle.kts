@@ -24,6 +24,9 @@ kotlin {
             dependsOn(javaMain)
             dependencies { implementation(libs.ajalt.mordant) }
         }
-        wasmJsMain { dependsOn(kotlinMain) }
+        wasmJsMain {
+            dependsOn(kotlinMain)
+            dependencies { implementation(libs.jetbrains.stdlib) }
+        }
     }
 }

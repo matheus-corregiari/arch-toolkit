@@ -5,10 +5,10 @@ package br.com.arch.toolkit.lumber
 actual class ThreadSafe<T> actual constructor() : ThreadLocal<T>()
 
 @Suppress("ThrowingExceptionsWithoutMessageOrCause")
-actual fun defaultTag(exclude: Set<String>): String? = Throwable()
+actual fun defaultTag(): String? = Throwable()
     .stackTrace
     .drop(1)
-    .firstOrNull { it.className.replace("$", ".") !in exclude }
+    .firstOrNull { it.className.replace("$", ".") !in fqcnIgnore }
     ?.let(::createStackElementTag)
 
 actual fun String.format(vararg args: Any?): String = String.format(this, *args)

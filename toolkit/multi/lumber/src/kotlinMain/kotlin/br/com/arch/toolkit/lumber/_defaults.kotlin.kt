@@ -6,7 +6,7 @@ package br.com.arch.toolkit.lumber
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
-actual fun defaultTag(exclude: Set<String>): String? = null
+actual fun defaultTag(): String? = null
 
 actual class ThreadSafe<T> actual constructor() {
 

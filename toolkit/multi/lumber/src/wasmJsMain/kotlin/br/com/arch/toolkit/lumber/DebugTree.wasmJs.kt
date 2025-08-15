@@ -11,14 +11,12 @@ actual open class DebugTree actual constructor() : Lumber.Oak() {
         tag: String?,
         message: String,
         error: Throwable?
-    ) {
-        when (level) {
-            Lumber.Level.Verbose -> jsLog("VERBOSE $tag : $message")
-            Lumber.Level.Debug -> jsLog("DEBUG $tag : $message")
-            Lumber.Level.Info -> info("INFO $tag : $message")
-            Lumber.Level.Warn -> warn("WARNING $tag : $message")
-            Lumber.Level.Error -> error("ERROR $tag : $message")
-            Lumber.Level.Assert -> error("ASSERT $tag : $message")
-        }
+    ) = when (level) {
+        Lumber.Level.Verbose -> jsLog("VERBOSE - [$tag] : $message")
+        Lumber.Level.Debug -> jsLog("DEBUG - [$tag] : $message")
+        Lumber.Level.Info -> jsLogInfo("[$tag] : $message")
+        Lumber.Level.Warn -> jsLogWarn("[$tag] : $message")
+        Lumber.Level.Error -> jsLogError("[$tag] : $message")
+        Lumber.Level.Assert -> jsLogError("[$tag] : $message")
     }
 }

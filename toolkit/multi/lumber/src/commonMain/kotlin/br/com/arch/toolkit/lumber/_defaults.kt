@@ -2,6 +2,8 @@
 
 package br.com.arch.toolkit.lumber
 
+import br.com.arch.toolkit.lumber.Lumber.Level
+import br.com.arch.toolkit.lumber.Lumber.Oak
 import kotlinx.coroutines.sync.Mutex
 
 internal const val MAX_LOG_LENGTH = 4000
@@ -14,7 +16,15 @@ internal fun <T> Mutex.synchronized(key: Any, block: () -> T) = try {
     runCatching { unlock(owner = key) }
 }
 
-expect fun defaultTag(exclude: Set<String>): String?
+internal val fqcnIgnore = setOfNotNull(
+    Lumber::class.qualifiedName,
+    Level::class.qualifiedName,
+    Lumber.OakWood::class.qualifiedName,
+    Oak::class.qualifiedName,
+    DebugTree::class.qualifiedName,
+)
+
+expect fun defaultTag(): String?
 expect fun String.format(vararg args: Any?): String
 
 expect class ThreadSafe<T>() {

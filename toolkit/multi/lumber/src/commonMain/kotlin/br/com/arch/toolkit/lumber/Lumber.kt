@@ -59,14 +59,6 @@ class Lumber private constructor() {
         private val explicitTag = ThreadSafe<String?>()
         private val explicitQuiet = ThreadSafe<Boolean?>()
 
-        private val fqcnIgnore = setOfNotNull(
-            Lumber::class.qualifiedName,
-            Level::class.qualifiedName,
-            OakWood::class.qualifiedName,
-            Oak::class.qualifiedName,
-            DebugTree::class.qualifiedName,
-        )
-
         /**
          * The tag to be used for the log message.
          * By default, it is derived from the stack trace element, but it can be overridden
@@ -79,7 +71,7 @@ class Lumber private constructor() {
                 .get()
                 .takeIf { it.isNullOrBlank().not() }
                 ?.also { explicitTag.remove() }
-                ?: defaultTag(fqcnIgnore)
+                ?: defaultTag()
 
         /**
          * A flag to determine if the log message should be suppressed.
@@ -277,7 +269,7 @@ class Lumber private constructor() {
                     .forEachIndexed { index, part ->
                         log(
                             level = level,
-                            tag = tag?.let { "$it #$index" },
+                            tag = tag?.let { "$it #$index" } ?: "#$index",
                             message = part,
                             error = error,
                         )
