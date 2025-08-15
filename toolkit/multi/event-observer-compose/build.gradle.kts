@@ -32,11 +32,10 @@ kotlin {
     // Test Libraries
     sourceSets.commonTest.dependencies {
         // Other Arch-Toolkit Dependencies
-        api(project(":toolkit:multi:test"))
+        implementation(project(":toolkit:multi:test"))
 
         // Libraries
-        api(libs.jetbrains.kotlin.test)
-
+        implementation(libs.jetbrains.kotlin.test)
         implementation(libs.jetbrains.coroutines.test)
         implementation(compose.material3)
         implementation(compose.uiTest)
