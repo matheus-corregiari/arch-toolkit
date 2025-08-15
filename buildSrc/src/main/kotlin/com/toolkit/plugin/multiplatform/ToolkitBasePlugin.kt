@@ -22,7 +22,6 @@ internal class ToolkitBasePlugin : Plugin<Project> {
             jvm {}
             wasmJs {
                 browser { testTask { it.useKarma { useChromeHeadless() } } }
-                nodejs()
                 binaries.library()
             }
         }
