@@ -54,6 +54,9 @@ kotlin {
     }
     sourceSets.jsMain.dependencies {
         implementation(compose.html.core)
-        implementation(compose.components.uiToolingPreview)
+    }
+    sourceSets.wasmJsMain.dependencies {
+        // Arch Toolkit Dependencies
+        implementation(project(":toolkit:multi:lumber"))
     }
 }

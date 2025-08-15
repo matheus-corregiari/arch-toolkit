@@ -17,7 +17,7 @@ dependencies {
     implementation(project(":toolkit:android:delegate"))
 
     // Libraries
-    implementation(libs.jetbrains.stdlib.jdk8)
+    implementation(libs.jetbrains.stdlib)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraint)
@@ -26,7 +26,7 @@ dependencies {
     implementation(libs.google.material)
 
     // Test Libraries
-    androidTestImplementation(libs.jetbrains.stdlib.jdk8)
+    androidTestImplementation(libs.jetbrains.stdlib)
     androidTestImplementation(libs.androidx.annotation)
     androidTestImplementation(libs.androidx.appcompat)
     androidTestImplementation(libs.androidx.constraint)

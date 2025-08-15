@@ -10,7 +10,7 @@ android.testOptions.unitTests { isIncludeAndroidResources = true }
 
 dependencies {
     // Libraries
-    compileOnly(libs.jetbrains.stdlib.jdk8)
+    compileOnly(libs.jetbrains.stdlib)
     compileOnly(libs.androidx.annotation)
 
     // Test Libraries
@@ -19,10 +19,10 @@ dependencies {
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.espresso.intents)
     androidTestImplementation(libs.junit.test)
-    androidTestImplementation(libs.jetbrains.stdlib.jdk8)
+    androidTestImplementation(libs.jetbrains.stdlib)
 
     // Test Libraries
-    testImplementation(libs.jetbrains.stdlib.jdk8)
+    testImplementation(libs.jetbrains.stdlib)
     testImplementation(libs.junit.test)
     testImplementation(libs.mockito.test.core)
     testImplementation(libs.mockito.test.kotlin)

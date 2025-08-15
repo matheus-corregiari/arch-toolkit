@@ -81,7 +81,7 @@ haze = "1.6.10"
 # ------------------------------------------------------------------------------------------------ #
 [libraries]
 ## JetBrains
-jetbrains-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "jetbrains-kotlin" }
+jetbrains-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "jetbrains-kotlin" }
 jetbrains-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "jetbrains-kotlin" }
 jetbrains-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "jetbrains-serialization" }
 jetbrains-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "jetbrains-coroutines" }
@@ -195,11 +195,10 @@ x-normalize-x013 = { module = "androidx.test:runner", version = "1.7.0" }
 x-normalize-x014 = { module = "com.google.auto.value:auto-value-annotations", version = "1.11.0" }
 x-normalize-x015 = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 x-normalize-x016 = { module = "com.squareup:javawritter", version = "2.5.0" }
-x-normalize-x017 = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "jetbrains-kotlin" }
-x-normalize-x018 = { module = "org.jetbrains.kotlin:kotlin-stdlib-common", version.ref = "jetbrains-kotlin" }
-x-normalize-x019 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "jetbrains-serialization" }
-x-normalize-x020 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm", version.ref = "jetbrains-serialization" }
-x-normalize-x021 = { module = "org.jetbrains:annotations", version = "26.0.2" }
+x-normalize-x017 = { module = "org.jetbrains.kotlin:kotlin-stdlib-common", version.ref = "jetbrains-kotlin" }
+x-normalize-x018 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "jetbrains-serialization" }
+x-normalize-x019 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm", version.ref = "jetbrains-serialization" }
+x-normalize-x020 = { module = "org.jetbrains:annotations", version = "26.0.2" }
 
 # ------------------------------------------------------------------------------------------------ #
 [plugins]

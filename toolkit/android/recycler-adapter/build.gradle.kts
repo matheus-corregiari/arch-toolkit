@@ -7,6 +7,6 @@ android.namespace = "br.com.arch.toolkit.recyclerAdapter"
 
 dependencies {
     // Libraries
-    compileOnly(libs.jetbrains.stdlib.jdk8)
+    compileOnly(libs.jetbrains.stdlib)
     compileOnly(libs.androidx.recycler)
 }

@@ -162,7 +162,7 @@ gradlePlugin {
     }
 }
 
-val normalize = (1..21)
+val normalize = (1..20)
     .mapNotNull { libs.create("x-normalize-x${it.toString().padStart(3, '0')}").orNull }
     .map { module -> "${module.group}:${module.name}:${module.versionConstraint.requiredVersion}:" }
 
