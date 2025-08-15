@@ -8,39 +8,37 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.onNodeWithTag
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.test.PlatformTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.setMain
-import org.junit.FixMethodOrder
-import org.junit.Test
-import org.junit.runners.MethodSorters
+import kotlin.test.Test
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-class ComposableDataResultLoadingTest {
+class ComposableDataResultErrorTest : PlatformTest() {
     init {
         Dispatchers.setMain(StandardTestDispatcher())
     }
 
     @Test
-    fun `1 - String, LOADING, null`() = scenario(
-        result = DataResult("Hello Compose", null, DataResultStatus.LOADING),
+    fun `1 - String, ERROR, null`() = scenario(
+        result = DataResult("Hello Compose", null, DataResultStatus.ERROR),
         config = stringConfig,
         assert = {
             // Data
             onNodeWithTag("dataTag1").assertTextEquals("Hello Compose")
-            onNodeWithTag("dataTag2").assertTextEquals("Hello Compose - LOADING")
-            onNodeWithTag("dataTag3").assertTextEquals("Hello Compose - LOADING - null")
+            onNodeWithTag("dataTag2").assertTextEquals("Hello Compose - ERROR")
+            onNodeWithTag("dataTag3").assertTextEquals("Hello Compose - ERROR - null")
             // Show Loading
-            onNodeWithTag("showLoadingTag1").assertTextEquals("ShowLoading 1")
-            onNodeWithTag("showLoadingTag2").assertTextEquals("ShowLoading 2")
+            onNodeWithTag("showLoadingTag1").assertDoesNotExist()
+            onNodeWithTag("showLoadingTag2").assertDoesNotExist()
             onNodeWithTag("showLoadingTag3").assertDoesNotExist()
             // Hide Loading
-            onNodeWithTag("hideLoadingTag1").assertDoesNotExist()
-            onNodeWithTag("hideLoadingTag2").assertDoesNotExist()
+            onNodeWithTag("hideLoadingTag1").assertTextEquals("HideLoading 1")
+            onNodeWithTag("hideLoadingTag2").assertTextEquals("HideLoading 2")
             onNodeWithTag("hideLoadingTag3").assertDoesNotExist()
             // Error Without Throwable
-            onNodeWithTag("errorTag1").assertDoesNotExist()
-            onNodeWithTag("errorTag2").assertDoesNotExist()
+            onNodeWithTag("errorTag1").assertTextEquals("Error 1")
+            onNodeWithTag("errorTag2").assertTextEquals("Error 2")
             onNodeWithTag("errorTag3").assertDoesNotExist()
             // Error With Throwable
             onNodeWithTag("errorTag4").assertDoesNotExist()
@@ -62,8 +60,8 @@ class ComposableDataResultLoadingTest {
     )
 
     @Test
-    fun `2 - null, LOADING, Throwable`() = scenario(
-        result = DataResult(null, RuntimeException("fail"), DataResultStatus.LOADING),
+    fun `2 - null, ERROR, Throwable`() = scenario(
+        result = DataResult(null, RuntimeException("fail"), DataResultStatus.ERROR),
         config = stringConfig,
         assert = {
             // Data
@@ -71,21 +69,21 @@ class ComposableDataResultLoadingTest {
             onNodeWithTag("dataTag2").assertDoesNotExist()
             onNodeWithTag("dataTag3").assertDoesNotExist()
             // Show Loading
-            onNodeWithTag("showLoadingTag1").assertTextEquals("ShowLoading 1")
+            onNodeWithTag("showLoadingTag1").assertDoesNotExist()
             onNodeWithTag("showLoadingTag2").assertDoesNotExist()
-            onNodeWithTag("showLoadingTag3").assertTextEquals("ShowLoading 3")
+            onNodeWithTag("showLoadingTag3").assertDoesNotExist()
             // Hide Loading
-            onNodeWithTag("hideLoadingTag1").assertDoesNotExist()
+            onNodeWithTag("hideLoadingTag1").assertTextEquals("HideLoading 1")
             onNodeWithTag("hideLoadingTag2").assertDoesNotExist()
-            onNodeWithTag("hideLoadingTag3").assertDoesNotExist()
+            onNodeWithTag("hideLoadingTag3").assertTextEquals("HideLoading 3")
             // Error Without Throwable
-            onNodeWithTag("errorTag1").assertDoesNotExist()
+            onNodeWithTag("errorTag1").assertTextEquals("Error 1")
             onNodeWithTag("errorTag2").assertDoesNotExist()
-            onNodeWithTag("errorTag3").assertDoesNotExist()
+            onNodeWithTag("errorTag3").assertTextEquals("Error 3")
             // Error With Throwable
-            onNodeWithTag("errorTag4").assertDoesNotExist()
+            onNodeWithTag("errorTag4").assertTextEquals("Error 4 fail")
             onNodeWithTag("errorTag5").assertDoesNotExist()
-            onNodeWithTag("errorTag6").assertDoesNotExist()
+            onNodeWithTag("errorTag6").assertTextEquals("Error 6 fail")
             // Success
             onNodeWithTag("successTag1").assertDoesNotExist()
             onNodeWithTag("successTag2").assertDoesNotExist()
@@ -102,29 +100,29 @@ class ComposableDataResultLoadingTest {
     )
 
     @Test
-    fun `3 - String, LOADING, Throwable`() = scenario(
-        result = DataResult("Hello Compose", RuntimeException("fail"), DataResultStatus.LOADING),
+    fun `3 - String, ERROR, Throwable`() = scenario(
+        result = DataResult("Hello Compose", RuntimeException("fail"), DataResultStatus.ERROR),
         config = stringConfig,
         assert = {
             // Data
             onNodeWithTag("dataTag1").assertTextEquals("Hello Compose")
-            onNodeWithTag("dataTag2").assertTextEquals("Hello Compose - LOADING")
-            onNodeWithTag("dataTag3").assertTextEquals("Hello Compose - LOADING - fail")
+            onNodeWithTag("dataTag2").assertTextEquals("Hello Compose - ERROR")
+            onNodeWithTag("dataTag3").assertTextEquals("Hello Compose - ERROR - fail")
             // Show Loading
-            onNodeWithTag("showLoadingTag1").assertTextEquals("ShowLoading 1")
-            onNodeWithTag("showLoadingTag2").assertTextEquals("ShowLoading 2")
+            onNodeWithTag("showLoadingTag1").assertDoesNotExist()
+            onNodeWithTag("showLoadingTag2").assertDoesNotExist()
             onNodeWithTag("showLoadingTag3").assertDoesNotExist()
             // Hide Loading
-            onNodeWithTag("hideLoadingTag1").assertDoesNotExist()
-            onNodeWithTag("hideLoadingTag2").assertDoesNotExist()
+            onNodeWithTag("hideLoadingTag1").assertTextEquals("HideLoading 1")
+            onNodeWithTag("hideLoadingTag2").assertTextEquals("HideLoading 2")
             onNodeWithTag("hideLoadingTag3").assertDoesNotExist()
             // Error Without Throwable
-            onNodeWithTag("errorTag1").assertDoesNotExist()
-            onNodeWithTag("errorTag2").assertDoesNotExist()
+            onNodeWithTag("errorTag1").assertTextEquals("Error 1")
+            onNodeWithTag("errorTag2").assertTextEquals("Error 2")
             onNodeWithTag("errorTag3").assertDoesNotExist()
             // Error With Throwable
-            onNodeWithTag("errorTag4").assertDoesNotExist()
-            onNodeWithTag("errorTag5").assertDoesNotExist()
+            onNodeWithTag("errorTag4").assertTextEquals("Error 4 fail")
+            onNodeWithTag("errorTag5").assertTextEquals("Error 5 fail")
             onNodeWithTag("errorTag6").assertDoesNotExist()
             // Success
             onNodeWithTag("successTag1").assertDoesNotExist()
@@ -142,8 +140,8 @@ class ComposableDataResultLoadingTest {
     )
 
     @Test
-    fun `4 - null, LOADING, null`() = scenario(
-        result = DataResult(null, null, DataResultStatus.LOADING),
+    fun `4 - null, ERROR, null`() = scenario(
+        result = DataResult(null, null, DataResultStatus.ERROR),
         config = stringConfig,
         assert = {
             // Data
@@ -151,17 +149,17 @@ class ComposableDataResultLoadingTest {
             onNodeWithTag("dataTag2").assertDoesNotExist()
             onNodeWithTag("dataTag3").assertDoesNotExist()
             // Show Loading
-            onNodeWithTag("showLoadingTag1").assertTextEquals("ShowLoading 1")
+            onNodeWithTag("showLoadingTag1").assertDoesNotExist()
             onNodeWithTag("showLoadingTag2").assertDoesNotExist()
-            onNodeWithTag("showLoadingTag3").assertTextEquals("ShowLoading 3")
+            onNodeWithTag("showLoadingTag3").assertDoesNotExist()
             // Hide Loading
-            onNodeWithTag("hideLoadingTag1").assertDoesNotExist()
+            onNodeWithTag("hideLoadingTag1").assertTextEquals("HideLoading 1")
             onNodeWithTag("hideLoadingTag2").assertDoesNotExist()
-            onNodeWithTag("hideLoadingTag3").assertDoesNotExist()
+            onNodeWithTag("hideLoadingTag3").assertTextEquals("HideLoading 3")
             // Error Without Throwable
-            onNodeWithTag("errorTag1").assertDoesNotExist()
+            onNodeWithTag("errorTag1").assertTextEquals("Error 1")
             onNodeWithTag("errorTag2").assertDoesNotExist()
-            onNodeWithTag("errorTag3").assertDoesNotExist()
+            onNodeWithTag("errorTag3").assertTextEquals("Error 3")
             // Error With Throwable
             onNodeWithTag("errorTag4").assertDoesNotExist()
             onNodeWithTag("errorTag5").assertDoesNotExist()

@@ -16,9 +16,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.arch.toolkit.compose.observable.ComposeObservable
 import br.com.arch.toolkit.compose.observable.DataObservable
@@ -38,6 +41,7 @@ import br.com.arch.toolkit.result.EventDataStatus
 import br.com.arch.toolkit.result.EventDataStatus.DoesNotMatter
 import br.com.arch.toolkit.result.ObserveWrapper
 import br.com.arch.toolkit.util.unwrap
+import br.com.arch.toolkit.util.valueOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration
@@ -333,9 +337,12 @@ data class ComposableDataResult<T> internal constructor(
      * @see Unwrap(LifecycleOwner)
      */
     @Composable
-    fun Unwrap(config: @Composable ComposableDataResult<T>.() -> Unit) {
+    fun Unwrap(
+        owner: LifecycleOwner? = LocalLifecycleOwner.current,
+        config: @Composable ComposableDataResult<T>.() -> Unit
+    ) {
         config()
-        Unwrap()
+        Unwrap(owner)
     }
 
     /**
@@ -357,10 +364,14 @@ data class ComposableDataResult<T> internal constructor(
      * @see ObserveWrapper
      */
     @Composable
-    fun Unwrap() {
+    fun Unwrap(owner: LifecycleOwner? = LocalLifecycleOwner.current) {
         LaunchedEffect(this) { result.unwrap { notComposableBlock?.invoke(this) } }
         val animationConfig = remember { animationConfig }
-        val state: DataResult<T>? by result.collectAsStateWithLifecycle(null)
+        val state: DataResult<T>? by if (owner != null) {
+            result.collectAsStateWithLifecycle(result.valueOrNull(), owner)
+        } else {
+            result.collectAsState(result.valueOrNull())
+        }
         val resultState = state?.takeIf { it.isNone.not() } ?: return
         observableList.forEachIndexed { index, observable ->
             if (animationConfig.enabled) {

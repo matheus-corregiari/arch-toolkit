@@ -5,7 +5,7 @@ import androidx.compose.runtime.derivedStateOf
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.result.DataResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Creates a [ComposableDataResult] from this [DataResult], enabling declarative observation
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.flowOf
  * @return A [ComposableDataResult] configured with the underlying flow.
  * @see ComposableDataResult
  */
-val <T> DataResult<T>.composable: ComposableDataResult<T> get() = ComposableDataResult(flowOf(this))
+val <T> DataResult<T>.composable: ComposableDataResult<T> get() = MutableStateFlow(this).composable
 
 /**
  * Creates a [ComposableDataResult] from this [ResponseFlow], providing Compose-aware
