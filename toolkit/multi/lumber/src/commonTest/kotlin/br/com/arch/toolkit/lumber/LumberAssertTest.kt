@@ -24,7 +24,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-simple-message",
+                    tag = defaultTag(),
                     message = "normal text without arguments",
                     error = null
                 )
@@ -42,7 +42,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-message-and-arguments",
+                    tag = defaultTag(),
                     message = "this is a formatted text with 2 arguments",
                     error = null
                 )
@@ -69,7 +69,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-message-and-null-arguments",
+                    tag = defaultTag(),
                     message = "this is a null text with null arguments",
                     error = null
                 )
@@ -87,7 +87,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-message-containing-format-specifiers-but-no-arguments",
+                    tag = defaultTag(),
                     message = "this is a %s text with %d arguments",
                     error = null
                 )
@@ -105,7 +105,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-more-arguments-than-format-specifiers",
+                    tag = defaultTag(),
                     message = "this is a formatted text with 2 arguments",
                     error = null
                 )
@@ -171,13 +171,13 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-very-long-message-exceeding-MAX-LOG-LENGTH #0",
+                    tag = defaultTag()?.let { "$it #0" } ?: "#0",
                     message = "a".repeat(4000),
                     error = null
                 ),
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-very-long-message-exceeding-MAX-LOG-LENGTH #1",
+                    tag = defaultTag()?.let { "$it #1" } ?: "#1",
                     message = "a".repeat(2000),
                     error = null
                 )
@@ -195,7 +195,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-message-exactly-MAX-LOG-LENGTH",
+                    tag = defaultTag(),
                     message = "a".repeat(4000),
                     error = null
                 )
@@ -213,7 +213,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-special-characters-in-message",
+                    tag = defaultTag(),
                     message = "a\nb\tc",
                     error = null
                 )
@@ -231,7 +231,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-special-characters-in-arguments",
+                    tag = defaultTag(),
                     message = "a\nb\tca\nb\tc",
                     error = null
                 )
@@ -266,7 +266,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with message and exception`() {
         val tree = TestTree()
-        val error = IllegalStateException("boom")
+        val error = Exception("boom")
         Lumber.plant(tree)
 
         Lumber.wtf(error, "normal text without arguments")
@@ -276,7 +276,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-message-and-exception",
+                    tag = defaultTag(),
                     message = "normal text without arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -287,7 +287,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with message arguments and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("bad state")
+        val error = Exception("bad state")
         Lumber.plant(tree)
 
         Lumber.wtf(error, "this is a %s text with %d arguments", "formatted", 2)
@@ -297,7 +297,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-message-arguments-and-exception",
+                    tag = defaultTag(),
                     message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -308,7 +308,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with empty message and exception`() {
         val tree = TestTree()
-        val error = IllegalArgumentException("x")
+        val error = Exception("x")
         Lumber.plant(tree)
 
         Lumber.wtf(error, "")
@@ -318,7 +318,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-empty-message-and-exception",
+                    tag = defaultTag(),
                     message = error.stackTraceToString(),
                     error = error
                 )
@@ -329,7 +329,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with message and null arguments plus exception`() {
         val tree = TestTree()
-        val error = NullPointerException("npe")
+        val error = Exception("npe")
         Lumber.plant(tree)
 
         Lumber.wtf(error, "this is a %s text with %d arguments", null, null)
@@ -339,7 +339,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-message-and-null-arguments-plus-exception",
+                    tag = defaultTag(),
                     message = "this is a null text with null arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -350,7 +350,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with format specifiers but no arguments and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("oops")
+        val error = Exception("oops")
         Lumber.plant(tree)
 
         Lumber.wtf(error, "this is a %s text with %d arguments")
@@ -361,7 +361,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-format-specifiers-but-no-arguments-and-exception",
+                    tag = defaultTag(),
                     message = "this is a %s text with %d arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -372,7 +372,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with more arguments than specifiers and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("overflow")
+        val error = Exception("overflow")
         Lumber.plant(tree)
 
         Lumber.wtf(error, "this is a %s text with %d arguments", "formatted", 2, "extra")
@@ -383,7 +383,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-more-arguments-than-specifiers-and-exception",
+                    tag = defaultTag(),
                     message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -398,7 +398,7 @@ class LumberAssertTest {
 
         assertFails {
             Lumber.wtf(
-                IllegalStateException("missing"),
+                Exception("missing"),
                 "this is a %s text with %d arguments",
                 "formatted"
             )
@@ -414,7 +414,7 @@ class LumberAssertTest {
         val tree = TestTree(Lumber.Level.Assert)
         Lumber.plant(tree)
 
-        Lumber.wtf(IllegalStateException("nope"), "normal text without arguments")
+        Lumber.wtf(Exception("nope"), "normal text without arguments")
 
         assertEquals(listOf(tree), Lumber.forest())
         // isLoggable false -> do not log
@@ -427,7 +427,7 @@ class LumberAssertTest {
         Lumber.plant(tree)
         Lumber.quiet(true)
 
-        Lumber.wtf(IllegalStateException("quiet"), "normal text without arguments")
+        Lumber.wtf(Exception("quiet"), "normal text without arguments")
 
         assertEquals(listOf(tree), Lumber.forest())
         // quiet -> do not log
@@ -437,7 +437,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with explicit tag and exception`() {
         val tree = TestTree()
-        val error = IllegalStateException("tagged")
+        val error = Exception("tagged")
         Lumber.plant(tree)
 
         Lumber.tag("MyTag").wtf(error, "normal text without arguments")
@@ -458,7 +458,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with special characters and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("multiline")
+        val error = Exception("multiline")
         Lumber.plant(tree)
 
         Lumber.wtf(error, "a\nb\tc")
@@ -468,7 +468,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-special-characters-and-exception",
+                    tag = defaultTag(),
                     message = "a\nb\tc\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -479,7 +479,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with special characters in arguments and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("args")
+        val error = Exception("args")
         Lumber.plant(tree)
 
         Lumber.wtf(error, "a\nb\tc%s", "a\nb\tc")
@@ -489,7 +489,7 @@ class LumberAssertTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Assert,
-                    tag = "LumberAssertTest:wtf-with-special-characters-in-arguments-and-exception",
+                    tag = defaultTag(),
                     message = "a\nb\tca\nb\tc\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -500,7 +500,7 @@ class LumberAssertTest {
     @Test
     fun `wtf with explicit tag message and arguments plus exception`() {
         val tree = TestTree()
-        val error = IllegalArgumentException("bad-arg")
+        val error = Exception("bad-arg")
         Lumber.plant(tree)
 
         Lumber.tag("MyTag").wtf(error, "this is a %s text with %d arguments", "formatted", 2)

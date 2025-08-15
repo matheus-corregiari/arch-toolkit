@@ -24,7 +24,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-simple-message",
+                    tag = defaultTag(),
                     message = "normal text without arguments",
                     error = null
                 )
@@ -42,7 +42,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-message-and-arguments",
+                    tag = defaultTag(),
                     message = "this is a formatted text with 2 arguments",
                     error = null
                 )
@@ -69,7 +69,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-message-and-null-arguments",
+                    tag = defaultTag(),
                     message = "this is a null text with null arguments",
                     error = null
                 )
@@ -87,7 +87,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-message-containing-format-specifiers-but-no-arguments",
+                    tag = defaultTag(),
                     message = "this is a %s text with %d arguments",
                     error = null
                 )
@@ -111,7 +111,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-more-arguments-than-format-specifiers",
+                    tag = defaultTag(),
                     message = "this is a formatted text with 2 arguments",
                     error = null
                 )
@@ -177,13 +177,13 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-very-long-message-exceeding-MAX-LOG-LENGTH #0",
+                    tag = defaultTag()?.let { "$it #0" } ?: "#0",
                     message = "a".repeat(4000),
                     error = null
                 ),
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-very-long-message-exceeding-MAX-LOG-LENGTH #1",
+                    tag = defaultTag()?.let { "$it #1" } ?: "#1",
                     message = "a".repeat(2000),
                     error = null
                 )
@@ -201,7 +201,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-message-exactly-MAX-LOG-LENGTH",
+                    tag = defaultTag(),
                     message = "a".repeat(4000),
                     error = null
                 )
@@ -219,7 +219,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-special-characters-in-message",
+                    tag = defaultTag(),
                     message = "a\nb\tc",
                     error = null
                 )
@@ -237,7 +237,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-special-characters-in-arguments",
+                    tag = defaultTag(),
                     message = "a\nb\tca\nb\tc",
                     error = null
                 )
@@ -272,7 +272,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with message and exception`() {
         val tree = TestTree()
-        val error = IllegalStateException("boom")
+        val error = Exception("boom")
         Lumber.plant(tree)
 
         Lumber.log(Lumber.Level.Warn, error, "normal text without arguments")
@@ -282,7 +282,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-message-and-exception",
+                    tag = defaultTag(),
                     message = "normal text without arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -293,7 +293,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with message arguments and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("bad state")
+        val error = Exception("bad state")
         Lumber.plant(tree)
 
         Lumber.log(Lumber.Level.Warn, error, "this is a %s text with %d arguments", "formatted", 2)
@@ -303,7 +303,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-message-arguments-and-exception",
+                    tag = defaultTag(),
                     message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -314,7 +314,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with empty message and exception`() {
         val tree = TestTree()
-        val error = IllegalArgumentException("x")
+        val error = Exception("x")
         Lumber.plant(tree)
 
         Lumber.log(Lumber.Level.Warn, error, "")
@@ -324,7 +324,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-empty-message-and-exception",
+                    tag = defaultTag(),
                     message = error.stackTraceToString(),
                     error = error
                 )
@@ -335,7 +335,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with message and null arguments plus exception`() {
         val tree = TestTree()
-        val error = NullPointerException("npe")
+        val error = Exception("npe")
         Lumber.plant(tree)
 
         Lumber.log(Lumber.Level.Warn, error, "this is a %s text with %d arguments", null, null)
@@ -345,7 +345,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-message-and-null-arguments-plus-exception",
+                    tag = defaultTag(),
                     message = "this is a null text with null arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -356,7 +356,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with format specifiers but no arguments and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("oops")
+        val error = Exception("oops")
         Lumber.plant(tree)
 
         Lumber.log(Lumber.Level.Warn, error, "this is a %s text with %d arguments")
@@ -367,7 +367,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-format-specifiers-but-no-arguments-and-exception",
+                    tag = defaultTag(),
                     message = "this is a %s text with %d arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -378,7 +378,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with more arguments than specifiers and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("overflow")
+        val error = Exception("overflow")
         Lumber.plant(tree)
 
         Lumber.log(
@@ -396,7 +396,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-more-arguments-than-specifiers-and-exception",
+                    tag = defaultTag(),
                     message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -412,7 +412,7 @@ class LumberLogTest {
         assertFails {
             Lumber.log(
                 Lumber.Level.Warn,
-                IllegalStateException("missing"),
+                Exception("missing"),
                 "this is a %s text with %d arguments",
                 "formatted"
             )
@@ -430,7 +430,7 @@ class LumberLogTest {
 
         Lumber.log(
             Lumber.Level.Warn,
-            IllegalStateException("nope"),
+            Exception("nope"),
             "normal text without arguments"
         )
 
@@ -447,7 +447,7 @@ class LumberLogTest {
 
         Lumber.log(
             Lumber.Level.Warn,
-            IllegalStateException("quiet"),
+            Exception("quiet"),
             "normal text without arguments"
         )
 
@@ -459,7 +459,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with explicit tag and exception`() {
         val tree = TestTree()
-        val error = IllegalStateException("tagged")
+        val error = Exception("tagged")
         Lumber.plant(tree)
 
         Lumber.tag("MyTag").log(Lumber.Level.Warn, error, "normal text without arguments")
@@ -480,7 +480,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with special characters and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("multiline")
+        val error = Exception("multiline")
         Lumber.plant(tree)
 
         Lumber.log(Lumber.Level.Warn, error, "a\nb\tc")
@@ -490,7 +490,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-special-characters-and-exception",
+                    tag = defaultTag(),
                     message = "a\nb\tc\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -501,7 +501,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with special characters in arguments and exception`() {
         val tree = TestTree()
-        val error = RuntimeException("args")
+        val error = Exception("args")
         Lumber.plant(tree)
 
         Lumber.log(Lumber.Level.Warn, error, "a\nb\tc%s", "a\nb\tc")
@@ -511,7 +511,7 @@ class LumberLogTest {
             listOf(
                 TestTree.Data(
                     level = Lumber.Level.Warn,
-                    tag = "LumberLogTest:raw-log-with-special-characters-in-arguments-and-exception",
+                    tag = defaultTag(),
                     message = "a\nb\tca\nb\tc\n\n${error.stackTraceToString()}",
                     error = error
                 )
@@ -522,7 +522,7 @@ class LumberLogTest {
     @Test
     fun `raw-log with explicit tag message and arguments plus exception`() {
         val tree = TestTree()
-        val error = IllegalArgumentException("bad-arg")
+        val error = Exception("bad-arg")
         Lumber.plant(tree)
 
         Lumber.tag("MyTag")
