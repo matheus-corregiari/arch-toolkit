@@ -6,7 +6,10 @@ import kotlin.test.assertEquals
 class TestTree(private val falseForLevel: Level? = null) : DebugTree() {
     val history = mutableListOf<Data>()
 
-    override fun isLoggable(tag: String?, level: Level) = (level == falseForLevel).not()
+    override fun isLoggable(tag: String?, level: Level): Boolean {
+        super.isLoggable(tag, level)
+        return (level == falseForLevel).not()
+    }
 
     override fun log(level: Level, tag: String?, message: String, error: Throwable?) {
         super.log(level, tag, message, error)
