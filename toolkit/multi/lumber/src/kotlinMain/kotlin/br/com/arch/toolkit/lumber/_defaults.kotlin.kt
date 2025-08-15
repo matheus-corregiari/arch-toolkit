@@ -20,13 +20,18 @@ actual class ThreadSafe<T> actual constructor() {
 }
 
 actual fun String.format(vararg args: Any?): String {
-    var index = 0
-    return replace(Regex("%[sd]")) {
-        val arg = args.getOrNull(index++)
-        when (it.value) {
-            "%s" -> arg?.toString() ?: "null"
-            "%d" -> (arg as? Number)?.toString() ?: "0"
-            else -> it.value
-        }
+    val match = Regex("%[sd]").find(this) ?: return this
+    if (args.isEmpty()) error("Wrong number of arguments")
+    val argument = args.firstOrNull()
+    val formatted = when (match.value) {
+        "%s" -> argument.toString()
+        "%d" -> (argument as? Number).toString()
+        else -> match.value
     }
+    return replaceRange(
+        range = match.range,
+        replacement = formatted
+    ).format(
+        args = args.drop(1).toTypedArray()
+    )
 }

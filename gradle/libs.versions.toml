@@ -76,7 +76,7 @@ node = "7.1.0"
 ktorfit = "2.6.4"
 ktor = "3.2.3"
 coil = "3.3.0"
-haze = "1.6.9"
+haze = "1.6.10"
 
 # ------------------------------------------------------------------------------------------------ #
 [libraries]
@@ -111,7 +111,7 @@ androidx-datastore-core = { module = "androidx.datastore:datastore", version.ref
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
 androidx-test-core = { module = "androidx.arch.core:core-testing", version.ref = "androidx-test-core" }
 androidx-test-window = { module = "androidx.window:window-testing", version.ref = "androidx-window" }
-androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
+androidx-test-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "androidx-test-junit" }
 androidx-test-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "androidx-test-espresso" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso" }
 
