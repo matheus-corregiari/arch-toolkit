@@ -52,10 +52,17 @@ abstract class StorageProvider {
     ) = enum(key, enumEntries<T>(), default)
 
     companion object Defaults {
-        val defaultJson = Json {
-            ignoreUnknownKeys = true
-            encodeDefaults = true
-            prettyPrint = true
+        var defaultJson: Json
+            private set
+
+        init {
+            defaultJson = Json {
+                ignoreUnknownKeys = true
+                encodeDefaults = true
+                prettyPrint = true
+            }
         }
+
+        fun json(json: Json) = apply { defaultJson = json }
     }
 }
