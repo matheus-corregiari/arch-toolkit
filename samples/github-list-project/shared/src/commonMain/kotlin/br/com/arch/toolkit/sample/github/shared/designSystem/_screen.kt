@@ -7,6 +7,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.unit.Dp
 import androidx.window.core.layout.WindowWidthSizeClass
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
@@ -16,7 +17,7 @@ import br.com.arch.toolkit.sample.github.shared.structure.core.model.Orientation
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ScreenInfo
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.WindowSize
-import br.com.arch.toolkit.sample.github.shared.structure.data.local.dataStoreEnum
+import br.com.arch.toolkit.sample.github.shared.structure.data.local.rememberDefaultStorage
 
 internal val LocalScreenInfo = compositionLocalOf { ScreenInfo() }
 
@@ -44,8 +45,9 @@ internal fun getCurrentScreenInfo(): State<ScreenInfo> {
     val navigationSuiteType = widthSizeClass.navigationSuiteType(orientation == LANDSCAPE)
 
     // Saved Enums
-    val theme: ThemeMode by dataStoreEnum("theme", ThemeMode.SYSTEM)
-    val contrast: ContrastMode by dataStoreEnum("contrast", ContrastMode.STANDARD)
+    val storage = rememberDefaultStorage()
+    val theme: ThemeMode by storage.enum("theme", ThemeMode.SYSTEM).state()
+    val contrast: ContrastMode by storage.enum("contrast", ContrastMode.STANDARD).state()
 
     // Creating Screen Info
     val info = ScreenInfo(
@@ -60,7 +62,7 @@ internal fun getCurrentScreenInfo(): State<ScreenInfo> {
     )
 
     // State \o/
-    return mutableStateOf(info)
+    return mutableStateOf(info, structuralEqualityPolicy())
 }
 
 @Composable

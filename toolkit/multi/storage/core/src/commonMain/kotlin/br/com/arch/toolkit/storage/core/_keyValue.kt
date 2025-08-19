@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.lastOrNull
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
+expect fun <T> KeyValue<T>.instant(): T
+
 @StorageApi
 abstract class KeyValue<ResultData> {
 
@@ -67,5 +69,3 @@ abstract class KeyValue<ResultData> {
         )
     }
 }
-
-expect fun <T> KeyValue<T>.instant(): T

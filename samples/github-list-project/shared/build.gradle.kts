@@ -18,6 +18,7 @@ kotlin {
             // Arch Toolkit Dependencies
             implementation(project(":toolkit:multi:lumber"))
             implementation(project(":toolkit:multi:splinter"))
+            implementation(project(":toolkit:multi:storage:core"))
             implementation(project(":toolkit:multi:event-observer"))
             implementation(project(":toolkit:multi:event-observer-compose"))
 
@@ -62,12 +63,22 @@ kotlin {
         }
 
         androidMain.dependencies {
+            // Arch Toolkit Dependencies
             implementation(project(":toolkit:android:util"))
+            implementation(project(":toolkit:multi:storage:datastore"))
+
             implementation(libs.jetbrains.coroutines.android)
         }
 
         jvmMain.dependencies {
+            // Arch Toolkit Dependencies
+            implementation(project(":toolkit:multi:storage:datastore"))
+
             implementation(libs.jetbrains.coroutines.jvm)
+        }
+        wasmJsMain.dependencies {
+            // Arch Toolkit Dependencies
+//            implementation(project(":toolkit:multi:storage:memory"))
         }
     }
 }

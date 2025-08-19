@@ -2,6 +2,7 @@ plugins {
     id("toolkit-multiplatform-library")
     id("toolkit-multiplatform-publish")
     alias(libs.plugins.jetbrains.compose.kotlin)
+    alias(libs.plugins.jetbrains.compose.compiler)
 }
 
 android.namespace = "br.com.arch.toolkit.storage.core"

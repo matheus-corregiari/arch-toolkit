@@ -10,9 +10,7 @@ internal class MapKeyValue<Current, Transformed> internal constructor(
     private val mapBack: (Transformed) -> Current
 ) : KeyValue<Transformed>() {
 
-    override var lastValue: Transformed
-        set(value) = set(value, scope)
-        get() = mapTo(keyValue.lastValue)
+    override var lastValue: Transformed = mapTo(keyValue.lastValue)
 
     override fun get() = keyValue.get().map { mapTo(it) }
 

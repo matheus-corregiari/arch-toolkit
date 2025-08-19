@@ -8,8 +8,8 @@ class SettingsViewModel(
     private val repository: SettingsRepository,
 ) : ViewModel() {
     @Composable
-    fun themeMode() = repository.themeMode.asMutableState()
+    fun themeMode() = repository.themeMode.state()
 
     @Composable
-    fun contrastMode() = repository.contrastMode.asMutableState()
+    fun contrastMode() = repository.contrastMode.state()
 }

@@ -9,11 +9,9 @@ internal class RequiredKeyValue<ResultData> internal constructor(
     private val default: (() -> ResultData)?
 ) : KeyValue<ResultData>() {
 
-    override var lastValue: ResultData
-        set(value) = keyValue.set(value, scope)
-        get() = keyValue.lastValue
-            ?: default?.invokeCatching()
-            ?: error("Required KeyValue does not have a last value")
+    override var lastValue: ResultData = keyValue.lastValue
+        ?: default?.invokeCatching()
+        ?: error("Required KeyValue does not have a last value")
 
     override fun get() = keyValue.get().mapNotNull { it }
 

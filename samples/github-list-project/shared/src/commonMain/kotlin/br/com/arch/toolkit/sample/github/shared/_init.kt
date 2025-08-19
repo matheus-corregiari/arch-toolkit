@@ -7,7 +7,8 @@ import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureRegistry
 import br.com.arch.toolkit.sample.github.shared.structure.core.enableSavedStateHandleCompat
 import br.com.arch.toolkit.sample.github.shared.structure.core.featureRegistry
 import br.com.arch.toolkit.sample.github.shared.structure.core.savedStateHandleCompat
-import br.com.arch.toolkit.sample.github.shared.structure.data.local.defaultKeyValueDataStore
+import br.com.arch.toolkit.sample.github.shared.structure.data.local.LocalSourceModule
+import br.com.arch.toolkit.sample.github.shared.structure.data.local.defaultStorage
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.TrustManager
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.api.createGithubApi
 import br.com.arch.toolkit.sample.github.shared.structure.repository.FeatureRepository
@@ -46,12 +47,6 @@ private val koinLogger = object : KoinLogger() {
 
 private val ktorLogger = object : KtorLogger {
     override fun log(message: String) = Lumber.tag("Ktor").info(message)
-}
-
-private object LocalSourceModule {
-    val module = module {
-        single(named("default-keyValue")) { defaultKeyValueDataStore() }
-    }
 }
 
 private object RemoteSourceModule {
@@ -116,7 +111,7 @@ private object RepositoryModule {
     val module = module {
         single { FeatureRepository(allFeatureMap) }
         singleOf(::GithubRepository)
-        single { SettingsRepository(get(named("default-keyValue"))) }
+        single { SettingsRepository(defaultStorage) }
     }
 }
 
