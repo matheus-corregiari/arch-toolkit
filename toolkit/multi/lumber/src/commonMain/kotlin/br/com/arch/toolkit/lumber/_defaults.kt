@@ -13,7 +13,7 @@ internal fun <T> Mutex.synchronized(key: Any, block: () -> T) = try {
     runCatching { tryLock(owner = key) }
     block()
 } finally {
-    runCatching { unlock(owner = key) }
+    runCatching { if(isLocked) unlock(owner = key) }
 }
 
 internal val fqcnIgnore = setOfNotNull(
