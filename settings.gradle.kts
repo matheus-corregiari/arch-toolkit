@@ -20,6 +20,7 @@ rootProject.name = "arch-toolkit"
 include(":toolkit:multi:event-observer")
 include(":toolkit:multi:event-observer-compose")
 include(":toolkit:multi:splinter")
+include(":toolkit:multi:storage:core")
 include(":toolkit:multi:lumber")
 include(":toolkit:multi:test")
 include(":toolkit:android:delegate")
