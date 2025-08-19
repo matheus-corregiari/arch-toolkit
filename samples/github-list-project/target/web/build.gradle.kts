@@ -56,7 +56,15 @@ kotlin {
         implementation(compose.html.core)
     }
     sourceSets.wasmJsMain.dependencies {
+        // Sample Modules
+        implementation(project(":samples:github-list-project:shared"))
+
         // Arch Toolkit Dependencies
         implementation(project(":toolkit:multi:lumber"))
+        implementation(project(":toolkit:multi:splinter"))
+        implementation(project(":toolkit:multi:event-observer"))
+        implementation(project(":toolkit:multi:event-observer-compose"))
+        implementation(project(":toolkit:multi:storage:core"))
+        implementation(project(":toolkit:multi:storage:memory"))
     }
 }
