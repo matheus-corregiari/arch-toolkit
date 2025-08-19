@@ -14,7 +14,7 @@ build-sdk-target = "36"
 build-tools = "36.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "2.2.10"
+jetbrains-kotlin = "2.2.0"
 jetbrains-compose = "1.8.2"
 jetbrains-lifecycle = "2.9.2"
 jetbrains-compose-navigation = "2.9.0-beta05"

@@ -18,8 +18,8 @@ internal fun CoroutineScope.lazyJob(
 }
 
 internal fun <T> Mutex.synchronized(key: Any, block: () -> T) = try {
-    holdsLock(owner = key)
+    runCatching { tryLock(owner = key) }
     block()
 } finally {
-    unlock(owner = key)
+    runCatching { unlock(owner = key) }
 }
