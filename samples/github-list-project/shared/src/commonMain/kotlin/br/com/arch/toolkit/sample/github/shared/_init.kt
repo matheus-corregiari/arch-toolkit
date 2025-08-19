@@ -9,7 +9,6 @@ import br.com.arch.toolkit.sample.github.shared.structure.core.featureRegistry
 import br.com.arch.toolkit.sample.github.shared.structure.core.savedStateHandleCompat
 import br.com.arch.toolkit.sample.github.shared.structure.data.local.LocalSourceModule
 import br.com.arch.toolkit.sample.github.shared.structure.data.local.defaultStorage
-import br.com.arch.toolkit.sample.github.shared.structure.data.remote.TrustManager
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.api.createGithubApi
 import br.com.arch.toolkit.sample.github.shared.structure.repository.FeatureRepository
 import br.com.arch.toolkit.sample.github.shared.structure.repository.GithubRepository
@@ -72,7 +71,7 @@ private object RemoteSourceModule {
         single(named("image-client")) {
             HttpClient(CIO) {
                 expectSuccess = true
-                engine { https { trustManager = TrustManager() } }
+                //engine { https { trustManager = TrustManager() } }
                 defaultRequest {
                     contentType(ContentType.Image.Any)
                     accept(ContentType.Image.Any)
@@ -82,7 +81,7 @@ private object RemoteSourceModule {
         single(named("ktor")) {
             HttpClient(CIO) {
                 expectSuccess = true
-                engine { https { trustManager = TrustManager() } }
+                //engine { https { trustManager = TrustManager() } }
                 install(ContentNegotiation) { json(get()) }
                 install(Logging) {
                     format = LoggingFormat.OkHttp

@@ -6,6 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Suppress("LongParameterList")
 class RepoDTO(
     @SerialName("id") val id: Long,
     @SerialName("name") val name: String,

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     id("toolkit-multiplatform-sample")
     id("kotlin-parcelize")
@@ -13,6 +15,12 @@ android.androidResources.enable = false
 android.buildFeatures.buildConfig = false
 
 kotlin {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        binaries.executable()
+        browser()
+    }
+
     sourceSets {
         commonMain.dependencies {
             // Arch Toolkit Dependencies
@@ -23,15 +31,14 @@ kotlin {
             implementation(project(":toolkit:multi:event-observer-compose"))
 
             // Jetbrains Compose Tools
-            implementation(compose.material3)
             implementation(compose.runtime)
             implementation(compose.ui)
-            implementation(compose.foundation)
-            implementation(compose.materialIconsExtended)
             implementation(compose.uiUtil)
-            implementation(compose.animation)
+            implementation(compose.foundation)
             implementation(compose.components.resources)
-            implementation(compose.uiTooling)
+            implementation(compose.animation)
+            implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.material3AdaptiveNavigationSuite)
 
             // Other Tools
@@ -56,10 +63,6 @@ kotlin {
             implementation(libs.ktor.content.negotiation)
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.logging)
-
-            // Storage
-            api(libs.androidx.datastore.core)
-            api(libs.androidx.datastore.preferences)
         }
 
         androidMain.dependencies {
@@ -78,7 +81,7 @@ kotlin {
         }
         wasmJsMain.dependencies {
             // Arch Toolkit Dependencies
-//            implementation(project(":toolkit:multi:storage:memory"))
+            implementation(project(":toolkit:multi:storage:memory"))
         }
     }
 }

@@ -21,10 +21,20 @@ data class ScreenInfo(
         super.equals(other)
     } else {
         size == other.size &&
-                theme == other.theme &&
-                contrast == other.contrast &&
-                type == other.type &&
-                navigationSuiteType == other.navigationSuiteType &&
-                orientation == other.orientation
+            theme == other.theme &&
+            contrast == other.contrast &&
+            type == other.type &&
+            navigationSuiteType == other.navigationSuiteType &&
+            orientation == other.orientation
+    }
+
+    override fun hashCode(): Int {
+        var result = size.hashCode()
+        result = 31 * result + theme.hashCode()
+        result = 31 * result + contrast.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + navigationSuiteType.hashCode()
+        result = 31 * result + orientation.hashCode()
+        return result
     }
 }
