@@ -30,28 +30,24 @@ internal sealed class DataStoreKeyValue<Result>(
     override var lastValue: Result? = null
     private val job = AtomicReference<Job>(Job().apply { complete() })
 
-    override fun get(): Flow<Result?> = store.data.map { pref -> get(pref) }
+    override fun get(): Flow<Result?> = store.data.map { pref -> get(pref).getOrNull() }
 
     override fun set(value: Result?, scope: CoroutineScope?) {
         job.load().cancel()
         job.store((scope ?: this.scope).launch { store.edit { pref -> set(pref, value) } })
     }
 
-    protected open suspend fun get(preferences: Preferences): Result? =
-        runCatching { preferences[key] }
-            .onFailure { Lumber.tag("DataStore - get").error(it) }
-            .onSuccess { lastValue = it }
-            .getOrNull()
+    private fun get(preferences: Preferences) = runCatching {
+        preferences[key]
+    }.onSuccess { lastValue = it }.onFailure { Lumber.tag("DataStore - get").error(it) }
 
-    protected open suspend fun set(preferences: MutablePreferences, value: Result?) {
-        runCatching {
-            if (value == null) {
-                preferences.remove(key)
-            } else {
-                preferences[key] = value
-            }
-        }.onSuccess { lastValue = value }.onFailure { Lumber.tag("DataStore - set").error(it) }
-    }
+    private fun set(preferences: MutablePreferences, value: Result?) = runCatching {
+        if (value == null) {
+            preferences.remove(key)
+        } else {
+            preferences[key] = value
+        }
+    }.onSuccess { lastValue = value }.onFailure { Lumber.tag("DataStore - set").error(it) }
 
     internal class BooleanKV(key: String, store: DataStore<Preferences>) :
         DataStoreKeyValue<Boolean>(key = booleanPreferencesKey(key), store = store)
