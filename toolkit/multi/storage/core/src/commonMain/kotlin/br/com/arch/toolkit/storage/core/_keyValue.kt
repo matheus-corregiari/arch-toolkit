@@ -23,6 +23,8 @@ abstract class KeyValue<ResultData> {
         private set
 
     abstract var lastValue: ResultData
+        protected set
+
     abstract fun get(): Flow<ResultData>
     abstract fun set(value: ResultData, scope: CoroutineScope?)
 
