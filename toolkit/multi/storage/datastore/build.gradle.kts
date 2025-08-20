@@ -39,5 +39,6 @@ kotlin {
         androidMain { dependsOn(opMain) }
         jvmMain { dependsOn(opMain) }
         wasmJsMain { dependsOn(noopMain) }
+        jsMain { dependsOn(noopMain) }
     }
 }
