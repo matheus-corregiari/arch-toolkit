@@ -11,6 +11,7 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
+@ExperimentalWasmDsl
 internal class ToolkitSamplePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
@@ -23,7 +24,10 @@ internal class ToolkitSamplePlugin : Plugin<Project> {
         with(target.multiplatform) {
             androidTarget {}
             jvm {}
-            wasmJs {}
+            wasmJs(configure = { wasm ->
+                wasm.binaries.library()
+                wasm.browser()
+            })
         }
 
         target.plugins.apply("toolkit-optimize")

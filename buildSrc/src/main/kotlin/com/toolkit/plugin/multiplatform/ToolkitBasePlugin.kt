@@ -1,5 +1,4 @@
 @file:Suppress("UnstableApiUsage")
-@file:OptIn(ExperimentalWasmDsl::class)
 
 package com.toolkit.plugin.multiplatform
 
@@ -11,6 +10,7 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
+@OptIn(ExperimentalWasmDsl::class)
 internal class ToolkitBasePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
@@ -18,9 +18,15 @@ internal class ToolkitBasePlugin : Plugin<Project> {
         target.kotlinExtension.jvmToolchain(projectJavaVersionCode)
 
         with(target.multiplatform) {
+            applyDefaultHierarchyTemplate()
+
             androidTarget {}
             jvm {}
-            wasmJs {
+            wasmJs { wasm ->
+                wasm.browser { testTask { it.useKarma { useChromeHeadless() } } }
+                wasm.binaries.library()
+            }
+            js(IR) {
                 browser { testTask { it.useKarma { useChromeHeadless() } } }
                 binaries.library()
             }

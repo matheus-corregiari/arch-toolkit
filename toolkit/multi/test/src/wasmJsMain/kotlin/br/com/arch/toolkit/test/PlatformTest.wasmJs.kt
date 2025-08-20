@@ -2,4 +2,4 @@
 
 package br.com.arch.toolkit.test
 
-actual abstract class PlatformTest actual constructor()
+actual abstract class PlatformTest
