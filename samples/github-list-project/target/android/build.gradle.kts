@@ -15,8 +15,10 @@ android {
 
 dependencies {
     // Arch Toolkit Dependencies
-    implementation(project(":samples:github-list-project:shared"))
-    implementation(project(":toolkit:multi:lumber"))
+    implementation(project(":samples:github-list-project:shared:structure:core"))
+    implementation(project(":samples:github-list-project:shared:structure:designSystem"))
+    implementation(project(":samples:github-list-project:shared:structure:repository"))
+    implementation(project(":samples:github-list-project:shared:app"))
 
     // Jetbrains Compose Tools
     implementation(compose.runtime)

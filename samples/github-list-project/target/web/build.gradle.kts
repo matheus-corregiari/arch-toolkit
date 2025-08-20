@@ -11,28 +11,27 @@ plugins {
 
 kotlin {
 
-    js(IR) {
-        binaries.executable()
-        browser {
-            commonWebpackConfig {
-                cssSupport { enabled = true }
-                outputFileName = "bacate.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(project.rootDir.path)
-                        add(project.projectDir.path)
-                    }
-                }
-            }
-        }
-    }
+//    js(IR) {
+//        binaries.executable()
+//        browser {
+//            commonWebpackConfig {
+//                cssSupport { enabled = true }
+//                outputFileName = "bacate.js"
+//                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+//                    static = (static ?: mutableListOf()).apply {
+//                        // Serve sources to debug inside browser
+//                        add(project.rootDir.path)
+//                        add(project.projectDir.path)
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     wasmJs {
         binaries.executable()
         browser {
             commonWebpackConfig {
-                cssSupport { enabled = true }
                 outputFileName = "bacate.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
@@ -47,7 +46,10 @@ kotlin {
 
     sourceSets.commonMain.dependencies {
         // Sample Modules
-        implementation(project(":samples:github-list-project:shared"))
+        implementation(project(":samples:github-list-project:shared:structure:core"))
+        implementation(project(":samples:github-list-project:shared:structure:designSystem"))
+        implementation(project(":samples:github-list-project:shared:structure:repository"))
+        implementation(project(":samples:github-list-project:shared:app"))
 
         implementation(compose.runtime)
         implementation(compose.material3)
