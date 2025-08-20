@@ -22,12 +22,11 @@ internal class ToolkitSamplePlugin : Plugin<Project> {
         target.kotlinExtension.jvmToolchain(projectJavaVersionCode)
 
         with(target.multiplatform) {
+            applyDefaultHierarchyTemplate()
             androidTarget {}
             jvm {}
-            wasmJs(configure = { wasm ->
-                wasm.binaries.library()
-                wasm.browser()
-            })
+            wasmJs { wasm -> wasm.browser() }
+//            js(IR) { browser() }
         }
 
         target.plugins.apply("toolkit-optimize")

@@ -69,7 +69,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
         with(target.vanniktechPublish) {
             configure(
                 KotlinMultiplatform(
-                    javadocJar = JavadocJar.Dokka("dokkaHtml"),
+                    javadocJar = JavadocJar.Dokka("dokkaGenerate"),
                     sourcesJar = true,
                     androidVariantsToPublish = listOf("release"),
                 )

@@ -35,7 +35,13 @@ include(":toolkit:android:statemachine")
 // Samples
 val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"
 if (isIdeBuild) {
-    include(":samples:github-list-project:shared")
+    // Shared Modules with KMP Code to use in Targets
+    include(":samples:github-list-project:shared:app")
+    include(":samples:github-list-project:shared:structure:repository")
+    include(":samples:github-list-project:shared:structure:designSystem")
+    include(":samples:github-list-project:shared:structure:core")
+
+    // Targets
     include(":samples:github-list-project:target:android")
     include(":samples:github-list-project:target:desktop")
     include(":samples:github-list-project:target:web")
