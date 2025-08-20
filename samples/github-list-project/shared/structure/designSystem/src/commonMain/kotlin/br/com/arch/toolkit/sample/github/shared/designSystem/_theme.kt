@@ -18,21 +18,21 @@ import org.koin.core.qualifier.named
 
 @Immutable
 data object AppTheme {
-    @get:Composable
-    @get:ReadOnlyComposable
-    val screen: ScreenInfo get() = LocalScreenInfo.current
+    val screen: ScreenInfo
+        @Composable @ReadOnlyComposable
+        get() = LocalScreenInfo.current
 
-    @get:Composable
-    @get:ReadOnlyComposable
-    val color: AppColor get() = LocalAppColor.current
+    val color: AppColor
+        @Composable @ReadOnlyComposable
+        get() = LocalAppColor.current
 
-    @get:Composable
-    @get:ReadOnlyComposable
-    val dimen: AppDimen get() = LocalAppDimen.current
+    val dimen: AppDimen
+        @Composable @ReadOnlyComposable
+        get() = LocalAppDimen.current
 
-    @get:Composable
-    @get:ReadOnlyComposable
-    val textStyle: AppTextStyle get() = LocalAppTextStyle.current
+    val textStyle: AppTextStyle
+        @Composable @ReadOnlyComposable
+        get() = LocalAppTextStyle.current
 }
 
 @Composable

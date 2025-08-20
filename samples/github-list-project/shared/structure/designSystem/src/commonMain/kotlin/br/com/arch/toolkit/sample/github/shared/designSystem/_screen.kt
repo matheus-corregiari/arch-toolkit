@@ -17,7 +17,7 @@ import br.com.arch.toolkit.sample.github.shared.structure.core.model.Orientation
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ScreenInfo
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.WindowSize
-import br.com.arch.toolkit.sample.github.shared.structure.data.local.rememberDefaultStorage
+import br.com.arch.toolkit.sample.github.shared.structure.core.rememberDefaultStorage
 
 internal val LocalScreenInfo = compositionLocalOf { ScreenInfo() }
 
