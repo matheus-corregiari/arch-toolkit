@@ -31,8 +31,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
-import arch_toolkit.samples.github_list_project.shared.generated.resources.Res
-import arch_toolkit.samples.github_list_project.shared.generated.resources.sample_github_list_last_updated
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.Res
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.sample_github_list_last_updated
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusM
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusXs

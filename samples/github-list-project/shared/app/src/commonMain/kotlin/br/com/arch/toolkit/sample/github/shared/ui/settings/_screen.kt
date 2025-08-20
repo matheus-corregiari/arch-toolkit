@@ -17,8 +17,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import arch_toolkit.samples.github_list_project.shared.generated.resources.Res
-import arch_toolkit.samples.github_list_project.shared.generated.resources.sample_settings_title
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.Res
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.sample_settings_title
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.ScreenTitle
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusM

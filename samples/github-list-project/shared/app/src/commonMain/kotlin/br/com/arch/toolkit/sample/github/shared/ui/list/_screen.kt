@@ -1,20 +1,15 @@
 @file:Suppress("FunctionNaming")
-@file:OptIn(
-    ExperimentalHazeMaterialsApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalHazeApi::class
-)
 
 package br.com.arch.toolkit.sample.github.shared.ui.list
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import arch_toolkit.samples.github_list_project.shared.generated.resources.Res
-import arch_toolkit.samples.github_list_project.shared.generated.resources.sample_github_list_title
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.Res
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.sample_github_list_title
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.ScreenTitle
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.fillAdjustableSize
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.haze
@@ -22,9 +17,7 @@ import br.com.arch.toolkit.sample.github.shared.ui.list.state.EmptyListState
 import br.com.arch.toolkit.sample.github.shared.ui.list.state.ErrorListState
 import br.com.arch.toolkit.sample.github.shared.ui.list.state.LoadingListState
 import br.com.arch.toolkit.sample.github.shared.ui.list.state.ManyListState
-import dev.chrisbanes.haze.ExperimentalHazeApi
 import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.rememberHazeState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel

@@ -7,11 +7,11 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Settings
-import arch_toolkit.samples.github_list_project.shared.generated.resources.Res
-import arch_toolkit.samples.github_list_project.shared.generated.resources.sample_github_list_description
-import arch_toolkit.samples.github_list_project.shared.generated.resources.sample_github_list_title
-import arch_toolkit.samples.github_list_project.shared.generated.resources.sample_settings_description
-import arch_toolkit.samples.github_list_project.shared.generated.resources.sample_settings_title
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.Res
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.sample_github_list_description
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.sample_github_list_title
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.sample_settings_description
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.sample_settings_title
 import br.com.arch.toolkit.sample.github.shared.structure.core.ComposeContent
 import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureIcon
 import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureRegistry

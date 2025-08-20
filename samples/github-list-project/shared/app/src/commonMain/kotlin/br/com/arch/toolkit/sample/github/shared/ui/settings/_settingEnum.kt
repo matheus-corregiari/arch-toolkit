@@ -22,9 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
-import arch_toolkit.samples.github_list_project.shared.generated.resources.Res
-import arch_toolkit.samples.github_list_project.shared.generated.resources.sample_settings_contrast
-import arch_toolkit.samples.github_list_project.shared.generated.resources.sample_settings_theme
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.Res
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.sample_settings_contrast
+import arch_toolkit.samples.github_list_project.shared.app.generated.resources.sample_settings_theme
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
