@@ -1,77 +1,74 @@
 package br.com.arch.toolkit.flow
 
-import br.com.arch.toolkit.MainDispatcherRule
-import br.com.arch.toolkit.annotation.Experimental
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus.NONE
 import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
 import br.com.arch.toolkit.util.dataResultNone
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert
-import org.junit.FixMethodOrder
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runners.MethodSorters
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyNoInteractions
+import kotlinx.coroutines.test.setMain
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
-@OptIn(ExperimentalCoroutinesApi::class, Experimental::class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@OptIn(ExperimentalCoroutinesApi::class)
 class ResponseStateFlowTest {
 
-    @get:Rule
-    val rule = MainDispatcherRule()
+    init {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
 
     @Test
-    fun `0 - init without param, should init with none value`() = runTest {
+    fun `0 - init without param - should init with none value`() = runTest {
         val flow = ResponseStateFlow<Any>()
         flow.scope(CoroutineScope(Dispatchers.Main.immediate))
         flow.transformDispatcher(Dispatchers.Main.immediate)
 
-        Assert.assertEquals(dataResultNone<Any>(), flow.value)
-        Assert.assertNull(flow.error)
-        Assert.assertNull(flow.data)
-        Assert.assertEquals(NONE, flow.status)
+        assertEquals(dataResultNone<Any>(), flow.value)
+        assertNull(flow.error)
+        assertNull(flow.data)
+        assertEquals(NONE, flow.status)
     }
 
     @Test
-    fun `0 - init with param, should init with param value`() = runTest {
+    fun `0 - init with param - should init with param value`() = runTest {
         val value = DataResult("String", null, SUCCESS)
         val flow = ResponseStateFlow(value)
         flow.scope(CoroutineScope(Dispatchers.Main.immediate))
         flow.transformDispatcher(Dispatchers.Main.immediate)
 
-        Assert.assertEquals(value, flow.value)
-        Assert.assertNull(flow.error)
-        Assert.assertEquals("String", flow.data)
-        Assert.assertEquals(SUCCESS, flow.status)
+        assertEquals(value, flow.value)
+        assertNull(flow.error)
+        assertEquals("String", flow.data)
+        assertEquals(SUCCESS, flow.status)
     }
 
     @Test
     fun `01 - Collect with ObserveWrapper`() = runTest {
-        val mockObserver: () -> Unit = mock()
+        val mockObserver: () -> Unit = mockk(relaxed = true)
         val flow = ResponseMutableStateFlow<Any>()
         flow.scope(CoroutineScope(Dispatchers.Main.immediate))
         flow.transformDispatcher(Dispatchers.Main.immediate)
 
         flow.cold(hotWhile = { it.isNone }).collect { showLoading(observer = mockObserver) }
         advanceUntilIdle()
-        verifyNoInteractions(mockObserver)
+        verify(exactly = 0) { mockObserver.invoke() }
 
         flow.emitLoading()
         advanceUntilIdle()
-        verifyBlocking(mockObserver) { invoke() }
+        verify(exactly = 1) { mockObserver.invoke() }
     }
 
     @Test
     fun `02 - ShareIn should copy a flow to another`() = runTest {
-        val mockObserver: () -> Unit = mock()
-        val mockShareObserver: () -> Unit = mock()
+        val mockObserver: () -> Unit = mockk(relaxed = true)
+        val mockShareObserver: () -> Unit = mockk(relaxed = true)
         val flow = ResponseMutableStateFlow<Any>()
         flow.scope(CoroutineScope(Dispatchers.Main.immediate))
         flow.transformDispatcher(Dispatchers.Main.immediate)
@@ -82,12 +79,12 @@ class ResponseStateFlowTest {
         shareIn.cold(hotWhile = { it.isNone }).collect { showLoading(observer = mockShareObserver) }
 
         advanceUntilIdle()
-        verifyNoInteractions(mockObserver)
-        verifyNoInteractions(mockShareObserver)
+        verify(exactly = 0) { mockObserver.invoke() }
+        verify(exactly = 0) { mockShareObserver.invoke() }
 
         flow.emitLoading()
         advanceUntilIdle()
-        verifyBlocking(mockObserver) { invoke() }
-        verifyBlocking(mockShareObserver) { invoke() }
+        verify(exactly = 1) { mockObserver.invoke() }
+        verify(exactly = 1) { mockShareObserver.invoke() }
     }
 }

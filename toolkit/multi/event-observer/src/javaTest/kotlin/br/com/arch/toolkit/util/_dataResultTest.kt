@@ -7,8 +7,8 @@ import br.com.arch.toolkit.result.DataResultStatus.ERROR
 import br.com.arch.toolkit.result.DataResultStatus.LOADING
 import br.com.arch.toolkit.result.DataResultStatus.NONE
 import br.com.arch.toolkit.result.DataResultStatus.SUCCESS
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class _dataResultTest {
 
@@ -34,17 +34,7 @@ class _dataResultTest {
             dataResultError<String>(null) to DataResult<String>(null, null, ERROR),
             dataResultError(null, "data") to DataResult("data", null, ERROR),
             dataResultError<String>(error) to DataResult<String>(null, error, ERROR),
-            dataResultError(
-                error, "data"
-            ) to DataResult("data", error, ERROR),
-        ).onEach { (actual, expected) ->
-            assertEquals(
-                "Assert Status: ${expected.status}, " +
-                    "with data: ${expected.data}, " +
-                    "with error: ${expected.error}",
-                expected,
-                actual
-            )
-        }
+            dataResultError(error, "data") to DataResult("data", error, ERROR),
+        ).onEach { (actual, expected) -> assertEquals(expected, actual) }
     }
 }

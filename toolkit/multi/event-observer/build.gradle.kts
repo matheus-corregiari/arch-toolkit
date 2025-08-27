@@ -24,9 +24,10 @@ kotlin {
     // Test Libraries
     sourceSets.commonTest.dependencies {
         implementation(libs.jetbrains.coroutines.test)
-        implementation(libs.junit.test)
-        implementation(libs.mockito.test.core)
-        implementation(libs.mockito.test.kotlin)
+        implementation(libs.jetbrains.kotlin.test)
+    }
+    sourceSets.javaTest.dependencies {
+        implementation(libs.mockk.test.agent)
     }
     sourceSets.androidUnitTest.dependencies {
         implementation(libs.mockk.test.agent)
