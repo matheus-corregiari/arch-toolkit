@@ -20,9 +20,9 @@ rootProject.name = "arch-toolkit"
 include(":toolkit:multi:event-observer")
 include(":toolkit:multi:event-observer-compose")
 include(":toolkit:multi:splinter")
-include(":toolkit:multi:storage:core")
-include(":toolkit:multi:storage:datastore")
-include(":toolkit:multi:storage:memory")
+include(":toolkit:multi:storage-core")
+include(":toolkit:multi:storage-datastore")
+include(":toolkit:multi:storage-memory")
 include(":toolkit:multi:lumber")
 include(":toolkit:multi:test")
 include(":toolkit:android:delegate")
@@ -33,19 +33,18 @@ include(":toolkit:android:util")
 include(":toolkit:android:statemachine")
 
 // Samples
-val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"
-if (isIdeBuild) {
-    // Shared Modules with KMP Code to use in Targets
-    include(":samples:github-list-project:shared:app")
-    include(":samples:github-list-project:shared:structure:repository")
-    include(":samples:github-list-project:shared:structure:designSystem")
-    include(":samples:github-list-project:shared:structure:core")
+// Shared Modules with KMP Code to use in Targets
+include(":sample:shared:app")
+include(":sample:shared:feature:github-list")
+include(":sample:shared:feature:settings")
+include(":sample:shared:structure:repository")
+include(":sample:shared:structure:designSystem")
+include(":sample:shared:structure:core")
 
-    // Targets
-    include(":samples:github-list-project:target:android")
-    include(":samples:github-list-project:target:desktop")
-    include(":samples:github-list-project:target:web")
-}
+// Targets
+include(":sample:target:android")
+include(":sample:target:desktop")
+include(":samples:target:web")
 
 plugins {
     id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.1"
