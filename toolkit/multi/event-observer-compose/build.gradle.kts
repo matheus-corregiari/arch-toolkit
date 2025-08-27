@@ -45,3 +45,13 @@ kotlin {
         implementation(compose.desktop.uiTestJUnit4)
     }
 }
+
+android {
+    testOptions {
+        unitTests {
+            all { test ->
+                test.systemProperty("robolectric.logging.enabled", "true")
+            }
+        }
+    }
+}

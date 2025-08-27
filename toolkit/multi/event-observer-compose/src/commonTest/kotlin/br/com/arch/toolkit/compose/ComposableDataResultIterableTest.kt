@@ -20,7 +20,7 @@ class ComposableDataResultIterableTest : PlatformTest() {
     }
 
     @Test
-    fun `1 - Empty Iterable, SUCCESS, null`() = scenario(
+    fun `1 - Empty Iterable - SUCCESS - null`() = scenario(
         result = DataResult(listOf(), null, DataResultStatus.SUCCESS),
         config = iterableConfig,
         assert = {
@@ -60,7 +60,7 @@ class ComposableDataResultIterableTest : PlatformTest() {
     )
 
     @Test
-    fun `2 - Single Iterable, SUCCESS, null`() = scenario(
+    fun `2 - Single Iterable - SUCCESS - null`() = scenario(
         result = DataResult(listOf("Hello Compose"), null, DataResultStatus.SUCCESS),
         config = iterableConfig,
         assert = {
@@ -100,7 +100,7 @@ class ComposableDataResultIterableTest : PlatformTest() {
     )
 
     @Test
-    fun `3 - Many Iterable, SUCCESS, null`() = scenario(
+    fun `3 - Many Iterable - SUCCESS - null`() = scenario(
         result = DataResult(listOf("Hello Compose", "Bye Compose"), null, DataResultStatus.SUCCESS),
         config = iterableConfig,
         assert = {

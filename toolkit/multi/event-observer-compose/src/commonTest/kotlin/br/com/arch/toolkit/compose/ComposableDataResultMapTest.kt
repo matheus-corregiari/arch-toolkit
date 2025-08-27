@@ -20,7 +20,7 @@ class ComposableDataResultMapTest : PlatformTest() {
     }
 
     @Test
-    fun `1 - Empty Map, SUCCESS, null`() = scenario(
+    fun `1 - Empty Map - SUCCESS - null`() = scenario(
         result = DataResult(mapOf(), null, DataResultStatus.SUCCESS),
         config = mapConfig,
         assert = {
@@ -60,7 +60,7 @@ class ComposableDataResultMapTest : PlatformTest() {
     )
 
     @Test
-    fun `2 - Single Map, SUCCESS, null`() = scenario(
+    fun `2 - Single Map - SUCCESS - null`() = scenario(
         result = DataResult(mapOf("1" to "Hello Compose"), null, DataResultStatus.SUCCESS),
         config = mapConfig,
         assert = {
@@ -100,7 +100,7 @@ class ComposableDataResultMapTest : PlatformTest() {
     )
 
     @Test
-    fun `3 - Many Map, SUCCESS, null`() = scenario(
+    fun `3 - Many Map - SUCCESS - null`() = scenario(
         result = DataResult(
             mapOf("1" to "Hello Compose", "2" to "Bye Compose"),
             null,

@@ -19,7 +19,7 @@ class ComposableDataResultNoneTest : PlatformTest() {
     }
 
     @Test
-    fun `1 - String, NONE, null`() = scenario(
+    fun `1 - String - NONE - null`() = scenario(
         result = DataResult("Hello Compose", null, DataResultStatus.NONE),
         config = stringConfig,
         assert = {
@@ -59,7 +59,7 @@ class ComposableDataResultNoneTest : PlatformTest() {
     )
 
     @Test
-    fun `2 - null, NONE, Throwable`() = scenario(
+    fun `2 - null - NONE - Throwable`() = scenario(
         result = DataResult(null, RuntimeException("fail"), DataResultStatus.NONE),
         config = stringConfig,
         assert = {
@@ -99,7 +99,7 @@ class ComposableDataResultNoneTest : PlatformTest() {
     )
 
     @Test
-    fun `3 - String, NONE, Throwable`() = scenario(
+    fun `3 - String - NONE - Throwable`() = scenario(
         result = DataResult("Hello Compose", RuntimeException("fail"), DataResultStatus.NONE),
         config = stringConfig,
         assert = {
@@ -139,7 +139,7 @@ class ComposableDataResultNoneTest : PlatformTest() {
     )
 
     @Test
-    fun `4 - null, NONE, null`() = scenario(
+    fun `4 - null - NONE - null`() = scenario(
         result = DataResult(null, null, DataResultStatus.NONE),
         config = stringConfig,
         assert = {
