@@ -21,13 +21,11 @@ class LumberLogTest {
         Lumber.log(Lumber.Level.Warn, "normal text without arguments")
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "normal text without arguments",
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "normal text without arguments",
+                error = null
             )
         )
     }
@@ -39,13 +37,11 @@ class LumberLogTest {
         Lumber.log(Lumber.Level.Warn, "this is a %s text with %d arguments", "formatted", 2)
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "this is a formatted text with 2 arguments",
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "this is a formatted text with 2 arguments",
+                error = null
             )
         )
     }
@@ -56,7 +52,7 @@ class LumberLogTest {
         Lumber.plant(tree)
         Lumber.log(Lumber.Level.Warn, "")
         assertEquals(listOf(tree), Lumber.forest())
-        tree.assertAll(emptyList())
+        tree.assertAll()
     }
 
     @Test
@@ -66,13 +62,11 @@ class LumberLogTest {
         Lumber.log(Lumber.Level.Warn, "this is a %s text with %d arguments", null, null)
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "this is a null text with null arguments",
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "this is a null text with null arguments",
+                error = null
             )
         )
     }
@@ -84,13 +78,11 @@ class LumberLogTest {
         Lumber.log(Lumber.Level.Warn, "this is a %s text with %d arguments")
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "this is a %s text with %d arguments",
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "this is a %s text with %d arguments",
+                error = null
             )
         )
     }
@@ -108,13 +100,11 @@ class LumberLogTest {
         )
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "this is a formatted text with 2 arguments",
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "this is a formatted text with 2 arguments",
+                error = null
             )
         )
     }
@@ -127,7 +117,7 @@ class LumberLogTest {
             Lumber.log(Lumber.Level.Warn, "this is a %s text with %d arguments", "formatted")
         }
         assertEquals(listOf(tree), Lumber.forest())
-        tree.assertAll(emptyList())
+        tree.assertAll()
     }
 
     @Test
@@ -136,7 +126,7 @@ class LumberLogTest {
         Lumber.plant(tree)
         Lumber.log(Lumber.Level.Warn, "normal text without arguments")
         assertEquals(listOf(tree), Lumber.forest())
-        tree.assertAll(emptyList())
+        tree.assertAll()
     }
 
     @Test
@@ -146,7 +136,7 @@ class LumberLogTest {
         Lumber.quiet(true)
         Lumber.log(Lumber.Level.Warn, "normal text without arguments")
         assertEquals(listOf(tree), Lumber.forest())
-        tree.assertAll(emptyList())
+        tree.assertAll()
     }
 
     @Test
@@ -156,13 +146,11 @@ class LumberLogTest {
         Lumber.tag("MyTag").log(Lumber.Level.Warn, "normal text without arguments")
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = "MyTag",
-                    message = "normal text without arguments",
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = "MyTag",
+                message = "normal text without arguments",
+                error = null
             )
         )
     }
@@ -171,40 +159,35 @@ class LumberLogTest {
     fun `raw-log with very long message exceeding MAX LOG LENGTH`() {
         val tree = TestTree()
         Lumber.plant(tree)
-        Lumber.log(Lumber.Level.Warn, "a".repeat(6000))
+        Lumber.log(Lumber.Level.Warn, "a".repeat(MAX_LOG_LENGTH + 2000))
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag()?.let { "$it #0" } ?: "#0",
-                    message = "a".repeat(4000),
-                    error = null
-                ),
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag()?.let { "$it #1" } ?: "#1",
-                    message = "a".repeat(2000),
-                    error = null
-                )
-            )
-        )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag()?.let { "$it #0" } ?: "#0",
+                message = "a".repeat(MAX_LOG_LENGTH),
+                error = null
+            ),
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag()?.let { "$it #1" } ?: "#1",
+                message = "a".repeat(2000),
+                error = null
+            ))
     }
 
     @Test
     fun `raw-log with message exactly MAX LOG LENGTH`() {
         val tree = TestTree()
         Lumber.plant(tree)
-        Lumber.log(Lumber.Level.Warn, "a".repeat(4000))
+        Lumber.log(Lumber.Level.Warn, "a".repeat(MAX_LOG_LENGTH))
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "a".repeat(4000),
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "a".repeat(MAX_LOG_LENGTH),
+                error = null
             )
         )
     }
@@ -216,13 +199,11 @@ class LumberLogTest {
         Lumber.log(Lumber.Level.Warn, "a\nb\tc")
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "a\nb\tc",
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "a\nb\tc",
+                error = null
             )
         )
     }
@@ -234,13 +215,11 @@ class LumberLogTest {
         Lumber.log(Lumber.Level.Warn, "a\nb\tc%s", "a\nb\tc")
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "a\nb\tca\nb\tc",
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "a\nb\tca\nb\tc",
+                error = null
             )
         )
     }
@@ -249,22 +228,20 @@ class LumberLogTest {
     fun `raw-log with explicit tag and long message`() {
         val tree = TestTree()
         Lumber.plant(tree)
-        Lumber.tag("MyTag").log(Lumber.Level.Warn, "a".repeat(6000))
+        Lumber.tag("MyTag").log(Lumber.Level.Warn, "a".repeat(MAX_LOG_LENGTH + 2000))
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = "MyTag #0",
-                    message = "a".repeat(4000),
-                    error = null
-                ),
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = "MyTag #1",
-                    message = "a".repeat(2000),
-                    error = null
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = "MyTag #0",
+                message = "a".repeat(MAX_LOG_LENGTH),
+                error = null
+            ),
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = "MyTag #1",
+                message = "a".repeat(2000),
+                error = null
             )
         )
     }
@@ -279,13 +256,11 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "normal text without arguments\n\n${error.stackTraceToString()}",
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "normal text without arguments\n\n${error.stackTraceToString()}",
+                error = error
             )
         )
     }
@@ -300,13 +275,11 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
+                error = error
             )
         )
     }
@@ -321,13 +294,11 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = error.stackTraceToString(),
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = error.stackTraceToString(),
+                error = error
             )
         )
     }
@@ -342,13 +313,11 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "this is a null text with null arguments\n\n${error.stackTraceToString()}",
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "this is a null text with null arguments\n\n${error.stackTraceToString()}",
+                error = error
             )
         )
     }
@@ -364,13 +333,11 @@ class LumberLogTest {
         assertEquals(listOf(tree), Lumber.forest())
         // Mirrors non-exception behavior: keep the raw message as-is
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "this is a %s text with %d arguments\n\n${error.stackTraceToString()}",
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "this is a %s text with %d arguments\n\n${error.stackTraceToString()}",
+                error = error
             )
         )
     }
@@ -393,13 +360,11 @@ class LumberLogTest {
         assertEquals(listOf(tree), Lumber.forest())
         // Extra args are ignored after formatting
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
+                error = error
             )
         )
     }
@@ -420,7 +385,7 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         // Nothing should be logged when formatting fails
-        tree.assertAll(emptyList())
+        tree.assertAll()
     }
 
     @Test
@@ -436,7 +401,7 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         // isLoggable false -> do not log
-        tree.assertAll(emptyList())
+        tree.assertAll()
     }
 
     @Test
@@ -453,7 +418,7 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         // quiet -> do not log
-        tree.assertAll(emptyList())
+        tree.assertAll()
     }
 
     @Test
@@ -466,13 +431,11 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = "MyTag",
-                    message = "normal text without arguments\n\n${error.stackTraceToString()}",
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = "MyTag",
+                message = "normal text without arguments\n\n${error.stackTraceToString()}",
+                error = error
             )
         )
     }
@@ -487,13 +450,11 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "a\nb\tc\n\n${error.stackTraceToString()}",
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "a\nb\tc\n\n${error.stackTraceToString()}",
+                error = error
             )
         )
     }
@@ -508,13 +469,11 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = defaultTag(),
-                    message = "a\nb\tca\nb\tc\n\n${error.stackTraceToString()}",
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = defaultTag(),
+                message = "a\nb\tca\nb\tc\n\n${error.stackTraceToString()}",
+                error = error
             )
         )
     }
@@ -530,13 +489,11 @@ class LumberLogTest {
 
         assertEquals(listOf(tree), Lumber.forest())
         tree.assertAll(
-            listOf(
-                TestTree.Data(
-                    level = Lumber.Level.Warn,
-                    tag = "MyTag",
-                    message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
-                    error = error
-                )
+            TestTree.Data(
+                level = Lumber.Level.Warn,
+                tag = "MyTag",
+                message = "this is a formatted text with 2 arguments\n\n${error.stackTraceToString()}",
+                error = error
             )
         )
     }

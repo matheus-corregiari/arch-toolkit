@@ -16,7 +16,7 @@ class TestTree(private val falseForLevel: Level? = null) : DebugTree() {
         history.add(Data(level, tag, message, error))
     }
 
-    fun assertAll(other: List<Data>) {
+    fun assertAll(vararg other: Data) {
         assertEquals(other.size, history.size)
         other.forEachIndexed { index, data -> assertEquals(data, history[index]) }
     }
