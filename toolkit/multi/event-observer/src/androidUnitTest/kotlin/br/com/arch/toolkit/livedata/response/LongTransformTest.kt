@@ -4,26 +4,23 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.livedata.MutableResponseLiveData
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.FixMethodOrder
+import kotlinx.coroutines.test.setMain
 import org.junit.Rule
-import org.junit.Test
-import org.junit.runners.MethodSorters
+import kotlin.test.Test
 
-// TODO Pensar numa forma melhor de fazer explodir
-@OptIn(ExperimentalCoroutinesApi::class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LongTransformTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @get:Rule
-    val rule = MainDispatcherRule()
+    init {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
 
     private class StoppableObserver : LifecycleOwner {
         private val registry = LifecycleRegistry(this)

@@ -3,7 +3,6 @@ package br.com.arch.toolkit.util
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import br.com.arch.toolkit.MainDispatcherRule
 import br.com.arch.toolkit.alwaysOnOwner
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -11,24 +10,24 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.FixMethodOrder
+import kotlinx.coroutines.test.setMain
 import org.junit.Rule
-import org.junit.Test
-import org.junit.runners.MethodSorters
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ChainTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @get:Rule
-    val rule = MainDispatcherRule()
+    init {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
 
     //region No Coroutine
     @Test
