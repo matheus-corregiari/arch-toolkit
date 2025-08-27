@@ -2,6 +2,7 @@
 
 package br.com.arch.toolkit.result
 
+import io.mockk.mockk
 import br.com.arch.toolkit.result.DataResultStatus.ERROR
 import br.com.arch.toolkit.result.DataResultStatus.LOADING
 import br.com.arch.toolkit.result.DataResultStatus.NONE
@@ -14,12 +15,9 @@ import br.com.arch.toolkit.util.merge
 import br.com.arch.toolkit.util.mergeAll
 import br.com.arch.toolkit.util.mergeNotNull
 import br.com.arch.toolkit.util.plus
-import org.junit.Assert.assertEquals
-import org.junit.FixMethodOrder
-import org.junit.Test
-import org.junit.runners.MethodSorters
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class DataResultMergeTest {
 
     private val error = IllegalStateException("error")
@@ -34,12 +32,12 @@ class DataResultMergeTest {
         /* region -------------------- A -------------------- */
         // A + A
         assertEquals(
-            dataResultSuccess("data A" to "data A"),
+            dataResultSuccess<Pair<String?, String?>>("data A" to "data A"),
             resultA + resultA
         )
         // A + B
         assertEquals(
-            dataResultLoading("data A" to 123),
+            dataResultLoading<Pair<String?, Int?>>("data A" to 123),
             resultA + resultB
         )
         // A + C
@@ -62,12 +60,12 @@ class DataResultMergeTest {
         /* region -------------------- B -------------------- */
         // B + A
         assertEquals(
-            dataResultLoading(123 to "data A"),
+            dataResultLoading<Pair<Int?, String?>>(123 to "data A"),
             resultB.merge(resultA)
         )
         // B + B
         assertEquals(
-            dataResultLoading(123 to 123),
+            dataResultLoading<Pair<Int?, Int?>>(123 to 123),
             resultB.merge(resultB)
         )
         // B + C
@@ -100,17 +98,17 @@ class DataResultMergeTest {
         )
         // C + C
         assertEquals(
-            dataResultError<Pair<Boolean?, Boolean?>>(error),
+            dataResultError(error),
             resultC.merge(resultC)
         )
         // C + D
         assertEquals(
-            dataResultError<Pair<Boolean?, Float?>>(error),
+            dataResultError(error),
             resultC.merge(resultD)
         )
         // C + E
         assertEquals(
-            dataResultError<Pair<Boolean?, Double?>>(error),
+            dataResultError(error),
             resultC.merge(resultE)
         )
         /* endregion */
@@ -128,17 +126,17 @@ class DataResultMergeTest {
         )
         // D + C
         assertEquals(
-            dataResultError<Pair<Float?, Boolean?>>(error),
+            dataResultError(error),
             resultD.merge(resultC)
         )
         // D + D
         assertEquals(
-            dataResultNone<Pair<Float?, Float?>>(),
+            dataResultNone(),
             resultD.merge(resultD)
         )
         // D + E
         assertEquals(
-            dataResultNone<Pair<Float?, Double?>>(),
+            dataResultNone(),
             resultD.merge(resultE)
         )
         /* endregion */
@@ -156,17 +154,17 @@ class DataResultMergeTest {
         )
         // E + C
         assertEquals(
-            dataResultError<Pair<Double?, Boolean?>>(error),
+            dataResultError(error),
             resultE.merge(resultC)
         )
         // E + D
         assertEquals(
-            dataResultNone<Pair<Double?, Float?>>(),
+            dataResultNone(),
             resultE.merge(resultD)
         )
         // E + E
         assertEquals(
-            dataResultNone<Pair<Double?, Double?>>(),
+            dataResultNone(),
             resultE.merge(resultE)
         )
         /* endregion */
@@ -187,7 +185,7 @@ class DataResultMergeTest {
         )
         // A + C
         assertEquals(
-            dataResultError<Pair<String, Boolean>>(error),
+            dataResultError(error),
             resultA.mergeNotNull(resultC)
         )
         // A + D
@@ -215,17 +213,17 @@ class DataResultMergeTest {
         )
         // B + C
         assertEquals(
-            dataResultError<Pair<Int, Boolean>>(error),
+            dataResultError(error),
             resultB.mergeNotNull(resultC)
         )
         // B + D
         assertEquals(
-            dataResultLoading<Pair<Int, Float>>(),
+            dataResultLoading(),
             resultB.mergeNotNull(resultD)
         )
         // B + E
         assertEquals(
-            dataResultLoading<Pair<Int, Double>>(),
+            dataResultLoading(),
             resultB.mergeNotNull(resultE)
         )
         /* endregion */
@@ -233,27 +231,27 @@ class DataResultMergeTest {
         /* region -------------------- C -------------------- */
         // C + A
         assertEquals(
-            dataResultError<Pair<Boolean, String>>(error),
+            dataResultError(error),
             resultC.mergeNotNull(resultA)
         )
         // C + B
         assertEquals(
-            dataResultError<Pair<Boolean, Int>>(error),
+            dataResultError(error),
             resultC.mergeNotNull(resultB)
         )
         // C + C
         assertEquals(
-            dataResultError<Pair<Boolean, Boolean>>(error),
+            dataResultError(error),
             resultC.mergeNotNull(resultC)
         )
         // C + D
         assertEquals(
-            dataResultError<Pair<Boolean, Float>>(error),
+            dataResultError(error),
             resultC.mergeNotNull(resultD)
         )
         // C + E
         assertEquals(
-            dataResultError<Pair<Boolean, Double>>(error),
+            dataResultError(error),
             resultC.mergeNotNull(resultE)
         )
         /* endregion */
@@ -266,22 +264,22 @@ class DataResultMergeTest {
         )
         // D + B
         assertEquals(
-            dataResultLoading<Pair<Float, Int>>(),
+            dataResultLoading(),
             resultD.mergeNotNull(resultB)
         )
         // D + C
         assertEquals(
-            dataResultError<Pair<Float, Boolean>>(error),
+            dataResultError(error),
             resultD.mergeNotNull(resultC)
         )
         // D + D
         assertEquals(
-            dataResultNone<Pair<Float, Float>>(),
+            dataResultNone(),
             resultD.mergeNotNull(resultD)
         )
         // D + E
         assertEquals(
-            dataResultNone<Pair<Float, Double>>(),
+            dataResultNone(),
             resultD.mergeNotNull(resultE)
         )
         /* endregion */
@@ -294,22 +292,22 @@ class DataResultMergeTest {
         )
         // E + B
         assertEquals(
-            dataResultLoading<Pair<Double, Int>>(),
+            dataResultLoading(),
             resultE.mergeNotNull(resultB)
         )
         // E + C
         assertEquals(
-            dataResultError<Pair<Double, Boolean>>(error),
+            dataResultError(error),
             resultE.mergeNotNull(resultC)
         )
         // E + D
         assertEquals(
-            dataResultNone<Pair<Double, Float>>(),
+            dataResultNone(),
             resultE.mergeNotNull(resultD)
         )
         // E + E
         assertEquals(
-            dataResultNone<Pair<Double, Double>>(),
+            dataResultNone(),
             resultE.mergeNotNull(resultE)
         )
         /* endregion */
@@ -326,7 +324,7 @@ class DataResultMergeTest {
         //region Single Assert
         assertEquals(
             listOf(pairA).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf("success" to "data A"),
                 error = null,
                 status = SUCCESS,
@@ -334,7 +332,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairB).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf("loading" to 123),
                 error = null,
                 status = LOADING,
@@ -342,7 +340,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairC).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = null,
                 error = error,
                 status = ERROR,
@@ -350,7 +348,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairD).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = null,
                 error = null,
                 status = NONE,
@@ -358,7 +356,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = null,
                 error = null,
                 status = NONE,
@@ -368,7 +366,7 @@ class DataResultMergeTest {
 
         assertEquals(
             listOf(pairA, pairB).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "loading" to 123,
@@ -379,7 +377,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairB, pairC).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "loading" to 123,
@@ -391,7 +389,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairB, pairD).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "loading" to 123,
@@ -403,7 +401,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairB, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "loading" to 123,
@@ -415,7 +413,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairB, pairC, pairD).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "loading" to 123,
@@ -428,7 +426,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairB, pairC, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "loading" to 123,
@@ -441,7 +439,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairB, pairC, pairD, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "loading" to 123,
@@ -456,7 +454,7 @@ class DataResultMergeTest {
 
         assertEquals(
             listOf(pairA, pairC).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "error" to null,
@@ -467,7 +465,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairC, pairB).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "error" to null,
@@ -479,7 +477,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairC, pairD).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "error" to null,
@@ -491,7 +489,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairC, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "error" to null,
@@ -503,7 +501,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairC, pairB, pairD).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "error" to null,
@@ -516,7 +514,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairC, pairB, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "error" to null,
@@ -529,7 +527,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairC, pairB, pairD, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "error" to null,
@@ -544,7 +542,7 @@ class DataResultMergeTest {
 
         assertEquals(
             listOf(pairA, pairD).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "null" to null,
@@ -555,7 +553,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairD, pairC).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "null" to null,
@@ -567,7 +565,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairD, pairB).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "null" to null,
@@ -579,7 +577,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairD, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "null" to null,
@@ -591,7 +589,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairD, pairC, pairB).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "null" to null,
@@ -604,7 +602,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairD, pairC, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "null" to null,
@@ -617,7 +615,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairD, pairC, pairB, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "null" to null,
@@ -632,7 +630,7 @@ class DataResultMergeTest {
 
         assertEquals(
             listOf(pairA, pairE).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "none" to null
@@ -643,7 +641,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairE, pairC).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "none" to null,
@@ -655,7 +653,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairE, pairD).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "none" to null,
@@ -667,7 +665,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairE, pairB).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "none" to null,
@@ -679,7 +677,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairE, pairC, pairD).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "none" to null,
@@ -692,7 +690,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairE, pairC, pairB).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "none" to null,
@@ -705,7 +703,7 @@ class DataResultMergeTest {
         )
         assertEquals(
             listOf(pairA, pairE, pairC, pairD, pairB).mergeAll(),
-            DataResult(
+            DataResult<Map<String, *>>(
                 data = mapOf(
                     "success" to "data A",
                     "none" to null,
