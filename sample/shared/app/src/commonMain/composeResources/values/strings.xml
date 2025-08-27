@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <!--  Main Feature  -->
+    <string name="sample_main_title">App Home</string>
+    <string name="sample_main_description">Main application home</string>
+</resources>
