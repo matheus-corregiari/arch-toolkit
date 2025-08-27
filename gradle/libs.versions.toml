@@ -23,7 +23,7 @@ jetbrains-dokka = "2.0.0"
 jetbrains-datetime = "0.7.1"
 
 ## AndroidX
-androidx-plugin = "8.11.1"
+androidx-plugin = "8.12.1"
 androidx-appcompat = "1.7.1"
 androidx-annotation = "1.9.1"
 androidx-constraint = "2.2.1"
@@ -58,7 +58,7 @@ di-koin = "4.1.0"
 ## Tools
 mockk = "1.14.5"
 junit = "4.13.2"
-robolectric = "4.15.1"
+robolectric = "4.16"
 ktlint = "11.6.1"
 dexcount = "4.0.0"
 ajalt-mordant = "3.0.2"
