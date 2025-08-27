@@ -175,6 +175,7 @@ x-normalize-x017 = { module = "org.jetbrains.kotlin:kotlin-stdlib-common", versi
 x-normalize-x018 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "jetbrains-serialization" }
 x-normalize-x019 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm", version.ref = "jetbrains-serialization" }
 x-normalize-x020 = { module = "org.jetbrains:annotations", version = "26.0.2" }
+x-normalize-x021 = { module = "com.squareup.okhttp3:okhttp", version.ref = "square-okhttp" }
 
 # ------------------------------------------------------------------------------------------------ #
 [plugins]

@@ -1,5 +1,4 @@
 @file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-@file:OptIn(ExperimentalAtomicApi::class)
 
 package br.com.arch.toolkit.lumber
 
@@ -11,6 +10,7 @@ internal actual const val MAX_TAG_LENGTH: Int = 25
 
 actual fun defaultTag(): String? = null
 
+@OptIn(ExperimentalAtomicApi::class)
 actual class ThreadSafe<T> {
 
     private val atomic = AtomicReference<T?>(null)
@@ -20,21 +20,4 @@ actual class ThreadSafe<T> {
     actual fun set(data: T?) = atomic.store(data)
 
     actual fun remove() = set(null)
-}
-
-actual fun String.format(vararg args: Any?): String {
-    val match = Regex("%[sd]").find(this) ?: return this
-    if (args.isEmpty()) error("Wrong number of arguments")
-    val argument = args.firstOrNull()
-    val formatted = when (match.value) {
-        "%s" -> argument.toString()
-        "%d" -> (argument as? Number).toString()
-        else -> match.value
-    }
-    return replaceRange(
-        range = match.range,
-        replacement = formatted
-    ).format(
-        args = args.drop(1).toTypedArray()
-    )
 }

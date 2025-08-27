@@ -46,10 +46,7 @@ kotlin {
 
     sourceSets.commonMain.dependencies {
         // Sample Modules
-        implementation(project(":sample:shared:structure:core"))
-        implementation(project(":sample:shared:structure:designSystem"))
-        implementation(project(":sample:shared:structure:repository"))
-        implementation(project(":samples:github-list-project:shared:app"))
+        implementation(project(":sample:shared:app"))
 
         implementation(compose.runtime)
         implementation(compose.material3)

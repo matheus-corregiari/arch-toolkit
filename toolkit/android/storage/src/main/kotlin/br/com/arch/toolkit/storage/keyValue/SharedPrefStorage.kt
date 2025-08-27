@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package br.com.arch.toolkit.storage.keyValue
 
 import android.content.Context
@@ -11,7 +13,10 @@ import br.com.arch.toolkit.storage.util.get
 import br.com.arch.toolkit.storage.util.set
 
 /**
- * This code defines a class called SharedPrefStorage that implements an interface called KeyValueStorage. This class is designed to store key-value pairs using Android's SharedPreferences system. Let's break down the code step by step:
+ * This code defines a class called SharedPrefStorage that implements an interface called KeyValueStorage.
+ * This class is designed to store key-value pairs using Android's SharedPreferences system.
+ * Let's break down the code step by step:
+ *
  * <br>
  * ## Constructor and Properties
  * - internal constructor(context: Context, override val name: String)
@@ -30,7 +35,8 @@ import br.com.arch.toolkit.storage.util.set
  * - get<T>(key: String, default: T)
  *      - Similar to get(key), but returns the provided default value if the key is not found.
  * - set<T>(key: String, value: T?)
- *      - Stores a key-value pair. It performs validation on both the key and value before storing them. If the value is null or empty, it removes the key.
+ *      - Stores a key-value pair. It performs validation on both the key and value before storing them.
+ *      If the value is null or empty, it removes the key.
  * - remove(key: String)
  *      - Removes the key-value pair associated with the given key.
  * - remove(regex: Regex)
@@ -45,7 +51,8 @@ import br.com.arch.toolkit.storage.util.set
  *      - Returns a list of all keys in the SharedPreferences.
  * <br>
  * ## Synchronization
- * The synchronized(lock) blocks in several methods ensure that only one thread can access the SharedPreferences at a time, preventing potential race conditions and data inconsistencies.
+ * The synchronized(lock) blocks in several methods ensure that only one thread can access the
+ * SharedPreferences at a time, preventing potential race conditions and data inconsistencies.
  * <br>
  * ## Example Usage
  * ```kotlin

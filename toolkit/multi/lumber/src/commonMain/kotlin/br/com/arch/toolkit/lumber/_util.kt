@@ -33,12 +33,18 @@ internal fun String.format(vararg args: Any?): String {
         range = match.range,
         replacement = formatted
     )
-    return if (args.size <= 1) replaced
-    else replaced.format(args = args.drop(1).toTypedArray())
+    return if (args.size <= 1) {
+        replaced
+    } else {
+        replaced.format(args = args.drop(1).toTypedArray())
+    }
 }
 
 internal fun String.camelcase(): String {
     val parts = trimStart().trimEnd().split(" ", "_", "-")
-    return if (parts.size == 1) parts.first()
-    else parts.joinToString("") { part -> part.lowercase().replaceFirstChar { it.titlecase() } }
+    return if (parts.size == 1) {
+        parts.first()
+    } else {
+        parts.joinToString("") { part -> part.lowercase().replaceFirstChar { it.titlecase() } }
+    }
 }
