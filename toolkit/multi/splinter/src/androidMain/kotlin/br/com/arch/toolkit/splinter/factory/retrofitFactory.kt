@@ -133,7 +133,7 @@ private sealed class Adapter<T, R>(
 
     override fun responseType() = responseType
 
-    fun executeWithSplinter(call: Call<T>) = splinter(
+    fun executeWithSplinter(call: Call<T>) = splinter<T>(
         id = id,
         config = {
             logging(quiet.not())
