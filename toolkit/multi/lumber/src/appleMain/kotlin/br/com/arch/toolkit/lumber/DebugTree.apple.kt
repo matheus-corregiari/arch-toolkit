@@ -6,6 +6,7 @@ import com.github.ajalt.mordant.rendering.TextColors
 import com.github.ajalt.mordant.rendering.TextStyle
 
 actual open class DebugTree : Lumber.Oak() {
+
     private val Lumber.Level.toStyle: TextStyle
         get() = when (this) {
             Lumber.Level.Error -> TextColors.brightRed

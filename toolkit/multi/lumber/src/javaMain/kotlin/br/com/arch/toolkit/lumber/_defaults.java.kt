@@ -2,29 +2,20 @@
 
 package br.com.arch.toolkit.lumber
 
-actual class ThreadSafe<T> actual constructor() : ThreadLocal<T>()
+internal actual const val MAX_LOG_LENGTH: Int = 4000
+internal actual const val MAX_TAG_LENGTH: Int = 25
 
-@Suppress("ThrowingExceptionsWithoutMessageOrCause")
-actual fun defaultTag(): String? = Throwable()
-    .stackTrace
-    .drop(1)
+actual class ThreadSafe<T> : ThreadLocal<T>()
+
+internal actual fun defaultTag(): String? = Throwable().stackTrace
     .firstOrNull { it.className.replace("$", ".") !in fqcnIgnore }
     ?.let(::createStackElementTag)
+    ?.chunked(MAX_TAG_LENGTH)?.first()
 
-actual fun String.format(vararg args: Any?): String = String.format(this, *args)
-
-/**
- * Extract the tag which should be used for the message from the `element`. By default
- * this will use the class name without any anonymous class suffixes (e.g., `Foo$1`
- * becomes `Foo`).
- *
- * Note: This will not be called if a [manual tag][.tag] was specified.
- */
-private fun createStackElementTag(element: StackTraceElement): String {
+internal fun createStackElementTag(element: StackTraceElement): String {
     var tag = element.className.substringAfterLast('.')
     val matcher = "(\\$\\d+)+$".toPattern().matcher(tag)
     if (matcher.find()) tag = matcher.replaceAll("")
-    tag = tag.chunked(MAX_TAG_LENGTH).first()
-    return "$tag:${element.methodName.replace(" ", "-")}"
+    return "$tag:${element.methodName.camelcase()}"
 }
 

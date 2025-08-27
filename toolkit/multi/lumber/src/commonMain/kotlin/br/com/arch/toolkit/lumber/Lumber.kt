@@ -2,8 +2,6 @@
 
 package br.com.arch.toolkit.lumber
 
-import br.com.arch.toolkit.lumber.Lumber.OakWood.quiet
-import br.com.arch.toolkit.lumber.Lumber.OakWood.tag
 import kotlinx.coroutines.sync.Mutex
 
 /**
@@ -71,7 +69,6 @@ class Lumber private constructor() {
                 .get()
                 .takeIf { it.isNullOrBlank().not() }
                 ?.also { explicitTag.remove() }
-                ?: defaultTag()
 
         /**
          * A flag to determine if the log message should be suppressed.
@@ -250,7 +247,7 @@ class Lumber private constructor() {
             vararg args: Any?,
         ) {
             // Consume tag even when message is not loggable so that next message is correctly tagged.
-            val tag = tag
+            val tag = (tag ?: defaultTag())?.chunked(MAX_TAG_LENGTH)?.first()
             if (!isLoggable(tag, level) || quiet) return
 
             var formattedMessage = message
@@ -265,15 +262,10 @@ class Lumber private constructor() {
             if (formattedMessage.length <= MAX_LOG_LENGTH) {
                 log(level = level, tag = tag, message = formattedMessage, error = error)
             } else {
-                formattedMessage.chunked(MAX_LOG_LENGTH)
-                    .forEachIndexed { index, part ->
-                        log(
-                            level = level,
-                            tag = tag?.let { "$it #$index" } ?: "#$index",
-                            message = part,
-                            error = error,
-                        )
-                    }
+                formattedMessage.chunked(MAX_LOG_LENGTH).forEachIndexed { index, part ->
+                    val indexTag = tag?.let { "$it #$index" } ?: "#$index"
+                    log(level = level, tag = indexTag, message = part, error = error)
+                }
             }
         }
     }

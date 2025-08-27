@@ -6,9 +6,12 @@ package br.com.arch.toolkit.lumber
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
+internal actual const val MAX_LOG_LENGTH: Int = 8000
+internal actual const val MAX_TAG_LENGTH: Int = 25
+
 actual fun defaultTag(): String? = null
 
-actual class ThreadSafe<T> actual constructor() {
+actual class ThreadSafe<T> {
 
     private val atomic = AtomicReference<T?>(null)
 

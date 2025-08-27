@@ -15,18 +15,13 @@ kotlin {
         commonTest.dependencies { implementation(libs.jetbrains.kotlin.test) }
 
         // Custom source Setup
-        val javaMain by creating { dependsOn(commonMain.get()) }
         val kotlinMain by creating { dependsOn(commonMain.get()) }
 
         // Target Setup
-        androidMain { dependsOn(javaMain) }
-        jvmMain {
-            dependsOn(javaMain)
-            dependencies { implementation(libs.ajalt.mordant) }
-        }
-        wasmJsMain {
-            dependsOn(kotlinMain)
-            dependencies { implementation(libs.jetbrains.stdlib) }
-        }
+        androidMain { }
+        jvmMain { dependencies { implementation(libs.ajalt.mordant) } }
+        appleMain { dependencies { implementation(libs.ajalt.mordant) } }
+        wasmJsMain { dependsOn(kotlinMain) }
+        jsMain { dependsOn(kotlinMain) }
     }
 }
