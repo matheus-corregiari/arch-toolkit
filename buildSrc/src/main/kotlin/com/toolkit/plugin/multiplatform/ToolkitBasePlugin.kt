@@ -7,10 +7,11 @@ import com.toolkit.plugin.util.multiplatform
 import com.toolkit.plugin.util.projectJavaVersionCode
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
-@OptIn(ExperimentalWasmDsl::class)
+@OptIn(ExperimentalKotlinGradlePluginApi::class, ExperimentalWasmDsl::class)
 internal class ToolkitBasePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
@@ -18,7 +19,18 @@ internal class ToolkitBasePlugin : Plugin<Project> {
         target.kotlinExtension.jvmToolchain(projectJavaVersionCode)
 
         with(target.multiplatform) {
-            applyDefaultHierarchyTemplate()
+            applyDefaultHierarchyTemplate {
+                common {
+                    group("java") {
+                        withJvm()
+                        withAndroidTarget()
+                    }
+                    group("web") {
+                        withJs()
+                        withWasmJs()
+                    }
+                }
+            }
 
             androidTarget {}
             jvm {}
@@ -30,6 +42,11 @@ internal class ToolkitBasePlugin : Plugin<Project> {
                 browser { testTask { it.useKarma { useChromeHeadless() } } }
                 binaries.library()
             }
+            listOf(
+                iosArm64(),
+                iosX64(),
+                iosSimulatorArm64(),
+            ).forEach { it.binaries.framework { baseName = "library" } }
         }
 
         target.plugins.apply("toolkit-optimize")

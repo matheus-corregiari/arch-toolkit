@@ -55,10 +55,15 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
                         pub.name.contains("jvm") -> "-jvm"
                         pub.name.contains("wasm") -> "-wasm-js"
                         pub.name.contains("js") -> "-js"
+                        pub.name.contains("iosarm64", true) -> "-iosarm64"
+                        pub.name.contains("iosx64", true) -> "-iosx64"
+                        pub.name.contains("iossimulatorarm64", true) -> "-iossimulatorarm64"
                         else -> ""
                     }
                     pub.groupId = target.properties["GROUP"] as String
-                    pub.artifactId = "${target.name}$suffix"
+                    if (suffix.isNotBlank()) {
+                        pub.artifactId = "${target.name}$suffix"
+                    }
                     pub.version = target.versionName
                     pub.pom { target.configurePom(it, false) }
                 }
