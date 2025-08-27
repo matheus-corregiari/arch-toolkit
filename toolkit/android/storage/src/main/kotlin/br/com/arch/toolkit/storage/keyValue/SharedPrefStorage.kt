@@ -85,7 +85,6 @@ sealed class SharedPrefStorage(
         context.getSharedPreferences(name, Context.MODE_PRIVATE)
     )
 
-    @Suppress("DEPRECATION")
     class Encrypted(context: Context, override val name: String) : SharedPrefStorage(
         StorageType.ENCRYPTED_SHARED_PREF,
         EncryptedSharedPreferences.create(
