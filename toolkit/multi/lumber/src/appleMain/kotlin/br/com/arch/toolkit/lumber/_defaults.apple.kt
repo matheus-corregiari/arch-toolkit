@@ -10,13 +10,16 @@ internal actual const val MAX_TAG_LENGTH: Int = 30
 private val METHOD_REGEX =
     "(?<full>(?:[a-zA-Z]+\\.)+(?<className>[a-zA-Z]+))#(?<method>[a-zA-Z ]+)\\(".toRegex()
 
-internal actual fun defaultTag(): String? = METHOD_REGEX
-    .findAll(Throwable("Default Log Exception").stackTraceToString())
-    .mapNotNull(::extractData)
-    .filter { (full, _, _) -> full !in fqcnIgnore }
-    .map { (_, className, method) -> "$className:$method" }
-    .firstOrNull()
-    ?.chunked(MAX_TAG_LENGTH)?.first()
+internal actual fun defaultTag(): String? {
+    val ignore = fqcnIgnore.map { it.qualifiedName }
+    return METHOD_REGEX
+        .findAll(Throwable("Default Log Exception").stackTraceToString())
+        .mapNotNull(::extractData)
+        .filter { (full, _, _) -> full !in ignore }
+        .map { (_, className, method) -> "$className:$method" }
+        .firstOrNull()
+        ?.chunked(MAX_TAG_LENGTH)?.first()
+}
 
 @OptIn(ExperimentalAtomicApi::class)
 actual class ThreadSafe<T> {

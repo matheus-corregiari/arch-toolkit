@@ -31,24 +31,6 @@ internal class ToolkitBasePlugin : Plugin<Project> {
                     }
                 }
             }
-
-            androidTarget {}
-            jvm {}
-            wasmJs { wasm ->
-                wasm.browser { testTask { it.useKarma { useChromeHeadless() } } }
-                wasm.binaries.library()
-            }
-            js(IR) {
-                browser { testTask { it.useKarma { useChromeHeadless() } } }
-                binaries.library()
-            }
-            listOf(
-                iosArm64(),
-                iosX64(),
-                iosSimulatorArm64(),
-            ).forEach { it.binaries.framework { baseName = "library" } }
         }
-
-        target.plugins.apply("toolkit-optimize")
     }
 }

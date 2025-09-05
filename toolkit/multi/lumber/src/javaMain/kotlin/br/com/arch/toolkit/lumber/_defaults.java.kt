@@ -7,10 +7,14 @@ internal actual const val MAX_TAG_LENGTH: Int = 25
 
 actual class ThreadSafe<T> : ThreadLocal<T>()
 
-internal actual fun defaultTag(): String? = Throwable().stackTrace
-    .firstOrNull { it.className.replace("$", ".") !in fqcnIgnore }
-    ?.let(::createStackElementTag)
-    ?.chunked(MAX_TAG_LENGTH)?.first()
+@Suppress("ThrowingExceptionsWithoutMessageOrCause")
+internal actual fun defaultTag(): String? {
+    val ignore = fqcnIgnore.map { it.qualifiedName }
+    return Throwable().stackTrace
+        .firstOrNull { it.className.replace("$", ".") !in ignore }
+        ?.let(::createStackElementTag)
+        ?.chunked(MAX_TAG_LENGTH)?.first()
+}
 
 internal fun createStackElementTag(element: StackTraceElement): String {
     var tag = element.className.substringAfterLast('.')

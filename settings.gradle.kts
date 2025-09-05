@@ -44,7 +44,7 @@ include(":sample:shared:structure:core")
 // Targets
 include(":sample:target:android")
 include(":sample:target:desktop")
-include(":sample:target:web")
+//include(":sample:target:web")
 
 plugins {
     id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.1"

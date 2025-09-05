@@ -3,11 +3,11 @@ package br.com.arch.toolkit.lumber
 import kotlinx.coroutines.sync.Mutex
 
 internal val fqcnIgnore = setOfNotNull(
-    Lumber::class.qualifiedName,
-    Lumber.Level::class.qualifiedName,
-    Lumber.OakWood::class.qualifiedName,
-    Lumber.Oak::class.qualifiedName,
-    DebugTree::class.qualifiedName,
+    Lumber::class,
+    Lumber.Level::class,
+    Lumber.OakWood::class,
+    Lumber.Oak::class,
+    DebugTree::class,
 )
 
 internal fun <T> Mutex.synchronized(key: Any, block: () -> T) = try {
