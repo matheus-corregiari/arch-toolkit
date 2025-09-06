@@ -98,7 +98,7 @@ class Lumber private constructor() {
          * ```
          */
         open fun tag(tag: String): Oak {
-            explicitTag.set(tag)
+            explicitTag.set(tag.trimEnd().trimStart())
             return this
         }
 
@@ -163,7 +163,7 @@ class Lumber private constructor() {
 
         /** Log an info exception and a message with optional format args. */
         open fun info(error: Throwable) =
-            log(level = Level.Info, error = null, message = null, args = emptyArray())
+            log(level = Level.Info, error = error)
 
         /** Log an info exception. */
         open fun info(error: Throwable, message: String, vararg args: Any?) =
@@ -256,15 +256,25 @@ class Lumber private constructor() {
                 if (error == null) return
                 formattedMessage = error.stackTraceToString()
             } else {
-                if (args.isNotEmpty()) formattedMessage = formattedMessage.format(*args)
+                formattedMessage = formattedMessage.format(*args)
                 if (error != null) formattedMessage += "\n\n" + error.stackTraceToString()
             }
             if (formattedMessage.length <= MAX_LOG_LENGTH) {
-                log(level = level, tag = tag, message = formattedMessage, error = error)
+                log(
+                    level = level,
+                    tag = tag,
+                    message = formattedMessage,
+                    error = error
+                )
             } else {
                 formattedMessage.chunked(MAX_LOG_LENGTH).forEachIndexed { index, part ->
                     val indexTag = tag?.let { "$it #$index" } ?: "#$index"
-                    log(level = level, tag = indexTag, message = part, error = error)
+                    log(
+                        level = level,
+                        tag = indexTag,
+                        message = part.trimStart('\n'),
+                        error = error
+                    )
                 }
             }
         }

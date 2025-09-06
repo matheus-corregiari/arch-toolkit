@@ -22,4 +22,3 @@ internal fun createStackElementTag(element: StackTraceElement): String {
     if (matcher.find()) tag = matcher.replaceAll("")
     return "$tag:${element.methodName.camelcase()}"
 }
-
