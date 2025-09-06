@@ -3,8 +3,16 @@ description: "Boilerplate steps"
 
 outputs:
   modules:
-    description: "List of modules"
+    description: "List of all modules"
     value: ${{ steps.read-modules.outputs.modules }}
+
+  android-modules:
+    description: "List of android modules"
+    value: ${{ steps.read-android-modules.outputs.modules }}
+
+  multi-modules:
+    description: "List of multiplatform modules"
+    value: ${{ steps.read-multi-modules.outputs.modules }}
 
 runs:
   using: "composite"
@@ -17,4 +25,22 @@ runs:
       run: |
         ./gradlew :toolkit:publishModules
         MODULES=$(cat $PWD/toolkit/build/modules.txt)
+        echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
+
+    # Get modules that need to be published and validated and put it into a variable
+    - name: Read Modules
+      id: read-android-modules
+      shell: bash
+      run: |
+        ./gradlew :toolkit:publishModules
+        MODULES=$(cat $PWD/toolkit/build/modules-android.txt)
+        echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
+
+    # Get modules that need to be published and validated and put it into a variable
+    - name: Read Modules
+      id: read-multi-modules
+      shell: bash
+      run: |
+        ./gradlew :toolkit:publishModules
+        MODULES=$(cat $PWD/toolkit/build/modules-multi.txt)
         echo "modules=$MODULES" >> "$GITHUB_OUTPUT"

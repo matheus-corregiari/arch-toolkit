@@ -54,13 +54,13 @@ jobs:
       - name: Detekt ${{ matrix.module }}
         run: ./gradlew :${{ matrix.module }}:detekt
 
-  test:
+  test-android:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     needs: pre-build
     strategy:
       matrix:
-        module: ${{fromJSON(needs.pre-build.outputs.modules)}}
+        module: ${{fromJSON(needs.pre-build.outputs.modules-android)}}
     steps:
       - uses: actions/checkout@v5
 
@@ -68,10 +68,23 @@ jobs:
         uses: ./.github/actions/setup-gradle
 
       - name: Unit Tests ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:testDebugUnitTest --no-parallel
+        run: ./gradlew :${{ matrix.module }}:testDebugUnitTest koverVerify --no-parallel
 
-      - name: Kover ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:koverVerify
+  test-multi:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    needs: pre-build
+    strategy:
+      matrix:
+        module: ${{fromJSON(needs.pre-build.outputs.modules-multi)}}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Base Setup
+        uses: ./.github/actions/setup-gradle
+
+      - name: Unit Tests ${{ matrix.module }}
+        run: ./gradlew :${{ matrix.module }}:allTests koverVerify --no-parallel
 
   build:
     if: github.event.pull_request.draft == false

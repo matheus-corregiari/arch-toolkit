@@ -16,16 +16,26 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
             // Store target directory into a variable to avoid project reference in the configuration cache
             val directory = task.project.layout.buildDirectory.get()
             val file = directory.file("modules.txt").asFile
+            val fileAndroid = directory.file("modules-android.txt").asFile
+            val fileMulti = directory.file("modules-multi.txt").asFile
             val publishAndroidLibraries = task.project.allAndroid()
             val publishMultiplatformLibraries = task.project.allMultiplatform()
             task.doLast { _ ->
                 Files.createDirectories(directory.asFile.toPath())
                 val json = JsonArray()
+                val androidJson = JsonArray()
+                val multiJson = JsonArray()
                 publishAndroidLibraries.onEach(json::add)
+                publishAndroidLibraries.onEach(androidJson::add)
                 publishMultiplatformLibraries.onEach(json::add)
+                publishMultiplatformLibraries.onEach(multiJson::add)
 
                 if (file.exists().not()) file.createNewFile()
+                if (fileAndroid.exists().not()) fileAndroid.createNewFile()
+                if (fileMulti.exists().not()) fileMulti.createNewFile()
                 file.writeText(json.toString())
+                fileAndroid.writeText(androidJson.toString())
+                fileMulti.writeText(multiJson.toString())
                 println("Publish module list generated at: $file")
                 println(json.toString())
             }
