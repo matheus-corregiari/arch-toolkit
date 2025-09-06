@@ -28,7 +28,7 @@ runs:
         echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
 
     # Get modules that need to be published and validated and put it into a variable
-    - name: Read Modules
+    - name: Read Android Modules
       id: read-android-modules
       shell: bash
       run: |
@@ -37,7 +37,7 @@ runs:
         echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
 
     # Get modules that need to be published and validated and put it into a variable
-    - name: Read Modules
+    - name: Read Multiplatform Modules
       id: read-multi-modules
       shell: bash
       run: |
