@@ -19,14 +19,18 @@ on:
       - reopened
       - ready_for_review
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pre-build:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     outputs:
-      modules: ${{ steps.publishing-modules.outputs.modules }}
-      modules-android: ${{ steps.publishing-modules.outputs.modules-android }}
-      modules-multi: ${{ steps.publishing-modules.outputs.modules-multi }}
+      modulesAll: ${{ steps.publishing-modules.outputs.modulesAll }}
+      modulesAndroid: ${{ steps.publishing-modules.outputs.modulesAndroid }}
+      modulesMulti: ${{ steps.publishing-modules.outputs.modulesMulti }}
     steps:
       - uses: actions/checkout@v5
 
@@ -42,8 +46,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: pre-build
     strategy:
+      fail-fast: true
       matrix:
-        module: ${{fromJSON(needs.pre-build.outputs.modules)}}
+        module: ${{fromJSON(needs.pre-build.outputs.modulesAll)}}
     steps:
       - uses: actions/checkout@v5
 
@@ -61,8 +66,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: pre-build
     strategy:
+      fail-fast: true
       matrix:
-        module: ${{fromJSON(needs.pre-build.outputs.modules)}}
+        module: ${{fromJSON(needs.pre-build.outputs.modulesAll)}}
     steps:
       - uses: actions/checkout@v5
 
@@ -79,8 +85,9 @@ jobs:
       - lint
       - build
     strategy:
+      fail-fast: true
       matrix:
-        module: ${{fromJSON(needs.pre-build.outputs.modules-android)}}
+        module: ${{fromJSON(needs.pre-build.outputs.modulesAndroid)}}
     steps:
       - uses: actions/checkout@v5
 
@@ -97,8 +104,9 @@ jobs:
       - lint
       - build
     strategy:
+      fail-fast: true
       matrix:
-        module: ${{fromJSON(needs.pre-build.outputs.modules-multi)}}
+        module: ${{fromJSON(needs.pre-build.outputs.modulesMulti)}}
     steps:
       - uses: actions/checkout@v5
 

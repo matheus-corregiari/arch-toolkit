@@ -9,9 +9,9 @@ import com.toolkit.plugin.util.applyPlugins
 import com.toolkit.plugin.util.detekt
 import com.toolkit.plugin.util.ktLint
 import com.toolkit.plugin.util.libs
+import com.toolkit.plugin.util.projectJavaVersionName
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
-import io.gitlab.arturbosch.detekt.extensions.DetektReport
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -38,11 +38,17 @@ internal class ToolkitLintPlugin : Plugin<Project> {
         }
         with(target.tasks) {
             withType(Detekt::class.java).configureEach { detekt ->
-                detekt.jvmTarget = "1.8"
-                detekt.reports.run { listOf(html, xml, txt, sarif, md) }.onEach { it.setup() }
+                detekt.jvmTarget = projectJavaVersionName
+                detekt.reports {
+                    it.xml.required.set(true)
+                    it.html.required.set(true)
+                    it.md.required.set(true)
+                    it.txt.required.set(true)
+                    it.sarif.required.set(true)
+                }
             }
             withType(DetektCreateBaselineTask::class.java).configureEach {
-                it.jvmTarget = "1.8"
+                it.jvmTarget = projectJavaVersionName
             }
         }
 
@@ -74,10 +80,5 @@ internal class ToolkitLintPlugin : Plugin<Project> {
 
         htmlOutput = File("${target.rootDir}/build/reports/lint/html/${target.name}-lint.html")
         xmlOutput = File("${target.rootDir}/build/reports/lint/xml/${target.name}-lint.xml")
-    }
-
-    private fun DetektReport.setup() {
-        required.set(true)
-        outputLocation.set(File("build/reports/detekt.${type.extension}"))
     }
 }

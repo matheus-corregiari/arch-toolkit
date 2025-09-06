@@ -2,15 +2,15 @@ name: "Find modules that need to be validated and exported"
 description: "Boilerplate steps"
 
 outputs:
-  modules:
+  modulesAll:
     description: "List of all modules"
     value: ${{ steps.read-all-modules.outputs.modules }}
 
-  android-modules:
+  modulesAndroid:
     description: "List of android modules"
     value: ${{ steps.read-android-modules.outputs.modules }}
 
-  multi-modules:
+  modulesMulti:
     description: "List of multiplatform modules"
     value: ${{ steps.read-multi-modules.outputs.modules }}
 

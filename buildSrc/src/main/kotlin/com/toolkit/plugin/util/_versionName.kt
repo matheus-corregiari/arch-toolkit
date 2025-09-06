@@ -11,6 +11,7 @@ internal val Project.versionName: String
         default = "0.0.0",
     )
 
+@Suppress("DEPRECATION")
 private val String.execute: Process get() = Runtime.getRuntime().exec(this)
 private val Process.text: String get() = inputStream.bufferedReader().readText().trim()
 private val String.executeWithText: String?

@@ -6,9 +6,9 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import br.com.arch.toolkit.lumber.DebugTree
 import br.com.arch.toolkit.lumber.Lumber
-import br.com.arch.toolkit.sample.shared.initKoin
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
 import br.com.arch.toolkit.sample.github.shared.structure.repository.SettingsRepository
+import br.com.arch.toolkit.sample.shared.initKoin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -44,4 +44,3 @@ internal class GithubApplication : Application() {
             ThemeMode.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
 }
-
