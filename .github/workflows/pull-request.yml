@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       modules: ${{ steps.publishing-modules.outputs.modules }}
+      modules-android: ${{ steps.publishing-modules.outputs.modules-android }}
+      modules-multi: ${{ steps.publishing-modules.outputs.modules-multi }}
     steps:
       - uses: actions/checkout@v5
 
