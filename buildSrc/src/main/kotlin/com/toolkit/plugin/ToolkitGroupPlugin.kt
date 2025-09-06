@@ -31,13 +31,19 @@ internal class ToolkitGroupPlugin : Plugin<Project> {
                 publishMultiplatformLibraries.onEach(multiJson::add)
 
                 if (file.exists().not()) file.createNewFile()
-                if (fileAndroid.exists().not()) fileAndroid.createNewFile()
-                if (fileMulti.exists().not()) fileMulti.createNewFile()
                 file.writeText(json.toString())
-                fileAndroid.writeText(androidJson.toString())
-                fileMulti.writeText(multiJson.toString())
-                println("Publish module list generated at: $file")
+                println("ALL Publish module list generated at: $file")
                 println(json.toString())
+
+                if (fileAndroid.exists().not()) fileAndroid.createNewFile()
+                fileAndroid.writeText(androidJson.toString())
+                println("ANDROID Publish module list generated at: $file")
+                println(androidJson.toString())
+
+                if (fileMulti.exists().not()) fileMulti.createNewFile()
+                fileMulti.writeText(multiJson.toString())
+                println("MULTIPLATFORM Publish module list generated at: $file")
+                println(multiJson.toString())
             }
         }
     }

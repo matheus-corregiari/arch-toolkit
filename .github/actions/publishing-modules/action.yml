@@ -4,15 +4,15 @@ description: "Boilerplate steps"
 outputs:
   modulesAll:
     description: "List of all modules"
-    value: ${{ steps.read-all-modules.outputs.modules }}
+    value: ${{ steps.read-all-modules.outputs.modulesAll }}
 
   modulesAndroid:
     description: "List of android modules"
-    value: ${{ steps.read-android-modules.outputs.modules }}
+    value: ${{ steps.read-android-modules.outputs.modulesAndroid }}
 
   modulesMulti:
     description: "List of multiplatform modules"
-    value: ${{ steps.read-multi-modules.outputs.modules }}
+    value: ${{ steps.read-multi-modules.outputs.modulesMulti }}
 
 runs:
   using: "composite"
@@ -31,7 +31,7 @@ runs:
       shell: bash
       run: |
         MODULES=$(cat $PWD/toolkit/build/modules.txt)
-        echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
+        echo "modulesAll=$MODULES" >> "$GITHUB_OUTPUT"
 
     # List of android modules that need to be published and validated
     - name: Read Android Modules
@@ -39,7 +39,7 @@ runs:
       shell: bash
       run: |
         MODULES=$(cat $PWD/toolkit/build/modules-android.txt)
-        echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
+        echo "modulesAndroid=$MODULES" >> "$GITHUB_OUTPUT"
 
     # List of multiplatform modules that need to be published and validated
     - name: Read Multiplatform Modules
@@ -47,4 +47,4 @@ runs:
       shell: bash
       run: |
         MODULES=$(cat $PWD/toolkit/build/modules-multi.txt)
-        echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
+        echo "modulesMulti=$MODULES" >> "$GITHUB_OUTPUT"
