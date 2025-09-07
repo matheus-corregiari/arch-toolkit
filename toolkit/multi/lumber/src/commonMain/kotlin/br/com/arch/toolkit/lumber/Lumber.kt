@@ -194,7 +194,7 @@ class Lumber private constructor() {
          * This tag helps identify the source of the log, making it easier to trace.
          * The tag is temporary and only affects the immediate next log message.
          *
-         * The tag is stored using a [ThreadLocal] to ensure it is only applied for the current thread
+         * The tag is stored using a [ThreadSafe] to ensure it is only applied for the current thread
          * and is cleared automatically after the log call.
          *
          * @param tag The tag to attach to the next log message.
@@ -514,8 +514,9 @@ class Lumber private constructor() {
          * ```
          */
         fun plant(tree: Oak, vararg trees: Oak) = apply {
-            trees.forEach { require(it !== this) { "Cannot plant Lumber itself." } }
-            mutex.synchronized(trees) { this.trees.addAll(listOf(tree, *trees)) }
+            val allTrees = listOf(tree, *trees)
+            allTrees.forEach { require(it !== this) { "Cannot plant Lumber itself." } }
+            mutex.synchronized(trees) { this.trees.addAll(allTrees) }
         }
 
         /**

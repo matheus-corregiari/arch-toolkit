@@ -26,7 +26,9 @@ jobs:
     needs:
       - generate-tag
     outputs:
-      modules: ${{ steps.publishing-modules.outputs.modules }}
+      modulesAll: ${{ steps.publishing-modules.outputs.modulesAll }}
+      modulesAndroid: ${{ steps.publishing-modules.outputs.modulesAndroid }}
+      modulesMulti: ${{ steps.publishing-modules.outputs.modulesMulti }}
     steps:
       - uses: actions/checkout@v5
 
@@ -44,7 +46,7 @@ jobs:
       - pre-build
     strategy:
       matrix:
-        module: ${{fromJSON(needs.pre-build.outputs.modules)}}
+        module: ${{fromJSON(needs.pre-build.outputs.modulesAll)}}
       fail-fast: true
       max-parallel: 1
 

@@ -6,7 +6,11 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-sealed class LumberTest {
+abstract class LumberTest {
+
+    @Suppress("unused", "ConvertSecondaryConstructorToPrimary")
+    // NOTE do NOT delete this or wasm tests will start to crash
+    constructor()
 
     abstract val level: Level
     abstract fun Oak.runLog(message: String, vararg args: Any?)
@@ -57,13 +61,34 @@ sealed class LumberTest {
         tree.assertAll(
             TestTree.Data(
                 level = level,
-                tag = "${defaultTag()} #0",
+                tag = defaultTag()?.let { "$it #0" } ?: "#0",
                 message = "a".repeat(MAX_LOG_LENGTH),
                 error = null
             ),
             TestTree.Data(
                 level = level,
-                tag = "${defaultTag()} #1",
+                tag = defaultTag()?.let { "$it #1" } ?: "#1",
+                message = "a".repeat(10),
+                error = null
+            )
+        )
+    }
+
+    @Test
+    fun `message long - quiet false - tag custom - error null - args empty`() {
+        val tree = newTree()
+        val msg = "a".repeat(MAX_LOG_LENGTH + 10)
+        Lumber.tag("Custom").runLog(msg)
+        tree.assertAll(
+            TestTree.Data(
+                level = level,
+                tag = "Custom #0",
+                message = "a".repeat(MAX_LOG_LENGTH),
+                error = null
+            ),
+            TestTree.Data(
+                level = level,
+                tag = "Custom #1",
                 message = "a".repeat(10),
                 error = null
             )
@@ -78,13 +103,13 @@ sealed class LumberTest {
         tree.assertAll(
             TestTree.Data(
                 level = level,
-                tag = "${defaultTag()} #0",
+                tag = defaultTag()?.let { "$it #0" } ?: "#0",
                 message = "a".repeat(MAX_LOG_LENGTH),
                 error = null
             ),
             TestTree.Data(
                 level = level,
-                tag = "${defaultTag()} #1",
+                tag = defaultTag()?.let { "$it #1" } ?: "#1",
                 message = "extra",
                 error = null
             )
@@ -94,7 +119,7 @@ sealed class LumberTest {
     @Test
     fun `message short - quiet false - tag default - error present - args empty`() {
         val tree = newTree()
-        val ex = Exception("boom")
+        val ex = Throwable("boom")
         Lumber.runLog(ex, "fail")
         tree.assertAll(
             TestTree.Data(
@@ -109,7 +134,7 @@ sealed class LumberTest {
     @Test
     fun `message empty - quiet false - tag default - error present - args empty`() {
         val tree = newTree()
-        val ex = Exception("fail")
+        val ex = Throwable("fail")
         Lumber.runLog(ex, "")
         tree.assertAll(
             TestTree.Data(level, defaultTag(), ex.stackTraceToString(), ex)
@@ -119,7 +144,7 @@ sealed class LumberTest {
     @Test
     fun `message none - quiet false - tag default - error present - args empty`() {
         val tree = newTree()
-        val ex = Exception("fail")
+        val ex = Throwable("fail")
         Lumber.runLog(ex)
         tree.assertAll(
             TestTree.Data(level, defaultTag(), ex.stackTraceToString(), ex)
@@ -129,7 +154,7 @@ sealed class LumberTest {
     @Test
     fun `message short - quiet false - tag default - error present - args present`() {
         val tree = newTree()
-        val ex = Exception("boom")
+        val ex = Throwable("boom")
         Lumber.runLog(ex, "code %d", 500)
         tree.assertAll(
             TestTree.Data(
@@ -189,7 +214,7 @@ sealed class LumberTest {
     @Test
     fun `message long - quiet false - tag default - error present - args empty`() {
         val tree = newTree()
-        val ex = Exception("long boom")
+        val ex = Throwable("long boom")
         val msg = "a".repeat(MAX_LOG_LENGTH + 20)
 
         Lumber.runLog(ex, msg)
@@ -197,13 +222,13 @@ sealed class LumberTest {
         tree.assertAll(
             TestTree.Data(
                 level = level,
-                tag = "${defaultTag()} #0",
+                tag = defaultTag()?.let { "$it #0" } ?: "#0",
                 message = "a".repeat(MAX_LOG_LENGTH),
                 error = ex
             ),
             TestTree.Data(
                 level = level,
-                tag = "${defaultTag()} #1",
+                tag = defaultTag()?.let { "$it #1" } ?: "#1",
                 message = "a".repeat(20) + "\n\n${ex.stackTraceToString()}",
                 error = ex
             )
@@ -213,7 +238,7 @@ sealed class LumberTest {
     @Test
     fun `message long - quiet false - tag default - error present - args present`() {
         val tree = newTree()
-        val ex = Exception("long boom")
+        val ex = Throwable("long boom")
         val msg = "a".repeat(MAX_LOG_LENGTH) + "%s"
 
         Lumber.runLog(ex, msg, "XYZ")
@@ -221,13 +246,13 @@ sealed class LumberTest {
         tree.assertAll(
             TestTree.Data(
                 level = level,
-                tag = "${defaultTag()} #0",
+                tag = defaultTag()?.let { "$it #0" } ?: "#0",
                 message = "a".repeat(MAX_LOG_LENGTH),
                 error = ex
             ),
             TestTree.Data(
                 level = level,
-                tag = "${defaultTag()} #1",
+                tag = defaultTag()?.let { "$it #1" } ?: "#1",
                 message = "XYZ\n\n${ex.stackTraceToString()}",
                 error = ex
             )
@@ -237,7 +262,7 @@ sealed class LumberTest {
     @Test
     fun `message short - quiet true - tag default - error present - args empty`() {
         val tree = newTree()
-        val ex = Exception("quiet")
+        val ex = Throwable("quiet")
         Lumber.quiet(true).runLog(ex, "muted")
         tree.assertAll() // quiet cancela
     }
@@ -245,7 +270,7 @@ sealed class LumberTest {
     @Test
     fun `message short - quiet false - tag custom - error present - args empty`() {
         val tree = newTree()
-        val ex = Exception("tagged")
+        val ex = Throwable("tagged")
         Lumber.tag("Custom").runLog(ex, "oops")
         tree.assertAll(
             TestTree.Data(level, "Custom", "oops\n\n${ex.stackTraceToString()}", ex)
@@ -271,7 +296,7 @@ sealed class LumberTest {
     @Test
     fun `message short - quiet true - tag custom - error present - args empty`() {
         val tree = newTree()
-        val ex = Exception("combo")
+        val ex = Throwable("combo")
         Lumber.tag("Custom").quiet(true).runLog(ex, "hidden")
         tree.assertAll() // nada
         Lumber.runLog("next")
