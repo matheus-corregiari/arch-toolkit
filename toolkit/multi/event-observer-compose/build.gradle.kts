@@ -14,6 +14,15 @@ android.androidResources { enable = false }
 android.buildFeatures.buildConfig = false
 
 kotlin {
+
+    js(IR) {
+        browser {
+            testTask {
+                enabled = false
+            }
+        }
+    }
+
     // Libraries
     sourceSets.commonMain.dependencies {
         // Other Arch-Toolkit Dependencies

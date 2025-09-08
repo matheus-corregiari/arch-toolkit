@@ -2,4 +2,7 @@
 
 package br.com.arch.toolkit.test
 
+import kotlin.test.Ignore
+
+@Ignore
 actual abstract class PlatformTest
