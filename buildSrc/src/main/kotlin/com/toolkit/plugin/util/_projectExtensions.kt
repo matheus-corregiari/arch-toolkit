@@ -7,12 +7,10 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
-import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.publish.PublishingExtension
-import org.gradle.plugins.signing.SigningExtension
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
@@ -43,11 +41,6 @@ internal val Project.jacoco: JacocoPluginExtension
     @Throws(IllegalStateException::class)
     get() = extensions.findByType(JacocoPluginExtension::class.java)
         ?: error("Project do not implement jacoco plugin!")
-
-internal val Project.kover: KoverProjectExtension
-    @Throws(IllegalStateException::class)
-    get() = extensions.findByType(KoverProjectExtension::class.java)
-        ?: error("Project do not implement kover plugin!")
 
 internal val Project.androidLibrary: LibraryExtension
     @Throws(IllegalStateException::class)
@@ -84,10 +77,6 @@ internal val Project.vanniktechPublish: MavenPublishBaseExtension
     get() = extensions.findByType(MavenPublishBaseExtension::class.java)
         ?: error("Project do not implement vanniktech-publish plugin!")
 
-internal val Project.sign: SigningExtension
-    @Throws(IllegalStateException::class)
-    get() = extensions.findByType(SigningExtension::class.java)
-        ?: error("Project do not implement signing plugin!")
-
 internal fun Project.applyPlugins(vararg id: String) =
-    id.forEach { plugins.apply(libs.findPlugin(it).get().get().pluginId) }
+    id.map { libs.findPlugin(it).get().get().pluginId }
+        .forEach { if (plugins.hasPlugin(it).not()) plugins.apply(it) }

@@ -16,6 +16,8 @@
     <ID>MaxLineLength:_liveData.kt$*</ID>
     <ID>MaxLineLength:_responseLiveData.kt$*</ID>
     <ID>MaxLineLength:_responseLiveData.kt$ResponseLiveDataScope$*</ID>
+    <ID>MagicNumber:GithubApplication.kt$GithubApplication$400L</ID>
+    <ID>Filename:_js.kt$br.com.arch.toolkit.lumber._js.kt</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues/>
 </SmellBaseline>

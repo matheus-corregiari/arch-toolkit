@@ -7,7 +7,7 @@ android.namespace = "br.com.arch.toolkit.storage"
 
 dependencies {
     // JetBrains
-    implementation(libs.jetbrains.stdlib.jdk8)
+    implementation(libs.jetbrains.stdlib)
     implementation(libs.jetbrains.coroutines.core)
     implementation(libs.jetbrains.reflect)
 

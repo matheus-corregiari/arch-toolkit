@@ -50,13 +50,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
 
             publications { container ->
                 container.withType(MavenPublication::class.java) { pub ->
-                    val suffix = when {
-                        pub.name.contains("android") -> "-android"
-                        pub.name.contains("jvm") -> "-jvm"
-                        else -> ""
-                    }
                     pub.groupId = target.properties["GROUP"] as String
-                    pub.artifactId = "${target.name}$suffix"
                     pub.version = target.versionName
                     pub.pom { target.configurePom(it, false) }
                 }
@@ -67,7 +61,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
         with(target.vanniktechPublish) {
             configure(
                 KotlinMultiplatform(
-                    javadocJar = JavadocJar.Dokka("dokkaHtml"),
+                    javadocJar = JavadocJar.Dokka("dokkaGenerate"),
                     sourcesJar = true,
                     androidVariantsToPublish = listOf("release"),
                 )

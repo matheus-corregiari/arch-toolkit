@@ -9,10 +9,19 @@ android.buildFeatures.buildConfig = false
 
 kotlin {
     // Libraries
-    sourceSets.commonMain.dependencies { implementation(libs.slf4j.core) }
-    sourceSets.androidMain.dependencies { implementation(libs.slf4j.nop) }
-    sourceSets.jvmMain.dependencies {
-        implementation(libs.slf4j.simple)
-        implementation(libs.ajalt.mordant)
+    sourceSets {
+        // Common Setup
+        commonMain.dependencies { implementation(libs.jetbrains.coroutines.core) }
+        commonTest.dependencies { implementation(libs.jetbrains.kotlin.test) }
+
+        // Custom source Setup
+        val kotlinMain by creating { dependsOn(commonMain.get()) }
+
+        // Target Setup
+        androidMain { }
+        jvmMain { dependencies { implementation(libs.ajalt.mordant) } }
+        appleMain { dependencies { implementation(libs.ajalt.mordant) } }
+        wasmJsMain { dependsOn(kotlinMain) }
+        jsMain { dependsOn(kotlinMain) }
     }
 }

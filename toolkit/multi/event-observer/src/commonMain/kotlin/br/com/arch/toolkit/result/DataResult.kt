@@ -275,7 +275,8 @@ data class DataResult<T>(
      *
      * @param R The type of the transformed data.
      * @param transform The function to transform the data.
-     * @return A new [DataResult] containing the transformed data, or the original error and status if the transformation fails.
+     * @return A new [DataResult] containing the transformed data, or the original error and status
+     * if the transformation fails.
      *
      * Example usage:
      * ```
@@ -306,11 +307,10 @@ data class DataResult<T>(
      * }
      * ```
      */
-    fun unwrap(config: ObserveWrapper<T>.() -> Unit) =
-        ObserveWrapper<T>().also {
-            scope?.let(it::scope)
-            transformDispatcher?.let(it::transformDispatcher)
-        }.apply(config).attachTo(this)
+    fun unwrap(config: ObserveWrapper<T>.() -> Unit) = ObserveWrapper<T>().also {
+        scope?.let(it::scope)
+        transformDispatcher?.let(it::transformDispatcher)
+    }.apply(config).attachTo(this)
 
     //region Data
 
@@ -329,7 +329,8 @@ data class DataResult<T>(
     fun data(func: suspend (T) -> Unit) = unwrap { data(observer = func) }
 
     /**
-     * Transforms the data using the provided transformer function and then executes the provided function with the transformed data.
+     * Transforms the data using the provided transformer function and then executes the provided
+     * function with the transformed data.
      *
      * @param R The type of the transformed data.
      * @param transformer The function to transform the data.
@@ -422,7 +423,8 @@ data class DataResult<T>(
     fun error(func: suspend () -> Unit) = unwrap { error(observer = func) }
 
     /**
-     * Transforms the error using the provided transformer function and then executes the provided function with the transformed error.
+     * Transforms the error using the provided transformer function and then executes the provided
+     * function with the transformed error.
      *
      * @param R The type of the transformed error.
      * @param transformer The function to transform the error.

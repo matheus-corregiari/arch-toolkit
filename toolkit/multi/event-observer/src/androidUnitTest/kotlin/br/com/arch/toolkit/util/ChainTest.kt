@@ -9,27 +9,24 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.FixMethodOrder
 import org.junit.Rule
-import org.junit.Test
-import org.junit.runners.MethodSorters
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ChainTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     init {
-        Dispatchers.setMain(StandardTestDispatcher())
+        Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 
     //region No Coroutine

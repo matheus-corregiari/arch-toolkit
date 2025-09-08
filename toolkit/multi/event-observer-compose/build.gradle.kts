@@ -14,6 +14,15 @@ android.androidResources { enable = false }
 android.buildFeatures.buildConfig = false
 
 kotlin {
+
+    js(IR) {
+        browser {
+            testTask {
+                enabled = false
+            }
+        }
+    }
+
     // Libraries
     sourceSets.commonMain.dependencies {
         // Other Arch-Toolkit Dependencies
@@ -31,14 +40,27 @@ kotlin {
 
     // Test Libraries
     sourceSets.commonTest.dependencies {
-        implementation(libs.jetbrains.test.coroutines)
-        implementation(libs.junit.test)
-        implementation(libs.mockk.test.agent)
+        // Other Arch-Toolkit Dependencies
+        implementation(project(":toolkit:multi:test"))
+
+        // Libraries
+        implementation(libs.jetbrains.kotlin.test)
+        implementation(libs.jetbrains.coroutines.test)
         implementation(compose.material3)
         implementation(compose.uiTest)
     }
     sourceSets.jvmTest.dependencies {
         implementation(compose.desktop.currentOs)
         implementation(compose.desktop.uiTestJUnit4)
+    }
+}
+
+android {
+    testOptions {
+        unitTests {
+            all { test ->
+                test.systemProperty("robolectric.logging.enabled", "true")
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@
 **/.gradle/
 **/.idea/
 **/.git/
+**/kotlin-js-store/
 *.log
 *.iml
 /local.properties

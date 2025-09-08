@@ -49,7 +49,7 @@ sealed class ResponseTransform<T, R, X> {
 
     @Experimental
     class StatusFail<T, R, X>(
-        override val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        override val dispatcher: CoroutineDispatcher = Dispatchers.Default,
         override val func: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
     ) : ResponseTransform<T, R, X>() {
         override val failMode: Mode = Mode.ERROR_STATUS_WHEN_FAIL
@@ -58,7 +58,7 @@ sealed class ResponseTransform<T, R, X> {
 
     @Experimental
     class OmitFail<T, R, X>(
-        override val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        override val dispatcher: CoroutineDispatcher = Dispatchers.Default,
         override val func: suspend (DataResult<Pair<T, R>>) -> DataResult<X>
     ) : ResponseTransform<T, R, X>() {
         override val failMode: Mode = Mode.OMIT_WHEN_FAIL
@@ -67,7 +67,7 @@ sealed class ResponseTransform<T, R, X> {
 
     @Experimental
     class Fallback<T, R, X>(
-        override val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        override val dispatcher: CoroutineDispatcher = Dispatchers.Default,
         override val func: suspend (DataResult<Pair<T, R>>) -> DataResult<X>,
         override val onErrorReturn: suspend (Throwable) -> DataResult<X>
     ) : ResponseTransform<T, R, X>() {
@@ -76,7 +76,7 @@ sealed class ResponseTransform<T, R, X> {
 
     @Experimental
     class Custom<T, R, X>(
-        override val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        override val dispatcher: CoroutineDispatcher = Dispatchers.Default,
         override val failMode: Mode,
         override val func: suspend (DataResult<Pair<T, R>>) -> DataResult<X>,
         override val onErrorReturn: suspend (Throwable) -> DataResult<X>

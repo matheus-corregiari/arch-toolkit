@@ -2,7 +2,8 @@ package br.com.arch.toolkit.splinter.util
 
 import br.com.arch.toolkit.lumber.DebugTree
 import br.com.arch.toolkit.lumber.Lumber.Level
-import org.junit.Assert
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class TestTree : DebugTree() {
     val history = mutableListOf<String>()
@@ -15,11 +16,11 @@ class TestTree : DebugTree() {
     }
 
     fun assertAll(other: List<Any>) {
-        Assert.assertEquals(other.size, history.size)
+        assertEquals(other.size, history.size)
         other.forEachIndexed { index, data ->
             when (data) {
-                is Regex -> Assert.assertTrue("Index: $$index", history[index].matches(data))
-                else -> Assert.assertEquals(data, history[index])
+                is Regex -> assertTrue("Index: $$index", { history[index].matches(data) })
+                else -> assertEquals(data, history[index])
             }
         }
     }

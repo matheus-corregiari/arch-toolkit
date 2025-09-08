@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 internal class ToolkitBasePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        target.applyPlugins("jetbrains-kotlin")
+        target.applyPlugins("jetbrains-kotlin-android")
         with(target.kotlinExtension) {
             jvmToolchain(projectJavaVersionCode)
         }

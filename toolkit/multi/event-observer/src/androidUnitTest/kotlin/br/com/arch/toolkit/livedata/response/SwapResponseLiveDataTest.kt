@@ -8,31 +8,30 @@ import br.com.arch.toolkit.livedata.SwapResponseLiveData
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.util.dataResultLoading
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.Assert
 import org.junit.Rule
-import org.junit.Test
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito
-import org.mockito.Mockito.times
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyNoInteractions
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SwapResponseLiveDataTest {
 
-    @Rule
-    @JvmField
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     init {
-        Dispatchers.setMain(StandardTestDispatcher())
+        Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 
     @Test
@@ -41,10 +40,10 @@ class SwapResponseLiveDataTest {
         liveData.scope(this)
         liveData.transformDispatcher(Dispatchers.Main.immediate)
 
-        Assert.assertNull(liveData.value)
-        Assert.assertNull(liveData.error)
-        Assert.assertNull(liveData.data)
-        Assert.assertNull(liveData.status)
+        assertNull(liveData.value)
+        assertNull(liveData.error)
+        assertNull(liveData.data)
+        assertNull(liveData.status)
     }
 
     @Test
@@ -52,15 +51,15 @@ class SwapResponseLiveDataTest {
         val value = DataResult("String", null, DataResultStatus.SUCCESS)
         val liveData = SwapResponseLiveData(value)
 
-        Assert.assertEquals(value, liveData.value)
-        Assert.assertNull(liveData.error)
-        Assert.assertEquals("String", liveData.data)
-        Assert.assertEquals(DataResultStatus.SUCCESS, liveData.status)
+        assertEquals(value, liveData.value)
+        assertNull(liveData.error)
+        assertEquals("String", liveData.data)
+        assertEquals(DataResultStatus.SUCCESS, liveData.status)
     }
 
     @Test
     fun `01 - swapResponse`() = runTest {
-        val mockedObserver: (String) -> Unit = mock()
+        val mockedObserver: (String) -> Unit = mockk(relaxed = true)
 
         val liveData = MutableResponseLiveData<String>()
             .transformDispatcher(Dispatchers.Main.immediate)
@@ -68,21 +67,21 @@ class SwapResponseLiveDataTest {
             .transformDispatcher(Dispatchers.Main.immediate)
 
         swapLiveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
-        verifyNoInteractions(mockedObserver)
-        Assert.assertFalse(swapLiveData.hasDataSource)
+        verify(exactly = 0) { mockedObserver.invoke(any()) }
+        assertFalse(swapLiveData.hasDataSource)
 
         swapLiveData.swapSource(liveData)
-        Assert.assertTrue(swapLiveData.hasDataSource)
-        verifyNoInteractions(mockedObserver)
+        assertTrue(swapLiveData.hasDataSource)
+        verify(exactly = 0) { mockedObserver.invoke(any()) }
 
         liveData.setData("data")
         advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke("data") }
+        verify(exactly = 1) { mockedObserver.invoke("data") }
     }
 
     @Test
     fun `02 - swapResponse, with discard after loading`() = runTest {
-        val mockedObserver: (String) -> Unit = mock()
+        val mockedObserver: (String) -> Unit = mockk(relaxed = true)
 
         val liveData = MutableResponseLiveData<String>()
             .transformDispatcher(Dispatchers.Main.immediate)
@@ -90,37 +89,37 @@ class SwapResponseLiveDataTest {
             .transformDispatcher(Dispatchers.Main.immediate)
 
         swapLiveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
-        verifyNoInteractions(mockedObserver)
-        Assert.assertFalse(swapLiveData.hasDataSource)
+        verify(exactly = 0) { mockedObserver.invoke(any()) }
+        assertFalse(swapLiveData.hasDataSource)
 
         swapLiveData.swapSource(liveData, true)
-        Assert.assertTrue(swapLiveData.hasDataSource)
-        verifyNoInteractions(mockedObserver)
+        assertTrue(swapLiveData.hasDataSource)
+        verify(exactly = 0) { mockedObserver.invoke(any()) }
 
         liveData.setLoading()
         advanceUntilIdle()
-        Assert.assertTrue(swapLiveData.hasDataSource)
-        verifyNoInteractions(mockedObserver)
-        Assert.assertEquals(dataResultLoading<String>(), swapLiveData.value)
+        assertTrue(swapLiveData.hasDataSource)
+        verify(exactly = 0) { mockedObserver.invoke(any()) }
+        assertEquals(dataResultLoading<String>(), swapLiveData.value)
 
         liveData.setData("data")
         advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke("data") }
-        Assert.assertTrue(swapLiveData.hasDataSource)
-        Assert.assertNull(swapLiveData.value)
+        verify(exactly = 1) { mockedObserver.invoke("data") }
+        assertTrue(swapLiveData.hasDataSource)
+        assertNull(swapLiveData.value)
 
         liveData.value = null
         advanceUntilIdle()
-        verifyBlocking(mockedObserver) { invoke("data") }
-        Assert.assertTrue(swapLiveData.hasDataSource)
-        Assert.assertNull(swapLiveData.value)
+        verify(exactly = 1) { mockedObserver.invoke("data") }
+        assertTrue(swapLiveData.hasDataSource)
+        assertNull(swapLiveData.value)
     }
 
     @Test
     fun `03 - swapResponse, with transformation`() = runTest {
-        val mockedTransformation: (String) -> Int = mock()
-        val mockedObserver: (Int) -> Unit = mock()
-        given(mockedTransformation.invoke("data")).willReturn(0)
+        val mockedTransformation: (String) -> Int = mockk()
+        val mockedObserver: (Int) -> Unit = mockk(relaxed = true)
+        every { mockedTransformation.invoke("data") } returns 0
 
         val liveData = MutableResponseLiveData<String>()
             .transformDispatcher(Dispatchers.Main)
@@ -129,43 +128,43 @@ class SwapResponseLiveDataTest {
 
         swapLiveData.observe(alwaysOnOwner) { data(observer = mockedObserver) }
 
-        Assert.assertFalse(swapLiveData.hasDataSource)
+        assertFalse(swapLiveData.hasDataSource)
         swapLiveData.swapSource(liveData, mockedTransformation)
-        Assert.assertTrue(swapLiveData.hasDataSource)
+        assertTrue(swapLiveData.hasDataSource)
 
         liveData.setData("data")
 
         advanceUntilIdle()
-        verifyBlocking(mockedTransformation) { invoke("data") }
-        verifyBlocking(mockedObserver) { invoke(0) }
+        verify(exactly = 1) { mockedTransformation.invoke("data") }
+        verify(exactly = 1) { mockedObserver.invoke(0) }
 
         liveData.value = DataResult(null, null, DataResultStatus.SUCCESS)
         advanceUntilIdle()
 
-        Assert.assertEquals(DataResultStatus.SUCCESS, swapLiveData.status)
-        Assert.assertNull(swapLiveData.data)
+        assertEquals(DataResultStatus.SUCCESS, swapLiveData.status)
+        assertNull(swapLiveData.data)
 
         liveData.setLoading()
         advanceUntilIdle()
 
         liveData.setError(IllegalStateException())
         advanceUntilIdle()
-        Assert.assertEquals(DataResultStatus.ERROR, swapLiveData.status)
+        assertEquals(DataResultStatus.ERROR, swapLiveData.status)
     }
 
     @Test
     fun `04 - swapResponse, with transformation with error`() = runTest {
         val result = IllegalStateException("error")
 
-        val mockedTransformation: (String) -> Int = mock()
-        val mockedObserver: (Int) -> Unit = mock()
-        val mockedErrorObserver: (Throwable) -> Unit = mock()
-        given(mockedTransformation.invoke("data")).willThrow(result)
+        val mockedTransformation: (String) -> Int = mockk()
+        val mockedObserver: (Int) -> Unit = mockk(relaxed = true)
+        val mockedErrorObserver: (Throwable) -> Unit = mockk(relaxed = true)
+        every { mockedTransformation.invoke("data") } throws result
 
         val liveData = MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
         val swapLiveData = SwapResponseLiveData<Int>().transformDispatcher(Dispatchers.Main)
 
-        Assert.assertFalse(swapLiveData.hasDataSource)
+        assertFalse(swapLiveData.hasDataSource)
 
         swapLiveData.observe(alwaysOnOwner) {
             data(observer = mockedObserver)
@@ -173,13 +172,13 @@ class SwapResponseLiveDataTest {
         }
 
         swapLiveData.swapSource(liveData, mockedTransformation)
-        Assert.assertTrue(swapLiveData.hasDataSource)
+        assertTrue(swapLiveData.hasDataSource)
 
         liveData.setData("data")
         advanceUntilIdle()
-        Mockito.verifyNoInteractions(mockedObserver)
-        verifyBlocking(mockedErrorObserver) {
-            invoke(
+        verify(exactly = 0) { mockedObserver.invoke(any()) }
+        verify(exactly = 1) {
+            mockedErrorObserver.invoke(
                 DataResultTransformationException(
                     message = "Error performing swapSource, please check your transformations",
                     error = result
@@ -189,14 +188,14 @@ class SwapResponseLiveDataTest {
 
         liveData.setSuccess()
         advanceUntilIdle()
-        Assert.assertEquals(DataResultStatus.SUCCESS, swapLiveData.status)
-        Assert.assertNull(swapLiveData.data)
+        assertEquals(DataResultStatus.SUCCESS, swapLiveData.status)
+        assertNull(swapLiveData.data)
 
         liveData.setLoading()
         advanceUntilIdle()
         liveData.setError(IllegalStateException())
         advanceUntilIdle()
-        Assert.assertEquals(DataResultStatus.ERROR, swapLiveData.status)
+        assertEquals(DataResultStatus.ERROR, swapLiveData.status)
     }
 
     @Test
@@ -204,49 +203,49 @@ class SwapResponseLiveDataTest {
         val data = DataResult("data", null, DataResultStatus.SUCCESS)
         val result = DataResult(0, null, DataResultStatus.SUCCESS)
 
-        val mockedTransformation: (DataResult<String>) -> DataResult<Int> = mock()
-        val mockedDataObserver: (Int) -> Unit = mock()
-        given(mockedTransformation.invoke(data)).willReturn(result)
+        val mockedTransformation: (DataResult<String>) -> DataResult<Int> = mockk()
+        val mockedDataObserver: (Int) -> Unit = mockk(relaxed = true)
+        every { mockedTransformation.invoke(data) } returns result
 
         val liveData = MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
         val swapLiveData = SwapResponseLiveData<Int>().transformDispatcher(Dispatchers.Main)
 
-        Assert.assertFalse(swapLiveData.hasDataSource)
+        assertFalse(swapLiveData.hasDataSource)
         swapLiveData.observe(alwaysOnOwner) { data(observer = mockedDataObserver) }
         swapLiveData.swapSource(liveData, mockedTransformation)
-        Assert.assertTrue(swapLiveData.hasDataSource)
+        assertTrue(swapLiveData.hasDataSource)
 
         liveData.setData("data")
         advanceUntilIdle()
 
-        verifyBlocking(mockedTransformation, times(1)) { invoke(data) }
-        verifyBlocking(mockedDataObserver, times(1)) { invoke(0) }
+        verify(exactly = 1) { mockedTransformation.invoke(data) }
+        verify(exactly = 1) { mockedDataObserver.invoke(0) }
     }
 
     @Test
     fun `06 - needsRefresh`() = runTest {
-        val mockedDataObserver: (String) -> Unit = mock()
+        val mockedDataObserver: (String) -> Unit = mockk(relaxed = true)
 
         val liveData = MutableResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
         val swapLiveData = SwapResponseLiveData<String>().transformDispatcher(Dispatchers.Main)
 
-        Assert.assertTrue(swapLiveData.needsRefresh())
+        assertTrue(swapLiveData.needsRefresh())
         swapLiveData.observe(alwaysOnOwner) { data(observer = mockedDataObserver) }
         swapLiveData.swapSource(liveData)
-        Assert.assertFalse(swapLiveData.needsRefresh())
-        Assert.assertTrue(swapLiveData.hasDataSource)
+        assertFalse(swapLiveData.needsRefresh())
+        assertTrue(swapLiveData.hasDataSource)
 
         liveData.setLoading()
         advanceUntilIdle()
-        Assert.assertFalse(swapLiveData.needsRefresh())
+        assertFalse(swapLiveData.needsRefresh())
 
         liveData.setError(IllegalStateException("error"))
         advanceUntilIdle()
-        Assert.assertTrue(swapLiveData.needsRefresh())
+        assertTrue(swapLiveData.needsRefresh())
 
         liveData.setData("data")
         advanceUntilIdle()
-        Assert.assertFalse(swapLiveData.needsRefresh())
-        verifyBlocking(mockedDataObserver, times(1)) { invoke("data") }
+        assertFalse(swapLiveData.needsRefresh())
+        verify(exactly = 1) { mockedDataObserver.invoke("data") }
     }
 }

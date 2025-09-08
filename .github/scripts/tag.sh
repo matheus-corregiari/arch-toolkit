@@ -13,7 +13,7 @@ if [ -z "$merge_message" ]; then
 fi
 
 # Verify if the commit is a merge following the pattern release/0.0.0 or hotfix/0.0.0
-matched_message=$(grep -E '(release|hotfix)\/([0-9]+.[0-9]+.[0-9]+)' <<< "$message" || true)
+matched_message=$(grep -E '(release|hotfix)\/([0-9]+.[0-9]+.[0-9]+(?:-rc\d{2})?)' <<< "$message" || true)
 if [ -z "$matched_message" ]; then
     echo -e "Are you sure that you created a proper branch name to merge with master?"
     echo "$message"
@@ -21,7 +21,7 @@ if [ -z "$matched_message" ]; then
 fi
 
 # Get version in message
-version=$(sed -E 's?.+(release|hotfix)/([0-9]+.[0-9]+.[0-9]+)?\2?g' <<< "$matched_message" | head -n1)
+version=$(sed -E 's?.+(release|hotfix)/([0-9]+.[0-9]+.[0-9]+(?:-rc\d{2})?)?\2?g' <<< "$matched_message" | head -n1)
 echo "Tag: $version"
 
 # Create and push tag

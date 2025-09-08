@@ -1,12 +1,11 @@
 package br.com.arch.toolkit.statemachine
 
-import br.com.arch.toolkit.statemachine.util.TestState
 import br.com.arch.toolkit.statemachine.util.TestStateMachine
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.mockito.Mockito.times
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -101,9 +100,9 @@ class StateMachineTest {
         val state1 = machine.newStateInstance()
         val state2 = machine.newStateInstance()
 
-        val onEnter = Mockito.mock(StateMachine.State.Callback::class.java)
-        val onExit = Mockito.mock(StateMachine.State.Callback::class.java)
-        val changeState = Mockito.mock(StateMachine.OnChangeStateCallback::class.java)
+        val onEnter: StateMachine.State.Callback = mockk(relaxed = true)
+        val onExit: StateMachine.State.Callback = mockk(relaxed = true)
+        val changeState: StateMachine.OnChangeStateCallback = mockk(relaxed = true)
         state1.onExit(onExit)
         state2.onEnter(onEnter)
 
@@ -115,13 +114,13 @@ class StateMachineTest {
         }
         machine.start()
 
-        Mockito.verify(changeState).onChangeState(0)
+        verify { changeState.onChangeState(0) }
 
         machine.changeState(1)
 
-        Mockito.verify(onExit).invoke()
-        Mockito.verify(onEnter).invoke()
-        Mockito.verify(changeState).onChangeState(1)
+        verify { onExit.invoke() }
+        verify { onEnter.invoke() }
+        verify { changeState.onChangeState(1) }
     }
 
     @Test
@@ -129,9 +128,9 @@ class StateMachineTest {
         val machine = TestStateMachine()
         val state1 = machine.newStateInstance()
 
-        val onEnter = Mockito.mock(StateMachine.State.Callback::class.java)
-        val onExit = Mockito.mock(StateMachine.State.Callback::class.java)
-        val changeState = Mockito.mock(StateMachine.OnChangeStateCallback::class.java)
+        val onEnter: StateMachine.State.Callback = mockk(relaxed = true)
+        val onExit: StateMachine.State.Callback = mockk(relaxed = true)
+        val changeState: StateMachine.OnChangeStateCallback = mockk(relaxed = true)
         state1.onExit(onExit)
         state1.onEnter(onEnter)
 
@@ -142,14 +141,14 @@ class StateMachineTest {
         }
         machine.start()
 
-        Mockito.verify(onEnter).invoke()
-        Mockito.verify(changeState).onChangeState(0)
+        verify { onEnter.invoke() }
+        verify { changeState.onChangeState(0) }
 
         machine.changeState(0, true)
 
-        Mockito.verifyNoInteractions(onExit)
-        Mockito.verify(onEnter, times(2)).invoke()
-        Mockito.verify(changeState, times(2)).onChangeState(0)
+        verify(exactly = 0) { onExit.invoke() }
+        verify(exactly = 2) { onEnter.invoke() }
+        verify(exactly = 2) { changeState.onChangeState(0) }
     }
 
     @Test
@@ -157,8 +156,8 @@ class StateMachineTest {
         val machine = TestStateMachine()
         val state1 = machine.newStateInstance()
 
-        val changeState = Mockito.mock(StateMachine.OnChangeStateCallback::class.java)
-        val customChangeState = Mockito.mock(StateMachine.OnChangeStateCallback::class.java)
+        val changeState: StateMachine.OnChangeStateCallback = mockk(relaxed = true)
+        val customChangeState: StateMachine.OnChangeStateCallback = mockk(relaxed = true)
 
         machine.addState(0, state1)
         machine.config {
@@ -166,12 +165,12 @@ class StateMachineTest {
             onChangeState = changeState
         }
         machine.start()
-        Mockito.verify(changeState).onChangeState(0)
+        verify { changeState.onChangeState(0) }
 
         machine.changeState(0, true, customChangeState)
         machine.changeState(0, customChangeState)
 
-        Mockito.verify(customChangeState).onChangeState(0)
+        verify { customChangeState.onChangeState(0) }
     }
 
     @Test
@@ -226,8 +225,8 @@ class StateMachineTest {
     }
 
     private fun TestStateMachine.initMachine(): TestStateMachine {
-        addState(0, Mockito.mock(TestState::class.java))
-        addState(1, Mockito.mock(TestState::class.java))
+        addState(0, mockk(relaxed = true))
+        addState(1, mockk(relaxed = true))
         config {
             initialState = 0
             setOnChangeState { }

@@ -2,19 +2,49 @@ name: "Find modules that need to be validated and exported"
 description: "Boilerplate steps"
 
 outputs:
-  modules:
-    description: "List of modules"
-    value: ${{ steps.read-modules.outputs.modules }}
+  modulesAll:
+    description: "List of all modules"
+    value: ${{ steps.read-all-modules.outputs.modulesAll }}
+
+  modulesAndroid:
+    description: "List of android modules"
+    value: ${{ steps.read-android-modules.outputs.modulesAndroid }}
+
+  modulesMulti:
+    description: "List of multiplatform modules"
+    value: ${{ steps.read-multi-modules.outputs.modulesMulti }}
 
 runs:
   using: "composite"
   steps:
 
-    # Get modules that need to be published and validated and put it into a variable
-    - name: Read Modules
-      id: read-modules
+    # Get modules that need to be published and validated
+    - name: Load Modules
+      id: load-modules
       shell: bash
       run: |
         ./gradlew :toolkit:publishModules
+
+    # List of all modules that need to be published and validated
+    - name: Read Modules
+      id: read-all-modules
+      shell: bash
+      run: |
         MODULES=$(cat $PWD/toolkit/build/modules.txt)
-        echo "modules=$MODULES" >> "$GITHUB_OUTPUT"
+        echo "modulesAll=$MODULES" >> "$GITHUB_OUTPUT"
+
+    # List of android modules that need to be published and validated
+    - name: Read Android Modules
+      id: read-android-modules
+      shell: bash
+      run: |
+        MODULES=$(cat $PWD/toolkit/build/modules-android.txt)
+        echo "modulesAndroid=$MODULES" >> "$GITHUB_OUTPUT"
+
+    # List of multiplatform modules that need to be published and validated
+    - name: Read Multiplatform Modules
+      id: read-multi-modules
+      shell: bash
+      run: |
+        MODULES=$(cat $PWD/toolkit/build/modules-multi.txt)
+        echo "modulesMulti=$MODULES" >> "$GITHUB_OUTPUT"

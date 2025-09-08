@@ -1,6 +1,6 @@
 plugins {
     id("java-gradle-plugin")
-    alias(libs.plugins.jvm)
+    alias(libs.plugins.jetbrains.kotlin.jvm)
 }
 
 kotlin { jvmToolchain(21) }
@@ -24,12 +24,6 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
     implementation(libs.jetbrains.extensions) {
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
-    }
-    implementation(libs.jetbrains.kover) {
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
-    }
-    implementation(libs.jetbrains.dokka) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
     implementation(libs.jetbrains.dokka) {
@@ -70,6 +64,7 @@ gradlePlugin {
             description = "All default config"
             implementationClass = "com.toolkit.plugin.android.ToolkitBasePlugin"
         }
+
         create("toolkit-android-publish") {
             id = "toolkit-android-publish"
             displayName = "Toolkit Publish Plugin"
@@ -78,7 +73,33 @@ gradlePlugin {
         }
         //endregion
 
+        //region Desktop
+        create("toolkit-desktop-sample") {
+            id = "toolkit-desktop-sample"
+            displayName = "Toolkit Sample Plugin"
+            description = "Plug and play for modules to show the world the wonders of tomorrow!"
+            implementationClass = "com.toolkit.plugin.desktop.ToolkitSamplePlugin"
+        }
+        //endregion
+
+        //region Wasm
+        create("toolkit-web-sample") {
+            id = "toolkit-web-sample"
+            displayName = "Toolkit Sample Plugin"
+            description = "Plug and play for modules to show the world the wonders of tomorrow!"
+            implementationClass = "com.toolkit.plugin.web.ToolkitSamplePlugin"
+        }
+        //endregion
+
         //region Multiplatform
+        create("toolkit-multiplatform-sample") {
+            id = "toolkit-multiplatform-sample"
+            displayName = "Toolkit Sample Plugin"
+            description =
+                "Plug and play for modules those should be a exported library to the world!"
+            implementationClass = "com.toolkit.plugin.multiplatform.ToolkitSamplePlugin"
+        }
+
         create("toolkit-multiplatform-library") {
             id = "toolkit-multiplatform-library"
             displayName = "Toolkit Library Plugin"
@@ -138,5 +159,17 @@ gradlePlugin {
             implementationClass = "com.toolkit.plugin.ToolkitGroupPlugin"
         }
         //endregion
+    }
+}
+
+val normalize = (1..21)
+    .mapNotNull { libs.create("x-normalize-x${it.toString().padStart(3, '0')}").orNull }
+    .map { module -> "${module.group}:${module.name}:${module.versionConstraint.requiredVersion}:" }
+
+configurations.configureEach {
+    resolutionStrategy {
+        failOnVersionConflict()
+        preferProjectModules()
+        setForcedModules(normalize)
     }
 }

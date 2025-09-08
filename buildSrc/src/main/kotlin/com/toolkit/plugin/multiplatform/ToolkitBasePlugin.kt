@@ -7,8 +7,11 @@ import com.toolkit.plugin.util.multiplatform
 import com.toolkit.plugin.util.projectJavaVersionCode
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class, ExperimentalWasmDsl::class)
 internal class ToolkitBasePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
@@ -16,10 +19,18 @@ internal class ToolkitBasePlugin : Plugin<Project> {
         target.kotlinExtension.jvmToolchain(projectJavaVersionCode)
 
         with(target.multiplatform) {
-            androidTarget {}
-            jvm {}
+            applyDefaultHierarchyTemplate {
+                common {
+                    group("java") {
+                        withJvm()
+                        withAndroidTarget()
+                    }
+                    group("web") {
+                        withJs()
+                        withWasmJs()
+                    }
+                }
+            }
         }
-
-        target.plugins.apply("toolkit-optimize")
     }
 }

@@ -2,37 +2,50 @@
 
 package br.com.arch.toolkit.splinter
 
-import br.com.arch.toolkit.flow.ColdResponseFlow
-import br.com.arch.toolkit.flow.ResponseFlow
-import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.DataResultStatus
+import br.com.arch.toolkit.splinter.extension.cold
+import br.com.arch.toolkit.splinter.extension.get
+import br.com.arch.toolkit.splinter.extension.live
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.buffer
 
-expect interface TargetResultHolder<T> : ResultHolder<T>
+interface DataHolder<T> {
+    /**
+     * Data Observables
+     */
+    //region Observable Data Info
+    /* Only Current execution events */
+    val liveFlow: Flow<T>
+    val liveColdFlow: Flow<T>
 
-expect interface TargetRegularHolder<T> : RegularHolder<T>
-
-interface ResultHolder<T> : DataHolder<DataResult<T>> {
-    val flow: ResponseFlow<T>
-    val coldFlow: ColdResponseFlow<T>
-
-    //region Return Types
-    val data: T? get() = get().data
-    val error: Throwable? get() = get().error
-    val status: DataResultStatus get() = get().status
+    /* All execution events from this instance */
+    val fullFlow: Flow<T>
+    val fullColdFlow: Flow<T>
     //endregion
 }
 
-interface RegularHolder<T> : DataHolder<T?> {
-    val flow: Flow<T?>
-}
+internal class MessageHolder : DataHolder<Splinter.Message> {
+    private lateinit var splinter: Splinter<*>
 
-interface DataHolder<T> {
-    fun get(): T
-}
+    fun init(splinter: Splinter<*>) {
+        this.splinter = splinter
+    }
 
-internal interface DataSetter<T> {
-    suspend fun set(value: T)
+    /**
+     * Data Observables
+     */
+    //region Observable Data Info
+    /* Only Current execution events */
+    override val liveFlow: Flow<Splinter.Message> get() = splinter.logFlow.live()
+    override val liveColdFlow: Flow<Splinter.Message>
+        get() = liveFlow.cold(
+            splinter = splinter,
+            default = { listOfNotNull(splinter.logFlow.get()) }
+        )
 
-    fun trySet(value: T): Boolean
+    /* All execution events from this instance */
+    override val fullFlow: Flow<Splinter.Message> get() = splinter.logFlow.asSharedFlow().buffer()
+    override val fullColdFlow: Flow<Splinter.Message>
+        get() = splinter.logFlow.cold(splinter = splinter).buffer()
+    //endregion
 }

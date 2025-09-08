@@ -3,9 +3,11 @@
 
 package br.com.arch.toolkit.flow
 
-import androidx.annotation.NonNull
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import br.com.arch.toolkit.result.DataResult
-import br.com.arch.toolkit.result.DataResultStatus
 import br.com.arch.toolkit.result.ObserveWrapper
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultNone
@@ -16,127 +18,104 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.stateIn
 
-open class ResponseFlow<T> : StateFlow<DataResult<T>> {
-    protected val innerFlow: MutableStateFlow<DataResult<T>>
+open class ResponseFlow<T> internal constructor(
+    private val innerFlow: Flow<DataResult<T>>
+) : Flow<DataResult<T>> by innerFlow {
 
-    protected var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        private set
+    private var scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private var transformDispatcher: CoroutineDispatcher = Dispatchers.Default
 
-    open fun scope(scope: CoroutineScope) =
-        apply { this.scope = scope }
-
-    protected var transformDispatcher: CoroutineDispatcher = Dispatchers.IO
-        private set
-
-    open fun transformDispatcher(dispatcher: CoroutineDispatcher) =
+    fun scope(scope: CoroutineScope) = apply { this.scope = scope }
+    fun transformDispatcher(dispatcher: CoroutineDispatcher) =
         apply { transformDispatcher = dispatcher }
 
-    constructor(value: DataResult<T> = dataResultNone()) {
-        this.innerFlow = MutableStateFlow(value)
-    }
+    suspend fun collect(wrapper: ObserveWrapper<T>.() -> Unit) =
+        ObserveWrapper<T>().scope(scope).transformDispatcher(transformDispatcher).apply(wrapper)
+            .suspendFunc { collect { data -> handleResult(data) } }
 
-    private constructor(
-        value: DataResult<T>,
-        scope: CoroutineScope,
-        dispatcher: CoroutineDispatcher,
-        mirror: Flow<DataResult<T>>,
-    ) : this(value) {
-        this.scope = scope
-        this.transformDispatcher = dispatcher
-        scope.launch { mirror.collect(innerFlow::tryEmit) }
-    }
-
-    val status: DataResultStatus
-        get() = value.status
-    val error: Throwable?
-        get() = value.error
-    val data: T?
-        get() = value.data
-
-    override val replayCache: List<DataResult<T>>
-        get() = innerFlow.replayCache
-    override var value: DataResult<T>
-        get() = innerFlow.value
-        protected set(value) {
-            innerFlow.value = value
+    /* MUAHAHA */
+    fun observe(
+        owner: LifecycleOwner,
+        wrapper: ObserveWrapper<T>.() -> Unit
+    ) = ObserveWrapper<T>().scope(owner.lifecycleScope).transformDispatcher(transformDispatcher)
+        .apply(wrapper).suspendFunc {
+            owner.lifecycle.repeatOnLifecycle(
+                state = Lifecycle.State.STARTED,
+                block = { collect(::handleResult) }
+            )
         }
 
-    override suspend fun collect(collector: FlowCollector<DataResult<T>>) =
-        innerFlow.collect(collector)
+    fun <R> map(transform: (T) -> R) = from(flow = innerFlow, transform = transform)
 
-    override fun equals(other: Any?): Boolean = innerFlow == other
+    fun state(
+        scope: CoroutineScope = this.scope,
+        started: SharingStarted = SharingStarted.WhileSubscribed(),
+        initial: DataResult<T> = (innerFlow as? StateFlow<DataResult<T>>)?.value
+            ?: (innerFlow as? SharedFlow<DataResult<T>>)?.replayCache?.lastOrNull()
+            ?: dataResultNone()
+    ): ResponseStateFlow<T> = ResponseStateFlow(
+        innerFlow = innerFlow.stateIn(scope = scope, started = started, initialValue = initial)
+    )
+
+    fun shared(
+        scope: CoroutineScope = this.scope,
+        started: SharingStarted = SharingStarted.WhileSubscribed(),
+        replay: Int = (innerFlow as? SharedFlow<DataResult<T>>)?.replayCache?.size
+            ?: (innerFlow as? StateFlow<DataResult<T>>)?.replayCache?.size ?: 0
+    ): ResponseSharedFlow<T> = ResponseSharedFlow(
+        innerFlow = innerFlow.shareIn(scope = scope, started = started, replay = replay)
+    )
+
+    override fun equals(other: Any?) = innerFlow == other
 
     override fun hashCode() = innerFlow.hashCode()
 
-    /**
-     *
-     */
-    suspend fun collect(collector: suspend ObserveWrapper<T>.() -> Unit) {
-        newWrapper()
-            .scope(scope)
-            .transformDispatcher(transformDispatcher)
-            .apply { collector.invoke(this) }
-            .attachTo(this)
+    override fun toString() = innerFlow.toString()
+
+    companion object {
+
+        operator fun <T> invoke(): ResponseFlow<T> = ResponseFlow(emptyFlow())
+        operator fun <T> invoke(data: DataResult<T>): ResponseFlow<T> = ResponseFlow(flowOf(data))
+
+        operator fun <T> invoke(vararg data: DataResult<T>): ResponseFlow<T> =
+            ResponseFlow(flowOf(*data))
+
+        operator fun <T> invoke(dataList: List<DataResult<T>>): ResponseFlow<T> =
+            ResponseFlow(dataList.asFlow())
+
+        fun <T> from(flow: Flow<DataResult<T>>): ResponseFlow<T> = ResponseFlow(innerFlow = flow)
+
+        fun <T, R> from(
+            flow: Flow<DataResult<R>>,
+            transform: (R) -> T
+        ): ResponseFlow<T> = ResponseFlow(
+            innerFlow = flow
+                .map { it.transform(transform) }
+                .catch { emit(dataResultError(it)) }
+        )
+
+        fun <T> fromFlow(flow: Flow<T>): ResponseFlow<T> = from(
+            flow = flow.map(::dataResultSuccess)
+        )
+
+        fun <T, R> fromFlow(
+            flow: Flow<R>,
+            transform: suspend (R) -> T
+        ): ResponseFlow<T> = ResponseFlow<T>(
+            innerFlow = flow
+                .map { dataResultSuccess<T>(transform(it)) }
+                .catch { emit(dataResultError<T>(it)) }
+        )
     }
-
-    /**
-     *
-     */
-    fun shareIn(scope: CoroutineScope, started: SharingStarted, replay: Int = 0) = ResponseFlow(
-        value = value,
-        scope = scope,
-        dispatcher = transformDispatcher,
-        mirror = innerFlow.shareIn(scope, started, replay),
-    )
-
-    /**
-     *
-     */
-    fun mirror(other: Flow<DataResult<T>>) = ResponseFlow(
-        value = value,
-        scope = scope,
-        dispatcher = transformDispatcher,
-        mirror = other,
-    )
-
-    /**
-     *
-     */
-    fun cold(until: suspend (DataResult<T>) -> Boolean) = ColdResponseFlow(
-        scope = scope,
-        dispatcher = transformDispatcher,
-        mirror = this,
-        until = until,
-    )
-
-    /**
-     *
-     */
-    @Suppress("RemoveExplicitTypeArguments")
-    fun <R> mirror(other: Flow<R>, transform: (R) -> T) = ResponseFlow(
-        value = value,
-        scope = scope,
-        dispatcher = transformDispatcher,
-        mirror = other.map<R, DataResult<T>> {
-            withContext(transformDispatcher) {
-                dataResultSuccess(it.let(transform))
-            }
-        }.catch { emit(dataResultError(it)) },
-    )
-
-    /**
-     * @return A new instance of ObserveWrapper<T>
-     */
-    @NonNull
-    private fun newWrapper() = ObserveWrapper<T>()
 }

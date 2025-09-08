@@ -4,43 +4,35 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import br.com.arch.toolkit.alwaysOnOwner
 import br.com.arch.toolkit.util.observeNotNull
 import br.com.arch.toolkit.util.observeSingle
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
-import org.junit.Assert
-import org.junit.Before
-import org.junit.FixMethodOrder
 import org.junit.Rule
-import org.junit.Test
-import org.junit.runners.MethodSorters
-import org.mockito.Mockito.times
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoInteractions
-import org.mockito.kotlin.verifyNoMoreInteractions
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ComputableLiveDataTest {
 
-    @Rule
-    @JvmField
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     init {
-        Dispatchers.setMain(StandardTestDispatcher())
+        Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 
     private lateinit var mockedObserver: (Any) -> Unit
     private lateinit var computeObserver: () -> Unit
     private lateinit var abortObserver: () -> Unit
 
-    @Before
+    @BeforeTest
     fun setup() {
-        mockedObserver = mock()
-        computeObserver = mock()
-        abortObserver = mock()
+        mockedObserver = mockk(relaxed = true)
+        computeObserver = mockk(relaxed = true)
+        abortObserver = mockk(relaxed = true)
     }
 
     @Test
@@ -50,14 +42,14 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        verifyNoInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 0) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
 
         liveData.observeNotNull(alwaysOnOwner, mockedObserver)
 
         Thread.sleep(50)
-        verify(computeObserver).invoke()
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 1) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
     }
 
     @Test
@@ -67,8 +59,8 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        verifyNoInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 0) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
 
         // Call when become active
         liveData.observeNotNull(alwaysOnOwner, mockedObserver)
@@ -78,8 +70,8 @@ class ComputableLiveDataTest {
         liveData.invalidate()
         Thread.sleep(50)
 
-        verify(computeObserver, times(2)).invoke()
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 2) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
     }
 
     @Test
@@ -89,22 +81,22 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        verifyNoInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 0) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
 
         // Call when become active
         liveData.observeNotNull(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
-        verify(computeObserver).invoke()
+        verify(exactly = 1) { computeObserver.invoke() }
 
         liveData.removeObservers(alwaysOnOwner)
-        Assert.assertTrue(liveData.hasComputed())
+        assertTrue(liveData.hasComputed())
 
         // Call again if have observers
         liveData.invalidate()
-        Assert.assertFalse(liveData.hasComputed())
-        verifyNoMoreInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        assertFalse(liveData.hasComputed())
+        verify(exactly = 1) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
     }
 
     @Test
@@ -117,21 +109,21 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        verifyNoInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
-        Assert.assertFalse(liveData.isRunningOrHasComputed)
+        verify(exactly = 0) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
+        assertFalse(liveData.isRunningOrHasComputed)
 
         // Call when become active
         liveData.observeNotNull(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
-        verify(computeObserver).invoke()
+        verify(exactly = 1) { computeObserver.invoke() }
 
         // Call again if have observers
         liveData.invalidate()
-        Assert.assertTrue(liveData.isRunning)
-        Assert.assertTrue(liveData.isRunningOrHasComputed)
-        verifyNoMoreInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        assertTrue(liveData.isRunning)
+        assertTrue(liveData.isRunningOrHasComputed)
+        verify(exactly = 1) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
     }
 
     @Test
@@ -144,16 +136,16 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        verifyNoInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 0) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
 
         // Call when become active
         liveData.observeNotNull(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
-        verify(computeObserver).invoke()
-        Assert.assertFalse(liveData.isRunning)
-        Assert.assertFalse(liveData.hasComputed())
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 1) { computeObserver.invoke() }
+        assertFalse(liveData.isRunning)
+        assertFalse(liveData.hasComputed())
+        verify(exactly = 0) { abortObserver.invoke() }
     }
 
     @Test
@@ -163,20 +155,20 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        verifyNoInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 0) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
 
         // Call when become active
         liveData.observeSingle(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
-        verify(computeObserver).invoke()
-        Assert.assertFalse(liveData.isRunning)
-        Assert.assertTrue(liveData.hasComputed())
+        verify(exactly = 1) { computeObserver.invoke() }
+        assertFalse(liveData.isRunning)
+        assertTrue(liveData.hasComputed())
 
         liveData.observeSingle(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
-        verifyNoMoreInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 1) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
     }
 
     @Test
@@ -186,15 +178,15 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        verifyNoInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 0) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
 
         liveData.interrupt()
-        verify(abortObserver).invoke()
-        Assert.assertFalse(liveData.isRunning)
-        Assert.assertFalse(liveData.hasComputed())
+        verify(exactly = 1) { abortObserver.invoke() }
+        assertFalse(liveData.isRunning)
+        assertFalse(liveData.hasComputed())
 
-        verifyNoInteractions(computeObserver)
+        verify(exactly = 0) { computeObserver.invoke() }
     }
 
     @Test
@@ -204,19 +196,19 @@ class ComputableLiveDataTest {
 
             override fun abort() = abortObserver.invoke()
         }
-        verifyNoInteractions(computeObserver)
-        verifyNoInteractions(abortObserver)
+        verify(exactly = 0) { computeObserver.invoke() }
+        verify(exactly = 0) { abortObserver.invoke() }
 
         liveData.observeSingle(alwaysOnOwner, mockedObserver)
         Thread.sleep(50)
-        verify(computeObserver).invoke()
-        Assert.assertTrue(liveData.isRunningOrHasComputed)
+        verify(exactly = 1) { computeObserver.invoke() }
+        assertTrue(liveData.isRunningOrHasComputed)
 
         liveData.interrupt()
-        verify(abortObserver).invoke()
-        Assert.assertFalse(liveData.isRunning)
-        Assert.assertFalse(liveData.hasComputed())
+        verify(exactly = 1) { abortObserver.invoke() }
+        assertFalse(liveData.isRunning)
+        assertFalse(liveData.hasComputed())
 
-        verifyNoMoreInteractions(computeObserver)
+        verify(exactly = 1) { computeObserver.invoke() }
     }
 }

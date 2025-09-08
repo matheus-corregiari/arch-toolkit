@@ -19,12 +19,13 @@ kotlin {
     }
     sourceSets.androidMain.dependencies {
         implementation(libs.androidx.lifecycle.livedata)
-        implementation(libs.jetbrains.coroutines.android)
-        compileOnly(libs.square.okhttp.core)
+
+        // Support for Retrofit
         compileOnly(libs.square.retrofit.main)
     }
+    sourceSets.jvmMain.dependencies {}
     sourceSets.commonTest.dependencies {
-        implementation(libs.junit.test)
-        implementation(libs.jetbrains.test.coroutines)
+        implementation(libs.jetbrains.kotlin.test)
+        implementation(libs.jetbrains.coroutines.test)
     }
 }

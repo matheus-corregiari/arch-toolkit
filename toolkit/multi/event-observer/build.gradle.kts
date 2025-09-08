@@ -14,19 +14,24 @@ kotlin {
         implementation(libs.androidx.lifecycle.runtime)
     }
     sourceSets.androidMain.dependencies {
+        implementation(libs.jetbrains.coroutines.android)
         implementation(libs.androidx.lifecycle.livedata)
+    }
+    sourceSets.jvmMain.dependencies {
+        implementation(libs.jetbrains.coroutines.jvm)
     }
 
     // Test Libraries
     sourceSets.commonTest.dependencies {
-        implementation(libs.jetbrains.test.coroutines)
-        implementation(libs.mockito.test.core)
-        implementation(libs.mockito.test.kotlin)
+        implementation(libs.jetbrains.coroutines.test)
+        implementation(libs.jetbrains.kotlin.test)
+    }
+    sourceSets.javaTest.dependencies {
         implementation(libs.mockk.test.agent)
-        implementation(libs.junit.test)
     }
     sourceSets.androidUnitTest.dependencies {
-        implementation(libs.androidx.test.core)
+        implementation(libs.mockk.test.agent)
         implementation(libs.mockk.test.android)
+        implementation(libs.androidx.test.core)
     }
 }

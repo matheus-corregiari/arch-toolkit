@@ -10,9 +10,9 @@ internal val logListAllDefault = listOf<Any>(
     "Info - test - \t[OneShot] Emit - Loading - null",
     "Info - test - \t\t[Context] - Emit - Snapshot! - aaa - null",
     ".*Error - test #0 - \t\t\\[Context] - Error\n\njava\\.lang\\.IllegalStateException.*"
-        .toRegex(RegexOption.DOT_MATCHES_ALL),
+        .toRegex(RegexOption.MULTILINE),
     ".*Error - test #1 - .*"
-        .toRegex(RegexOption.DOT_MATCHES_ALL),
+        .toRegex(RegexOption.MULTILINE),
     "Info - test - \t\t[Context] - Emit - Snapshot! - bbb - null",
     "Info - test - \t\t[Context] - Snapshot info - null",
     "Info - test - \t[OneShot] Executed with success, data: ccc - null",
@@ -30,9 +30,9 @@ internal val logListWithoutMinDuration = listOf<Any>(
     "Info - test - \t[OneShot] Emit - Loading - null",
     "Info - test - \t\t[Context] - Emit - Snapshot! - aaa - null",
     ".*Error - test #0 - \t\t\\[Context] - Error\n\njava\\.lang\\.IllegalStateException.*"
-        .toRegex(RegexOption.DOT_MATCHES_ALL),
+        .toRegex(RegexOption.MULTILINE),
     ".*Error - test #1 - .*"
-        .toRegex(RegexOption.DOT_MATCHES_ALL),
+        .toRegex(RegexOption.MULTILINE),
     "Info - test - \t\t[Context] - Emit - Snapshot! - bbb - null",
     "Info - test - \t\t[Context] - Snapshot info - null",
     "Info - test - \t[OneShot] Executed with success, data: ccc - null",
