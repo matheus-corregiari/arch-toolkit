@@ -1,27 +1,27 @@
 #!/bin/bash
 
-output="../git-tag"
 message=$(git show -s --format=%B)
-parents=$(git show -s --format=%P | wc -w)
 
-# Verify if the commit is a merge
-merge_message=$(grep -E '(merge|Merge) pull request' <<< "$message" || true)
+# Verify merge commit or squash
+merge_message=$(grep -Ei '(merge pull request|release/|hotfix/)' <<< "$message" || true)
 if [ -z "$merge_message" ]; then
-    echo -e "MUST BE A MERGE MERGE!"
+    echo "Commit is not a merge or squash merge from release/hotfix branch"
     echo "$message"
     exit 1
 fi
 
-# Verify if the commit is a merge following the pattern release/0.0.0 or hotfix/0.0.0
-matched_message=$(grep -E '(release|hotfix)\/([0-9]+.[0-9]+.[0-9]+(?:-rc\d{2})?)' <<< "$message" || true)
-if [ -z "$matched_message" ]; then
-    echo -e "Are you sure that you created a proper branch name to merge with master?"
+# Extract version (supports X.Y.Z and X.Y.Z-rcNN)
+version=$(grep -oE '(release|hotfix)/[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?' <<< "$message" \
+          | sed -E 's/^(release|hotfix)\///' \
+          | head -n1)
+
+if [ -z "$version" ]; then
+    echo "Could not extract version from commit message:"
     echo "$message"
     exit 1
 fi
 
-# Get version in message
-version=$(sed -E 's?.+(release|hotfix)/([0-9]+.[0-9]+.[0-9]+(?:-rc\d{2})?)?\2?g' <<< "$matched_message" | head -n1)
+echo "Message: $merge_message"
 echo "Tag: $version"
 
 # Create and push tag
