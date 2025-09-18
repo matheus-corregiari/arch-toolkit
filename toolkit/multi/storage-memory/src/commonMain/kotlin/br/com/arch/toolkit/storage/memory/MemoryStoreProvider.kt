@@ -11,6 +11,46 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.enums.EnumEntries
 
+/**
+ * In-memory [StorageProvider] implementation.
+ *
+ * [MemoryStoreProvider] keeps all values inside a [MutableMap] backed by [MutableStateFlow].
+ * It is ideal for **testing, prototyping, or ephemeral storage** where persistence
+ * is not required. Once the process is killed, all data is lost.
+ *
+ * ---
+ *
+ * ### Behavior
+ * - Each key is mapped to a [MutableStateFlow].
+ * - Values are reactive: updates are immediately emitted to collectors.
+ * - No persistence: values live only in memory.
+ * - API-compatible with other [StorageProvider] implementations like DataStore.
+ *
+ * ---
+ *
+ * ### Example: Using Memory storage
+ * ```kotlin
+ * val memory = MemoryStoreProvider(mutableMapOf())
+ *
+ * val flag = memory.boolean("feature_enabled")
+ * val counter = memory.int("counter").required { 0 }
+ *
+ * // Reactive
+ * scope.launch {
+ *     flag.get().collect { println("Feature enabled? $it") }
+ * }
+ *
+ * // Update
+ * flag.set(true)
+ * counter.set(counter.instant() + 1)
+ *
+ * println("Counter = ${counter.instant()}")
+ * ```
+ *
+ * @property database Internal map holding [MutableStateFlow]s per key.
+ *
+ * @see StorageProvider
+ */
 class MemoryStoreProvider(
     private val database: MutableMap<String, MutableStateFlow<*>>
 ) : StorageProvider() {
@@ -51,6 +91,27 @@ class MemoryStoreProvider(
     private fun <T> flow(key: String): MutableStateFlow<T?> =
         database.getOrPut(key) { MutableStateFlow<T?>(null) } as MutableStateFlow<T?>
 
+    /**
+     * In-memory [KeyValue] backed by a [MutableStateFlow].
+     *
+     * This class provides reactive and synchronous access to values stored in memory.
+     * It is the building block for all primitives, enums, and model keys returned
+     * by [MemoryStoreProvider].
+     *
+     * ---
+     *
+     * ### Example
+     * ```kotlin
+     * val memory = MemoryStoreProvider(mutableMapOf())
+     * val name: KeyValue<String?> = memory.string("user_name")
+     *
+     * name.set("Alice")
+     * println("Hello, ${name.instant()}")
+     * ```
+     *
+     * @param T The value type held in memory.
+     * @property flow The [MutableStateFlow] used to store and emit values.
+     */
     class MemoryKeyValue<T>(
         private val flow: MutableStateFlow<T?>
     ) : KeyValue<T?>() {
@@ -60,7 +121,7 @@ class MemoryStoreProvider(
 
         override fun get(): Flow<T?> = flow.asStateFlow()
 
-        override fun set(value: T?, scope: CoroutineScope?) {
+        override fun set(value: T?, scope: CoroutineScope) {
             flow.value = value
         }
     }

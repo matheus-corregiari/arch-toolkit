@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 /**
  *
  */
-sealed class CacheStrategy<T>(val id: String) {
+abstract class CacheStrategy<T>(val id: String) {
 
     internal abstract val localData: T?
     internal abstract val localVersion: DataVersion?

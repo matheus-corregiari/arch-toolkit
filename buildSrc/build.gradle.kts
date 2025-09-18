@@ -23,9 +23,6 @@ dependencies {
     implementation(libs.jetbrains.plugin) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
-    implementation(libs.jetbrains.extensions) {
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
-    }
     implementation(libs.jetbrains.dokka) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
@@ -129,13 +126,6 @@ gradlePlugin {
             displayName = "Toolkit Optimization Plugin"
             description = "Optimize dependencies"
             implementationClass = "com.toolkit.plugin.ToolkitOptimizePlugin"
-        }
-
-        create("toolkit-compose") {
-            id = "toolkit-compose"
-            displayName = "Toolkit Compose Plugin"
-            description = "Enables and configure compose for module"
-            implementationClass = "com.toolkit.plugin.ToolkitComposePlugin"
         }
 
         create("toolkit-lint") {

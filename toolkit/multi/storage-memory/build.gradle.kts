@@ -12,7 +12,6 @@ kotlin {
         // Common Setup (all targets)
         commonMain.dependencies {
             // Other Arch-Toolkit Dependencies
-            implementation(project(":toolkit:multi:lumber"))
             implementation(project(":toolkit:multi:storage-core"))
 
             // Jetbrains
