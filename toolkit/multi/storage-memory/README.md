@@ -4,9 +4,9 @@
 [![CI Status][badge-ci]][link-ci]
 ![Android][badge-android]
 ![Apple][badge-apple]
+![JVM][badge-jvm]
 ![JS][badge-js]
 ![WASM][badge-wasm]
-![JVM][badge-jvm]
 [![LICENSE][badge-license]][link-license]
 [![COVERAGE][badge-coverage]][link-coverage]
 

@@ -1,9 +1,4 @@
-@file:Suppress(
-    "TooManyFunctions",
-    "unused",
-    "CanBeParameter"
-)
-@file:OptIn(ExperimentalAtomicApi::class, ExperimentalTime::class)
+@file:Suppress("TooManyFunctions", "unused", "CanBeParameter")
 
 package br.com.arch.toolkit.splinter
 
@@ -43,6 +38,8 @@ import kotlin.concurrent.atomics.plusAssign
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+@Suppress("MemberVisibilityCanBePrivate")
+@OptIn(ExperimentalAtomicApi::class)
 class Splinter<RETURN> internal constructor(
     private val id: String,
     private val config: Config<RETURN>,
@@ -110,7 +107,7 @@ class Splinter<RETURN> internal constructor(
             }
         }
     }
-    private val exceptionHandler = CoroutineExceptionHandler { context, throwable ->
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         logFlow.tryError("[Splinter] Major failed detected", throwable)
         dataFlow.tryEmit(dataResultError(throwable))
     }
@@ -360,6 +357,7 @@ class Splinter<RETURN> internal constructor(
     }
 
     @ConsistentCopyVisibility
+    @OptIn(ExperimentalTime::class)
     data class Message private constructor(
         val level: Lumber.Level,
         val message: String?,
