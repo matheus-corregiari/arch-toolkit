@@ -124,7 +124,6 @@ println("Counter is $counter")
 ## 🛠️ Providers
 
 * **storage-datastore** → Backed by AndroidX DataStore.
-
     * Supported on **Java (Android/JVM)** and **Apple (iOS/macOS)**.
 * **storage-memory** → In-memory, ideal for testing and mock scenarios.
 * **noop** → Stub for **Web (JS/WASM)** targets.

@@ -179,12 +179,6 @@ abstract class KeyValue<ResultData> {
         )
 
         @StorageApi
-        fun <T> KeyValue<T?>.required(default: T): KeyValue<T> = RequiredKeyValue(
-            keyValue = this,
-            default = { default }
-        )
-
-        @StorageApi
         fun <T, R> KeyValue<T>.map(mapTo: (T) -> R, mapBack: (R) -> T): KeyValue<R> = MapKeyValue(
             keyValue = this,
             mapTo = mapTo,
