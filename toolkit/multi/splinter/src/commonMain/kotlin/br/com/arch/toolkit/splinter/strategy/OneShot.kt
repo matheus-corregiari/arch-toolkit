@@ -52,13 +52,17 @@ class OneShot<T> private constructor(
                 logChannel.info("[OneShot] Cache - Set =)")
                 val (version, data, interrupt) = handleCache(cache, logChannel)
                 remoteVersion = version
-                if (interrupt && data != null) return@measureTimeResult data
-                else if (data != null) localData = data
+                if (interrupt && data != null) {
+                    return@measureTimeResult data
+                } else if (data != null) localData = data
             } ?: logChannel.info("[OneShot] Cache - Not set =(")
 
             // Emit first loading
-            if (localData == null) logChannel.info("[OneShot] Emit - Loading")
-            else logChannel.info("[OneShot] Emit - Loading with data! - $localData")
+            if (localData == null) {
+                logChannel.info("[OneShot] Emit - Loading")
+            } else {
+                logChannel.info("[OneShot] Emit - Loading with data! - $localData")
+            }
             dataChannel.send(dataResultLoading(localData))
 
             // Before Request
@@ -101,7 +105,6 @@ class OneShot<T> private constructor(
         cache: CacheStrategy<T>,
         logChannel: Channel<Splinter.Message>
     ): Triple<CacheStrategy.DataVersion?, T?, Boolean> {
-
         val remoteVersion = cache.newVersion()
         logChannel.info("[Cache] New version - $remoteVersion")
 

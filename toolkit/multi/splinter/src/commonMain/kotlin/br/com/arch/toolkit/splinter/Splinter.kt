@@ -367,7 +367,7 @@ class Splinter<RETURN> internal constructor(
         val timestamp: Long = Clock.System.now().toEpochMilliseconds()
     ) {
 
-        internal val indentedMessage = message?.indented()
+        val indentedMessage = message?.indented()
 
         private fun String?.messageTag(): String? {
             if (isNullOrBlank()) return null
@@ -377,14 +377,15 @@ class Splinter<RETURN> internal constructor(
 
         private fun String?.indented(): String? {
             val messageTag = messageTag() ?: return this
-            val indent =
-                identMap.firstNotNullOfOrNull { (regex, indent) -> if (regex.matches(messageTag)) indent else null }
+            val indent = indentMap.firstNotNullOfOrNull { (regex, indent) ->
+                indent.takeIf { regex.matches(messageTag) }
+            }
             return indent + this
         }
 
         companion object Creator {
 
-            private val identMap = mapOf(
+            private val indentMap = mapOf(
                 Regex("(\\[Splinter])") to "",
                 Regex("(\\[Apprentice #[0-9]{3}])") to "-- ",
                 Regex("(\\[OneShot])") to "-- -- ",
