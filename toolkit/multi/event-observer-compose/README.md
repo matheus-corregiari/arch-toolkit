@@ -1,180 +1,152 @@
-# Event Observer – Compose Module
+# 🎭 Arch Toolkit · Event Observer Compose
 
 [![Maven Central][badge-maven]][link-maven]
 [![CI Status][badge-ci]][link-ci]
 ![Android][badge-android]
+![Apple][badge-apple]
+![JS][badge-js]
+![WASM][badge-wasm]
 ![JVM][badge-jvm]
+[![LICENSE][badge-license]][link-license]
+[![COVERAGE][badge-coverage]][link-coverage]
 
-Bring Arch Toolkit’s reactive `DataResult`, `ResponseFlow` and `ResponseLiveData` into Jetpack
-Compose with a single, elegant DSL. Define loading, error, data and list-state handlers in a fluent,
-chainable API—no boilerplate, fully type-safe and animation-ready.
-
----
-
-## 📑 Table of Contents
-
-* [Features](#-features)
-* [Installation](#-installation)
-* [Usage](#-usage)
-    * [1. Wrap your DataResult / Flow / LiveData](#1-wrap-your-dataResult--flow--liveData)
-    * [2. Chain your UI callbacks](#2-chain-your-ui-callbacks)
-    * [3. Attach side-effects](#3-attach-non-compose-side-effects)
-* [API Reference](#-api-reference)
-* [Examples](#-examples)
-* [License](#-license)
+A **Compose-first event/result observer DSL** for handling loading, success, error, and data states
+declaratively.
+Part of the [Arch Toolkit](https://github.com/matheus-corregiari/arch-toolkit).
 
 ---
 
-## 🏷️ Features
+## ✨ Features
 
-* **Fluent DSL** — Chainable composable callbacks: `OnShowLoading`, `OnData`, `OnError`, etc.
-* **Animation support** — Customize enter/exit transitions for loading, data or error states.
-* **Outside-Compose hooks** — Attach a traditional `ObserveWrapper<T>` for side-effects or logging.
-* **Empty & List helpers** — `OnEmpty`, `OnNotEmpty`, `OnSingle`, `OnMany` for collection handling.
-* **Kotlin Multiplatform** — Compatible with all Arch Toolkit targets (`JVM`, `Android`, `JS`,
-  etc.).
+* ✅ **Multiplatform**: Works across Android, JVM, Apple, JS, and WASM.
+* 🎯 **Declarative DSL**: Chainable API for `OnData`, `OnError`, `OnLoading`, etc.
+* 🔄 **Reactive**: Powered by Kotlin \[Flow] and \[DataResult].
+* 🎨 **Compose-ready**: Works seamlessly with Jetpack Compose, including `AnimatedVisibility`.
+* ⚡ **Animation built-in**: Configurable enter/exit transitions with sensible defaults.
+* 🧪 **Side-effects**: Observe outside Compose with `outsideComposable`.
 
 ---
 
-## 🚀 Installation
+## 🚀 Quick Start
 
-Add this module to your Gradle build:
+Add dependency:
 
 ```kotlin
-dependencies {
-    implementation("io.github.matheus-corregiari:event-observer-compose:<arch-toolkit-version>")
-}
+implementation("io.github.matheus-corregiari:event-observer-compose:<version>")
 ```
 
-> **Note:** Don’t forget the Compose BOM or required Compose libraries in your project.
-
 ---
 
-## 💡 Usage
+## 📖 Usage Examples
 
-### 1. Wrap your DataResult / Flow / LiveData
-
-```kotlin
-import br.com.arch.toolkit.compose.composable
-
-val myDataResult: DataResult<MyModel> = DataResult()
-val comp = myDataResult.composable
-```
-
-Or with a Flow:
+### Basic Observation
 
 ```kotlin
-val myFlow: ResponseFlow<MyModel> = ResponseFlow()
 val comp = myFlow.composable
-```
 
-Or with LiveData:
-
-```kotlin
-val myLiveData: ResponseLiveData<MyModel> = ResponseLiveData()
-val comp = myLiveData.composable
-```
-
-### 2. Chain your UI callbacks
-
-```kotlin
 comp
-    .animation {
-        enabled = true
-        defaultEnterDuration = 200L
-    }
-    .OnShowLoading(EventDataStatus.DoesNotMatter) {
-        CircularProgressIndicator()
-    }
-    .OnData { data: T ->
-        Text(text = data.title)
-    }
-    .OnError { error: Throwable ->
-        Text("Oops: ${error.message}")
-    }
-    .OnEmpty {
-        Text("No items found")
-    }
+    .OnShowLoading { CircularProgressIndicator() }
+    .OnData { data -> Text("Hello, $data") }
+    .OnError { err -> Text("Oops: ${err.message}") }
     .Unwrap()
 ```
 
-* **`OnShowLoading` / `OnHideLoading`** — Show or hide a loader
-* **`OnData`** — Render your data (overloads allow status or exception)
-* **`OnError`** — Render static or exception-aware error UI
-* **`OnEmpty` / `OnNotEmpty` / `OnSingle` / `OnMany`** — Handle list states
-* **`Unwrap()`** — **must** be the final call to start collecting the flow
+---
 
-### 3. Attach non-Compose side-effects
+### Nested DSL
 
 ```kotlin
-comp.outsideComposable { 
-    success { /* analytics */ }
-    error { error: Throwable -> logError(error) }
+comp.Unwrap {
+    OnShowLoading { CircularProgressIndicator() }
+    OnData { Text("Loaded!") }
+    OnError { Text("Something went wrong") }
 }
 ```
 
-These callbacks run on your configured dispatcher (default `Dispatchers.Main` / `IO`), outside
-Compose.
+---
+
+### Animation Configuration
+
+```kotlin
+comp.animation {
+    enabled = true
+    enterAnimation = fadeIn(tween(300))
+    exitAnimation = fadeOut(tween(200))
+}
+    .Unwrap()
+```
+
+Or globally:
+
+```kotlin
+ComposableDataResult.AnimationConfig.enabledByDefault = false
+```
 
 ---
 
-## 🛠️ API Reference
+### Outside Composable Side-Effects
 
-### `ComposableDataResult<T>`
-
-#### Configuration
-
-| Method                                                    | Description                  |
-|-----------------------------------------------------------|------------------------------|
-| `animation(config: AnimationConfig.() -> Unit)`           | Customize animation settings |
-| `outsideComposable(config: ObserveWrapper<T>.() -> Unit)` | Attach non-compose observers |
-
-#### Loading
-
-| Method                                                                                 | Description                   |
-|----------------------------------------------------------------------------------------|-------------------------------|
-| `@Composable OnShowLoading(dataStatus: EventDataStatus, func: @Composable () -> Unit)` | Render when status is LOADING |
-| `@Composable OnHideLoading(dataStatus: EventDataStatus, func: @Composable () -> Unit)` | Render when loading ends      |
-
-#### Error
-
-| Method                                                                                    | Description                      |
-|-------------------------------------------------------------------------------------------|----------------------------------|
-| `@Composable OnError(dataStatus: EventDataStatus, func: @Composable () -> Unit)`          | Render on error (no exception)   |
-| `@Composable OnError(dataStatus: EventDataStatus, func: @Composable (Throwable) -> Unit)` | Render on error (with exception) |
-
-#### Data
-
-| Method                                                                            | Description                     |
-|-----------------------------------------------------------------------------------|---------------------------------|
-| `@Composable OnData(func: @Composable (T) -> Unit)`                               | Render on data available        |
-| `@Composable OnData(func: @Composable (T, DataResultStatus) -> Unit)`             | Render on data + status         |
-| `@Composable OnData(func: @Composable (T, DataResultStatus, Throwable?) -> Unit)` | Render on data + status + error |
-
-#### List Types
-
-| Method                                                    | Description                  |
-|-----------------------------------------------------------|------------------------------|
-| `@Composable OnEmpty(func: @Composable () -> Unit)`       | Render on empty collection   |
-| `@Composable OnNotEmpty(func: @Composable (T) -> Unit)`   | Render on non-empty list     |
-| `@Composable <R> OnSingle(func: @Composable (R) -> Unit)` | Render on single-item result |
-| `@Composable OnMany(func: @Composable (T) -> Unit)`       | Render on multi-item result  |
-
-#### Unwrap
-
-| Method                                                                     | Description                             |
-|----------------------------------------------------------------------------|-----------------------------------------|
-| `@Composable Unwrap(func: @Composable ComposableDataResult<T>.() -> Unit)` | Configure in nested DSL                 |
-| `@Composable Unwrap()`                                                     | Start collection and dispatch callbacks |
+```kotlin
+comp.outsideComposable {
+    error { throwable: Throwable -> logError(throwable) }
+}
+    .Unwrap()
+```
 
 ---
 
-## 📝 Examples
+### Collect as State
 
-See the **[sample-compose][link-sample]** folder for a minimal end-to-end demo:
+```kotlin
+val compState by myFlow.collectAsComposableState()
 
-1. Launch `MainActivity` collecting a `Flow<DataResult<List<String>>>`.
-2. Display a loader, list of strings, or error message.
+compState
+    .OnData { Text("From State") }
+    .Unwrap()
+```
+
+---
+
+## 🛠️ Concepts
+
+* **`ComposableDataResult`** → The core wrapper around `Flow<DataResult<T>>`.
+* **`OnData / OnError / OnLoading / OnEmpty`** → DSL blocks for state rendering.
+* **`AnimationConfig`** → Controls enter/exit transitions (fade by default).
+* **`outsideComposable`** → Non-Compose observation via `ObserveWrapper`.
+
+---
+
+## 🧩 Targets Overview
+
+| Target      | Status |
+|-------------|--------|
+| Android/JVM | ✅      |
+| iOS/macOS   | ✅      |
+| JS/WASM     | ✅      |
+
+---
+
+## 🧪 Testing
+
+```kotlin
+val fakeFlow = MutableStateFlow(DataResult.loading())
+
+val comp = fakeFlow.composable
+comp.OnShowLoading { Text("Loading...") }
+    .OnData { Text("Loaded!") }
+    .Unwrap()
+```
+
+---
+
+## 📦 Part of Arch Toolkit
+
+The **Event Observer Compose** is one of the building blocks
+of [Arch Toolkit](https://github.com/matheus-corregiari/arch-toolkit), designed to provide:
+
+* Reactive abstractions
+* Declarative state handling
+* Developer productivity
 
 ---
 
@@ -185,10 +157,28 @@ See [LICENSE](../../../LICENSE.md) for details.
 
 ---
 
-[link-sample]: https://github.com/matheus-corregiari/arch-toolkit/tree/master/toolkit/compose/sample-compose
 [link-maven]: https://search.maven.org/artifact/io.github.matheus-corregiari/event-observer-compose
+
 [link-ci]: https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/generate-tag.yml
+
+[link-license]: ../../../LICENSE.md
+
+[link-coverage]: https://codecov.io/gh/matheus-corregiari/arch-toolkit
+
 [badge-android]: http://img.shields.io/badge/-android-6EDB8D.svg?style=flat
+
+[badge-apple]: http://img.shields.io/badge/-apple-000000.svg?style=flat
+
+[badge-js]: http://img.shields.io/badge/-js-F7DF1E.svg?style=flat
+
+[badge-wasm]: http://img.shields.io/badge/-wasm-654FF0.svg?style=flat
+
 [badge-jvm]: http://img.shields.io/badge/-jvm-DB413D.svg?style=flat
+
 [badge-maven]: https://img.shields.io/maven-central/v/io.github.matheus-corregiari/event-observer-compose.svg
+
 [badge-ci]: https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/generate-tag.yml/badge.svg
+
+[badge-license]: https://img.shields.io/github/license/matheus-corregiari/arch-toolkit
+
+[badge-coverage]: https://img.shields.io/codecov/c/github/matheus-corregiari/arch-toolkit

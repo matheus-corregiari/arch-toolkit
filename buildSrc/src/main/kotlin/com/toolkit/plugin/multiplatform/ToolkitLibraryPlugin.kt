@@ -35,22 +35,22 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
             }
 
             // iOS Targets
-            val exportName = target.name.split("-").joinToString(
-                separator = "",
-                transform = String::capitalizeFirstChar
-            )
-            val exportId = (target.android.namespace ?: "").trim()
-            listOf(
-                iosArm64(),
-                iosX64(),
-                iosSimulatorArm64(),
-            ).forEach { target ->
-                target.binaries.framework {
-                    baseName = "${exportName}Kit"
-                    isStatic = true
-                    freeCompilerArgs += listOf("-bundle-id", exportId)
-                }
-            }
+//            val exportName = target.name.split("-").joinToString(
+//                separator = "",
+//                transform = String::capitalizeFirstChar
+//            )
+//            val exportId = (target.android.namespace ?: "").trim()
+//            listOf(
+//                iosArm64(),
+//                iosX64(),
+//                iosSimulatorArm64(),
+//            ).forEach { target ->
+//                target.binaries.framework {
+//                    baseName = "${exportName}Kit"
+//                    isStatic = true
+//                    freeCompilerArgs += listOf("-bundle-id", exportId)
+//                }
+//            }
         }
 
         target.plugins.apply("toolkit-lint")

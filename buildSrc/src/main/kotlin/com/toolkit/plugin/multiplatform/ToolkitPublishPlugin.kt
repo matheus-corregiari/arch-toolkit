@@ -59,6 +59,8 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
 
         // Setup Custom Publishing
         with(target.vanniktechPublish) {
+            signAllPublications()
+            publishToMavenCentral(true)
             configure(
                 KotlinMultiplatform(
                     javadocJar = JavadocJar.Dokka("dokkaGenerate"),
