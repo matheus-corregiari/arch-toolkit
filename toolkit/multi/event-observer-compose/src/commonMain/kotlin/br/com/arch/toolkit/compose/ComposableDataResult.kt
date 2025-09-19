@@ -4,7 +4,6 @@
     "FunctionNaming",
     "TooManyFunctions",
 )
-@file:OptIn(ExperimentalAtomicApi::class)
 
 package br.com.arch.toolkit.compose
 
@@ -23,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import br.com.arch.toolkit.compose.ComposableDataResult.AnimationConfig
+import br.com.arch.toolkit.compose.ComposableDataResult.AnimationConfig.Defaults
 import br.com.arch.toolkit.compose.observable.ComposeObservable
 import br.com.arch.toolkit.compose.observable.DataObservable
 import br.com.arch.toolkit.compose.observable.EmptyObservable
@@ -43,22 +44,71 @@ import br.com.arch.toolkit.result.ObserveWrapper
 import br.com.arch.toolkit.util.unwrap
 import br.com.arch.toolkit.util.valueOrNull
 import kotlinx.coroutines.flow.Flow
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 
 /**
- * Entry point for observing a [ResponseFlow] of [DataResult] in Arch Toolkit.
+ * Declarative Compose wrapper for observing a [ResponseFlow] of [DataResult].
  *
- * Provides a fluent, declarative API to react to loading, error, data, and list states
- * via composable callbacks. This class also supports animations for the appearance and
- * disappearance of these states through the [AnimationConfig] class.
+ * [ComposableDataResult] provides a **fluent DSL** to react to common states:
+ * - **Loading** → [OnShowLoading], [OnHideLoading]
+ * - **Error** → [OnError]
+ * - **Success/Data** → [OnSuccess], [OnData]
+ * - **Collections** → [OnEmpty], [OnNotEmpty], [OnSingle], [OnMany]
  *
- * @param T The type of data held by the [DataResult].
- * @property resultFlow The source [ResponseFlow] emitting [DataResult] values.
+ * The final rendering is triggered by [Unwrap], which collects the underlying flow
+ * and dispatches the configured callbacks.
+ *
+ * ---
+ *
+ * ### Behavior
+ * - Works with [Flow]s of [DataResult] (commonly [ResponseFlow]).
+ * - Each state observer adds a [ComposeObservable] to the pipeline.
+ * - Supports optional **non-Compose side effects** via [outsideComposable].
+ * - Provides **animations** for showing/hiding state blocks via [AnimationConfig].
+ * - Uses [collectAsStateWithLifecycle] if a [LifecycleOwner] is available,
+ *   falling back to [collectAsState].
+ *
+ * ---
+ *
+ * ### Example: Typical Usage
+ * ```kotlin
+ * val comp = myFlow.composable
+ *
+ * comp
+ *   .OnShowLoading { CircularProgressIndicator() }
+ *   .OnData { user -> Text("Hello ${user.name}") }
+ *   .OnError { e -> Text("Error: ${e.message}") }
+ *   .Unwrap()
+ * ```
+ *
+ * ### Example: Nested DSL
+ * ```kotlin
+ * myFlow.composable.Unwrap {
+ *   OnShowLoading { CircularProgressIndicator() }
+ *   OnData { Text("Done!") }
+ *   OnError { Text("Oops!") }
+ * }
+ * ```
+ *
+ * ### Example: Animations
+ * ```kotlin
+ * comp.animation {
+ *   enabled = true
+ *   defaultEnterDuration = 300.milliseconds
+ *   defaultExitDuration = 200.milliseconds
+ * }
+ * ```
+ *
+ * ---
+ *
+ * @param T The type of data wrapped in [DataResult].
+ * @property result The [Flow] emitting [DataResult] values.
+ *
  * @see ResponseFlow
  * @see DataResult
+ * @see Unwrap
  * @see AnimationConfig
  */
 @ConsistentCopyVisibility
@@ -113,18 +163,29 @@ data class ComposableDataResult<T> internal constructor(
     // region Success
 
     /**
-     * Renders the given @Composable block when the [DataResultStatus] is SUCCESS.
+     * Renders the given composable block when the [DataResultStatus] is `SUCCESS`.
      *
-     * Example:
+     * ---
+     *
+     * ### Behavior
+     * - Triggered when the upstream [DataResult] has a success status.
+     * - Optional [EventDataStatus] filter allows reacting only if data is present or not.
+     *
+     * ---
+     *
+     * ### Example
      * ```kotlin
      * comp.OnSuccess(EventDataStatus.WithData) {
-     *   Text("Success")
+     *   Text("Success with data!")
      * }.Unwrap()
      * ```
      *
-     * @param dataStatus when to run the block based on data presence (see [EventDataStatus])
-     * @param func the @Composable lambda to execute on success
-     * @return this [ComposableDataResult] for chaining
+     * @param dataStatus Filter when to render based on [EventDataStatus]. Default = [EventDataStatus.DoesNotMatter].
+     * @param func The composable content to display on success.
+     * @return This [ComposableDataResult] for fluent chaining.
+     *
+     * @see DataResultStatus.SUCCESS
+     * @see EventDataStatus
      */
     @Composable
     fun OnSuccess(
@@ -137,19 +198,19 @@ data class ComposableDataResult<T> internal constructor(
     // region Loading
 
     /**
-     * Renders the given @Composable block when the [DataResultStatus] is LOADING.
+     * Renders the given composable block while the [DataResultStatus] is `LOADING`.
      *
-     * Example:
+     * ---
+     *
+     * ### Example
      * ```kotlin
-     * comp.OnShowLoading(EventDataStatus.WithData) {
+     * comp.OnShowLoading {
      *   CircularProgressIndicator()
      * }.Unwrap()
      * ```
      *
-     * @param dataStatus when to run the block based on data presence (see [EventDataStatus])
-     * @param func the @Composable lambda to execute on loading
-     * @return this [ComposableDataResult] for chaining
-     * @see EventDataStatus
+     * @param dataStatus Filter based on [EventDataStatus]. Default = [EventDataStatus.DoesNotMatter].
+     * @param func The composable content to show during loading.
      */
     @Composable
     fun OnShowLoading(
@@ -158,19 +219,20 @@ data class ComposableDataResult<T> internal constructor(
     ) = apply { observableList.add(ShowLoadingObservable(dataStatus, func)) }
 
     /**
-     * Renders the given @Composable block when loading finishes (status becomes non-LOADING).
+     * Renders the given composable block when loading finishes
+     * (i.e., status changes from `LOADING` to something else).
      *
-     * Example:
+     * ---
+     *
+     * ### Example
      * ```kotlin
      * comp.OnHideLoading {
-     *   // hide your loader
+     *   Text("Loaded!")
      * }.Unwrap()
      * ```
      *
-     * @param dataStatus when to run the block based on data presence (see [EventDataStatus])
-     * @param func the @Composable lambda to execute after loading ends
-     * @return this [ComposableDataResult] for chaining
-     * @see EventDataStatus
+     * @param dataStatus Filter based on [EventDataStatus]. Default = [EventDataStatus.DoesNotMatter].
+     * @param func The composable content to display after loading ends.
      */
     @Composable
     fun OnHideLoading(
@@ -183,19 +245,17 @@ data class ComposableDataResult<T> internal constructor(
     // region Error
 
     /**
-     * Renders the given @Composable block when an error occurs (without the error object).
+     * Renders the given composable block when an error occurs,
+     * without exposing the [Throwable].
      *
-     * Example:
+     * ---
+     *
+     * ### Example
      * ```kotlin
      * comp.OnError {
-     *   Text("Unexpected error")
+     *   Text("Something went wrong")
      * }.Unwrap()
      * ```
-     *
-     * @param dataStatus when to run the block based on data presence (see [EventDataStatus])
-     * @param func the @Composable lambda to execute on error
-     * @return this [ComposableDataResult] for chaining
-     * @see EventDataStatus
      */
     @Composable
     fun OnError(
@@ -204,19 +264,17 @@ data class ComposableDataResult<T> internal constructor(
     ) = apply { observableList.add(ErrorObservable(dataStatus, func)) }
 
     /**
-     * Renders the given @Composable block when an error occurs, providing the [Throwable].
+     * Renders the given composable block when an error occurs,
+     * exposing the thrown [Throwable].
      *
-     * Example:
+     * ---
+     *
+     * ### Example
      * ```kotlin
      * comp.OnError { t ->
      *   Text("Error: ${t.message}")
      * }.Unwrap()
      * ```
-     *
-     * @param dataStatus when to run the block based on data presence (see [EventDataStatus])
-     * @param func the @Composable lambda receiving the thrown [Throwable]
-     * @return this [ComposableDataResult] for chaining
-     * @see EventDataStatus
      */
     @Composable
     fun OnError(
@@ -229,18 +287,16 @@ data class ComposableDataResult<T> internal constructor(
     // region Data
 
     /**
-     * Renders the given @Composable block when non-null data is available.
+     * Renders the given composable block when non-null data is available.
      *
-     * Example:
+     * ---
+     *
+     * ### Example
      * ```kotlin
-     * comp.OnData { data ->
-     *   Text(data.toString())
+     * comp.OnData { user ->
+     *   Text("Hello, ${user.name}")
      * }.Unwrap()
      * ```
-     *
-     * @param func the @Composable lambda receiving the data of type [T]
-     * @return this [ComposableDataResult] for chaining
-     * @see DataResultStatus
      */
     @Composable
     fun OnData(func: @Composable (T) -> Unit) = apply {
@@ -248,11 +304,17 @@ data class ComposableDataResult<T> internal constructor(
     }
 
     /**
-     * Renders the given @Composable block when data is available, also providing the [DataResultStatus].
+     * Renders the given composable block when data is available,
+     * providing the [DataResultStatus] alongside the data.
      *
-     * @param func the @Composable lambda receiving the data of type [T] and its [DataResultStatus]
-     * @return this [ComposableDataResult] for chaining
-     * @see DataResultStatus
+     * ---
+     *
+     * ### Example
+     * ```kotlin
+     * comp.OnData { user, status ->
+     *   Text("User ${user.name} (status=$status)")
+     * }
+     * ```
      */
     @Composable
     fun OnData(func: @Composable (T, DataResultStatus) -> Unit) = apply {
@@ -260,11 +322,18 @@ data class ComposableDataResult<T> internal constructor(
     }
 
     /**
-     * Renders the given @Composable block when data is available, providing data, status, and optional error.
+     * Renders the given composable block when data is available,
+     * providing data, its [DataResultStatus], and a possible [Throwable].
      *
-     * @param func the @Composable lambda receiving data, its [DataResultStatus], and a possible [Throwable]
-     * @return this [ComposableDataResult] for chaining
-     * @see DataResultStatus
+     * ---
+     *
+     * ### Example
+     * ```kotlin
+     * comp.OnData { user, status, error ->
+     *   if (error != null) Text("Recovered from ${error.message}")
+     *   else Text("User ${user.name}")
+     * }
+     * ```
      */
     @Composable
     fun OnData(func: @Composable (T, DataResultStatus, Throwable?) -> Unit) = apply {
@@ -276,44 +345,36 @@ data class ComposableDataResult<T> internal constructor(
     // region List Type
 
     /**
-     * Renders the given @Composable block when the data list is empty.
+     * Renders when the underlying list is empty.
      *
-     * Example:
+     * ---
+     *
+     * ### Example
      * ```kotlin
-     * comp.OnEmpty { Text("Nothing here") }.Unwrap()
+     * comp.OnEmpty {
+     *   Text("No items found")
+     * }
      * ```
-     *
-     * @param func the @Composable lambda to execute on empty list
-     * @return this [ComposableDataResult] for chaining
      */
     @Composable
     fun OnEmpty(func: @Composable () -> Unit) = apply { observableList.add(EmptyObservable(func)) }
 
     /**
-     * Renders the given @Composable block when the data list is not empty.
-     *
-     * @param func the @Composable lambda receiving the non-empty data list
-     * @return this [ComposableDataResult] for chaining
+     * Renders when the underlying list is not empty.
      */
     @Composable
     fun OnNotEmpty(func: @Composable (T) -> Unit) =
         apply { observableList.add(NotEmptyObservable(func)) }
 
     /**
-     * Renders the given @Composable block when the data list contains exactly one item.
-     *
-     * @param func the @Composable lambda receiving the single item of type [R]
-     * @return this [ComposableDataResult] for chaining
+     * Renders when the list contains exactly one item.
      */
     @Composable
     fun <R> OnSingle(func: @Composable (R) -> Unit) =
         apply { observableList.add(SingleObservable(func)) }
 
     /**
-     * Renders the given @Composable block when the data list contains more than one item.
-     *
-     * @param func the @Composable lambda receiving the entire data list
-     * @return this [ComposableDataResult] for chaining
+     * Renders when the list contains more than one item.
      */
     @Composable
     fun OnMany(func: @Composable (T) -> Unit) = apply { observableList.add(ManyObservable(func)) }
@@ -323,18 +384,21 @@ data class ComposableDataResult<T> internal constructor(
     // region Unwrap
 
     /**
-     * Configures multiple observables in a nested DSL before collecting the flow.
+     * DSL entrypoint to configure multiple observables before collection.
      *
-     * Example:
+     * ---
+     *
+     * ### Example
      * ```kotlin
      * comp.Unwrap {
-     *   OnData { … }
-     *   OnError { … }
+     *   OnShowLoading { CircularProgressIndicator() }
+     *   OnData { Text("Done!") }
+     *   OnError { Text("Oops!") }
      * }
      * ```
      *
-     * @param config A @Composable receiver on this [ComposableDataResult] to set up callbacks.
-     * @see Unwrap(LifecycleOwner)
+     * @param owner Optional [LifecycleOwner] for lifecycle-aware collection.
+     * @param config DSL block on this [ComposableDataResult].
      */
     @Composable
     fun Unwrap(
@@ -346,12 +410,12 @@ data class ComposableDataResult<T> internal constructor(
     }
 
     /**
-     * Starts collecting the underlying [ResponseFlow] and dispatches all configured callbacks.
+     * Starts collecting the underlying [Flow] and dispatches
+     * all configured observables.
      *
-     * Must be the last call in your chain if not using the DSL-style `Unwrap` overload.
+     * ---
      *
-     * Example:
-     *
+     * ### Example
      * ```kotlin
      * comp
      *   .OnShowLoading { … }
@@ -360,8 +424,7 @@ data class ComposableDataResult<T> internal constructor(
      *   .Unwrap()
      * ```
      *
-     * @see ResponseFlow.collect
-     * @see ObserveWrapper
+     * @param owner Optional [LifecycleOwner] for lifecycle-aware collection.
      */
     @Composable
     fun Unwrap(owner: LifecycleOwner? = LocalLifecycleOwner.current) {
@@ -393,23 +456,44 @@ data class ComposableDataResult<T> internal constructor(
     /**
      * Holds animation configuration for the composable states managed by [ComposableDataResult].
      *
-     * This class allows for enabling/disabling animations, customizing the [Modifier]
-     * applied during animations, and defining specific [EnterTransition] and [ExitTransition]
-     * effects.
+     * ---
      *
-     * Default animations are fade-in and fade-out. The default enter animation includes a delay
-     * matching the default exit animation's duration, which can help create a sequential
-     * animation effect when one composable state replaces another within the Unwrap block.
+     * ### Behavior
+     * - Controls whether animations are applied to [AnimatedVisibility] when rendering
+     *   success, error, loading, or data states.
+     * - Defines the default `Modifier`, enter, and exit transitions.
+     * - Provides global defaults via [Defaults], which can be overridden before use.
+     *
+     * ---
+     *
+     * ### Example
+     * ```kotlin
+     * comp.animation {
+     *   enabled = true
+     *   enterAnimation = fadeIn(tween(300))
+     *   exitAnimation = fadeOut(tween(200))
+     * }
+     * ```
+     *
+     * Or set global defaults once:
+     * ```kotlin
+     * ComposableDataResult.AnimationConfig.enabledByDefault = false
+     * ComposableDataResult.AnimationConfig.defaultEnterDuration = 200.milliseconds
+     * ComposableDataResult.AnimationConfig.defaultExitDuration = 200.milliseconds
+     * ```
+     *
+     * ---
      *
      * @property enabled Whether animations are active for the composable blocks.
-     *           Defaults to [AnimationConfig.Defaults.enabledByDefault].
-     * @property animationModifier A [Modifier] to be applied to the `AnimatedVisibility`
-     *           wrapper if animations are enabled.
-     * @property enterAnimation The [EnterTransition] to use when a composable block becomes visible.
-     *           Defaults to a `fadeIn` animation.
-     * @property exitAnimation The [ExitTransition] to use when a composable block becomes hidden.
-     *           Defaults to a `fadeOut` animation.
+     *           Defaults to [Defaults.enabledByDefault].
+     * @property animationModifier A [Modifier] applied to the `AnimatedVisibility` wrapper.
+     * @property enterAnimation The [EnterTransition] for showing content.
+     *           Defaults to a fade-in with a delay equal to the exit duration.
+     * @property exitAnimation The [ExitTransition] for hiding content.
+     *           Defaults to a simple fade-out.
+     *
      * @see ComposableDataResult.animation
+     * @see AnimatedVisibility
      */
     class AnimationConfig internal constructor() {
         var enabled: Boolean = enabledByDefault
@@ -429,27 +513,38 @@ data class ComposableDataResult<T> internal constructor(
             )
 
         /**
-         * Provides default values for [AnimationConfig] properties.
-         * These can be overridden globally before any [ComposableDataResult] instance
-         * creates its [AnimationConfig].
+         * Provides global defaults for [AnimationConfig].
+         *
+         * ---
+         *
+         * ### Behavior
+         * - These values are applied whenever a new [AnimationConfig] is created.
+         * - Can be changed globally to affect all instances.
+         *
+         * ---
+         *
+         * ### Example
+         * ```kotlin
+         * // Disable animations everywhere
+         * ComposableDataResult.AnimationConfig.enabledByDefault = false
+         *
+         * // Faster transitions
+         * ComposableDataResult.AnimationConfig.defaultEnterDuration = 150.milliseconds
+         * ComposableDataResult.AnimationConfig.defaultExitDuration = 150.milliseconds
+         * ```
+         *
+         * ---
+         *
+         * @property enabledByDefault Global flag to enable/disable animations.
+         *           Default = `true`.
+         * @property defaultEnterDuration Default duration for [enterAnimation].
+         *           Default = `450.milliseconds`.
+         * @property defaultExitDuration Default duration for [exitAnimation].
+         *           Default = `450.milliseconds`.
          */
         companion object Defaults {
-            /**
-             * Determines if animations are enabled by default for new [AnimationConfig] instances.
-             * Default value is `true`.
-             */
             var enabledByDefault = true
-
-            /**
-             * The default duration for enter animations if not specified otherwise in [enterAnimation].
-             * Default value is 450 milliseconds.
-             */
             var defaultEnterDuration: Duration = 450.milliseconds
-
-            /**
-             * The default duration for exit animations if not specified otherwise in [exitAnimation].
-             * Default value is 450 milliseconds.
-             */
             var defaultExitDuration: Duration = 450.milliseconds
         }
     }

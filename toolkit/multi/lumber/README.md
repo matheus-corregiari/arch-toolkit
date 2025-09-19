@@ -4,9 +4,11 @@
 [![CI Status][badge-ci]][link-ci]  
 ![Android][badge-android]  
 ![Apple][badge-apple]  
+![JVM][badge-jvm]
 ![JS][badge-js]  
 ![WASM][badge-wasm]  
-![JVM][badge-jvm]
+[![LICENSE][badge-license]][link-license]  
+[![COVERAGE][badge-coverage]][link-coverage]
 
 A flexible, type-safe, and multiplatform logging library inspired
 by [Timber](https://github.com/JakeWharton/timber).  
@@ -223,6 +225,10 @@ See [LICENSE](../../../LICENSE.md) for details.
 
 [link-ci]: https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/generate-tag.yml
 
+[link-license]: ../../../LICENSE.md
+
+[link-coverage]: https://codecov.io/gh/matheus-corregiari/arch-toolkit
+
 [badge-android]: http://img.shields.io/badge/-android-6EDB8D.svg?style=flat
 
 [badge-apple]: http://img.shields.io/badge/-apple-000000.svg?style=flat
@@ -236,5 +242,9 @@ See [LICENSE](../../../LICENSE.md) for details.
 [badge-maven]: https://img.shields.io/maven-central/v/io.github.matheus-corregiari/lumber.svg
 
 [badge-ci]: https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/generate-tag.yml/badge.svg
+
+[badge-license]: https://img.shields.io/github/license/matheus-corregiari/arch-toolkit
+
+[badge-coverage]: https://img.shields.io/codecov/c/github/matheus-corregiari/arch-toolkit
 
 ```
