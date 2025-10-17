@@ -42,6 +42,8 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
 
         // Setup Custom Publishing
         with(target.vanniktechPublish) {
+            signAllPublications()
+            publishToMavenCentral(true)
             configure(AndroidSingleVariantLibrary())
         }
     }
