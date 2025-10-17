@@ -17,4 +17,5 @@ dependencies {
 
     // Other Module depedencies
     implementation(project(":toolkit:multi:lumber"))
+    implementation(project(":toolkit:android:util"))
 }
