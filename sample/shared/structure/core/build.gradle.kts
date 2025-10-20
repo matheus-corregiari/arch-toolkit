@@ -15,6 +15,7 @@ kotlin {
             dependencies {
                 // Arch Toolkit Dependencies
                 api(project(":toolkit:multi:lumber"))
+                api(project(":toolkit:multi:state-handle"))
                 api(project(":toolkit:multi:storage-core"))
 
                 // Jetbrains Compose Tools
