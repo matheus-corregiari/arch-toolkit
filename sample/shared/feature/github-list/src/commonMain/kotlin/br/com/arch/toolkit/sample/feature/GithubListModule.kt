@@ -14,7 +14,7 @@ import br.com.arch.toolkit.sample.github.shared.structure.core.ComposeContent
 import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureIcon
 import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureRegistry
 import br.com.arch.toolkit.sample.github.shared.structure.core.featureRegistry
-import br.com.arch.toolkit.sample.github.shared.structure.core.savedStateHandleCompat
+import br.com.arch.toolkit.stateHandle.savedStateHandleCompat
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

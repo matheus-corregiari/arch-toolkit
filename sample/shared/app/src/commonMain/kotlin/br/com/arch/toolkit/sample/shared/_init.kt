@@ -5,12 +5,12 @@ package br.com.arch.toolkit.sample.shared
 import br.com.arch.toolkit.lumber.Lumber
 import br.com.arch.toolkit.sample.feature.GithubListModule
 import br.com.arch.toolkit.sample.feature.SettingsModule
-import br.com.arch.toolkit.sample.github.shared.structure.core.enableSavedStateHandleCompat
 import br.com.arch.toolkit.sample.github.shared.structure.core.featureRegistry
 import br.com.arch.toolkit.sample.github.shared.structure.data.local.LocalSourceModule
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.RemoteSourceModule
 import br.com.arch.toolkit.sample.github.shared.structure.repository.RepositoryModule
 import br.com.arch.toolkit.sample.shared.ui.home.HomeViewModel
+import br.com.arch.toolkit.stateHandle.enableSavedStateHandleCompat
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.koin.core.module.dsl.viewModelOf
