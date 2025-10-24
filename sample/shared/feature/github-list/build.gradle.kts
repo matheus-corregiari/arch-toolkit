@@ -2,6 +2,7 @@ plugins {
     id("toolkit-multiplatform-sample")
     alias(libs.plugins.jetbrains.compose.compiler)
     alias(libs.plugins.jetbrains.compose.kotlin)
+    alias(libs.plugins.jetbrains.serialization)
 }
 
 android.namespace = "br.com.arch.toolkit.sample.shared.feature.githubList"
