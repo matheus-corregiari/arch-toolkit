@@ -48,7 +48,7 @@ include(":sample:target:desktop")
 //include(":sample:target:web")
 
 plugins {
-    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.1"
+    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.2"
 }
 
 kover { enableCoverage() }
