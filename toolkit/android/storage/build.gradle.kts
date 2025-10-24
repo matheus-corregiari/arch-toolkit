@@ -14,6 +14,7 @@ dependencies {
     // Androidx
     implementation(libs.androidx.security)
     implementation(libs.androidx.startup)
+    implementation(libs.androidx.lifecycle.livedata)
 
     // Other Module depedencies
     implementation(project(":toolkit:multi:lumber"))
