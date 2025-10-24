@@ -2,7 +2,11 @@ package br.com.arch.toolkit.storage.core
 
 import br.com.arch.toolkit.storage.core.KeyValue.Companion.required
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.timeout
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * A [KeyValue] adapter that enforces non-null values.
@@ -65,7 +69,9 @@ internal class RequiredKeyValue<ResultData> internal constructor(
             value = value ?: error("Required KeyValue cannot have a null value"),
         )
 
-    override fun get() = keyValue.get().mapNotNull { it }
+    @OptIn(FlowPreview::class)
+    override fun get() = keyValue.get().mapNotNull { it }.timeout(300.milliseconds)
+        .catch { default?.invokeCatching()?.let { emit(it) } }
 
     override fun set(value: ResultData, scope: CoroutineScope) = keyValue.set(value, scope)
 
