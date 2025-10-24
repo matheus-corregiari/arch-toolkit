@@ -5,6 +5,8 @@ import br.com.arch.toolkit.flow.ResponseMutableStateFlow
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.splinter.extension.invokeCatching
 import br.com.arch.toolkit.stateHandle.StateValue.Companion.default
+import br.com.arch.toolkit.stateHandle.ViewModelState.Regular
+import br.com.arch.toolkit.stateHandle.ViewModelState.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -18,6 +20,32 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 
+/**
+ * Typed, lifecycle-aware state holder backed by [SavedStateHandle].
+ *
+ * Provides:
+ * - In-memory value (`data`) synced to `SavedStateHandle`.
+ * - Optional JSON fallback when a value cannot be directly saved (e.g., non-parcelable).
+ * - Reactive streams for UI consumption.
+ *
+ * ## Variants
+ * - [Regular] – exposes `Flow<T?>` of the current value.
+ * - [Result] – exposes `Flow<DataResult<T>>` for request/result patterns.
+ *
+ * ## When to use
+ * - UI state that must survive configuration and process recreation.
+ * - Small payloads you want to read/write and observe from a ViewModel.
+ *
+ * ## When **not** to use
+ * - Long-term persistence (use your storage layer).
+ * - Large graphs/blobs (serialize only minimal fields or store IDs).
+ *
+ * @param name Logical key for the value (also used to build the JSON shadow key).
+ * @param json JSON engine used when falling back to string persistence.
+ * @param serializer Optional serializer for `T` used by JSON fallback.
+ * @param stateHandle Underlying Android saved state storage.
+ * @param scope Coroutine scope tied to the ViewModel lifecycle.
+ */
 sealed class ViewModelState<T : Any>(
     val name: String,
     val json: Json,
@@ -25,7 +53,15 @@ sealed class ViewModelState<T : Any>(
     protected val stateHandle: SavedStateHandle,
     val scope: CoroutineScope
 ) {
+    // Shadow key for JSON string persistence when direct set/remove fails.
     private var jsonData: String? by stateHandle.value("$name-primitive")
+
+    /**
+     * Backing value synchronized with [stateHandle].
+     *
+     * - Write path: saves directly; on failure, persists JSON shadow (if serializer available).
+     * - Read path: returns saved value or (when absent) tries to decode from JSON shadow.
+     */
     protected var data: T? by stateHandle.value<T>(
         key = name,
         setError = { data, _ ->
@@ -40,16 +76,27 @@ sealed class ViewModelState<T : Any>(
         json.decodeFromString(serializer, dataAsString)
     }
 
+    /** Stream of the typed value from [SavedStateHandle]. */
     protected val dataFlow = stateHandle.getStateFlow<T?>(
         key = name,
         initialValue = null
     )
+
+    /** Stream of the shadow JSON string. */
     protected val jsonDataFlow = stateHandle.getStateFlow<String?>(
         key = "$name-primitive",
         initialValue = null
     )
 
+    /** Returns the current in-memory value. */
     open fun get(): T? = data
+
+    /**
+     * Sets a new value.
+     *
+     * - `null` clears both the typed entry and the JSON shadow.
+     * - Non-null attempts direct persistence; on failure, stores JSON shadow (if possible).
+     */
     open fun set(value: T?) {
         scope.launch {
             data = value
@@ -57,6 +104,11 @@ sealed class ViewModelState<T : Any>(
         }
     }
 
+    /**
+     * Sets a new value with optional distinctness check.
+     *
+     * @param distinct When `true`, writes only if `value` differs from current.
+     */
     open fun set(value: T?, distinct: Boolean) {
         if (distinct && value != get()) {
             set(value)
@@ -65,8 +117,15 @@ sealed class ViewModelState<T : Any>(
         }
     }
 
+    /** Clears the current value (equivalent to `set(null)`). */
     fun invalidate() = set(null)
 
+    /**
+     * Basic state holder exposing `Flow<T?>`.
+     *
+     * Combines direct `SavedStateHandle` updates and shadow JSON updates
+     * into a single cold flow, shared on demand.
+     */
     class Regular<T : Any>(
         name: String,
         json: Json,
@@ -74,6 +133,15 @@ sealed class ViewModelState<T : Any>(
         stateHandle: SavedStateHandle,
         scope: CoroutineScope
     ) : ViewModelState<T>(name, json, serializer, stateHandle, scope) {
+        /**
+         * Stream of the current value.
+         *
+         * Emits:
+         * - Typed updates from the `SavedStateHandle`.
+         * - Decoded values from the JSON shadow when present.
+         *
+         * Sharing: [SharingStarted.WhileSubscribed].
+         */
         fun flow(): Flow<T?> = flow {
             coroutineScope { launch { dataFlow.collect(::emit) } }
             coroutineScope {
@@ -88,6 +156,13 @@ sealed class ViewModelState<T : Any>(
         }.shareIn(scope, SharingStarted.WhileSubscribed())
     }
 
+    /**
+     * Result-oriented state holder exposing `Flow<DataResult<T>>`.
+     *
+     * Keeps the last successful data in `SavedStateHandle` (with JSON fallback),
+     * while emitting request/response states independently through an internal
+     * [ResponseMutableStateFlow].
+     */
     class Result<T : Any>(
         name: String,
         json: Json,
@@ -97,11 +172,25 @@ sealed class ViewModelState<T : Any>(
     ) : ViewModelState<T>(name, json, serializer, stateHandle, scope) {
 
         private val resultFlow = ResponseMutableStateFlow<T>()
+        private var job: Job? = null
+
+        /** Reactive stream of [DataResult]. */
         fun flow(): Flow<DataResult<T>> = resultFlow.asStateFlow()
 
+        /** Convenience: sets underlying data from a [DataResult]. */
         fun set(value: DataResult<T>?) = set(value = value?.data)
 
-        private var job: Job? = null
+        /**
+         * Loads data using the provided [func], emitting through [flow].
+         *
+         * Behavior:
+         * - If current state is present and [evaluate] returns `true`, it **reuses** the state.
+         * - Otherwise, clears current state, emits `None/Loading`, then collects [func].
+         * - On success, persists the data (typed or JSON shadow fallback) and emits the result.
+         *
+         * @param evaluate Optional predicate to validate the current state before skipping load.
+         * @param func Producer of a `Flow<DataResult<T>>` (e.g., repository request).
+         */
         fun load(
             evaluate: suspend (T) -> Boolean = { true },
             func: suspend () -> Flow<DataResult<T>>
