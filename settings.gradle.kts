@@ -24,6 +24,7 @@ include(":toolkit:multi:storage-core")
 include(":toolkit:multi:storage-datastore")
 include(":toolkit:multi:storage-memory")
 include(":toolkit:multi:lumber")
+include(":toolkit:multi:state-handle")
 include(":toolkit:multi:test")
 include(":toolkit:android:delegate")
 include(":toolkit:android:foldable")
@@ -47,7 +48,7 @@ include(":sample:target:desktop")
 //include(":sample:target:web")
 
 plugins {
-    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.1"
+    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.2"
 }
 
 kover { enableCoverage() }

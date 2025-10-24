@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.sample.github.shared.structure.data.remote.model
 
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.SavableObject
+import br.com.arch.toolkit.stateHandle.SavableObject
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

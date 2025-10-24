@@ -1,9 +1,8 @@
-package br.com.arch.toolkit.util
+package br.com.arch.toolkit.storage.util
 
-import androidx.lifecycle.LiveData
 import br.com.arch.toolkit.storage.delegate.keyValueStorage
 import br.com.arch.toolkit.storage.keyValue.KeyValueStorage
-import kotlinx.coroutines.flow.Flow
+import br.com.arch.toolkit.util.ObservableValue
 
 data class ConfigValue<T : Any>(
     private val name: String,
@@ -14,9 +13,11 @@ data class ConfigValue<T : Any>(
     private var _value: T? by keyValueStorage(default::class, name).storage(storage)
     private val observable = ObservableValue(default, ::_value) { _value = it }
 
-    val liveData: LiveData<T> get() = observable.liveData
-    val flow: Flow<T> get() = observable.flow
+    val liveData get() = observable.liveData
+    val flow get() = observable.flow
 
     fun get(): T = observable.value
-    fun set(value: T) { observable.value = value }
+    fun set(value: T) {
+        observable.value = value
+    }
 }

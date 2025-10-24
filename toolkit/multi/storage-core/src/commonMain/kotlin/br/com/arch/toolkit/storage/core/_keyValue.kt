@@ -13,10 +13,14 @@ import br.com.arch.toolkit.storage.core.KeyValue.Companion.map
 import br.com.arch.toolkit.storage.core.KeyValue.Companion.required
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.timeout
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Returns the current value of this [KeyValue] immediately.
@@ -144,7 +148,11 @@ abstract class KeyValue<ResultData> {
     abstract fun set(value: ResultData, scope: CoroutineScope = this.scope)
 
     fun scope(scope: CoroutineScope) = apply { this.scope = scope }
-    suspend fun current(): ResultData = get().firstOrNull() ?: lastValue
+
+    @OptIn(FlowPreview::class)
+    suspend fun current(): ResultData = runCatching {
+        get().timeout(300.milliseconds).catch { emit(lastValue) }.firstOrNull()
+    }.getOrNull() ?: lastValue
 
     @Composable
     fun state(scope: CoroutineScope? = rememberCoroutineScope()): MutableState<ResultData> {
