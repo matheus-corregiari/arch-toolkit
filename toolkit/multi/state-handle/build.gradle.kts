@@ -16,6 +16,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":toolkit:multi:lumber"))
             implementation(project(":toolkit:multi:event-observer"))
+            implementation(project(":toolkit:multi:splinter"))
 
             implementation(libs.jetbrains.coroutines.core)
             implementation(libs.jetbrains.serialization)
