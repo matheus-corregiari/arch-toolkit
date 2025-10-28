@@ -18,7 +18,7 @@ fun ScreenTitle(modifier: Modifier, text: String) {
         containerColor = Color.Transparent,
         scrolledContainerColor = Color.Transparent,
     )
-    val style = when (AppTheme.screen.size) {
+    val style = when (AppTheme.screen.windowSize) {
         WindowSize.SMALL -> AppTheme.textStyle.titleXLMedium
         WindowSize.MEDIUM -> AppTheme.textStyle.titleXXXLMedium
         WindowSize.LARGE -> AppTheme.textStyle.titleHMedium

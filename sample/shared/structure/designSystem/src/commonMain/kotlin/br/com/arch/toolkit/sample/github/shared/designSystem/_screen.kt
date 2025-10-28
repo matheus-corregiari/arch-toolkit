@@ -1,17 +1,24 @@
+@file:OptIn(ExperimentalMaterial3AdaptiveApi::class)
+
 package br.com.arch.toolkit.sample.github.shared.designSystem
 
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowDpSize
+import androidx.compose.material3.adaptive.currentWindowSize
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.unit.Dp
 import androidx.window.core.layout.WindowWidthSizeClass
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.DeviceType
+import br.com.arch.toolkit.sample.github.shared.structure.core.model.Orientation
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.Orientation.LANDSCAPE
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.Orientation.PORTRAIT
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ScreenInfo
@@ -32,29 +39,29 @@ internal expect fun deviceType(): DeviceType
 
 @Composable
 internal fun getCurrentScreenInfo(): State<ScreenInfo> {
-    // Window Size and Device Type
-    val width = screenWidth()
-    val height = screenHeight()
-    val type = deviceType()
+    // Window Size
+    val screenSize = currentWindowSize()
+    val width = remember(screenSize) { screenSize.width }
+    val height = remember(screenSize) { screenSize.height }
+    val orientation = remember(screenSize) { if (height < width) LANDSCAPE else PORTRAIT }
 
     // Computed Info
-    val orientation = if (height < width) LANDSCAPE else PORTRAIT
-    val adaptiveInfo = currentWindowAdaptiveInfo()
-    val widthSizeClass = adaptiveInfo.windowSizeClass.windowWidthSizeClass
-    val size = widthSizeClass.screenSize()
-    val navigationSuiteType = widthSizeClass.navigationSuiteType(orientation == LANDSCAPE)
+    val widthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+    val size = remember(widthSizeClass) { widthSizeClass.screenSize() }
+    val navigationSuiteType = remember(widthSizeClass, orientation) {
+        widthSizeClass.navigationSuiteType(orientation)
+    }
 
     // Saved Enums
     val storage = rememberDefaultStorage()
-    val theme: ThemeMode by storage.enum("theme", ThemeMode.SYSTEM).state()
-    val contrast: ContrastMode by storage.enum("contrast", ContrastMode.STANDARD).state()
+    val theme by storage.enum("theme", ThemeMode.SYSTEM).state()
+    val contrast by storage.enum("contrast", ContrastMode.STANDARD).state()
 
     // Creating Screen Info
     val info = ScreenInfo(
-        width = width,
-        height = height,
-        size = size,
-        type = type,
+        size = currentWindowDpSize(),
+        windowSize = size,
+        type = deviceType(),
         theme = theme,
         contrast = contrast,
         orientation = orientation,
@@ -62,10 +69,9 @@ internal fun getCurrentScreenInfo(): State<ScreenInfo> {
     )
 
     // State \o/
-    return mutableStateOf(info, structuralEqualityPolicy())
+    return remember(info) { mutableStateOf(info, structuralEqualityPolicy()) }
 }
 
-@Composable
 private fun WindowWidthSizeClass.screenSize() = when (this) {
     WindowWidthSizeClass.COMPACT -> WindowSize.SMALL
     WindowWidthSizeClass.MEDIUM -> WindowSize.MEDIUM
@@ -73,10 +79,9 @@ private fun WindowWidthSizeClass.screenSize() = when (this) {
     else -> WindowSize.SMALL
 }
 
-@Composable
-private fun WindowWidthSizeClass.navigationSuiteType(isLandscape: Boolean) =
+private fun WindowWidthSizeClass.navigationSuiteType(orientation: Orientation) =
     when (this) {
-        WindowWidthSizeClass.COMPACT -> if (isLandscape) {
+        WindowWidthSizeClass.COMPACT -> if (orientation == LANDSCAPE) {
             NavigationSuiteType.NavigationRail
         } else {
             NavigationSuiteType.NavigationBar

@@ -40,7 +40,7 @@ private fun hazeStyle() = HazeStyle(
 @Composable
 fun Modifier.haze(state: HazeState): Modifier {
     val enableBlur = state.blurEnabled
-            && AppTheme.screen.size == WindowSize.SMALL
+            && AppTheme.screen.windowSize == WindowSize.SMALL
             && AppTheme.screen.type == DeviceType.MOBILE
     return hazeEffect(state = state, style = hazeStyle()) {
         blurEnabled = enableBlur
