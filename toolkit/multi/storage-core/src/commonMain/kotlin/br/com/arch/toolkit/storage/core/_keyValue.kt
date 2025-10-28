@@ -8,7 +8,7 @@ import androidx.compose.runtime.SnapshotMutationPolicy
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import br.com.arch.toolkit.storage.core.KeyValue.Companion.map
 import br.com.arch.toolkit.storage.core.KeyValue.Companion.required
 import kotlinx.coroutines.CoroutineScope
@@ -80,7 +80,7 @@ internal expect fun <T> KeyValue<T>.defaultScope(): CoroutineScope
 /**
  * Represents a generic reactive key–value entry.
  *
- * A [KeyValue] abstracts reading and writing a single value of type [ResultData],
+ * A [KeyValue] abstracts reading and writing a single value of type [DATA],
  * providing reactive observation through [Flow], integration with Jetpack Compose
  * state management, and delegation support for property syntax.
  *
@@ -129,47 +129,48 @@ internal expect fun <T> KeyValue<T>.defaultScope(): CoroutineScope
  * println("Counter is $counter")
  * ```
  *
- * @param ResultData The type of the stored value.
+ * @param DATA The type of the stored value.
  *
  * @see StorageProvider For factory methods to create [KeyValue] instances.
  * @see required To enforce non-null values.
  * @see map To transform values between types.
  */
 @StorageApi
-abstract class KeyValue<ResultData> {
+abstract class KeyValue<DATA> {
 
     protected var scope: CoroutineScope = defaultScope()
         private set
 
-    abstract var lastValue: ResultData
+    abstract var lastValue: DATA
         protected set
 
-    abstract fun get(): Flow<ResultData>
-    abstract fun set(value: ResultData, scope: CoroutineScope = this.scope)
+    abstract fun get(): Flow<DATA>
+    abstract fun set(value: DATA, scope: CoroutineScope = this.scope)
 
     fun scope(scope: CoroutineScope) = apply { this.scope = scope }
 
     @OptIn(FlowPreview::class)
-    suspend fun current(): ResultData = runCatching {
-        get().timeout(300.milliseconds).catch { emit(lastValue) }.firstOrNull()
+    suspend fun current(): DATA = runCatching {
+        get().timeout(50.milliseconds).catch { emit(lastValue) }.firstOrNull()
     }.getOrNull() ?: lastValue
 
     @Composable
-    fun state(scope: CoroutineScope? = rememberCoroutineScope()): MutableState<ResultData> {
-        val current: ResultData by get().collectAsState(lastValue)
-        return mutableStateOf(
-            value = current,
-            policy = object : SnapshotMutationPolicy<ResultData> {
-                override fun equivalent(a: ResultData, b: ResultData) =
-                    (a == b).also { set(b, scope ?: this@KeyValue.scope) }
-            }
-        )
+    fun state(scope: CoroutineScope = this.scope): MutableState<DATA> {
+        val current by get().collectAsState(lastValue)
+        return remember(current, scope) {
+            mutableStateOf(
+                value = current,
+                policy = object : SnapshotMutationPolicy<DATA> {
+                    override fun equivalent(a: DATA, b: DATA) = (a == b).also { set(b, scope) }
+                }
+            )
+        }
     }
 
-    fun delegate() = object : ReadWriteProperty<Any, ResultData> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): ResultData = instant()
+    fun delegate() = object : ReadWriteProperty<Any, DATA> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): DATA = instant()
 
-        override fun setValue(thisRef: Any, property: KProperty<*>, value: ResultData) =
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: DATA) =
             set(value = value, scope = scope)
     }
 
