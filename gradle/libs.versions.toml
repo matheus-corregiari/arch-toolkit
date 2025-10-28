@@ -15,8 +15,8 @@ build-tools = "36.1.0"
 
 ## JetBrains
 jetbrains-kotlin = "2.2.21"
-jetbrains-compose = "1.9.1"
-jetbrains-lifecycle = "2.9.5"
+jetbrains-compose = "1.10.0-alpha03"
+jetbrains-lifecycle = "2.10.0-alpha03"
 jetbrains-coroutines = "1.10.2"
 jetbrains-serialization = "1.9.0"
 jetbrains-dokka = "2.1.0"
@@ -47,7 +47,7 @@ square-okhttp = "5.2.1"
 
 ## Google
 google-material = "1.13.0"
-google-ksp = "2.2.20-2.0.2"
+google-ksp = "2.3.0"
 
 ## Dependency Injection
 di-koin = "4.1.1"
@@ -101,8 +101,8 @@ androidx-test-espresso-intents = { module = "androidx.test.espresso:espresso-int
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso" }
 
 ## Androidx / Jetbrains Compose
-androidx-compose-material3-window = { module = "org.jetbrains.compose.material3:material3-window-size-class", version = "1.9.0" }
-androidx-compose-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version = "1.1.2" }
+androidx-compose-material3-window = { module = "org.jetbrains.compose.material3:material3-window-size-class", version = "1.10.0-alpha03" }
+androidx-compose-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version = "1.2.0-beta01" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-compose-activity" }
 androidx-compose-lifecycle = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jetbrains-lifecycle" }
 androidx-compose-testManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-core" }
