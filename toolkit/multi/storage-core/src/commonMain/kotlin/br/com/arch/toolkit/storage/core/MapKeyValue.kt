@@ -2,10 +2,7 @@ package br.com.arch.toolkit.storage.core
 
 import br.com.arch.toolkit.storage.core.KeyValue.Companion.map
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.timeout
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * A [KeyValue] adapter that transforms values between two types.
@@ -56,12 +53,15 @@ internal class MapKeyValue<Current, Transformed> internal constructor(
 ) : KeyValue<Transformed>() {
 
     override var lastValue: Transformed
-        get() = mapTo(keyValue.lastValue)
+        get() = mapTo.invokeCatching(keyValue.lastValue).getOrThrow()
         set(value) = set(value)
 
-    @OptIn(FlowPreview::class)
-    override fun get() = keyValue.get().map { mapTo(it) }.timeout(300.milliseconds)
+    override fun get() = keyValue.get().map(mapTo)
 
-    override fun set(value: Transformed, scope: CoroutineScope) =
-        keyValue.set(mapBack(value), scope)
+    override fun set(value: Transformed, scope: CoroutineScope) {
+        val transformed = mapBack.invokeCatching(value).getOrNull()
+        transformed?.let { keyValue.set(transformed, scope) }
+    }
+
+    private fun <T, R> ((T) -> R).invokeCatching(data: T) = runCatching { invoke(data) }
 }

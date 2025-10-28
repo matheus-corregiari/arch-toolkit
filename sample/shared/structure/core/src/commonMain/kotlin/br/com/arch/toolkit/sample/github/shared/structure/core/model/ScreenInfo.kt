@@ -1,13 +1,11 @@
 package br.com.arch.toolkit.sample.github.shared.structure.core.model
 
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.DpSize
 
 data class ScreenInfo(
-    val width: Dp = 0.dp,
-    val height: Dp = 0.dp,
-    val size: WindowSize = WindowSize.SMALL,
+    val size: DpSize = DpSize.Zero,
+    val windowSize: WindowSize = WindowSize.SMALL,
     val theme: ThemeMode = ThemeMode.SYSTEM,
     val contrast: ContrastMode = ContrastMode.STANDARD,
     val type: DeviceType = DeviceType.MOBILE,
@@ -16,25 +14,6 @@ data class ScreenInfo(
 ) {
     val isLandscape = orientation == Orientation.LANDSCAPE
     val isPortrait = orientation == Orientation.PORTRAIT
+    val isValid = size != DpSize.Zero
 
-    override fun equals(other: Any?) = if (other == null || other !is ScreenInfo) {
-        super.equals(other)
-    } else {
-        size == other.size &&
-            theme == other.theme &&
-            contrast == other.contrast &&
-            type == other.type &&
-            navigationSuiteType == other.navigationSuiteType &&
-            orientation == other.orientation
-    }
-
-    override fun hashCode(): Int {
-        var result = size.hashCode()
-        result = 31 * result + theme.hashCode()
-        result = 31 * result + contrast.hashCode()
-        result = 31 * result + type.hashCode()
-        result = 31 * result + navigationSuiteType.hashCode()
-        result = 31 * result + orientation.hashCode()
-        return result
-    }
 }

@@ -1,11 +1,13 @@
 package br.com.arch.toolkit.sample.github.shared.designSystem
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ScreenInfo
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
@@ -37,23 +39,22 @@ data object AppTheme {
 
 @Composable
 @Suppress("FunctionNaming")
-fun AppTheme(content: @Composable () -> Unit) {
-    val client = koinInject<HttpClient>(named("image-client"))
-    setSingletonImageLoaderFactory { context ->
-        ImageLoader.Builder(context)
-            .components { add(factory = KtorNetworkFetcherFactory(client)) }
-            .memoryCachePolicy(CachePolicy.ENABLED)
-            .diskCachePolicy(CachePolicy.ENABLED)
-            .addLastModifiedToFileCacheKey(true)
-            .build()
-    }
-
+fun AppTheme(
+    imageClient: HttpClient = koinInject(named("image-client")),
+    content: @Composable () -> Unit
+) {
     val screenInfo by getCurrentScreenInfo()
-    val size = screenInfo.size
-    val color = AppColor(screenInfo.theme, screenInfo.contrast)
-    val dimen = AppDimen(size)
-    val textStyle = AppTextStyle(size)
+    if (screenInfo.isValid.not()) return
+    setupCoil(imageClient)
 
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val color = remember(screenInfo.theme, screenInfo.contrast, isSystemInDarkTheme) {
+        AppColor(screenInfo.theme, screenInfo.contrast, isSystemInDarkTheme)
+    }
+    val dimen = remember(screenInfo.windowSize) { AppDimen(screenInfo.windowSize) }
+    val textStyle = remember(screenInfo.windowSize) { AppTextStyle(screenInfo.windowSize) }
+
+    println("AAAAAAAA: $screenInfo")
     MaterialTheme(
         colorScheme = color.colorScheme(),
         typography = textStyle.typography(),
@@ -68,4 +69,15 @@ fun AppTheme(content: @Composable () -> Unit) {
             )
         }
     )
+}
+
+@Composable
+@ReadOnlyComposable
+private fun setupCoil(client: HttpClient) = setSingletonImageLoaderFactory { context ->
+    ImageLoader.Builder(context)
+        .components { add(factory = KtorNetworkFetcherFactory(client)) }
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .addLastModifiedToFileCacheKey(true)
+        .build()
 }

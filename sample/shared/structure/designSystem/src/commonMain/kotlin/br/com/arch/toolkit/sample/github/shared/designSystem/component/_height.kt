@@ -17,7 +17,7 @@ import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.WindowSize
 
 @Composable
-fun Modifier.fillAdjustableSize() = when (AppTheme.screen.size) {
+fun Modifier.fillAdjustableSize() = when (AppTheme.screen.windowSize) {
     WindowSize.SMALL -> fillMaxSize()
     WindowSize.MEDIUM -> fillMaxHeight().fillMaxWidth(0.85f)
     WindowSize.LARGE -> fillMaxHeight().fillMaxWidth(0.75f)

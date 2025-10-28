@@ -1,8 +1,11 @@
 package br.com.arch.toolkit.sample.github.desktop
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Coffee
+import androidx.compose.material.icons.filled.Gite
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -19,14 +22,14 @@ fun main() = application {
     initKoin()
     Window(
         title = "Github Sample",
-        icon = rememberVectorPainter(image = Icons.Filled.Coffee),
+        icon = rememberVectorPainter(image = Icons.Filled.Gite),
+        state = rememberWindowState(size = DpSize(800.dp, 600.dp)),
         onCloseRequest = {
             stopKoin()
             exitApplication()
         },
-        state = rememberWindowState(),
     ) {
-        window.minimumSize = Dimension(320, 480)
+        LaunchedEffect(Unit) { window.minimumSize = Dimension(320, 480) }
         AppTheme { AppHome() }
     }
 }

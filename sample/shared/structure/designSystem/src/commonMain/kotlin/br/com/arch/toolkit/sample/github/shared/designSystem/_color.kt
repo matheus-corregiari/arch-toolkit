@@ -2,11 +2,9 @@
 
 package br.com.arch.toolkit.sample.github.shared.designSystem
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
@@ -114,22 +112,14 @@ sealed class AppColor {
     abstract fun colorScheme(): ColorScheme
 
     companion object {
-        @Composable
         @Suppress("CyclomaticComplexMethod")
-        operator fun invoke(theme: ThemeMode, contrast: ContrastMode): AppColor = when {
-            theme == ThemeMode.LIGHT -> when (contrast) {
-                ContrastMode.STANDARD -> LightColor.StandardContrast
-                ContrastMode.MEDIUM -> LightColor.MediumContrast
-                ContrastMode.HIGH -> LightColor.HighContrast
-            }
+        operator fun invoke(
+            theme: ThemeMode,
+            contrast: ContrastMode,
+            isSystemInDarkTheme: Boolean
+        ): AppColor = when {
 
-            theme == ThemeMode.DARK -> when (contrast) {
-                ContrastMode.STANDARD -> DarkColor.LowContrast
-                ContrastMode.MEDIUM -> DarkColor.MediumContrast
-                ContrastMode.HIGH -> DarkColor.HighContrast
-            }
-
-            theme == ThemeMode.SYSTEM && isSystemInDarkTheme() -> when (contrast) {
+            theme == ThemeMode.DARK || isSystemInDarkTheme -> when (contrast) {
                 ContrastMode.STANDARD -> DarkColor.LowContrast
                 ContrastMode.MEDIUM -> DarkColor.MediumContrast
                 ContrastMode.HIGH -> DarkColor.HighContrast
