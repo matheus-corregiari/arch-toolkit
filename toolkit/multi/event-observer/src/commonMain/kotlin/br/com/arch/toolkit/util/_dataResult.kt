@@ -102,6 +102,28 @@ fun <T> dataResultNone() = DataResult<T>(null, null, NONE)
 
 //region Transformation Methods
 /**
+ * Ensures that a nullable [DataResult] is never `null`, returning a neutral
+ * [dataResultNone] when the receiver is `null`.
+ *
+ * ## What it does
+ * - If this result is non-null, it is returned unchanged.
+ * - If it is `null`, a new `DataResult.None` is returned.
+ *
+ * ## When to use
+ * Use to simplify chains where a `DataResult` may be `null` but you always
+ * want a safe, non-null object to work with:
+ * ```
+ * val result: DataResult<User>? = repository.get()
+ * val safe = result.orNone()
+ * ```
+ *
+ * ## Returns
+ * The same [DataResult] instance when not `null`,
+ * or a [dataResultNone] singleton when the receiver is `null`.
+ */
+fun <T> DataResult<T>?.orNone() = this ?: dataResultNone()
+
+/**
  * Transforms a [DataResult] with a pair of nullable values to a [DataResult] with non-null values.
  *
  * If any value in the pair is null, the result will be null.
