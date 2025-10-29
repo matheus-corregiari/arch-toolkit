@@ -8,7 +8,6 @@ import br.com.arch.toolkit.compose.composable
 import br.com.arch.toolkit.sample.feature.githubList.ui.list.model.RepoVO
 import br.com.arch.toolkit.sample.github.shared.structure.repository.GithubRepository
 import br.com.arch.toolkit.stateHandle.saveResponseState
-import br.com.arch.toolkit.util.dataResultNone
 import kotlinx.coroutines.flow.map
 
 class ListViewModel(
@@ -16,7 +15,7 @@ class ListViewModel(
     state: SavedStateHandle
 ) : ViewModel() {
 
-    private val lastPageState by state.saveResponseState(default = dataResultNone<List<RepoVO>>())
+    private val lastPageState by state.saveResponseState<List<RepoVO>>()
 
     @get:Composable
     val stateList: ComposableDataResult<List<RepoVO>>

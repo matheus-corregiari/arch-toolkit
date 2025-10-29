@@ -7,6 +7,8 @@ import br.com.arch.toolkit.splinter.extension.invokeCatching
 import br.com.arch.toolkit.stateHandle.StateValue.Companion.default
 import br.com.arch.toolkit.stateHandle.ViewModelState.Regular
 import br.com.arch.toolkit.stateHandle.ViewModelState.Result
+import br.com.arch.toolkit.util.dataResultSuccess
+import br.com.arch.toolkit.util.orNone
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -178,7 +180,15 @@ sealed class ViewModelState<T : Any>(
         fun flow(): Flow<DataResult<T>> = resultFlow.asStateFlow()
 
         /** Convenience: sets underlying data from a [DataResult]. */
-        fun set(value: DataResult<T>?) = set(value = value?.data)
+        fun set(value: DataResult<T>?) {
+            super.set(value = value?.data)
+            resultFlow.tryEmit(value.orNone())
+        }
+
+        override fun set(value: T?) {
+            super.set(value)
+            resultFlow.tryEmit(value?.let(::dataResultSuccess).orNone())
+        }
 
         /**
          * Loads data using the provided [func], emitting through [flow].
