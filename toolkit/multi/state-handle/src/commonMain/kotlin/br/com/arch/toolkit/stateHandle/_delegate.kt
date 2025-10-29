@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.util.dataResultNone
+import br.com.arch.toolkit.util.dataResultSuccess
+import br.com.arch.toolkit.util.orNone
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import org.koin.core.component.KoinComponent
@@ -62,31 +65,34 @@ inline fun <reified T : Any> SavedStateHandle.saveState(
 
 /**
  * ViewModel delegate that exposes a [ViewModelState.Result] backed by [SavedStateHandle],
- * emitting `Flow<DataResult<T>>` and keeping last success in saved state.
+ * emitting a `Flow<DataResult<T>>` and keeping the last successful value persisted.
  *
- * Use when you have a request/response lifecycle and still want the last
- * known good value to survive process death or configuration changes.
+ * Use this for request/response-style state that should retain the last
+ * known successful data across process death or configuration changes.
  *
  * ## Parameters
- * @param name Optional explicit key for the state (defaults to property name).
- * @param default Optional initial result to set on first access.
+ * @param name Optional explicit key for the state (defaults to the delegated property name).
+ * @param default Initial [DataResult] to set on first access.
  *
  * ## Returns
- * A `ReadOnlyProperty<ViewModel, ViewModelState.Result<T>>` for `by` delegation.
+ * A `ReadOnlyProperty<ViewModel, ViewModelState.Result<T>>` usable via `by` delegation.
  *
  * ## Example
  * ```
  * class MyVm(private val handle: SavedStateHandle) : ViewModel() {
- *   val profile by handle.saveResponseState<User>()
  *
- *   fun refresh() = profile.load { repo.fetchUser() }
- *   fun results(): Flow<DataResult<User>> = profile.flow()
+ *     val profile by handle.saveResponseState<User>(
+ *         default = dataResultNone()
+ *     )
+ *
+ *     fun refresh() = profile.load { repo.fetchUser() }
+ *     fun results(): Flow<DataResult<User>> = profile.flow()
  * }
  * ```
  */
 inline fun <reified T : Any> SavedStateHandle.saveResponseState(
     name: String = "",
-    default: DataResult<T>? = null
+    default: DataResult<T>
 ): ReadOnlyProperty<ViewModel, ViewModelState.Result<T>> =
     object : ReadOnlyProperty<ViewModel, ViewModelState.Result<T>>, KoinComponent {
         var state: ViewModelState.Result<T>? = null
@@ -98,40 +104,35 @@ inline fun <reified T : Any> SavedStateHandle.saveResponseState(
                 serializer = runCatching { serializer<T>() }.getOrNull(),
                 stateHandle = this@saveResponseState,
                 scope = thisRef.viewModelScope
-            ).also {
-                it.set(default)
-                state = it
-            }
+            ).also { it.set(default) }.also { state = it }
         }
     }
 
 /**
- * Overload of [saveResponseState] that accepts a plain `T?` default.
+ * Overload of [saveResponseState] that accepts a plain default value of type [T].
  *
- * Sets the underlying data immediately; the first emitted `DataResult` will be `None`
- * until `load { ... }` is called or another result is posted.
+ * Sets the underlying data immediately, wrapping it in a [dataResultSuccess].
+ * The first emitted `DataResult` will be `None` until [ViewModelState.Result.load]
+ * is invoked or another result is emitted.
+ *
+ * ## Parameters
+ * @param name Optional explicit key for the state (defaults to the delegated property name).
+ * @param default Optional plain value of type [T]. When `null`, no initial data is set.
  */
+inline fun <reified T : Any> SavedStateHandle.saveResponseState(name: String = "", default: T?) =
+    saveResponseState<T>(name = name, default = default?.let(::dataResultSuccess).orNone())
 
-inline fun <reified T : Any> SavedStateHandle.saveResponseState(
-    name: String = "",
-    default: T? = null
-): ReadOnlyProperty<ViewModel, ViewModelState.Result<T>> =
-    object : ReadOnlyProperty<ViewModel, ViewModelState.Result<T>>, KoinComponent {
-        var state: ViewModelState.Result<T>? = null
-        override fun getValue(thisRef: ViewModel, property: KProperty<*>) = state ?: kotlin.run {
-            val json by inject<Json>()
-            ViewModelState.Result(
-                name = name.ifBlank { property.name },
-                json = json,
-                serializer = runCatching { serializer<T>() }.getOrNull(),
-                stateHandle = this@saveResponseState,
-                scope = thisRef.viewModelScope
-            ).also {
-                it.set(default)
-                state = it
-            }
-        }
-    }
+/**
+ * Overload of [saveResponseState] that creates a [ViewModelState.Result]
+ * with an initial `DataResult.None`.
+ *
+ * This is the simplest entry point when no initial data is available.
+ *
+ * ## Parameters
+ * @param name Optional explicit key for the state (defaults to the delegated property name).
+ */
+inline fun <reified T : Any> SavedStateHandle.saveResponseState(name: String = "") =
+    saveResponseState<T>(name = name, default = dataResultNone())
 
 /**
  * Creates an **optional** state delegate bound to a [SavedStateHandle], supporting
