@@ -31,7 +31,7 @@ fun Module.enableSavedStateHandleCompat() =
  * Resolution order:
  * 1) If this scope already contains a real `SavedStateHandle`, return it.
  * 2) Otherwise, use the shared compat map (if enabled via [enableSavedStateHandleCompat]).
- * 3) If needed, lazy-create a new `SavedState` entry for the given `name`.
+ * 3) If needed, lazy-create a new `SavedStateHandle` entry for the given `name`.
  *
  * This allows scoped state retention **outside** of AndroidX `viewModel` contexts.
  *
