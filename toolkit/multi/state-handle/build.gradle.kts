@@ -26,3 +26,6 @@ kotlin {
         commonTest.dependencies { implementation(libs.jetbrains.kotlin.test) }
     }
 }
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }

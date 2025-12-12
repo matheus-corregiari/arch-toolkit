@@ -17,3 +17,6 @@ kotlin {
         implementation(libs.jetbrains.serialization)
     }
 }
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }

@@ -10,3 +10,6 @@ dependencies {
     compileOnly(libs.jetbrains.stdlib)
     compileOnly(libs.androidx.recycler)
 }
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }

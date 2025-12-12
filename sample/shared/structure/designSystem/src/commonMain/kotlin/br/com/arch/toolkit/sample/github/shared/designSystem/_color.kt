@@ -117,9 +117,15 @@ sealed class AppColor {
             theme: ThemeMode,
             contrast: ContrastMode,
             isSystemInDarkTheme: Boolean
-        ): AppColor = when {
+        ): AppColor = when (theme) {
 
-            theme == ThemeMode.DARK || isSystemInDarkTheme -> when (contrast) {
+            ThemeMode.DARK -> when (contrast) {
+                ContrastMode.STANDARD -> DarkColor.LowContrast
+                ContrastMode.MEDIUM -> DarkColor.MediumContrast
+                ContrastMode.HIGH -> DarkColor.HighContrast
+            }
+
+            ThemeMode.SYSTEM if isSystemInDarkTheme -> when (contrast) {
                 ContrastMode.STANDARD -> DarkColor.LowContrast
                 ContrastMode.MEDIUM -> DarkColor.MediumContrast
                 ContrastMode.HIGH -> DarkColor.HighContrast
