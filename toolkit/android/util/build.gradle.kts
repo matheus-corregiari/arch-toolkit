@@ -13,3 +13,6 @@ dependencies {
     implementation(libs.androidx.startup)
     implementation(libs.androidx.lifecycle.livedata)
 }
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }

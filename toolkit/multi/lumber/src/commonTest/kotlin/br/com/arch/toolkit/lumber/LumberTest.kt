@@ -120,7 +120,7 @@ abstract class LumberTest {
     fun `message short - quiet false - tag default - error present - args empty`() {
         val tree = newTree()
         val ex = Throwable("boom")
-        Lumber.runLog(ex, "fail")
+        Lumber.maxLogLength("fail\n\n${ex.stackTraceToString()}".length).runLog(ex, "fail")
         tree.assertAll(
             TestTree.Data(
                 level = level,
@@ -135,7 +135,7 @@ abstract class LumberTest {
     fun `message empty - quiet false - tag default - error present - args empty`() {
         val tree = newTree()
         val ex = Throwable("fail")
-        Lumber.runLog(ex, "")
+        Lumber.maxLogLength(ex.stackTraceToString().length).runLog(ex, "")
         tree.assertAll(
             TestTree.Data(level, defaultTag(), ex.stackTraceToString(), ex)
         )
@@ -145,7 +145,7 @@ abstract class LumberTest {
     fun `message none - quiet false - tag default - error present - args empty`() {
         val tree = newTree()
         val ex = Throwable("fail")
-        Lumber.runLog(ex)
+        Lumber.maxLogLength(ex.stackTraceToString().length).runLog(ex)
         tree.assertAll(
             TestTree.Data(level, defaultTag(), ex.stackTraceToString(), ex)
         )
@@ -155,7 +155,8 @@ abstract class LumberTest {
     fun `message short - quiet false - tag default - error present - args present`() {
         val tree = newTree()
         val ex = Throwable("boom")
-        Lumber.runLog(ex, "code %d", 500)
+        Lumber.maxLogLength("code 500\n\n${ex.stackTraceToString()}".length)
+            .runLog(ex, "code %d", 500)
         tree.assertAll(
             TestTree.Data(
                 level = level,
@@ -220,18 +221,15 @@ abstract class LumberTest {
         Lumber.runLog(ex, msg)
 
         tree.assertAll(
-            TestTree.Data(
-                level = level,
-                tag = defaultTag()?.let { "$it #0" } ?: "#0",
-                message = "a".repeat(MAX_LOG_LENGTH),
-                error = ex
-            ),
-            TestTree.Data(
-                level = level,
-                tag = defaultTag()?.let { "$it #1" } ?: "#1",
-                message = "a".repeat(20) + "\n\n${ex.stackTraceToString()}",
-                error = ex
-            )
+            *"$msg\n\n${ex.stackTraceToString()}"
+                .chunked(MAX_LOG_LENGTH).mapIndexed { index, log ->
+                    TestTree.Data(
+                        level = level,
+                        tag = defaultTag()?.let { "$it #$index" } ?: "#$index",
+                        message = log,
+                        error = ex
+                    )
+                }.toTypedArray()
         )
     }
 
@@ -242,20 +240,16 @@ abstract class LumberTest {
         val msg = "a".repeat(MAX_LOG_LENGTH) + "%s"
 
         Lumber.runLog(ex, msg, "XYZ")
-
         tree.assertAll(
-            TestTree.Data(
-                level = level,
-                tag = defaultTag()?.let { "$it #0" } ?: "#0",
-                message = "a".repeat(MAX_LOG_LENGTH),
-                error = ex
-            ),
-            TestTree.Data(
-                level = level,
-                tag = defaultTag()?.let { "$it #1" } ?: "#1",
-                message = "XYZ\n\n${ex.stackTraceToString()}",
-                error = ex
-            )
+            *"${"a".repeat(MAX_LOG_LENGTH)}XYZ\n\n${ex.stackTraceToString()}"
+                .chunked(MAX_LOG_LENGTH).mapIndexed { index, log ->
+                    TestTree.Data(
+                        level = level,
+                        tag = defaultTag()?.let { "$it #$index" } ?: "#$index",
+                        message = log,
+                        error = ex
+                    )
+                }.toTypedArray()
         )
     }
 
@@ -271,7 +265,8 @@ abstract class LumberTest {
     fun `message short - quiet false - tag custom - error present - args empty`() {
         val tree = newTree()
         val ex = Throwable("tagged")
-        Lumber.tag("Custom").runLog(ex, "oops")
+        Lumber.tag("Custom").maxLogLength("oops\n\n${ex.stackTraceToString()}".length)
+            .runLog(ex, "oops")
         tree.assertAll(
             TestTree.Data(level, "Custom", "oops\n\n${ex.stackTraceToString()}", ex)
         )

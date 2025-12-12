@@ -43,3 +43,6 @@ kotlin {
         jsMain { dependsOn(noopMain) }
     }
 }
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }

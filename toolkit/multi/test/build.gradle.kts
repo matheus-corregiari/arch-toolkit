@@ -17,3 +17,6 @@ kotlin {
         api(libs.robolectric.test)
     }
 }
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }

@@ -17,7 +17,6 @@ internal class ToolkitBasePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.applyPlugins("jetbrains-multiplatform")
         target.kotlinExtension.jvmToolchain(projectJavaVersionCode)
-
         with(target.multiplatform) {
             applyDefaultHierarchyTemplate {
                 common {

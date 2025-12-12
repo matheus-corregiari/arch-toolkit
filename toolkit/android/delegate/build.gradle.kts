@@ -12,3 +12,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     compileOnly(libs.androidx.recycler)
 }
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }

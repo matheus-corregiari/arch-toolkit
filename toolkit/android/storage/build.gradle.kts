@@ -20,3 +20,6 @@ dependencies {
     implementation(project(":toolkit:multi:lumber"))
     implementation(project(":toolkit:android:util"))
 }
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }
