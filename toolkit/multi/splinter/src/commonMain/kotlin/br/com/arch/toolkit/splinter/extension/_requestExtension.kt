@@ -1,16 +1,13 @@
-@file:OptIn(ExperimentalTime::class)
-
 package br.com.arch.toolkit.splinter.extension
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
 internal suspend inline fun <T> measureTimeResult(
     max: Duration,
-    min: Duration,
+    min: (Result<T>) -> Duration,
     noinline log: suspend (String) -> Unit,
     crossinline func: suspend () -> T
 ): Result<T> {
@@ -19,7 +16,7 @@ internal suspend inline fun <T> measureTimeResult(
     }
     handleMinDuration(
         duration = duration,
-        min = min,
+        min = min(value),
         log = log
     )
     return value

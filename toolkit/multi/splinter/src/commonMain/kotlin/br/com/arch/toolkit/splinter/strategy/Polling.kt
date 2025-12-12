@@ -21,8 +21,8 @@ import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
-import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
@@ -50,7 +50,7 @@ class Polling<T> private constructor(
         /**
          * Start the request loop!
          */
-        while (shouldStop.not() && coroutineContext.isActive && holder.get().isSuccess.not()) {
+        while (shouldStop.not() && currentCoroutineContext().isActive && holder.get().isSuccess.not()) {
             /**
              * Verify loop limit before start loop!
              */
@@ -70,7 +70,7 @@ class Polling<T> private constructor(
 
             val result = measureTimeResult(
                 max = config.maxExecutionTime,
-                min = config.minExecutionTime,
+                min = { config.minExecutionTime },
                 log = { logChannel.info("[Polling] $it") }) {
                 loopCounter++
 

@@ -1,5 +1,4 @@
 @file:Suppress("LongMethod")
-@file:OptIn(ExperimentalTime::class)
 
 package br.com.arch.toolkit.splinter.strategy
 
@@ -16,12 +15,11 @@ import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultSuccess
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
-import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.ExperimentalTime
 
 /**
  * Strategy to make a single operation (one shot)
@@ -44,7 +42,7 @@ class OneShot<T> private constructor(
 
         measureTimeResult(
             max = config.maxDuration,
-            min = config.minDuration,
+            min = { if (it.isSuccess) config.minDurationOnSuccess else config.minDurationOnError },
             log = { logChannel.info("[OneShot] $it") }
         ) {
             // Setup Cache config
@@ -153,7 +151,8 @@ class OneShot<T> private constructor(
         val beforeRequest: (suspend () -> Unit)?,
         val request: (suspend Context<T>.() -> T)?,
         val afterRequest: (suspend (T) -> Unit)?,
-        val minDuration: Duration,
+        val minDurationOnSuccess: Duration,
+        val minDurationOnError: Duration,
         val maxDuration: Duration,
         val cacheStrategy: CacheStrategy<T>?
     ) {
@@ -168,7 +167,8 @@ class OneShot<T> private constructor(
             private var beforeRequest: (suspend () -> Unit)? = null
             private var request: (suspend Context<T>.() -> T)? = null
             private var afterRequest: (suspend (T) -> Unit)? = null
-            private var minDuration: Duration = 200.milliseconds
+            private var minDurationOnSuccess: Duration = 200.milliseconds
+            private var minDurationOnError: Duration = Duration.ZERO
             private var maxDuration: Duration = 10.minutes
             private var cache: CacheStrategy<T>? = null
 
@@ -177,7 +177,12 @@ class OneShot<T> private constructor(
             fun fallback(fallback: suspend (Throwable) -> T) = apply { this.fallback = fallback }
             fun beforeRequest(func: suspend () -> Unit) = apply { this.beforeRequest = func }
             fun afterRequest(func: suspend (T) -> Unit) = apply { this.afterRequest = func }
-            fun minDuration(minDuration: Duration) = apply { this.minDuration = minDuration }
+            fun minDuration(duration: Duration) = minDuration(duration, duration)
+            fun minDuration(onSuccess: Duration, onError: Duration) = apply {
+                minDurationOnSuccess = onSuccess
+                minDurationOnError = onError
+            }
+
             fun maxDuration(maxDuration: Duration) = apply { this.maxDuration = maxDuration }
             fun cache(cache: CacheStrategy<T>) = apply { this.cache = cache }
 
@@ -187,7 +192,8 @@ class OneShot<T> private constructor(
                 beforeRequest = beforeRequest,
                 request = request,
                 afterRequest = afterRequest,
-                minDuration = minDuration,
+                minDurationOnSuccess = minDurationOnSuccess,
+                minDurationOnError = minDurationOnError,
                 maxDuration = maxDuration,
                 cacheStrategy = cache,
             )
@@ -202,18 +208,18 @@ class OneShot<T> private constructor(
         private val logChannel: Channel<Splinter.Message>,
     ) {
         suspend fun sendSnapshot(data: T) {
-            coroutineContext.ensureActive()
+            currentCoroutineContext().ensureActive()
             logChannel.info("[OneShot] Emit Snapshot - $data")
             dataChannel.send(dataResultLoading(data))
         }
 
         suspend fun logInfo(message: String) {
-            coroutineContext.ensureActive()
+            currentCoroutineContext().ensureActive()
             logChannel.info("[OneShot] $message")
         }
 
         suspend fun logError(message: String, error: Throwable) {
-            coroutineContext.ensureActive()
+            currentCoroutineContext().ensureActive()
             logChannel.error("[OneShot] $message", error)
         }
     }
