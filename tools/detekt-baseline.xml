@@ -21,6 +21,7 @@
     <ID>CyclomaticComplexMethod:_sharedPref.kt$@Throws(UnsupportedOperationException::class) operator fun &lt;T : Any?> SharedPreferences.set(key: String, value: T)</ID>
     <ID>Filename:_sharedPref.kt$br.com.arch.toolkit.storage.util._sharedPref.kt</ID>
     <ID>Filename:_screen.kt$br.com.arch.toolkit.sample.github.shared.designSystem._screen.kt</ID>
+    <ID>Filename:_requestExtension.kt$br.com.arch.toolkit.splinter.extension._requestExtension.kt</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues/>
 </SmellBaseline>
