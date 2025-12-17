@@ -34,21 +34,24 @@ include(":toolkit:android:util")
 include(":toolkit:android:statemachine")
 
 // Samples
-// Shared Modules with KMP Code to use in Targets
-include(":sample:shared:app")
-include(":sample:shared:feature:github-list")
-include(":sample:shared:feature:settings")
-include(":sample:shared:structure:repository")
-include(":sample:shared:structure:designSystem")
-include(":sample:shared:structure:core")
+val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"
+if (isIdeBuild) {
+    // Shared Modules with KMP Code to use in Targets
+    include(":sample:shared:app")
+    include(":sample:shared:feature:github-list")
+    include(":sample:shared:feature:settings")
+    include(":sample:shared:structure:repository")
+    include(":sample:shared:structure:designSystem")
+    include(":sample:shared:structure:core")
 
-// Targets
-include(":sample:target:android")
-include(":sample:target:desktop")
-//include(":sample:target:web")
+    // Targets
+    include(":sample:target:android")
+    include(":sample:target:desktop")
+    //include(":sample:target:web")
+}
 
 plugins {
-    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.2"
+    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.4"
 }
 
 kover { enableCoverage() }
