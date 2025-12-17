@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------------------------ #
 [versions]
 ## --- Plugins and more general stuff --- ##
-jacoco = "0.8.11"
+jacoco = "0.8.14"
 detekt = "1.23.8"
 
 ## --- Build Config and SDK --- ##
@@ -14,7 +14,7 @@ build-sdk-target = "36"
 build-tools = "36.1.0"
 
 ## JetBrains
-jetbrains-kotlin = "2.2.21"
+jetbrains-kotlin = "2.3.0"
 jetbrains-compose = "1.10.0-rc02"
 jetbrains-lifecycle = "2.10.0-alpha06"
 jetbrains-coroutines = "1.10.2"
