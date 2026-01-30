@@ -13,20 +13,6 @@ internal fun RepositoryHandler.createLocalPathRepository(project: Project) = mav
     maven.url = project.uri(project.rootProject.layout.buildDirectory.asFile.get().absolutePath)
 }
 
-internal fun RepositoryHandler.createSonatypeRepository(project: Project) {
-    if (project.missing("OSSRH_USERNAME", "OSSRH_PASSWORD")) return
-    maven { maven ->
-        maven.name = "Sonatype"
-        maven.url = project.uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-        maven.credentials { cred ->
-            cred.username =
-                System.getenv("OSSRH_USERNAME") ?: (project.properties["OSSRH_USERNAME"] as String)
-            cred.password =
-                System.getenv("OSSRH_PASSWORD") ?: (project.properties["OSSRH_PASSWORD"] as String)
-        }
-    }
-}
-
 internal fun Project.configurePom(pom: MavenPom, addDependencies: Boolean) {
     // Main Configuration
     if (pom.name.orNull.isNullOrBlank() && hasProperty("NAME")) {
@@ -104,11 +90,9 @@ private fun Node.addDependency(dependency: Dependency, scope: String) {
             node.appendNode("scope", scope)
         }
     } else {
-        val group = dependency.group.takeIf { it.isNullOrBlank().not() }
-        val name = dependency.name.takeIf { it.isNullOrBlank().not() }
-        val version = dependency.version.takeIf { it.isNullOrBlank().not() }
-
-        if (group == null || name == null || version == null) return
+        val group = dependency.group.takeIf { it.isNullOrBlank().not() } ?: return
+        val name = dependency.name.takeIf { it.isNotBlank() } ?: return
+        val version = dependency.version.takeIf { it.isNullOrBlank().not() } ?: return
 
         val node = appendNode("dependency")
         node.appendNode("groupId", group)
