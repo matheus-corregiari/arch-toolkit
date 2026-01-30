@@ -1,11 +1,11 @@
 package br.com.arch.toolkit.splinter.util
 
-import br.com.arch.toolkit.lumber.DebugTree
+import br.com.arch.toolkit.lumber.DebugOak
 import br.com.arch.toolkit.lumber.Lumber.Level
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class TestTree : DebugTree() {
+class TestTree : DebugOak() {
     val history = mutableListOf<String>()
 
     override fun isLoggable(tag: String?, level: Level) = true
