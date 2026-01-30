@@ -38,7 +38,7 @@ class OneShot<T> private constructor(
         logChannel: Channel<Splinter.Message>
     ) {
         var remoteVersion: CacheStrategy.DataVersion? = null
-        var localData: T? = null
+        var localData: T? = holder.data.takeIf { config.retainDataFromPastExecutions }
 
         measureTimeResult(
             max = config.maxDuration,
@@ -154,6 +154,7 @@ class OneShot<T> private constructor(
         val minDurationOnSuccess: Duration,
         val minDurationOnError: Duration,
         val maxDuration: Duration,
+        val retainDataFromPastExecutions: Boolean,
         val cacheStrategy: CacheStrategy<T>?
     ) {
 
@@ -171,6 +172,7 @@ class OneShot<T> private constructor(
             private var minDurationOnError: Duration = Duration.ZERO
             private var maxDuration: Duration = 10.minutes
             private var cache: CacheStrategy<T>? = null
+            private var retainDataFromPastExecutions: Boolean = false
 
             fun request(request: suspend Context<T>.() -> T) = apply { this.request = request }
             fun mapError(map: suspend (Throwable) -> Throwable) = apply { this.mapError = map }
@@ -185,6 +187,8 @@ class OneShot<T> private constructor(
 
             fun maxDuration(maxDuration: Duration) = apply { this.maxDuration = maxDuration }
             fun cache(cache: CacheStrategy<T>) = apply { this.cache = cache }
+            fun retainDataFromPastExecutions(enabled: Boolean) =
+                apply { retainDataFromPastExecutions = enabled }
 
             internal fun build() = Config(
                 mapError = mapError,
@@ -196,6 +200,7 @@ class OneShot<T> private constructor(
                 minDurationOnError = minDurationOnError,
                 maxDuration = maxDuration,
                 cacheStrategy = cache,
+                retainDataFromPastExecutions = retainDataFromPastExecutions,
             )
         }
     }
