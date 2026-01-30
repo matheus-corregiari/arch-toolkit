@@ -22,8 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import br.com.arch.toolkit.compose.ComposableDataResult.AnimationConfig
-import br.com.arch.toolkit.compose.ComposableDataResult.AnimationConfig.Defaults
+import br.com.arch.toolkit.compose.ComposableDataResult.AnimationConfig.Defaults.defaultEnterDuration
+import br.com.arch.toolkit.compose.ComposableDataResult.AnimationConfig.Defaults.defaultExitDuration
+import br.com.arch.toolkit.compose.ComposableDataResult.AnimationConfig.Defaults.enabledByDefault
 import br.com.arch.toolkit.compose.observable.ComposeObservable
 import br.com.arch.toolkit.compose.observable.DataObservable
 import br.com.arch.toolkit.compose.observable.EmptyObservable
@@ -32,8 +33,10 @@ import br.com.arch.toolkit.compose.observable.ErrorWithThrowableObservable
 import br.com.arch.toolkit.compose.observable.HideLoadingObservable
 import br.com.arch.toolkit.compose.observable.ManyObservable
 import br.com.arch.toolkit.compose.observable.NotEmptyObservable
+import br.com.arch.toolkit.compose.observable.ResultObservable
 import br.com.arch.toolkit.compose.observable.ShowLoadingObservable
 import br.com.arch.toolkit.compose.observable.SingleObservable
+import br.com.arch.toolkit.compose.observable.StatusObservable
 import br.com.arch.toolkit.compose.observable.SuccessObservable
 import br.com.arch.toolkit.flow.ResponseFlow
 import br.com.arch.toolkit.result.DataResult
@@ -113,7 +116,7 @@ import kotlin.time.DurationUnit
  */
 @ConsistentCopyVisibility
 data class ComposableDataResult<T> internal constructor(
-    private val result: Flow<DataResult<T>>,
+    val result: Flow<DataResult<T>>,
 ) {
     private val animationConfig = AnimationConfig()
     private var notComposableBlock: (ObserveWrapper<T>.() -> Unit)? = null
@@ -340,6 +343,28 @@ data class ComposableDataResult<T> internal constructor(
         observableList.add(DataObservable(func))
     }
 
+    // endregion
+
+    // region Result
+    @Composable
+    fun OnResult(func: @Composable (T?) -> Unit) =
+        apply { observableList.add(ResultObservable { data, _, _ -> func(data) }) }
+
+    @Composable
+    fun OnResult(func: @Composable (T?, DataResultStatus) -> Unit) =
+        apply { observableList.add(ResultObservable { data, status, _ -> func(data, status) }) }
+
+    @Composable
+    fun OnResult(func: @Composable (T?, DataResultStatus, Throwable?) -> Unit) =
+        apply { observableList.add(ResultObservable(func)) }
+    // endregion
+
+    // region Status
+    @Composable
+    fun OnStatus(
+        dataStatus: EventDataStatus = DoesNotMatter,
+        func: @Composable (DataResultStatus) -> Unit
+    ) = apply { observableList.add(StatusObservable(dataStatus, func)) }
     // endregion
 
     // region List Type

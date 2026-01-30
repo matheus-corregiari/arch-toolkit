@@ -11,7 +11,7 @@ kotlin {
     // Libraries
     sourceSets.commonMain.dependencies {
         implementation(project(":toolkit:multi:event-observer"))
-        implementation(project(":toolkit:multi:lumber"))
+        implementation(libs.arch.lumber)
 
         implementation(libs.jetbrains.coroutines.core)
         implementation(libs.androidx.lifecycle.runtime)

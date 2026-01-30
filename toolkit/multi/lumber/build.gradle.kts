@@ -25,3 +25,19 @@ kotlin {
         jsMain { dependsOn(kotlinMain) }
     }
 }
+
+publishing.publications.withType(MavenPublication::class.java) {
+    pom {
+        distributionManagement {
+            relocation {
+                message.set("This library was moved from another repository")
+                groupId.set("io.github.matheus-corregiari")
+                artifactId.set("arch-lumber")
+                version.set("1.0.0")
+            }
+        }
+    }
+}
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }
