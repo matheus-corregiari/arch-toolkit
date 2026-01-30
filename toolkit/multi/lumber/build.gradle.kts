@@ -38,3 +38,6 @@ publishing.publications.withType(MavenPublication::class.java) {
         }
     }
 }
+
+// Fixme - Make Tests
+tasks.withType<AbstractTestTask>().configureEach { failOnNoDiscoveredTests = false }
