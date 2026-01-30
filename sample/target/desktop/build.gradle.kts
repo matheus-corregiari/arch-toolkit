@@ -11,7 +11,7 @@ dependencies {
     implementation(project(":sample:shared:app"))
 
     // Arch Toolkit Dependencies
-    implementation(project(":toolkit:multi:lumber"))
+    implementation(libs.arch.lumber)
     implementation(project(":toolkit:multi:splinter"))
     implementation(project(":toolkit:multi:event-observer"))
     implementation(project(":toolkit:multi:event-observer-compose"))

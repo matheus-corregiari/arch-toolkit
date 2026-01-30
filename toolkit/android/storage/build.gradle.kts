@@ -17,7 +17,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata)
 
     // Other Module depedencies
-    implementation(project(":toolkit:multi:lumber"))
+    implementation(libs.arch.lumber)
     implementation(project(":toolkit:android:util"))
 }
 

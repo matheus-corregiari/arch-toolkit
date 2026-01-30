@@ -14,7 +14,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 // Other Arch-Toolkit Dependencies
-                implementation(project(":toolkit:multi:lumber"))
+                implementation(libs.arch.lumber)
                 implementation(project(":toolkit:multi:storage-core"))
             }
         }
