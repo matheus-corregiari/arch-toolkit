@@ -42,6 +42,7 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
             val exportId = (target.android.namespace ?: "").trim()
             listOf(
                 iosArm64(),
+                iosX64(),
                 iosSimulatorArm64(),
             ).forEach { target ->
                 target.binaries.framework {
