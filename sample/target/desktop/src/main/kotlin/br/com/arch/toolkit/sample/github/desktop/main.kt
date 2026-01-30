@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import br.com.arch.toolkit.lumber.DebugTree
+import br.com.arch.toolkit.lumber.DebugOak
 import br.com.arch.toolkit.lumber.Lumber
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.shared.initKoin
@@ -18,7 +18,7 @@ import org.koin.core.context.stopKoin
 import java.awt.Dimension
 
 fun main() = application {
-    Lumber.plant(DebugTree())
+    Lumber.plant(DebugOak())
     initKoin()
     Window(
         title = "Github Sample",
