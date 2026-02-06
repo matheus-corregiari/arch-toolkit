@@ -17,7 +17,6 @@
     <ID>MaxLineLength:_responseLiveData.kt$*</ID>
     <ID>MaxLineLength:_responseLiveData.kt$ResponseLiveDataScope$*</ID>
     <ID>MagicNumber:GithubApplication.kt$GithubApplication$400L</ID>
-    <ID>Filename:_js.kt$br.com.arch.toolkit.lumber._js.kt</ID>
     <ID>CyclomaticComplexMethod:_sharedPref.kt$@Throws(UnsupportedOperationException::class) operator fun &lt;T : Any?> SharedPreferences.set(key: String, value: T)</ID>
     <ID>Filename:_sharedPref.kt$br.com.arch.toolkit.storage.util._sharedPref.kt</ID>
     <ID>Filename:_screen.kt$br.com.arch.toolkit.sample.github.shared.designSystem._screen.kt</ID>

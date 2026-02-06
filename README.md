@@ -26,7 +26,6 @@ Provide production-ready Kotlin Multiplatform (KMP) building blocks for state ma
 | `toolkit/multi/event-observer` | `io.github.matheus-corregiari:event-observer` | Beta | Android, JVM, iOS, macOS | Multiplatform event channels with lifecycle awareness. |
 | `toolkit/multi/event-observer-compose` | `io.github.matheus-corregiari:event-observer-compose` | Experimental | Android | Compose extensions for event observers. |
 | `toolkit/multi/state-handle` | `io.github.matheus-corregiari:state-handle` | Incubating | Android, JVM | Lifecycle-friendly state persistence for shared logic. |
-| `toolkit/multi/lumber` | `io.github.matheus-corregiari:lumber` | Incubating | Android, JVM, iOS, macOS | Structured logging façade tuned for KMP. |
 | `toolkit/multi/splinter` | `io.github.matheus-corregiari:splinter` | Work in Progress | Android, JVM, iOS, macOS | Code generation helpers for DI-less modularization. |
 | `toolkit/android/statemachine` | `io.github.matheus-corregiari:statemachine` | Stable | Android | Declarative state transitions for UI flows. |
 | `toolkit/android/recycler-adapter` | `io.github.matheus-corregiari:recycler-adapter` | Stable | Android | RecyclerView adapter utilities with View binding hooks. |
