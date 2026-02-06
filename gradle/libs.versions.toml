@@ -14,7 +14,7 @@ build-sdk-target = "36"
 build-tools = "36.1.0"
 
 ## JetBrains
-jetbrains-kotlin = "2.3.0"
+jetbrains-kotlin = "2.3.10"
 jetbrains-compose = "1.10.0"
 jetbrains-lifecycle = "2.10.0-alpha08"
 jetbrains-coroutines = "1.10.2"
@@ -50,7 +50,7 @@ google-material = "1.13.0"
 google-ksp = "2.3.5"
 
 ## Arch Toolkit
-arch-lumber = "1.0.0"
+arch-lumber = "1.0.1"
 
 ## Dependency Injection
 di-koin = "4.1.1"
@@ -61,7 +61,6 @@ junit = "4.13.2"
 robolectric = "4.16.1"
 ktlint = "11.6.1"
 dexcount = "4.0.0"
-ajalt-mordant = "3.0.2"
 vanniktech-publish = "0.36.0"
 ktorfit = "2.7.2"
 ktor = "3.4.0"
@@ -133,7 +132,6 @@ robolectric-test = { module = "org.robolectric:robolectric", version.ref = "robo
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 ktlint = { module = "org.jlleitschuh.gradle.ktlint-idea:org.jlleitschuh.gradle.ktlint-idea.gradle.plugin", version.ref = "ktlint" }
-ajalt-mordant = { module = "com.github.ajalt.mordant:mordant", version.ref = "ajalt-mordant" }
 vanniktech-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-publish" }
 ktorfit = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }

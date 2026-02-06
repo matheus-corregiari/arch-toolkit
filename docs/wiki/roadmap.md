@@ -22,7 +22,6 @@ Refer to the [installation guide](../../README.md#-installation-gradle-kotlin-ds
 
 ### Mid Term (3–6 months)
 
-* Publish `lumber` with structured logging sinks for Kermit and OSLog.
 * Stabilise `event-observer-compose` once Compose for iOS matures.
 * Introduce build logic to keep dependencies automatically upgraded via Renovate or Dependabot.
 
