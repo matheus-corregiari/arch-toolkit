@@ -382,13 +382,30 @@ data class ComposableDataResult<T> internal constructor(
      * ```
      */
     @Composable
-    fun OnEmpty(func: @Composable () -> Unit) = apply { observableList.add(EmptyObservable(func)) }
+    fun OnEmpty(func: @Composable () -> Unit) =
+        apply { observableList.add(EmptyObservable { _, _ -> func() }) }
+
+    @Composable
+    fun OnEmpty(func: @Composable (DataResultStatus) -> Unit) =
+        apply { observableList.add(EmptyObservable { status, _ -> func(status) }) }
+
+    @Composable
+    fun OnEmpty(func: @Composable (DataResultStatus, Throwable?) -> Unit) =
+        apply { observableList.add(EmptyObservable(func)) }
 
     /**
      * Renders when the underlying list is not empty.
      */
     @Composable
     fun OnNotEmpty(func: @Composable (T) -> Unit) =
+        apply { observableList.add(NotEmptyObservable { data, _, _ -> func(data) }) }
+
+    @Composable
+    fun OnNotEmpty(func: @Composable (T, DataResultStatus) -> Unit) =
+        apply { observableList.add(NotEmptyObservable { data, status, _ -> func(data, status) }) }
+
+    @Composable
+    fun OnNotEmpty(func: @Composable (T, DataResultStatus, Throwable?) -> Unit) =
         apply { observableList.add(NotEmptyObservable(func)) }
 
     /**
@@ -396,13 +413,32 @@ data class ComposableDataResult<T> internal constructor(
      */
     @Composable
     fun <R> OnSingle(func: @Composable (R) -> Unit) =
+        apply { observableList.add(SingleObservable<T, R> { data, _, _ -> func(data) }) }
+
+    @Composable
+    fun <R> OnSingle(func: @Composable (R, DataResultStatus) -> Unit) = apply {
+        val observable = SingleObservable<T, R> { data, status, _ -> func(data, status) }
+        observableList.add(observable)
+    }
+
+    @Composable
+    fun <R> OnSingle(func: @Composable (R, DataResultStatus, Throwable?) -> Unit) =
         apply { observableList.add(SingleObservable(func)) }
 
     /**
      * Renders when the list contains more than one item.
      */
     @Composable
-    fun OnMany(func: @Composable (T) -> Unit) = apply { observableList.add(ManyObservable(func)) }
+    fun OnMany(func: @Composable (T) -> Unit) =
+        apply { observableList.add(ManyObservable { data, _, _ -> func(data) }) }
+
+    @Composable
+    fun OnMany(func: @Composable (T, DataResultStatus) -> Unit) =
+        apply { observableList.add(ManyObservable { data, status, _ -> func(data, status) }) }
+
+    @Composable
+    fun OnMany(func: @Composable (T, DataResultStatus, Throwable?) -> Unit) =
+        apply { observableList.add(ManyObservable(func)) }
 
     // endregion
 
