@@ -90,7 +90,7 @@ val stringConfig: @Composable ComposableDataResult<String>.() -> Unit = {
         Text("Success 3", modifier = Modifier.testTag("successTag3"))
     }
     // Empty
-    OnEmpty {
+    OnEmpty { ->
         Text("Empty", modifier = Modifier.testTag("emptyTag"))
     }
     // NotEmpty
@@ -169,7 +169,7 @@ val iterableConfig: @Composable ComposableDataResult<Collection<String>>.() -> U
         Text("Success 3", modifier = Modifier.testTag("successTag3"))
     }
     // Empty
-    OnEmpty {
+    OnEmpty { ->
         Text("Empty", modifier = Modifier.testTag("emptyTag"))
     }
     // NotEmpty
@@ -251,7 +251,7 @@ val mapConfig: @Composable ComposableDataResult<Map<String, String>>.() -> Unit 
         Text("Success 3", modifier = Modifier.testTag("successTag3"))
     }
     // Empty
-    OnEmpty {
+    OnEmpty { ->
         Text("Empty", modifier = Modifier.testTag("emptyTag"))
     }
     // NotEmpty
