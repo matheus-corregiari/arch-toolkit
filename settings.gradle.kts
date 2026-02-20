@@ -50,7 +50,8 @@ if (isIdeBuild) {
 }
 
 plugins {
-    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.4"
+    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.6"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 kover { enableCoverage() }
