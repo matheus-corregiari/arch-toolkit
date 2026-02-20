@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 
+/**
+ * Mutable observable value synchronized with an external getter/setter source.
+ */
 class ObservableValue<T>(
     initialValue: T,
     private val getter: () -> T?,

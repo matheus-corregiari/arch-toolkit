@@ -4,6 +4,11 @@ import br.com.arch.toolkit.storage.delegate.keyValueStorage
 import br.com.arch.toolkit.storage.keyValue.KeyValueStorage
 import br.com.arch.toolkit.util.ObservableValue
 
+/**
+ * Observable wrapper around a stored key-value entry.
+ *
+ * Exposes the same value as property access, [liveData], and [flow].
+ */
 data class ConfigValue<T : Any>(
     private val name: String,
     private val default: T,

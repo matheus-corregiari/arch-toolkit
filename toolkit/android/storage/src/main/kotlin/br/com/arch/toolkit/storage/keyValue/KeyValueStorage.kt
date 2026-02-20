@@ -2,6 +2,7 @@ package br.com.arch.toolkit.storage.keyValue
 
 import br.com.arch.toolkit.storage.StorageType
 
+/** Contract for key-value persistence used by the storage delegates. */
 interface KeyValueStorage {
 
     val type: StorageType

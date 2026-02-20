@@ -19,6 +19,10 @@ dependencies {
     // Other Module depedencies
     implementation(libs.arch.lumber)
     implementation(project(":toolkit:android:util"))
+
+    // Test Libraries
+    testImplementation(libs.junit.test)
+    testImplementation(libs.jetbrains.stdlib)
 }
 
 // Fixme - Make Tests

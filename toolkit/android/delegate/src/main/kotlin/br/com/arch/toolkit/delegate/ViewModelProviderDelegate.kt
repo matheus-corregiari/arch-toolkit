@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
+/** Delegate that creates ViewModels through the owner default factory. */
 class ViewModelProviderDelegate<out T : ViewModel> internal constructor(private val kClass: KClass<T>) {
 
     operator fun getValue(thisRef: AppCompatActivity, property: KProperty<*>): T =

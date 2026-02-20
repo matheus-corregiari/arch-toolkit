@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.lang.ref.WeakReference
 import kotlin.reflect.KProperty
 
+/** Lazy view lookup delegate for Activity, Fragment, View and ViewHolder scopes. */
 class ViewProviderDelegate<out T> internal constructor(
     @IdRes private val parentRes: Int = NO_ID,
     @IdRes private val idRes: Int,

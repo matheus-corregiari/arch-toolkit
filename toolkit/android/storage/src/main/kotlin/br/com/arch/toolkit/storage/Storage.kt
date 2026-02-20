@@ -7,6 +7,7 @@ import br.com.arch.toolkit.storage.keyValue.SharedPrefStorage
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
+/** Entry point for default storage backends and global storage settings. */
 sealed class Storage {
 
     data object KeyValue : Storage() {

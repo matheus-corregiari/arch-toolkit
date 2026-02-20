@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import kotlin.reflect.KProperty
 
+/**
+ * Delegate that reads values from Activity/Fragment extras or query parameters.
+ */
 class ExtraProviderDelegate<T>(
     private val extraName: String,
     private val keepState: Boolean,
