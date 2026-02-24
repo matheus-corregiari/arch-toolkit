@@ -27,7 +27,6 @@ jobs:
       - generate-tag
     outputs:
       modulesAll: ${{ steps.publishing-modules.outputs.modulesAll }}
-      modulesAndroid: ${{ steps.publishing-modules.outputs.modulesAndroid }}
       modulesMulti: ${{ steps.publishing-modules.outputs.modulesMulti }}
     steps:
       - uses: actions/checkout@v5

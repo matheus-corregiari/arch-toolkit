@@ -3,7 +3,7 @@ package br.com.arch.toolkit.sample.github.shared.structure.data.local
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import br.com.arch.toolkit.util.ContextProvider
+import br.com.arch.toolkit.android.util.ContextProvider
 import okio.Path.Companion.toPath
 
 internal const val DATASTORE_FILENAME = "batata.preferences_pb"

@@ -39,7 +39,7 @@ kotlin {
         }
         androidMain {
             dependencies {
-                implementation(project(":toolkit:android:util"))
+                implementation(libs.arch.android)
                 implementation(project(":toolkit:multi:storage-datastore"))
             }
         }

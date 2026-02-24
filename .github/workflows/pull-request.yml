@@ -29,7 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       modulesAll: ${{ steps.publishing-modules.outputs.modulesAll }}
-      modulesAndroid: ${{ steps.publishing-modules.outputs.modulesAndroid }}
       modulesMulti: ${{ steps.publishing-modules.outputs.modulesMulti }}
     steps:
       - uses: actions/checkout@v5
@@ -77,26 +76,6 @@ jobs:
 
       - name: Assemble ${{ matrix.module }}
         run: ./gradlew :${{ matrix.module }}:assembleRelease
-
-  test-android:
-    if: github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
-    needs:
-      - pre-build
-      - lint
-      - build
-    strategy:
-      fail-fast: true
-      matrix:
-        module: ${{fromJSON(needs.pre-build.outputs.modulesAndroid)}}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Base Setup
-        uses: ./.github/actions/setup-gradle
-
-      - name: Unit Tests ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:testDebugUnitTest koverVerify --no-parallel
 
   test-multi:
     if: github.event.pull_request.draft == false

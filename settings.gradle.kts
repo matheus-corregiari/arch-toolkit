@@ -25,12 +25,6 @@ include(":toolkit:multi:storage-datastore")
 include(":toolkit:multi:storage-memory")
 include(":toolkit:multi:state-handle")
 include(":toolkit:multi:test")
-include(":toolkit:android:delegate")
-include(":toolkit:android:foldable")
-include(":toolkit:android:recycler-adapter")
-include(":toolkit:android:storage")
-include(":toolkit:android:util")
-include(":toolkit:android:statemachine")
 
 // Samples
 val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"

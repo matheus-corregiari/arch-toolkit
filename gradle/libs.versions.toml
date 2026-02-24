@@ -51,6 +51,7 @@ google-ksp = "2.3.5"
 
 ## Arch Toolkit
 arch-lumber = "1.0.2"
+arch-android = "1.0.0"
 
 ## Dependency Injection
 di-koin = "4.1.1"
@@ -114,6 +115,7 @@ square-retrofit-main = { module = "com.squareup.retrofit2:retrofit", version.ref
 
 ## Arch Toolkit
 arch-lumber = { module = "io.github.matheus-corregiari:arch-lumber", version.ref = "arch-lumber" }
+arch-android = { module = "io.github.matheus-corregiari:arch-android", version.ref = "arch-android" }
 
 ## Google
 google-material = { module = "com.google.android.material:material", version.ref = "google-material" }
