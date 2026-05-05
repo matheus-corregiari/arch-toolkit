@@ -10,13 +10,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import arch_toolkit.sample.shared.feature.github_list.generated.resources.Res
 import arch_toolkit.sample.shared.feature.github_list.generated.resources.sample_github_list_title
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.ScreenTitle
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.fillAdjustableSize
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.haze
 import br.com.arch.toolkit.sample.feature.githubList.ui.list.state.EmptyListState
 import br.com.arch.toolkit.sample.feature.githubList.ui.list.state.ErrorListState
 import br.com.arch.toolkit.sample.feature.githubList.ui.list.state.LoadingListState
 import br.com.arch.toolkit.sample.feature.githubList.ui.list.state.ManyListState
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.ScreenTitle
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.fillAdjustableSize
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.haze
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import org.jetbrains.compose.resources.stringResource
@@ -36,10 +36,9 @@ fun RepositoryListScreen(
         }
     ) { padding ->
         val modifier = Modifier.fillAdjustableSize()
-        viewModel.stateList.Unwrap {
-            animation { enabled = true }
+        viewModel.stateList.animation { enabled = true }.Unwrap {
             OnMany { ManyListState(it, padding).Draw(modifier.hazeSource(hazeState)) }
-            OnEmpty { EmptyListState.Draw(modifier.padding(padding)) }
+            OnEmpty { -> EmptyListState.Draw(modifier.padding(padding)) }
             OnShowLoading { LoadingListState.Draw(modifier.padding(padding)) }
             OnError { error ->
                 ErrorListState(error, viewModel::reload).Draw(modifier.padding(padding))

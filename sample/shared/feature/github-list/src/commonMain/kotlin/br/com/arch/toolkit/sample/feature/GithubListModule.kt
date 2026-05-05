@@ -14,14 +14,13 @@ import br.com.arch.toolkit.sample.github.shared.structure.core.ComposeContent
 import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureIcon
 import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureRegistry
 import br.com.arch.toolkit.sample.github.shared.structure.core.featureRegistry
-import br.com.arch.toolkit.stateHandle.savedStateHandleCompat
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 object GithubListModule {
     val module = module {
         // ViewModels
-        viewModel { ListViewModel(get(), savedStateHandleCompat("list-view-model")) }
+        viewModel { ListViewModel(get(), get()) }
 
         // Features
         featureRegistry("repository-list-home") { repositoryList() }

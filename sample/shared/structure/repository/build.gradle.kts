@@ -19,7 +19,7 @@ kotlin {
                 implementation(project(":sample:shared:structure:core"))
 
                 // Arch Toolkit Dependencies
-                api(project(":toolkit:multi:event-observer"))
+                api(libs.arch.event.observer)
                 implementation(project(":toolkit:multi:splinter"))
 
                 implementation(libs.jetbrains.serialization)

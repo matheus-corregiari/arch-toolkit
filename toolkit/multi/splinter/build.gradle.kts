@@ -10,7 +10,7 @@ android.buildFeatures.buildConfig = false
 kotlin {
     // Libraries
     sourceSets.commonMain.dependencies {
-        implementation(project(":toolkit:multi:event-observer"))
+        implementation(libs.arch.event.observer)
         implementation(libs.arch.lumber)
 
         implementation(libs.jetbrains.coroutines.core)

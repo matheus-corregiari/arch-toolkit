@@ -23,7 +23,7 @@ kotlin {
                 implementation(project(":sample:shared:feature:settings"))
 
                 // Arch Toolkit Dependencies
-                implementation(project(":toolkit:multi:event-observer-compose"))
+                implementation(libs.arch.event.observer.compose)
 
                 // Compose
                 implementation(compose.components.resources)
