@@ -13,8 +13,8 @@ dependencies {
     // Arch Toolkit Dependencies
     implementation(libs.arch.lumber)
     implementation(project(":toolkit:multi:splinter"))
-    implementation(project(":toolkit:multi:event-observer"))
-    implementation(project(":toolkit:multi:event-observer-compose"))
+    implementation(libs.arch.event.observer)
+    implementation(libs.arch.event.observer.compose)
 
     // Jetbrains Compose Tools
     implementation(compose.runtime)
@@ -26,6 +26,7 @@ dependencies {
     // Other Dependencies
     implementation(libs.di.koin.core)
     implementation(libs.jetbrains.coroutines.core)
+    implementation(libs.jetbrains.coroutines.jvm)
 }
 
 compose.desktop {

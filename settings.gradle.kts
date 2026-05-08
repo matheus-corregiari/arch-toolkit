@@ -17,8 +17,6 @@ dependencyResolutionManagement {
 rootProject.name = "arch-toolkit"
 
 // Toolkit Libraries
-include(":toolkit:multi:event-observer")
-include(":toolkit:multi:event-observer-compose")
 include(":toolkit:multi:splinter")
 include(":toolkit:multi:storage-core")
 include(":toolkit:multi:storage-datastore")

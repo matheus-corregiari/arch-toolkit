@@ -10,3 +10,5 @@
 .DS_Store
 /captures
 .externalNativeBuild
+# Added by code-review-graph
+.code-review-graph/

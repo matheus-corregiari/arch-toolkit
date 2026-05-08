@@ -10,7 +10,6 @@ import br.com.arch.toolkit.sample.github.shared.structure.data.local.LocalSource
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.RemoteSourceModule
 import br.com.arch.toolkit.sample.github.shared.structure.repository.RepositoryModule
 import br.com.arch.toolkit.sample.shared.ui.home.HomeViewModel
-import br.com.arch.toolkit.stateHandle.enableSavedStateHandleCompat
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.koin.core.module.dsl.viewModelOf
@@ -24,9 +23,6 @@ fun initKoin() {
         })
 
         modules(
-            // Structure - Core
-            module { enableSavedStateHandleCompat() },
-
             // Structure - DesignSystem
             // Nothing to set!
 

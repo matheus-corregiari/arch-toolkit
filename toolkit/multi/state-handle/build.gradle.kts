@@ -15,7 +15,7 @@ kotlin {
         // Common Setup
         commonMain.dependencies {
             implementation(libs.arch.lumber)
-            implementation(project(":toolkit:multi:event-observer"))
+            implementation(libs.arch.event.observer)
             implementation(project(":toolkit:multi:splinter"))
 
             implementation(libs.jetbrains.coroutines.core)

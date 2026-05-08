@@ -12,7 +12,7 @@ android.buildFeatures.buildConfig = false
 kotlin {
     // Libraries
     sourceSets.commonMain.dependencies {
-        implementation(compose.runtime)
+        implementation(libs.jetbrains.compose.runtime)
         implementation(libs.jetbrains.coroutines.core)
         implementation(libs.jetbrains.serialization)
     }

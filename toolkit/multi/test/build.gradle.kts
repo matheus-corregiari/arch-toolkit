@@ -9,11 +9,11 @@ android.buildFeatures.buildConfig = false
 kotlin {
     // Libraries
     sourceSets.commonMain.dependencies {
-        implementation(libs.jetbrains.kotlin.test)
+        api(libs.jetbrains.kotlin.test)
     }
     sourceSets.androidMain.dependencies {
-        implementation(libs.androidx.compose.testManifest)
-        implementation(libs.androidx.test.junit)
+        api(libs.androidx.compose.testManifest)
+        api(libs.androidx.test.junit)
         api(libs.robolectric.test)
     }
 }

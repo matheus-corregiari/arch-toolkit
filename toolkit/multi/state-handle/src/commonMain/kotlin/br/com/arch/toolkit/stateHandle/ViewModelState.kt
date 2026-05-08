@@ -5,8 +5,6 @@ import br.com.arch.toolkit.flow.ResponseMutableStateFlow
 import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.splinter.extension.invokeCatching
 import br.com.arch.toolkit.stateHandle.StateValue.Companion.default
-import br.com.arch.toolkit.stateHandle.ViewModelState.Regular
-import br.com.arch.toolkit.stateHandle.ViewModelState.Result
 import br.com.arch.toolkit.util.dataResultSuccess
 import br.com.arch.toolkit.util.orNone
 import kotlinx.coroutines.CoroutineScope
@@ -216,10 +214,10 @@ sealed class ViewModelState<T : Any>(
                     return@launch
                 } else {
                     invalidate()
-                    resultFlow.emitNone()
+                    if (statedData == null) resultFlow.emitNone()
                     func.invokeCatching().getOrNull()?.collect { result ->
-                        if (result.isSuccess) set(result.data ?: statedData)
-                        resultFlow.emit(result)
+                        set(result.data ?: statedData)
+                        resultFlow.emit(result.copy(data = result.data ?: statedData))
                     }
                 }
             }

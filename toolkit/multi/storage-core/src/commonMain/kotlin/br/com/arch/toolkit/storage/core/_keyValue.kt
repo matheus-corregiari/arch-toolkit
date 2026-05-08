@@ -1,4 +1,4 @@
-@file:Suppress("MemberVisibilityCanBePrivate", "KDocUnresolvedReference")
+@file:Suppress("MemberVisibilityCanBePrivate", "KDocUnresolvedReference", "Filename")
 
 package br.com.arch.toolkit.storage.core
 
@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import br.com.arch.toolkit.storage.core.KeyValue.Companion.map
 import br.com.arch.toolkit.storage.core.KeyValue.Companion.required
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -55,13 +54,6 @@ expect fun <T> KeyValue<T>.instant(): T
  *
  * This is a platform-specific helper that defines where asynchronous storage
  * operations (e.g., [KeyValue.set]) should run by default.
- *
- * ---
- *
- * ### Platform defaults
- * - **Java (Android/JVM):** Uses [Dispatchers.IO].
- * - **Apple (iOS/macOS):** Uses [Dispatchers.Default].
- * - **Web (JS/WASM):** Uses [Dispatchers.Default].
  *
  * ---
  *
@@ -135,7 +127,6 @@ internal expect fun <T> KeyValue<T>.defaultScope(): CoroutineScope
  * @see required To enforce non-null values.
  * @see map To transform values between types.
  */
-@StorageApi
 abstract class KeyValue<DATA> {
 
     protected var scope: CoroutineScope = defaultScope()
@@ -175,19 +166,23 @@ abstract class KeyValue<DATA> {
     }
 
     companion object {
-        @StorageApi
         fun <T> KeyValue<T?>.required(): KeyValue<T> = RequiredKeyValue(
             keyValue = this,
             default = null
         )
 
-        @StorageApi
         fun <T> KeyValue<T?>.required(default: () -> T): KeyValue<T> = RequiredKeyValue(
             keyValue = this,
             default = default
         )
 
-        @StorageApi
+        fun <T> KeyValue<T?>.default(default: T?): KeyValue<T?> = default { default }
+
+        fun <T> KeyValue<T?>.default(default: () -> T?): KeyValue<T?> = DefaultKeyValue(
+            keyValue = this,
+            default = default
+        )
+
         fun <T, R> KeyValue<T>.map(mapTo: (T) -> R, mapBack: (R) -> T): KeyValue<R> = MapKeyValue(
             keyValue = this,
             mapTo = mapTo,
