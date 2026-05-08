@@ -214,10 +214,10 @@ sealed class ViewModelState<T : Any>(
                     return@launch
                 } else {
                     invalidate()
-                    resultFlow.emitNone()
+                    if (statedData == null) resultFlow.emitNone()
                     func.invokeCatching().getOrNull()?.collect { result ->
-                        if (result.isSuccess) set(result.data ?: statedData)
-                        resultFlow.emit(result)
+                        set(result.data ?: statedData)
+                        resultFlow.emit(result.copy(data = result.data ?: statedData))
                     }
                 }
             }

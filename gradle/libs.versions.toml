@@ -9,22 +9,23 @@ build-version-name = "1.0.0"
 build-version-code = "1"
 build-sdk-min-toolkit = "28"
 build-sdk-min-sample = "28"
-build-sdk-compile = "36"
-build-sdk-target = "36"
-build-tools = "36.1.0"
+build-sdk-compile = "37"
+build-sdk-target = "37"
+build-tools = "37.0.0"
 
 ## JetBrains
 jetbrains-kotlin = "2.3.21"
 jetbrains-compose = "1.10.3"
 jetbrains-lifecycle = "2.10.0"
-jetbrains-coroutines = "1.10.2"
+jetbrains-coroutines = "1.11.0"
 jetbrains-serialization = "1.11.0"
 jetbrains-dokka = "2.2.0"
-jetbrains-datetime = "0.7.1"
+jetbrains-datetime = "0.8.0"
 
 ## AndroidX
 androidx-plugin = "8.13.2"
 androidx-appcompat = "1.7.1"
+androidx-fragment = "1.8.9"
 androidx-annotation = "1.10.0"
 androidx-constraint = "2.2.1"
 androidx-recyclerview = "1.4.0"
@@ -38,7 +39,7 @@ androidx-test-junit = "1.3.0"
 androidx-test-espresso = "3.7.0"
 
 ## AndroidX Compose
-androidx-compose-core = "1.11.0"
+androidx-compose-core = "1.11.1"
 androidx-compose-activity = "1.13.0"
 
 ## SquareUp
@@ -50,8 +51,8 @@ google-material = "1.13.0"
 google-ksp = "2.3.5"
 
 ## Arch Toolkit
-arch-lumber = "1.0.3"
-arch-android = "1.0.0"
+arch-lumber = "1.1.0"
+arch-android = "1.1.0"
 arch-event-observer = "2.0.1"
 
 ## Dependency Injection
@@ -83,11 +84,13 @@ jetbrains-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.
 jetbrains-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "jetbrains-kotlin" }
 jetbrains-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "jetbrains-datetime" }
 jetbrains-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "jetbrains-kotlin" }
+jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains-compose" }
 
 ## Androidx
 androidx-plugin = { module = "com.android.tools.build:gradle", version.ref = "androidx-plugin" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "androidx-fragment" }
 androidx-constraint = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraint" }
 androidx-recycler = { module = "androidx.recyclerview:recyclerview", version.ref = "androidx-recyclerview" }
 androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata", version.ref = "androidx-lifecycle" }
@@ -106,7 +109,7 @@ androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core",
 
 ## Androidx / Jetbrains Compose
 androidx-compose-material3-window = { module = "org.jetbrains.compose.material3:material3-window-size-class", version = "1.10.0-alpha05" }
-androidx-compose-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version = "1.3.0-alpha07" }
+androidx-compose-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version = "1.2.0" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-compose-activity" }
 androidx-compose-lifecycle = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jetbrains-lifecycle" }
 androidx-compose-testManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-core" }

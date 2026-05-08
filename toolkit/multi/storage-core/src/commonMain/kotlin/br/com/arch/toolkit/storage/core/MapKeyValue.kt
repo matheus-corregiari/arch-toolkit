@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.map
  *
  * @see KeyValue.map Convenient factory method.
  */
-@StorageApi
 internal class MapKeyValue<Current, Transformed> internal constructor(
     private val keyValue: KeyValue<Current>,
     private val mapTo: (Current) -> Transformed,

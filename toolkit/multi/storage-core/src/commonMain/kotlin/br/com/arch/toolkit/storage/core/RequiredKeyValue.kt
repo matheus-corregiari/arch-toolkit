@@ -53,7 +53,6 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * @see KeyValue.required Convenient factory method.
  */
-@StorageApi
 internal class RequiredKeyValue<ResultData> internal constructor(
     private val keyValue: KeyValue<ResultData?>,
     private val default: (() -> ResultData)?
