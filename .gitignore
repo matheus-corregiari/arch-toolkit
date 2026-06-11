@@ -1,12 +1,17 @@
 **/build
 **/.kotlin/
 **/.gradle/
+.gradle-user-home/
 **/.idea/
 **/.git/
 **/kotlin-js-store/
 *.log
 *.iml
 /local.properties
+/docs/api/*
+/docs/contributing.md
+!/docs/api/*.md
+/site/
 .DS_Store
 /captures
 .externalNativeBuild
