@@ -1,5 +1,4 @@
 val repositoryList: RepositoryHandler.() -> Unit = {
-    mavenLocal()
     google()
     mavenCentral()
     gradlePluginPortal()

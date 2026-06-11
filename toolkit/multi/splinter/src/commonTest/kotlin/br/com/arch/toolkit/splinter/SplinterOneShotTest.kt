@@ -60,7 +60,7 @@ class SplinterOneShotTest {
 
     private fun TestScope.successSplinter(
         config: Splinter.Config.Builder<String>.() -> Unit = {},
-        oneShot: OneShot.Config.Builder<String>.() -> Unit = {},
+        oneShot: OneShot.Config.Builder<String>.() -> Unit = {}
     ) = splinter<String>(
         id = "test",
         strategy = Strategy.oneShot {

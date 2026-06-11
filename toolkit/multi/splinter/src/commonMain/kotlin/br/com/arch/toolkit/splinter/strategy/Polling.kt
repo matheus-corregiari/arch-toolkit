@@ -1,6 +1,6 @@
 @file:Suppress(
     "LongMethod",
-    "ComplexMethod",
+    "CyclomaticComplexMethod",
     "TooManyFunctions",
     "ComplexCondition",
     "unused"
@@ -50,7 +50,10 @@ class Polling<T> private constructor(
         /**
          * Start the request loop!
          */
-        while (shouldStop.not() && currentCoroutineContext().isActive && holder.get().isSuccess.not()) {
+        while (shouldStop.not() &&
+            currentCoroutineContext().isActive &&
+            holder.get().isSuccess.not()
+        ) {
             /**
              * Verify loop limit before start loop!
              */
@@ -71,7 +74,8 @@ class Polling<T> private constructor(
             val result = measureTimeResult(
                 max = config.maxExecutionTime,
                 min = { config.minExecutionTime },
-                log = { logChannel.info("[Polling] $it") }) {
+                log = { logChannel.info("[Polling] $it") }
+            ) {
                 loopCounter++
 
                 logChannel.info("Request looped - $loopCounter")
@@ -141,10 +145,14 @@ class Polling<T> private constructor(
                         config.stopOnError.runCatching { invoke(error) }.getOrDefault(false)
 
                     when {
-                        shouldStop.not() && config.maxErrorStreak > 0 && requestErrorCounter >= config.maxErrorStreak -> {
+                        shouldStop.not() &&
+                            config.maxErrorStreak > 0 &&
+                            requestErrorCounter >= config.maxErrorStreak -> {
                             logChannel.info("Max error streak reached: $requestErrorCounter")
+                            val message =
+                                "Polling stopped! Max error streak reached! $requestErrorCounter"
                             val newError = PollingMaxErrorStreakReachedException(
-                                message = "Polling stopped! Max error streak reached! $requestErrorCounter",
+                                message = message,
                                 cause = config.mapError?.invokeCatching(error)?.getOrNull() ?: error
                             )
                             val errorData = dataResultError(
@@ -207,7 +215,7 @@ class Polling<T> private constructor(
         val maxExecutionTime: Duration,
         val delayStrategy: DelayStrategy,
         val shouldStopAfterLoad: suspend (T) -> Boolean,
-        val limitLoopCount: Long,
+        val limitLoopCount: Long
     ) {
 
         /**
@@ -281,13 +289,14 @@ class Polling<T> private constructor(
                 maxExecutionTime = maxExecutionTime,
                 delayStrategy = delayStrategy,
                 shouldStopAfterLoad = shouldStopAfterLoad,
-                limitLoopCount = limitLoopCount,
+                limitLoopCount = limitLoopCount
             )
         }
     }
 
     enum class DelayStrategy {
-        AFTER_REQUEST, BEFORE_REQUEST;
+        AFTER_REQUEST,
+        BEFORE_REQUEST;
 
         suspend fun delayIfPossible(targetStrategy: DelayStrategy, delay: Duration) {
             if (this == targetStrategy && delay.inWholeMilliseconds > 0) {

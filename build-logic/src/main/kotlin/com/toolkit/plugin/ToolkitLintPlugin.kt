@@ -10,8 +10,9 @@ import com.toolkit.plugin.util.detekt
 import com.toolkit.plugin.util.ktLint
 import com.toolkit.plugin.util.libs
 import com.toolkit.plugin.util.projectJavaVersionName
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.DetektCreateBaselineTask
+import dev.detekt.gradle.extensions.DetektExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -22,33 +23,30 @@ internal class ToolkitLintPlugin : Plugin<Project> {
         target.applyPlugins("detekt", "ktlint")
 
         // Detekt configuration
-        target.dependencies.add(
-            "detektPlugins",
-            target.libs.findLibrary("detekt-formatting").get()
-        )
-        with(target.detekt) {
-            parallel = true
-            disableDefaultRuleSets = true
-            buildUponDefaultConfig = true
+        with(target.extensions.getByType(DetektExtension::class.java)) {
+            parallel.set(true)
+            buildUponDefaultConfig.set(true)
 
-            autoCorrect = true
-            allRules = false
+            allRules.set(false)
             config.setFrom("${target.rootDir}/tools/detekt-config.yml")
-            baseline = File("${target.rootDir}/tools/detekt-baseline.xml")
         }
         with(target.tasks) {
             withType(Detekt::class.java).configureEach { detekt ->
-                detekt.jvmTarget = projectJavaVersionName
+                detekt.jvmTarget.set(projectJavaVersionName)
                 detekt.reports {
-                    it.xml.required.set(true)
                     it.html.required.set(true)
-                    it.md.required.set(true)
-                    it.txt.required.set(true)
+                    it.checkstyle.required.set(true)
+                    it.markdown.required.set(true)
                     it.sarif.required.set(true)
                 }
             }
             withType(DetektCreateBaselineTask::class.java).configureEach {
-                it.jvmTarget = projectJavaVersionName
+                it.jvmTarget.set(projectJavaVersionName)
+            }
+            named("detekt").configure {
+                it.dependsOn(withType(Detekt::class.java).matching { task ->
+                    task.name.endsWith("SourceSet")
+                })
             }
         }
 

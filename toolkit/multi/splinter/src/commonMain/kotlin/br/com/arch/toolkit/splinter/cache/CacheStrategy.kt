@@ -67,13 +67,13 @@ abstract class CacheStrategy<T>(val id: String) {
     internal enum class HowToProceed {
         IGNORE_CACHE,
         STOP_FLOW_AND_DISPATCH_CACHE,
-        DISPATCH_CACHE,
+        DISPATCH_CACHE
     }
 
     /**
      *
      */
     internal data class DataVersion(
-        val version: String,
+        val version: String
     )
 }

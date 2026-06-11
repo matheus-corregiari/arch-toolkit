@@ -10,7 +10,10 @@ import org.gradle.api.artifacts.VersionCatalog
 internal fun Project.setupAndroidApplicationModule() = with(androidApplication) {
     // Exclusive Application Configurations
     defaultConfig {
-        proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+        proguardFiles(
+            getDefaultProguardFile("proguard-android-optimize.txt"),
+            "proguard-rules.pro",
+        )
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         versionCode = libs.version("build-version-code").toInt()

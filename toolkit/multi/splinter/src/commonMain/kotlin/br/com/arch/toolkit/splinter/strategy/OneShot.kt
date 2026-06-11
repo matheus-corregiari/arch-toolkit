@@ -52,7 +52,9 @@ class OneShot<T> private constructor(
                 remoteVersion = version
                 if (interrupt && data != null) {
                     return@measureTimeResult data
-                } else if (data != null) localData = data
+                } else if (data != null) {
+                    localData = data
+                }
             } ?: logChannel.info("[OneShot] Cache - Not set =(")
 
             // Emit first loading
@@ -92,7 +94,7 @@ class OneShot<T> private constructor(
             dataChannel.send(
                 dataResultError(
                     error = config.mapError?.invokeCatching(error)?.getOrNull() ?: error,
-                    data = localData ?: config.fallback?.invokeCatching(error)?.getOrNull(),
+                    data = localData ?: config.fallback?.invokeCatching(error)?.getOrNull()
                 )
             )
         }
@@ -200,7 +202,7 @@ class OneShot<T> private constructor(
                 minDurationOnError = minDurationOnError,
                 maxDuration = maxDuration,
                 cacheStrategy = cache,
-                retainDataFromPastExecutions = retainDataFromPastExecutions,
+                retainDataFromPastExecutions = retainDataFromPastExecutions
             )
         }
     }
@@ -210,7 +212,7 @@ class OneShot<T> private constructor(
      */
     class Context<T> internal constructor(
         private val dataChannel: Channel<DataResult<T>>,
-        private val logChannel: Channel<Splinter.Message>,
+        private val logChannel: Channel<Splinter.Message>
     ) {
         suspend fun sendSnapshot(data: T) {
             currentCoroutineContext().ensureActive()

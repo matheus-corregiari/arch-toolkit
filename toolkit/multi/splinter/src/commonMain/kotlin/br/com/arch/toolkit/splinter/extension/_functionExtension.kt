@@ -35,7 +35,7 @@ suspend fun <A1, R> (suspend (A1) -> R).invokeCatching(data: A1) = runCatching {
  */
 suspend fun <A1, A2, R> (suspend (A1, A2) -> R).invokeCatching(
     data1: A1,
-    data2: A2,
+    data2: A2
 ) = runCatching { invoke(data1, data2) }
 
 /**
@@ -46,7 +46,7 @@ suspend fun <A1, A2, R> (suspend (A1, A2) -> R).invokeCatching(
 suspend fun <A1, A2, A3, R> (suspend (A1, A2, A3) -> R).invokeCatching(
     data1: A1,
     data2: A2,
-    data3: A3,
+    data3: A3
 ) = runCatching { invoke(data1, data2, data3) }
 
 /**
@@ -58,5 +58,5 @@ suspend fun <A1, A2, A3, A4, R> (suspend (A1, A2, A3, A4) -> R).invokeCatching(
     data1: A1,
     data2: A2,
     data3: A3,
-    data4: A4,
+    data4: A4
 ) = runCatching { invoke(data1, data2, data3, data4) }

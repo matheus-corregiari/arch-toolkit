@@ -2,6 +2,7 @@
 
 package com.toolkit.plugin.multiplatform
 
+import com.android.build.api.withAndroid
 import com.toolkit.plugin.util.applyPlugins
 import com.toolkit.plugin.util.multiplatform
 import com.toolkit.plugin.util.projectJavaVersionCode
@@ -22,7 +23,7 @@ internal class ToolkitBasePlugin : Plugin<Project> {
                 common {
                     group("java") {
                         withJvm()
-                        withAndroidTarget()
+                        withAndroid()
                     }
                     group("web") {
                         withJs()

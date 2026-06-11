@@ -14,6 +14,7 @@ dependencies {
     implementation(libs.androidx.plugin) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
+    implementation(libs.androidx.kmp.library)
     implementation(libs.detekt) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
@@ -23,6 +24,8 @@ dependencies {
     implementation(libs.jetbrains.plugin) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
+    implementation(libs.jetbrains.multiplatform)
+    implementation(libs.jetbrains.kover)
     implementation(libs.jetbrains.dokka) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }

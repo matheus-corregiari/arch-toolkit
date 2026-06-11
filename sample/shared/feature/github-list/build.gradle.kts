@@ -5,10 +5,6 @@ plugins {
     alias(libs.plugins.jetbrains.serialization)
 }
 
-android.namespace = "br.com.arch.toolkit.sample.shared.feature.githubList"
-android.androidResources.enable = false
-android.buildFeatures.buildConfig = false
-
 kotlin {
     sourceSets {
         commonMain {

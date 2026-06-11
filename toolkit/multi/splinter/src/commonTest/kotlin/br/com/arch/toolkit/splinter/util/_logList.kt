@@ -19,7 +19,7 @@ internal val logListAllDefault = listOf<Any>(
     "Info - test - \t\\[OneShot] Execution time \\d+ms, need to wait more \\d+ms - null"
         .toRegex(),
     "Info - test - \t[OneShot] Emit - Success Data! - ccc - null",
-    "Info - test - [Job] Finished! - null",
+    "Info - test - [Job] Finished! - null"
 )
 
 internal val logListWithoutMinDuration = listOf<Any>(
@@ -39,5 +39,5 @@ internal val logListWithoutMinDuration = listOf<Any>(
     "Info - test - \t\\[OneShot] Execution time \\d+ms - null"
         .toRegex(),
     "Info - test - \t[OneShot] Emit - Success Data! - ccc - null",
-    "Info - test - [Job] Finished! - null",
+    "Info - test - [Job] Finished! - null"
 )

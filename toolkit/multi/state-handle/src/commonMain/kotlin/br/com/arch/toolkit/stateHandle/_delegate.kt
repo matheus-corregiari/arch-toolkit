@@ -179,11 +179,10 @@ inline fun <reified T : Any> SavedStateHandle.saveResponseState(name: String = "
 fun <T : Any> SavedStateHandle.value(
     key: String = "",
     getError: (Throwable) -> Unit = {},
-    setError: (T, Throwable) -> Unit = { _, _ -> },
+    setError: (T, Throwable) -> Unit = { _, _ -> }
 ) = StateValue.Optional(
     key = key,
     handle = this,
     getError = getError,
     setError = setError
 )
-
