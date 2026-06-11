@@ -31,15 +31,15 @@ runs:
     # Setup versionName because we love it
     - name: Get next version name
       id: new-version
-      uses: proudust/gh-describe@v1.5.3
+      uses: proudust/gh-describe@v2
 
     # Write versionName into build file to use properly in the future
     - name: Write version into build file
       shell: bash
       run: |
         mkdir build
-        touch version-name.txt
-        echo "${{ steps.new-version.outputs.describe }}" >> build/version-name.txt
+        touch build/version-name.txt
+        echo "${{ steps.new-version.outputs.describe }}" > build/version-name.txt
 
     # Put everything we need into gradle.properties to build properly
     - name: Inject sign into gradle.properties
