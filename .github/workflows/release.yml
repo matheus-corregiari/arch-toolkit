@@ -14,6 +14,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Validate tag
         env:
