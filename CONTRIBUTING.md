@@ -1,43 +1,27 @@
 # Contributing to Arch Toolkit
 
-## Setup
+Use JDK 21, the checked-in Gradle wrapper, and a focused branch from `master`.
 
-1. Use JDK 21.
-2. Use the checked-in Gradle wrapper.
-3. Create a focused branch from `master`.
-
-## Validation
+Before opening a pull request, run the checks relevant to the change:
 
 ```bash
-./gradlew ciBuild
-./gradlew ciTest
-./gradlew ciLint
+./gradlew ciLint ciBuild ciTest
 ./gradlew ciCoverage
 ./gradlew ciDocs
 python -m mkdocs build --strict
 ```
 
-Validate samples separately when sample code changes:
+Samples are opt-in:
 
 ```bash
 ./gradlew -PincludeSamples=true ciSamples
 ```
 
-## Release Branches
+The complete contribution guide covers repository architecture, build logic,
+quality commands, documentation, dependency updates, publishing, release
+branches, tag validation, and pull-request expectations:
 
-Release and hotfix branches must match one of these formats:
+https://matheus-corregiari.github.io/arch-toolkit/contributing/
 
-- `release/X.Y.Z`
-- `release/X.Y.Z-rcNN`
-- `hotfix/X.Y.Z`
-- `hotfix/X.Y.Z-rcNN`
-
-After a matching branch is merged into `master`, GitHub Actions creates the tag
-and the tag starts the release workflow.
-
-## Pull Requests
-
-- Keep changes scoped.
-- Add tests for behavior changes.
-- Update public documentation when usage or compatibility changes.
-- Do not commit generated build output, API HTML, local properties, or IDE files.
+Do not commit generated build output, Dokka HTML, the MkDocs site, local
+properties, or IDE files.

@@ -1,15 +1,13 @@
 # Storage Memory
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.matheus-corregiari/storage-memory)](https://central.sonatype.com/artifact/io.github.matheus-corregiari/storage-memory)
+Process-local `StorageProvider` for tests, previews, and temporary state.
 
-In-memory `StorageProvider` for tests, previews, and temporary state.
-
-```kotlin
-implementation("io.github.matheus-corregiari:storage-memory:<version>")
-```
+- Artifact: `io.github.matheus-corregiari:storage-memory`
+- Targets: Android, JVM, iOS arm64, iOS simulator arm64, JS, WasmJS
 
 ```kotlin
-val storage = MemoryStoreProvider(mutableMapOf())
+implementation("io.github.matheus-corregiari:storage-memory:<latest-version>")
 ```
 
-See the [module documentation](../../../docs/modules/storage-memory.md).
+[Module guide](https://matheus-corregiari.github.io/arch-toolkit/modules/storage-memory/) |
+[API reference](https://matheus-corregiari.github.io/arch-toolkit/api/storage-memory/html/)

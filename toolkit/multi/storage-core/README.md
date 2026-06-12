@@ -1,17 +1,14 @@
 # Storage Core
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.matheus-corregiari/storage-core)](https://central.sonatype.com/artifact/io.github.matheus-corregiari/storage-core)
+Reactive storage contracts, typed keys, Flow observation, delegates, and
+Compose state adapters.
 
-Reactive storage contracts shared by the Arch Toolkit storage providers.
-
-```kotlin
-implementation("io.github.matheus-corregiari:storage-core:<version>")
-```
+- Artifact: `io.github.matheus-corregiari:storage-core`
+- Targets: Android, JVM, iOS arm64, iOS simulator arm64, JS, WasmJS
 
 ```kotlin
-val name = storage.string("name")
-name.set("Ada")
-println(name.instant())
+implementation("io.github.matheus-corregiari:storage-core:<latest-version>")
 ```
 
-See the [module documentation](../../../docs/modules/storage-core.md).
+[Module guide](https://matheus-corregiari.github.io/arch-toolkit/modules/storage-core/) |
+[API reference](https://matheus-corregiari.github.io/arch-toolkit/api/storage-core/html/)

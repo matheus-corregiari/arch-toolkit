@@ -1,15 +1,13 @@
 # Splinter
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.matheus-corregiari/splinter)](https://central.sonatype.com/artifact/io.github.matheus-corregiari/splinter)
+One-shot, polling, mirrored-flow, cache, and execution-policy orchestration.
 
-Request orchestration strategies for one-shot execution, polling, and mirrored
-flows.
+- Artifact: `io.github.matheus-corregiari:splinter`
+- Targets: Android, JVM, iOS arm64, iOS simulator arm64, JS, WasmJS
 
 ```kotlin
-implementation("io.github.matheus-corregiari:splinter:<version>")
+implementation("io.github.matheus-corregiari:splinter:<latest-version>")
 ```
 
-Splinter is still evolving. Review release notes before upgrading between
-release candidates.
-
-See the [module documentation](../../../docs/modules/splinter.md).
+[Module guide](https://matheus-corregiari.github.io/arch-toolkit/modules/splinter/) |
+[API reference](https://matheus-corregiari.github.io/arch-toolkit/api/splinter/html/)

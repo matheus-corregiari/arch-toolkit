@@ -1,5 +1,3 @@
-@file:Suppress("KDocUnresolvedReference")
-
 package br.com.arch.toolkit.storage.datastore
 
 import androidx.datastore.core.DataStore
@@ -11,7 +9,7 @@ import br.com.arch.toolkit.storage.core.StorageProvider
 import kotlin.enums.EnumEntries
 
 /**
- * [StorageProvider] implementation backed by AndroidX [DataStore] with [Preferences].
+ * Storage provider backed by AndroidX [DataStore] with [Preferences].
  *
  * [DataStoreProvider] exposes a type-safe API to access preference keys as reactive [KeyValue] entries.
  * It supports primitives, enums, and serializable models, while keeping the same contract as
@@ -22,7 +20,7 @@ import kotlin.enums.EnumEntries
  * ### Behavior
  * - Each primitive type is mapped to its corresponding `Preferences.Key`.
  * - Values are observed reactively through [KeyValue.get] as a [kotlinx.coroutines.flow.Flow].
- * - Writes are persisted asynchronously via [DataStore.edit].
+ * - Writes are persisted asynchronously through `DataStore.edit`.
  * - Enums are stored as strings (`name`) and mapped back to their enum entry.
  * - Models are stored as JSON strings using provided `fromJson` / `toJson` lambdas.
  *
@@ -82,7 +80,6 @@ import kotlin.enums.EnumEntries
  *
  * @param store The [DataStore] instance backed by [Preferences].
  *
- * @see StorageProvider For the contract implemented by this class.
  * @see DataStoreKeyValue For the internal [KeyValue] implementations used.
  */
 class DataStoreProvider(private val store: DataStore<Preferences>) : StorageProvider() {

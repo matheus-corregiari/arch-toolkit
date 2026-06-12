@@ -18,6 +18,8 @@ theme:
   features:
     - content.tabs.link
     - content.code.copy
+    - navigation.indexes
+    - navigation.sections
 
 markdown_extensions:
   - admonition
@@ -28,11 +30,24 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra_javascript:
+  - javascripts/mermaid.mjs
 
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
+  - Using Arch Toolkit:
+      - Getting Started: getting-started.md
+      - Choosing Modules: using/choosing-modules.md
+      - Target Compatibility: using/compatibility.md
+      - Core Concepts: core-concepts.md
+      - Practical Recipes: recipes.md
+      - Migration and Updates: using/migration.md
   - Modules:
       - Overview: modules/index.md
       - Storage Core: modules/storage-core.md
@@ -40,8 +55,19 @@ nav:
       - Storage Memory: modules/storage-memory.md
       - State Handle: modules/state-handle.md
       - Splinter: modules/splinter.md
-  - Core Concepts: core-concepts.md
-  - Usage Recipes: recipes.md
-  - Changelog: changelog/index.md
-  - Contributing: contributing.md
+  - Sample Application:
+      - Overview: sample/index.md
+      - Architecture: sample/architecture.md
+      - Running the Sample: sample/running.md
+      - Demonstrated Flows: sample/flows.md
+      - Known Limitations: sample/limitations.md
+  - Troubleshooting: troubleshooting.md
+  - Contributing:
+      - Overview: contributing.md
+      - Repository Architecture: contributing/architecture.md
+      - Development and Quality: contributing/development.md
+      - Documentation: contributing/documentation.md
+      - Dependency Updates: contributing/dependencies.md
+      - Publishing and Releases: contributing/release.md
   - API Reference: api/index.md
+  - Changelog: changelog/index.md

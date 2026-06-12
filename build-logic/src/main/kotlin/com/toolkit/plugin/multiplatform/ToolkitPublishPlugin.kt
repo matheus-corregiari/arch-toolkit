@@ -34,6 +34,9 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
             moduleName.set(target.name)
             moduleVersion.set(target.versionName)
             basePublicationsDirectory.set(target.file("${target.rootDir}/docs/api/${target.name}"))
+            dokkaPublications.configureEach { publication ->
+                publication.failOnWarning.set(true)
+            }
         }
 
         target.multiplatform.withSourcesJar(true)

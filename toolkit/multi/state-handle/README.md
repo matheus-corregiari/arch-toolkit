@@ -1,16 +1,14 @@
 # State Handle
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.matheus-corregiari/state-handle)](https://central.sonatype.com/artifact/io.github.matheus-corregiari/state-handle)
+Typed delegates and observable state wrappers for multiplatform AndroidX
+`SavedStateHandle`.
 
-Typed, reactive state delegates backed by Android `SavedStateHandle` and
-compatible scoped state on other targets.
-
-```kotlin
-implementation("io.github.matheus-corregiari:state-handle:<version>")
-```
+- Artifact: `io.github.matheus-corregiari:state-handle`
+- Targets: Android, JVM, iOS arm64, iOS simulator arm64, JS, WasmJS
 
 ```kotlin
-var page by savedStateHandle.value<Int?>(key = "page").required { 1 }
+implementation("io.github.matheus-corregiari:state-handle:<latest-version>")
 ```
 
-See the [module documentation](../../../docs/modules/state-handle.md).
+[Module guide](https://matheus-corregiari.github.io/arch-toolkit/modules/state-handle/) |
+[API reference](https://matheus-corregiari.github.io/arch-toolkit/api/state-handle/html/)

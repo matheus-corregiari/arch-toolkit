@@ -1,4 +1,4 @@
-# Usage Recipes
+# Practical Recipes
 
 ## In-Memory Storage
 
@@ -21,11 +21,37 @@ val theme = provider.string("theme")
 theme.set("dark")
 ```
 
-## Restorable State
+## Required Storage Value
 
 ```kotlin
-var query by savedStateHandle.value<String?>(key = "query")
+val page = storage.int("page").required { 1 }
+page.set(2)
+check(page.instant() == 2)
+```
+
+## Restorable State Delegate
+
+```kotlin
+var query by savedStateHandle.value<String?>(key = "query").default { "" }
 ```
 
 Keep persisted state small. Store identifiers and user input, not large object
 graphs.
+
+## One-Shot Request
+
+```kotlin
+val request = splinter(
+    strategy = Strategy.oneShot {
+        request { repository.loadProfile() }
+    }
+)
+
+request.execute()
+request.resultHolder.fullFlow.collect { result ->
+    render(result)
+}
+```
+
+Use explicit execution and stop policies when the default behavior does not
+match the screen lifecycle. See [Splinter](modules/splinter.md).

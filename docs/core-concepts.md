@@ -1,23 +1,43 @@
 # Core Concepts
 
-## Small Modules
+## Focused Modules
 
 Each artifact owns one concern. Consumers install only the modules they use.
 
-## Common Contracts
+## Storage Contracts and Providers
 
-Storage providers implement the contracts from `storage-core`, so production and
-test providers can be exchanged without changing callers.
+Storage providers implement the contracts from `storage-core`, so production
+and test providers can be exchanged without changing callers.
 
-## Reactive Values
+```mermaid
+flowchart LR
+    App[Application code] --> Core[storage-core contracts]
+    Memory[storage-memory] --> Core
+    DataStore[storage-datastore] --> Core
+```
 
-Stored values expose Kotlin Flow-based observation while retaining immediate
-read and write operations.
+## Reactive Key Values
 
-## Platform Fallbacks
+A `KeyValue<T>` exposes a `Flow<T>`, suspending reads, writes, property
+delegation, and Compose state integration. Providers decide where values live;
+callers depend on the same contract.
 
-When a dependency is unavailable on web targets, the module keeps the common API
-compilable and documents the no-op behavior.
+## Restorable State
+
+`state-handle` wraps AndroidX `SavedStateHandle` with typed delegates. It is for
+small UI state that must survive recreation, not for durable application data.
+
+## Request Orchestration
+
+Splinter separates the operation strategy from execution policy and lifecycle
+rules. Strategies describe what runs; policies describe how overlapping
+executions behave.
+
+## Platform Availability
+
+Common source sets expose APIs across supported targets. A module may still have
+runtime restrictions when an upstream dependency has no implementation for a
+target. These restrictions are documented on each module page.
 
 ## One Release Train
 
