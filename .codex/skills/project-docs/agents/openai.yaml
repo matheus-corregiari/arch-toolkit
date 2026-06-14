@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Docs"
+  short_description: "Audit and synchronize Arch Toolkit release documentation"
+  default_prompt: "Use $project-docs to audit or synchronize Arch Toolkit documentation for release preparation."

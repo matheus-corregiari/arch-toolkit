@@ -154,7 +154,8 @@ class Splinter<RETURN> internal constructor(
      */
     //region Flags
     val isKilled: Boolean get() = masterJob.isActive.not()
-    val isRunning: Boolean get() = !isKilled && (hasRunningApprentice || isStarting || moreCreatedThenCompleted)
+    val isRunning: Boolean get() = !isKilled &&
+        (hasRunningApprentice || isStarting || moreCreatedThenCompleted)
     val isStarting: Boolean get() = moreCreatedThenStarted
     val hasRunningApprentice: Boolean
         get() = apprenticeFlow.replayCache.any(Apprentice<RETURN>::isRunning)
@@ -174,7 +175,7 @@ class Splinter<RETURN> internal constructor(
                 id = operationCount.incrementAsId(),
                 scope = config.scope + masterJob,
                 holder = resultHolder,
-                strategy = strategy,
+                strategy = strategy
             ).also { apprentice ->
                 if (config.policy == ParallelQueue) {
                     logFlow.tryInfo("[Splinter] - Apprentice ${apprentice.id} - Started!")
@@ -351,7 +352,7 @@ class Splinter<RETURN> internal constructor(
                 policy = policy,
                 stopPolicy = stopPolicy,
                 lifecycleOwner = lifecycleOwner,
-                onCancel = onCancel,
+                onCancel = onCancel
             )
         }
     }
@@ -390,7 +391,7 @@ class Splinter<RETURN> internal constructor(
                 Regex("(\\[Mirror])") to "-- -- ",
                 Regex("(\\[Polling])") to "-- -- ",
                 Regex("(\\[Cache])") to "-- -- -- ",
-                Regex("(\\[.*])") to "-- -- -- -- ",
+                Regex("(\\[.*])") to "-- -- -- -- "
             )
 
             fun info(message: String) =
@@ -428,7 +429,7 @@ class Splinter<RETURN> internal constructor(
     enum class StopPolicy {
         UntilRequest,
         AfterFirstExecution,
-        OnLifecycle, // Default
+        OnLifecycle // Default
     }
     //endregion
 }

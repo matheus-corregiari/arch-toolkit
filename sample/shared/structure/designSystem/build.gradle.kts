@@ -4,10 +4,6 @@ plugins {
     alias(libs.plugins.jetbrains.compose.kotlin)
 }
 
-android.namespace = "br.com.arch.toolkit.sample.github.shared.structure.designSystem"
-android.androidResources.enable = false
-android.buildFeatures.buildConfig = false
-
 kotlin {
     sourceSets {
         commonMain {

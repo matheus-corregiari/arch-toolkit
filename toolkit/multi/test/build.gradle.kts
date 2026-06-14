@@ -2,10 +2,6 @@ plugins {
     id("toolkit-multiplatform-library")
 }
 
-android.namespace = "br.com.arch.toolkit.test"
-android.androidResources { enable = false }
-android.buildFeatures.buildConfig = false
-
 kotlin {
     // Libraries
     sourceSets.commonMain.dependencies {

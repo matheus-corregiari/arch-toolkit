@@ -31,7 +31,9 @@ internal suspend fun handleMinDuration(
     when {
         // This means that we need to wait the delta time to reach the minDuration set inside config
         delta > Duration.ZERO -> {
-            log("Execution time ${duration.inWholeMilliseconds}ms - Wait more ${delta.inWholeMilliseconds}ms")
+            log(
+                "Execution time ${duration.inWholeMilliseconds}ms - Wait more ${delta.inWholeMilliseconds}ms"
+            )
             delay(delta)
         }
 

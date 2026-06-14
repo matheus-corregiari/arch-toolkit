@@ -22,7 +22,7 @@ import br.com.arch.toolkit.splinter.Splinter as SplinterExec
  */
 annotation class SplinterConfig(
     val id: String = "",
-    val quiet: Boolean = false,
+    val quiet: Boolean = false
 )
 
 /**
@@ -34,13 +34,13 @@ class SplinterFactory : CallAdapter.Factory() {
     override fun get(
         returnType: Type,
         annotations: Array<Annotation>,
-        retrofit: Retrofit,
+        retrofit: Retrofit
     ): CallAdapter<*, *>? {
         val returnClass = getRawType(returnType).takeIf {
             it in listOf(
                 ResponseFlow::class.java,
                 ResponseLiveData::class.java,
-                SplinterExec::class.java,
+                SplinterExec::class.java
             )
         } ?: return null
 
@@ -64,7 +64,7 @@ class SplinterFactory : CallAdapter.Factory() {
                 Adapter.AsFlow(
                     annotation = splinterConfig,
                     responseType = getRawType(type),
-                    kClass = returnClass,
+                    kClass = returnClass
                 )
             }
 
@@ -75,7 +75,7 @@ class SplinterFactory : CallAdapter.Factory() {
                 Adapter.AsLiveData(
                     annotation = splinterConfig,
                     responseType = getRawType(type),
-                    kClass = returnClass,
+                    kClass = returnClass
                 )
             }
 
@@ -86,7 +86,7 @@ class SplinterFactory : CallAdapter.Factory() {
                 Adapter.AsSplinter(
                     annotation = splinterConfig,
                     responseType = getRawType(type),
-                    kClass = returnClass,
+                    kClass = returnClass
                 )
             }
 
@@ -103,13 +103,13 @@ private sealed class Adapter<T, R>(
     private val id: String,
     private val quiet: Boolean,
     private val responseType: Type,
-    private val kClass: Class<T>,
+    private val kClass: Class<T>
 ) : CallAdapter<T, R> {
 
     class AsSplinter<T : Any>(
         annotation: SplinterConfig,
         responseType: Type,
-        kClass: Class<T>,
+        kClass: Class<T>
     ) : Adapter<T, SplinterExec<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call)
             .also(SplinterExec<T>::execute)
@@ -118,7 +118,7 @@ private sealed class Adapter<T, R>(
     class AsLiveData<T : Any>(
         annotation: SplinterConfig,
         responseType: Type,
-        kClass: Class<T>,
+        kClass: Class<T>
     ) : Adapter<T, ResponseLiveData<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call).execute().liveData
     }
@@ -126,7 +126,7 @@ private sealed class Adapter<T, R>(
     class AsFlow<T : Any>(
         annotation: SplinterConfig,
         responseType: Type,
-        kClass: Class<T>,
+        kClass: Class<T>
     ) : Adapter<T, ResponseFlow<T>>(annotation.id, annotation.quiet, responseType, kClass) {
         override fun adapt(call: Call<T>) = executeWithSplinter(call).execute().flow
     }

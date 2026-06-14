@@ -39,7 +39,7 @@ class MirrorFlow<T>(
                 val errorData = dataResultError(
                     error = config.mapError?.invoke(error) ?: error,
                     data = lastReceivedData.load().data
-                        ?: config.fallback?.invokeCatching(error)?.getOrNull(),
+                        ?: config.fallback?.invokeCatching(error)?.getOrNull()
                 )
                 lastReceivedData.store(errorData)
                 dataChannel.send(errorData)
@@ -61,7 +61,6 @@ class MirrorFlow<T>(
                         lastReceivedData.store(nextData)
                         dataChannel.send(nextData)
                     }
-
                 }
         }.onFailure { error -> onError(error) }
 
@@ -86,7 +85,7 @@ class MirrorFlow<T>(
         val mapError: (suspend (Throwable) -> Throwable)?,
         val fallback: (suspend (Throwable) -> T)?,
         val emitOnlyDistinct: Boolean,
-        val flow: (suspend () -> Flow<T>)?,
+        val flow: (suspend () -> Flow<T>)?
     ) {
         class Builder<T> internal constructor() {
             internal var mapError: (suspend (Throwable) -> Throwable)? = null
@@ -103,7 +102,7 @@ class MirrorFlow<T>(
                 mapError = mapError,
                 fallback = fallback,
                 emitOnlyDistinct = emitOnlyDistinct,
-                flow = flow,
+                flow = flow
             )
         }
     }

@@ -14,7 +14,7 @@ import br.com.arch.toolkit.splinter.strategy.OneShot
 fun <T> splinterExecuteRequestLiveData(
     id: String,
     config: Splinter.Config.Builder<T>.() -> Unit = {},
-    request: suspend OneShot.Context<T>.() -> T,
+    request: suspend OneShot.Context<T>.() -> T
 ) = splinterExecuteRequest(
     id = id,
     config = config,

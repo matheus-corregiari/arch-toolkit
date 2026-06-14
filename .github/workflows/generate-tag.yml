@@ -1,76 +1,63 @@
-name: Generate Release Tag and Publish Artifacts
+name: Generate Release Tag
 
 on:
   push:
-    branches:
-      - master
+    branches: [ "master" ]
+
+permissions:
+  contents: write
+  pull-requests: read
 
 jobs:
-
-  # Generates a new tag and submit it into repository <3
-  generate-tag:
+  tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-      - name: Generate next tag
+      - name: Find merged release branch
+        id: release
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pulls = await github.paginate(
+              github.rest.repos.listPullRequestsAssociatedWithCommit,
+              { owner, repo, commit_sha: context.sha },
+            );
+            const pull = pulls.find(({ merged_at, head }) =>
+              merged_at && (head.ref.startsWith("release/") || head.ref.startsWith("hotfix/"))
+            );
+
+            if (!pull) {
+              core.notice("No merged release or hotfix branch is associated with this commit.");
+              core.setOutput("should_tag", "false");
+              return;
+            }
+
+            const match = /^(?:release|hotfix)\/(\d+\.\d+\.\d+(?:-rc\d{2})?)$/.exec(pull.head.ref);
+            if (!match) {
+              core.setFailed(`Invalid release branch: ${pull.head.ref}`);
+              return;
+            }
+
+            core.setOutput("should_tag", "true");
+            core.setOutput("version", match[1]);
+            core.setOutput("branch", pull.head.ref);
+
+      - name: Create and push tag
+        if: steps.release.outputs.should_tag == 'true'
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          BRANCH: ${{ steps.release.outputs.branch }}
         run: |
+          git fetch --force --tags
+          if git rev-parse --verify --quiet "refs/tags/$VERSION"; then
+            echo "::error::Tag $VERSION already exists."
+            exit 1
+          fi
           git config user.name "GitHub Actions"
           git config user.email "github-actions@users.noreply.github.com"
-          chmod +x .github/scripts/tag.sh
-          ./.github/scripts/tag.sh
-
-  # Prepare the field to init publishing stuff
-  pre-build:
-    runs-on: ubuntu-latest
-    needs:
-      - generate-tag
-    outputs:
-      modulesAll: ${{ steps.publishing-modules.outputs.modulesAll }}
-      modulesMulti: ${{ steps.publishing-modules.outputs.modulesMulti }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Base Setup
-        uses: ./.github/actions/setup-gradle
-
-      - name: List of Modules
-        id: publishing-modules
-        uses: ./.github/actions/publishing-modules
-
-  # Publishes everything ^^
-  publish:
-    runs-on: ubuntu-latest
-    needs:
-      - pre-build
-    strategy:
-      matrix:
-        module: ${{fromJSON(needs.pre-build.outputs.modulesAll)}}
-      fail-fast: true
-      max-parallel: 1
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Base Setup
-        uses: ./.github/actions/setup-gradle
-
-      - name: Version Name
-        uses: ./.github/actions/version-name
-        with:
-          # Sonatype Credentials
-          ossrh_username: ${{ secrets.OSSRH_USERNAME }}
-          ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
-          mavencentral_username: ${{ secrets.MAVEN_CENTRAL_USERNAME}}
-          mavencentral_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD}}
-
-          # Sign Credentials
-          sign_keyid: ${{ secrets.SIGN_KEYID }}
-          sign_password: ${{ secrets.SIGN_PASSWORD }}
-          sign_filename: ${{ secrets.SIGN_FILENAME }}
-
-      - name: Build ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:assemble
-
-      - name: Publish ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:publishAndReleaseToMavenCentral
+          git tag -a "$VERSION" -m "$VERSION from $BRANCH"
+          git push origin "$VERSION"

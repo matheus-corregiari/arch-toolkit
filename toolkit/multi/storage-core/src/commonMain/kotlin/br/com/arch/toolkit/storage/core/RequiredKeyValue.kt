@@ -63,7 +63,7 @@ internal class RequiredKeyValue<ResultData> internal constructor(
             ?: default?.invokeCatching()
             ?: error("Required KeyValue does not have a last value")
         set(value) = set(
-            value = value ?: error("Required KeyValue cannot have a null value"),
+            value = value ?: error("Required KeyValue cannot have a null value")
         )
 
     override fun get() = keyValue.get().mapNotNull {
