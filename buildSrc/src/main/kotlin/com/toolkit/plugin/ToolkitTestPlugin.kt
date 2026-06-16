@@ -12,6 +12,12 @@ import com.toolkit.plugin.util.version
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+/**
+ * Configures test and coverage defaults for Android modules.
+ *
+ * The plugin enables Jacoco, pins the repository tool version, and applies Android unit and
+ * instrumentation test defaults for application and library modules.
+ */
 internal class ToolkitTestPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {

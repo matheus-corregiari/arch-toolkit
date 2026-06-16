@@ -16,6 +16,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
 
+/**
+ * Configures static analysis for Toolkit modules.
+ *
+ * The plugin applies Detekt and Ktlint, points both tools at repository config files, and
+ * standardizes report generation for CI artifacts.
+ */
 internal class ToolkitLintPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {

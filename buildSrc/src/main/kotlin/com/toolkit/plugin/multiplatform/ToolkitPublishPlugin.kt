@@ -15,6 +15,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
 
+/**
+ * Configures publication for Kotlin Multiplatform library modules.
+ *
+ * The plugin wires Maven publication, Dokka-backed javadocs, Maven Central, Android release
+ * variant publication, and repository POM metadata.
+ */
 internal class ToolkitPublishPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {

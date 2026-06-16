@@ -1,14 +1,14 @@
 # Ecosystem Gitflow
 
-Arch libraries are independent, but they follow one release contract. The goal is simple:
-normal work flows through `develop`; anything that reaches `master` is a publication event.
+Arch libraries are independent, but they follow one release contract. Normal work flows through
+`develop`; anything that reaches `master` is a publication event.
 
 ```text
-feature/* ─┐
-config/*  ├──> develop ───> release/x.y.0[-rcN] ───┐
-bugfix/*  ┘                                         │
-                                                    ├──> master ───> tag ───> publish
-hotfix/x.y.z[-rcN] ─────────────────────────────────┘
+feature/* --+
+config/*  --+--> develop ---> release/x.y.0[-rcN] --+
+bugfix/*  --+                                       |
+                                                  +--> master --> tag --> publish
+hotfix/x.y.z[-rcN] -------------------------------+
 ```
 
 ## Branch Roles
@@ -99,6 +99,41 @@ MkDocs + Dokka + web sample -> GitHub Pages
 
 If the web sample does not build, the `arch-toolkit` release fails.
 
+## CI Enforcement
+
+Gitflow is enforced by GitHub Actions, not by convention alone.
+
+```text
+Pull request
+     |
+     v
+Branch Policy
+     |
+     +-- develop accepts feature/*, config/*, bugfix/*
+     |
+     +-- master accepts release/x.y.0[-rcN], hotfix/x.y.z[-rcN]
+```
+
+On `master`, a merged release or hotfix PR is the release trigger:
+
+```text
+merge release/hotfix PR
+        |
+        v
+resolve version from branch
+        |
+        v
+create tag
+        |
+        v
+publish artifacts
+        |
+        v
+create GitHub Release
+```
+
+The detailed CI and artifact flow lives in [CI and Release](ci-release.md).
+
 ## Master Merge Flow
 
 ```mermaid
@@ -120,11 +155,11 @@ The branch name is the version source. CI should not ask for a second version in
 Every publication creates a mergeback PR into `develop`.
 
 ```text
-master tag v2.0.0
-        │
-        ├── generated changelog
-        ├── release notes metadata
-        └── mergeback PR -> develop
+master tag 2.0.0
+        |
+        +-- generated changelog
+        +-- release notes metadata
+        +-- mergeback PR -> develop
 ```
 
 The mergeback is mandatory before the next release or hotfix. If it conflicts, fix the conflict in

@@ -148,6 +148,13 @@ gradlePlugin {
             description = "Enables and configure group for module"
             implementationClass = "com.toolkit.plugin.ToolkitGroupPlugin"
         }
+
+        create("toolkit-ci") {
+            id = "toolkit-ci"
+            displayName = "Toolkit CI Plugin"
+            description = "Registers root CI lifecycle tasks"
+            implementationClass = "com.toolkit.plugin.ToolkitCiPlugin"
+        }
         //endregion
     }
 }

@@ -33,7 +33,9 @@ markdown_extensions:
 nav:
   - Home: wiki/overview.md
   - Ecosystem:
+      - Overview: ecosystem/index.md
       - Gitflow: ecosystem/gitflow.md
+      - CI and Release: ecosystem/ci-release.md
   - Project:
       - Roadmap: wiki/roadmap.md
       - Contribution Guide: wiki/contribution-guide.md

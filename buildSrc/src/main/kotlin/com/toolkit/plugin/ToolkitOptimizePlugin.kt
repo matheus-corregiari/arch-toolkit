@@ -7,6 +7,12 @@ import com.toolkit.plugin.util.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+/**
+ * Applies dependency resolution guardrails.
+ *
+ * The plugin prefers project modules, fails on dependency conflicts, and forces catalog-defined
+ * versions to keep Toolkit builds reproducible.
+ */
 internal class ToolkitOptimizePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {

@@ -12,6 +12,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
 
+/**
+ * Configures publication for Android library modules.
+ *
+ * The plugin wires Maven publication, Dokka-backed javadocs, Maven Central, and repository POM
+ * metadata for Android artifacts.
+ */
 internal class ToolkitPublishPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {

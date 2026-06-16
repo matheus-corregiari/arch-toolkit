@@ -1,76 +1,74 @@
-name: Generate Release Tag and Publish Artifacts
+name: Master Release
 
 on:
-  push:
+  pull_request:
     branches:
       - master
+    types:
+      - closed
+
+concurrency:
+  group: master-release-${{ github.event.pull_request.head.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: write
 
 jobs:
-
-  # Generates a new tag and submit it into repository <3
-  generate-tag:
+  release:
+    name: Tag and publish
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
 
-      - name: Generate next tag
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v5
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Resolve release version
+        id: version
+        run: |
+          chmod +x .github/scripts/release-version.sh
+          .github/scripts/release-version.sh "${{ github.event.pull_request.head.ref }}"
+
+      - name: Base Setup
+        uses: ./.github/actions/setup-gradle
+
+      - name: Create release tag
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions@users.noreply.github.com"
-          chmod +x .github/scripts/tag.sh
-          ./.github/scripts/tag.sh
-
-  # Prepare the field to init publishing stuff
-  pre-build:
-    runs-on: ubuntu-latest
-    needs:
-      - generate-tag
-    outputs:
-      modulesAll: ${{ steps.publishing-modules.outputs.modulesAll }}
-      modulesMulti: ${{ steps.publishing-modules.outputs.modulesMulti }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Base Setup
-        uses: ./.github/actions/setup-gradle
-
-      - name: List of Modules
-        id: publishing-modules
-        uses: ./.github/actions/publishing-modules
-
-  # Publishes everything ^^
-  publish:
-    runs-on: ubuntu-latest
-    needs:
-      - pre-build
-    strategy:
-      matrix:
-        module: ${{fromJSON(needs.pre-build.outputs.modulesAll)}}
-      fail-fast: true
-      max-parallel: 1
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Base Setup
-        uses: ./.github/actions/setup-gradle
+          git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
+          git push origin "${{ steps.version.outputs.version }}"
 
       - name: Version Name
         uses: ./.github/actions/version-name
         with:
-          # Sonatype Credentials
           ossrh_username: ${{ secrets.OSSRH_USERNAME }}
           ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
-          mavencentral_username: ${{ secrets.MAVEN_CENTRAL_USERNAME}}
-          mavencentral_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD}}
-
-          # Sign Credentials
+          mavencentral_username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          mavencentral_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           sign_keyid: ${{ secrets.SIGN_KEYID }}
           sign_password: ${{ secrets.SIGN_PASSWORD }}
           sign_filename: ${{ secrets.SIGN_FILENAME }}
 
-      - name: Build ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:assemble
+      - name: Build publishable modules
+        run: ./gradlew ciBuild
 
-      - name: Publish ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:publishAndReleaseToMavenCentral
+      - name: Publish modules
+        run: ./gradlew ciPublishMavenCentral
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Arch Toolkit ${{ steps.version.outputs.version }}
+          prerelease: ${{ steps.version.outputs.prerelease }}
+          generate_release_notes: true
