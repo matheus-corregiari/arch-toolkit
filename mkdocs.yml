@@ -1,0 +1,40 @@
+site_name: Arch Toolkit
+site_description: Kotlin Multiplatform utilities and ecosystem standards.
+site_url: https://matheus-corregiari.github.io/arch-toolkit/
+repo_url: https://github.com/matheus-corregiari/arch-toolkit
+edit_uri: blob/master/docs/
+
+theme:
+  name: material
+  language: en
+  icon:
+    logo: material/toolbox
+  palette:
+    primary: white
+    accent: teal
+  features:
+    - content.code.copy
+    - navigation.sections
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Home: wiki/overview.md
+  - Ecosystem:
+      - Gitflow: ecosystem/gitflow.md
+  - Project:
+      - Roadmap: wiki/roadmap.md
+      - Contribution Guide: wiki/contribution-guide.md
+      - Artifact Publishing: wiki/artifact-publishing.md

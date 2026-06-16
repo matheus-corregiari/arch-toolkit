@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml/badge.svg?branch=master)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.matheus-corregiari/storage-core?logo=apache-maven&style=flat-square)](https://central.sonatype.com/search?q=io.github.matheus-corregiari)
-[![License](https://img.shields.io/github/license/matheus-corregiari/arch-toolkit?style=flat-square)](../../LICENSE.md)
+[![License](https://img.shields.io/github/license/matheus-corregiari/arch-toolkit?style=flat-square)](https://github.com/matheus-corregiari/arch-toolkit/blob/master/LICENSE.md)
 
 ## Objective
 
@@ -46,7 +46,7 @@ gpg --allow-secret-key-import --import public_key_matheus_secret.gpg
 
 ## License
 
-Artifacts inherit the [Apache License 2.0](../../LICENSE.md). Ensure third-party dependencies comply with the same or compatible licenses.
+Artifacts inherit the [Apache License 2.0](https://github.com/matheus-corregiari/arch-toolkit/blob/master/LICENSE.md). Ensure third-party dependencies comply with the same or compatible licenses.
 
 ## Additional Resources
 
