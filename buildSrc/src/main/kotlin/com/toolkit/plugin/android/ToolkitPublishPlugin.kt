@@ -11,6 +11,7 @@ import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.plugins.signing.Sign
 
 /**
  * Configures publication for Android library modules.
@@ -47,10 +48,26 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
         }
 
         // Setup Custom Publishing
+        val localPublishRequested = target.gradle.startParameter.taskNames.any {
+            it == "ciPublishLocal" ||
+                it == "publishToMavenLocal" ||
+                it.endsWith("ToMavenLocal")
+        }
         with(target.vanniktechPublish) {
-            signAllPublications()
+            if (!localPublishRequested) signAllPublications()
             publishToMavenCentral(true)
             configure(AndroidSingleVariantLibrary())
+        }
+
+        target.tasks.withType(Sign::class.java).configureEach {
+            it.onlyIf {
+                val localPublish = target.gradle.taskGraph.allTasks.any { task ->
+                    task.name == "ciPublishLocal" ||
+                        task.name == "publishToMavenLocal" ||
+                        task.name.endsWith("ToMavenLocal")
+                }
+                !localPublish
+            }
         }
     }
 }
