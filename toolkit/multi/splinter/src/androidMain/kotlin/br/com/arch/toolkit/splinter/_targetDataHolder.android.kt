@@ -21,4 +21,3 @@ internal actual class ResultHolder<T> private constructor(
 
     actual fun init(splinter: Splinter<T>) = core.init(splinter)
 }
-

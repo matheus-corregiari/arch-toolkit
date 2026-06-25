@@ -15,6 +15,7 @@ interface ResponseDataHolder<T> : DataHolder<DataResult<T>> {
      */
     //region Current Data Info
     fun get(): DataResult<T>
+
     val status: DataResultStatus
     val data: T?
     val error: Throwable?
@@ -33,7 +34,7 @@ internal class CoreResultHolder<T> : ResponseDataHolder<T> {
      * Data Observables
      */
     //region Observable Data Info
-    /* Only Current execution events */
+    // Only Current execution events
     override val liveFlow get() = splinter.dataFlow.live()
     override val liveColdFlow
         get() = liveFlow.cold(
@@ -41,7 +42,7 @@ internal class CoreResultHolder<T> : ResponseDataHolder<T> {
             default = { listOf(get()) }
         )
 
-    /* All execution events from this instance */
+    // All execution events from this instance
     override val fullFlow get() = splinter.dataFlow.asSharedFlow().buffer()
     override val fullColdFlow get() = splinter.dataFlow.cold(splinter = splinter).buffer()
     //endregion
@@ -51,6 +52,7 @@ internal class CoreResultHolder<T> : ResponseDataHolder<T> {
      */
     //region Current Data Info
     override fun get(): DataResult<T> = splinter.dataFlow.get() ?: dataResultNone()
+
     override val status: DataResultStatus get() = get().status
     override val data: T? get() = get().data
     override val error: Throwable? get() = get().error

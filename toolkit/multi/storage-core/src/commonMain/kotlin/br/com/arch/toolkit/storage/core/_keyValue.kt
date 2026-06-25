@@ -136,6 +136,7 @@ abstract class KeyValue<DATA> {
         protected set
 
     abstract fun get(): Flow<DATA>
+
     abstract fun set(value: DATA, scope: CoroutineScope = this.scope)
 
     fun scope(scope: CoroutineScope) = apply { this.scope = scope }
