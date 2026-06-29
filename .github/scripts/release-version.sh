@@ -18,9 +18,16 @@ else
   exit 1
 fi
 
-if git rev-parse "$version" >/dev/null 2>&1; then
-  echo "Tag already exists: $version" >&2
-  exit 1
+if git rev-parse "refs/tags/$version" >/dev/null 2>&1; then
+  tag_commit="$(git rev-list -n 1 "$version")"
+  head_commit="$(git rev-parse HEAD)"
+
+  if [[ "$tag_commit" != "$head_commit" ]]; then
+    echo "Tag already exists on another commit: $version" >&2
+    exit 1
+  fi
+
+  echo "Reusing tag on current commit: $version"
 fi
 
 prerelease=false

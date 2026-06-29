@@ -37,9 +37,8 @@ runs:
     - name: Write version into build file
       shell: bash
       run: |
-        mkdir build
-        touch version-name.txt
-        echo "${{ steps.new-version.outputs.describe }}" >> build/version-name.txt
+        mkdir -p build
+        printf '%s\\n' "${{ steps.new-version.outputs.describe }}" > build/version-name.txt
 
     # Put everything we need into gradle.properties to build properly
     - name: Inject sign into gradle.properties

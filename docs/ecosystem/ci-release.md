@@ -68,10 +68,13 @@ merge into master
 resolve version from branch
         |
         v
+create local tag and version file
+        |
+        v
 verify build and quality gates
         |
         v
-create tag
+push tag
         |
         v
 publish artifacts
@@ -80,7 +83,9 @@ publish artifacts
 create GitHub Release
 ```
 
-This avoids relying on a tag-created-by-CI to trigger another workflow.
+The tag-triggered workflow is not part of this path, which prevents duplicate publication. The
+local tag provides the publication version before Gradle runs; the remote tag is pushed only after
+the release build passes.
 
 ## Automatic Back-Merge
 
@@ -120,8 +125,9 @@ The branch and version rules are shared. Build and publication commands stay rep
 
 ## Tag Workflow Fallback
 
-Repositories may keep a tag-triggered `release.yml` as an escape hatch for tags created outside the
-automatic master merge flow.
+Repositories may keep a manually dispatched `release.yml` as an escape hatch. It must not react to
+the tag pushed by the automatic master merge flow, otherwise both workflows can publish the same
+version concurrently.
 
 The normal path is still:
 
