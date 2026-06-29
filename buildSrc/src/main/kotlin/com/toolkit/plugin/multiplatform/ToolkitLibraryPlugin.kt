@@ -9,6 +9,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
+/**
+ * Configures a Kotlin Multiplatform library module.
+ *
+ * The plugin owns common target setup plus shared lint, test, and dependency optimization
+ * conventions used by publishable multiplatform artifacts.
+ */
 @OptIn(ExperimentalWasmDsl::class)
 internal class ToolkitLibraryPlugin : Plugin<Project> {
 

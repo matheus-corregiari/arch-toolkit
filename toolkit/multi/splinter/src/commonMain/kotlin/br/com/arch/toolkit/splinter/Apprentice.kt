@@ -22,7 +22,7 @@ internal class Apprentice<T>(
     val id: String,
     scope: CoroutineScope,
     private val holder: ResponseDataHolder<T>,
-    private val strategy: Strategy<T>,
+    private val strategy: Strategy<T>
 ) {
     private val lock = this
     private val mutex = Mutex()

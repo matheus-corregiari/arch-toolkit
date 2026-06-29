@@ -15,6 +15,7 @@ abstract class CacheStrategy<T>(val id: String) {
     //region Getters
     private val _flow = MutableStateFlow<T?>(null)
     val flow: Flow<T?> get() = _flow.asSharedFlow()
+
     fun get(): T? = _flow.value
     //endregion
 
@@ -67,13 +68,13 @@ abstract class CacheStrategy<T>(val id: String) {
     internal enum class HowToProceed {
         IGNORE_CACHE,
         STOP_FLOW_AND_DISPATCH_CACHE,
-        DISPATCH_CACHE,
+        DISPATCH_CACHE
     }
 
     /**
      *
      */
     internal data class DataVersion(
-        val version: String,
+        val version: String
     )
 }

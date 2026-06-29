@@ -147,7 +147,7 @@ sealed class StateValue<T> {
      */
     class Required<T> internal constructor(
         private val other: StateValue<T?>,
-        private val default: () -> T,
+        private val default: () -> T
     ) : StateValue<T>() {
 
         override val key: String = other.key
@@ -167,7 +167,7 @@ sealed class StateValue<T> {
      */
     class WithDefault<T> internal constructor(
         private val other: StateValue<T?>,
-        private val default: () -> T?,
+        private val default: () -> T?
     ) : StateValue<T?>() {
 
         override val key: String = other.key

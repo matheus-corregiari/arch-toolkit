@@ -13,7 +13,7 @@ abstract class Strategy<RESULT> {
     abstract suspend fun execute(
         holder: ResponseDataHolder<RESULT>,
         dataChannel: Channel<DataResult<RESULT>>,
-        logChannel: Channel<Splinter.Message>,
+        logChannel: Channel<Splinter.Message>
     )
 
     companion object {

@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml/badge.svg?branch=master)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
 [![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fmatheus-corregiari%2F4fbcfa4cec61deb2262b16c19ab14138%2Fraw%2Fcoverage-badge.json&logo=kotlin)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
-[![License](https://img.shields.io/github/license/matheus-corregiari/arch-toolkit?style=flat-square)](../../LICENSE.md)
+[![License](https://img.shields.io/github/license/matheus-corregiari/arch-toolkit?style=flat-square)](https://github.com/matheus-corregiari/arch-toolkit/blob/master/LICENSE.md)
 
 ## Objective
 
@@ -10,7 +10,7 @@ Track upcoming features, module stabilisation efforts, and broader platform goal
 
 ## Installation
 
-Refer to the [installation guide](../../README.md#-installation-gradle-kotlin-dsl) to ensure you are on the latest release while experimenting with roadmap items.
+Refer to the [installation guide](https://github.com/matheus-corregiari/arch-toolkit#-installation-gradle-kotlin-dsl) to ensure you are on the latest release while experimenting with roadmap items.
 
 ## Usage Examples
 
@@ -33,7 +33,7 @@ Refer to the [installation guide](../../README.md#-installation-gradle-kotlin-ds
 
 ## License
 
-The roadmap content is shared under the [Apache License 2.0](../../LICENSE.md). Contributions to the roadmap follow the same guidelines as code changes.
+The roadmap content is shared under the [Apache License 2.0](https://github.com/matheus-corregiari/arch-toolkit/blob/master/LICENSE.md). Contributions to the roadmap follow the same guidelines as code changes.
 
 ## Additional Resources
 

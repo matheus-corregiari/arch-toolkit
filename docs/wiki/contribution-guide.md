@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml/badge.svg?branch=master)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
 [![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fmatheus-corregiari%2F4fbcfa4cec61deb2262b16c19ab14138%2Fraw%2Fcoverage-badge.json&logo=kotlin)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
-[![License](https://img.shields.io/github/license/matheus-corregiari/arch-toolkit?style=flat-square)](../../LICENSE.md)
+[![License](https://img.shields.io/github/license/matheus-corregiari/arch-toolkit?style=flat-square)](https://github.com/matheus-corregiari/arch-toolkit/blob/master/LICENSE.md)
 
 ## Objective
 
@@ -36,7 +36,7 @@ Follow these practices when contributing:
 
 ## License
 
-By contributing, you agree that your code will be released under the [Apache License 2.0](../../LICENSE.md).
+By contributing, you agree that your code will be released under the [Apache License 2.0](https://github.com/matheus-corregiari/arch-toolkit/blob/master/LICENSE.md).
 
 ## Pull Request Checklist
 

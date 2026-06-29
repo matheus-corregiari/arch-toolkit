@@ -48,6 +48,7 @@ inline fun <reified T : Any> SavedStateHandle.saveState(
 ): ReadOnlyProperty<ViewModel, ViewModelState.Regular<T>> =
     object : ReadOnlyProperty<ViewModel, ViewModelState.Regular<T>>, KoinComponent {
         var state: ViewModelState.Regular<T>? = null
+
         override fun getValue(thisRef: ViewModel, property: KProperty<*>) = state ?: kotlin.run {
             val json by inject<Json>()
             ViewModelState.Regular(
@@ -96,6 +97,7 @@ inline fun <reified T : Any> SavedStateHandle.saveResponseState(
 ): ReadOnlyProperty<ViewModel, ViewModelState.Result<T>> =
     object : ReadOnlyProperty<ViewModel, ViewModelState.Result<T>>, KoinComponent {
         var state: ViewModelState.Result<T>? = null
+
         override fun getValue(thisRef: ViewModel, property: KProperty<*>) = state ?: kotlin.run {
             val json by inject<Json>()
             ViewModelState.Result(
@@ -179,11 +181,10 @@ inline fun <reified T : Any> SavedStateHandle.saveResponseState(name: String = "
 fun <T : Any> SavedStateHandle.value(
     key: String = "",
     getError: (Throwable) -> Unit = {},
-    setError: (T, Throwable) -> Unit = { _, _ -> },
+    setError: (T, Throwable) -> Unit = { _, _ -> }
 ) = StateValue.Optional(
     key = key,
     handle = this,
     getError = getError,
     setError = setError
 )
-

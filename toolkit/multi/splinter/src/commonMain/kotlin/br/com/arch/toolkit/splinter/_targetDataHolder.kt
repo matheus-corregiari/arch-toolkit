@@ -16,11 +16,11 @@ internal expect class ResultHolder<T>() : TargetDataHolder<T> {
      * Data Observables
      */
     //region Observable Data Info
-    /* Only Current execution events */
+    // Only Current execution events
     override val liveFlow: Flow<DataResult<T>>
     override val liveColdFlow: Flow<DataResult<T>>
 
-    /* All execution events from this instance */
+    // All execution events from this instance
     override val fullFlow: Flow<DataResult<T>>
     override val fullColdFlow: Flow<DataResult<T>>
     //endregion
@@ -30,6 +30,7 @@ internal expect class ResultHolder<T>() : TargetDataHolder<T> {
      */
     //region Current Data Info
     override fun get(): DataResult<T>
+
     override val status: DataResultStatus
     override val data: T?
     override val error: Throwable?

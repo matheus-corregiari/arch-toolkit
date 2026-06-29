@@ -17,7 +17,10 @@ expect object SplinterDefaults {
         private set
 
     fun scope(scope: CoroutineScope): SplinterDefaults
+
     fun logging(enabled: Boolean): SplinterDefaults
+
     fun policy(policy: ExecutionPolicy): SplinterDefaults
+
     fun stop(policy: StopPolicy): SplinterDefaults
 }

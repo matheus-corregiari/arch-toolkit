@@ -2,7 +2,7 @@
 [versions]
 ## --- Plugins and more general stuff --- ##
 jacoco = "0.8.14"
-detekt = "1.23.8"
+detekt = "2.0.0-alpha.5"
 
 ## --- Build Config and SDK --- ##
 build-version-name = "1.0.0"
@@ -14,7 +14,7 @@ build-sdk-target = "37"
 build-tools = "37.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "2.3.21"
+jetbrains-kotlin = "2.4.0"
 jetbrains-compose = "1.10.3"
 jetbrains-lifecycle = "2.10.0"
 jetbrains-coroutines = "1.11.0"
@@ -23,7 +23,7 @@ jetbrains-dokka = "2.2.0"
 jetbrains-datetime = "0.8.0"
 
 ## AndroidX
-androidx-plugin = "8.13.2"
+androidx-plugin = "9.2.1"
 androidx-appcompat = "1.7.1"
 androidx-fragment = "1.8.9"
 androidx-annotation = "1.10.0"
@@ -59,12 +59,12 @@ arch-event-observer = "2.0.1"
 di-koin = "4.2.1"
 
 ## Tools
-mockk = "1.14.9"
+mockk = "1.14.11"
 junit = "4.13.2"
 robolectric = "4.16.1"
-ktlint = "11.6.1"
+ktlint = "14.2.0"
 dexcount = "4.0.0"
-vanniktech-publish = "0.36.0"
+vanniktech-publish = "0.37.0"
 ktorfit = "2.7.3"
 ktor = "3.4.3"
 coil = "3.4.0"
@@ -137,9 +137,8 @@ mockk-test-android = { module = "io.mockk:mockk-android", version.ref = "mockk" 
 mockk-test-agent = { module = "io.mockk:mockk", version.ref = "mockk" }
 junit-test = { module = "junit:junit", version.ref = "junit" }
 robolectric-test = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-ktlint = { module = "org.jlleitschuh.gradle.ktlint-idea:org.jlleitschuh.gradle.ktlint-idea.gradle.plugin", version.ref = "ktlint" }
+detekt = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+ktlint = { module = "org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin", version.ref = "ktlint" }
 vanniktech-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-publish" }
 ktorfit = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
@@ -196,8 +195,8 @@ jetbrains-compose-kotlin = { id = "org.jetbrains.compose", version.ref = "jetbra
 
 ## Tools to make my life easier
 dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint-idea", version.ref = "ktlint" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 vanniktech-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-publish" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 

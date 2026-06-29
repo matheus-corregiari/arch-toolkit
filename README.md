@@ -119,6 +119,7 @@ Every module README includes installation, setup walkthroughs, and runnable snip
 The project wiki consolidates in-depth guides and operational processes:
 
 * [Overview](docs/wiki/overview.md)
+* [Ecosystem Gitflow](docs/ecosystem/gitflow.md)
 * [Contribution Guide](docs/wiki/contribution-guide.md)
 * [Artifact Publishing](docs/wiki/artifact-publishing.md)
 * [Roadmap](docs/wiki/roadmap.md)

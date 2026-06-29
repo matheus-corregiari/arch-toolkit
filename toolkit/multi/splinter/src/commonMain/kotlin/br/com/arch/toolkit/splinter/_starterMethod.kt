@@ -14,7 +14,7 @@ import br.com.arch.toolkit.splinter.strategy.Strategy
 fun <T> splinter(
     id: String,
     strategy: Strategy<T>,
-    config: Splinter.Config.Builder<T>.() -> Unit = {},
+    config: Splinter.Config.Builder<T>.() -> Unit = {}
 ) = Splinter(
     id = id,
     config = Splinter.Config(config),
@@ -32,7 +32,7 @@ fun <T> splinter(
 fun <T> splinterExecuteRequest(
     id: String,
     config: Splinter.Config.Builder<T>.() -> Unit = {},
-    request: suspend OneShot.Context<T>.() -> T,
+    request: suspend OneShot.Context<T>.() -> T
 ) = splinter(
     id = id,
     config = config,
@@ -51,7 +51,7 @@ fun <T> splinterExecuteRequest(
 fun <T> splinterExecuteRequestFlow(
     id: String,
     config: Splinter.Config.Builder<T>.() -> Unit = {},
-    request: suspend OneShot.Context<T>.() -> T,
+    request: suspend OneShot.Context<T>.() -> T
 ) = splinterExecuteRequest(
     id = id,
     config = config,

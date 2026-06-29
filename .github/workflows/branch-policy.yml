@@ -1,0 +1,61 @@
+name: Branch Policy
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+      - ready_for_review
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate branch flow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate source and target
+        env:
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+
+          echo "base=$BASE_BRANCH"
+          echo "head=$HEAD_BRANCH"
+
+          if [[ "$BASE_BRANCH" == "develop" ]]; then
+            if [[ "$HEAD_BRANCH" == "master" ]]; then
+              exit 0
+            fi
+
+            if [[ "$HEAD_BRANCH" =~ ^(feature|config|bugfix)/.+$ ]]; then
+              exit 0
+            fi
+
+            echo "develop only accepts master back-merges or feature/*, config/*, or bugfix/* branches."
+            exit 1
+          fi
+
+          if [[ "$BASE_BRANCH" == "master" ]]; then
+            if [[ "$HEAD_BRANCH" =~ ^release/[0-9]+\.[0-9]+\.0(-rc[0-9]+)?$ ]]; then
+              exit 0
+            fi
+
+            if [[ "$HEAD_BRANCH" =~ ^hotfix/[0-9]+\.[0-9]+\.[1-9][0-9]*(-rc[0-9]+)?$ ]]; then
+              exit 0
+            fi
+
+            echo "master only accepts release/x.y.0[-rcN] or hotfix/x.y.z[-rcN] branches."
+            exit 1
+          fi
+
+          echo "Unsupported target branch: $BASE_BRANCH"
+          exit 1

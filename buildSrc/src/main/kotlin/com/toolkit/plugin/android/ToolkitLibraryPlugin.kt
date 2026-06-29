@@ -5,6 +5,12 @@ import com.toolkit.plugin.util.applyPlugins
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+/**
+ * Configures an Android library module.
+ *
+ * The plugin applies Android library defaults plus shared lint, test, and dependency optimization
+ * conventions used by publishable Android artifacts.
+ */
 internal class ToolkitLibraryPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {

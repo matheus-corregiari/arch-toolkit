@@ -21,5 +21,5 @@ internal fun <T> Mutex.synchronized(key: Any, block: () -> T) = try {
     runCatching { tryLock(owner = key) }
     block()
 } finally {
-    runCatching { if(isLocked) unlock(owner = key) }
+    runCatching { if (isLocked) unlock(owner = key) }
 }

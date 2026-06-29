@@ -50,7 +50,10 @@ class Polling<T> private constructor(
         /**
          * Start the request loop!
          */
-        while (shouldStop.not() && currentCoroutineContext().isActive && holder.get().isSuccess.not()) {
+        while (shouldStop.not() &&
+            currentCoroutineContext().isActive &&
+            holder.get().isSuccess.not()
+        ) {
             /**
              * Verify loop limit before start loop!
              */
@@ -71,7 +74,8 @@ class Polling<T> private constructor(
             val result = measureTimeResult(
                 max = config.maxExecutionTime,
                 min = { config.minExecutionTime },
-                log = { logChannel.info("[Polling] $it") }) {
+                log = { logChannel.info("[Polling] $it") }
+            ) {
                 loopCounter++
 
                 logChannel.info("Request looped - $loopCounter")
@@ -141,11 +145,17 @@ class Polling<T> private constructor(
                         config.stopOnError.runCatching { invoke(error) }.getOrDefault(false)
 
                     when {
-                        shouldStop.not() && config.maxErrorStreak > 0 && requestErrorCounter >= config.maxErrorStreak -> {
+                        shouldStop.not() &&
+                            config.maxErrorStreak > 0 &&
+                            requestErrorCounter >= config.maxErrorStreak -> {
                             logChannel.info("Max error streak reached: $requestErrorCounter")
+                            val maxErrorStreakMessage =
+                                "Polling stopped! Max error streak reached! $requestErrorCounter"
                             val newError = PollingMaxErrorStreakReachedException(
-                                message = "Polling stopped! Max error streak reached! $requestErrorCounter",
-                                cause = config.mapError?.invokeCatching(error)?.getOrNull() ?: error
+                                message = maxErrorStreakMessage,
+                                cause = config.mapError?.invokeCatching(
+                                    error
+                                )?.getOrNull() ?: error
                             )
                             val errorData = dataResultError(
                                 error = config.mapError?.invokeCatching(newError)?.getOrNull()
@@ -207,7 +217,7 @@ class Polling<T> private constructor(
         val maxExecutionTime: Duration,
         val delayStrategy: DelayStrategy,
         val shouldStopAfterLoad: suspend (T) -> Boolean,
-        val limitLoopCount: Long,
+        val limitLoopCount: Long
     ) {
 
         /**
@@ -230,9 +240,13 @@ class Polling<T> private constructor(
             private var limitLoopCount: Long = Long.MAX_VALUE
 
             fun request(request: suspend () -> T) = apply { this.request = request }
+
             fun mapError(map: suspend (Throwable) -> Throwable) = apply { this.mapError = map }
+
             fun fallback(fallback: suspend (Throwable) -> T) = apply { this.fallback = fallback }
+
             fun beforeRequest(func: suspend () -> Unit) = apply { this.beforeRequest = func }
+
             fun afterRequest(func: suspend (T) -> Unit) = apply { this.afterRequest = func }
 
             fun stopOnError(stopOnError: (error: Throwable) -> Boolean) =
@@ -244,6 +258,7 @@ class Polling<T> private constructor(
             }
 
             fun delay(millis: Long) = delay(millis.milliseconds)
+
             fun delay(delay: Duration) = apply { this.delay = delay }
 
             fun minExecutionPerRequest(duration: Long) =
@@ -281,13 +296,15 @@ class Polling<T> private constructor(
                 maxExecutionTime = maxExecutionTime,
                 delayStrategy = delayStrategy,
                 shouldStopAfterLoad = shouldStopAfterLoad,
-                limitLoopCount = limitLoopCount,
+                limitLoopCount = limitLoopCount
             )
         }
     }
 
     enum class DelayStrategy {
-        AFTER_REQUEST, BEFORE_REQUEST;
+        AFTER_REQUEST,
+        BEFORE_REQUEST
+        ;
 
         suspend fun delayIfPossible(targetStrategy: DelayStrategy, delay: Duration) {
             if (this == targetStrategy && delay.inWholeMilliseconds > 0) {

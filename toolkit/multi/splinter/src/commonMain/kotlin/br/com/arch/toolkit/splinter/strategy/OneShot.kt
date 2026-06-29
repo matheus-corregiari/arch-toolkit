@@ -52,7 +52,9 @@ class OneShot<T> private constructor(
                 remoteVersion = version
                 if (interrupt && data != null) {
                     return@measureTimeResult data
-                } else if (data != null) localData = data
+                } else if (data != null) {
+                    localData = data
+                }
             } ?: logChannel.info("[OneShot] Cache - Not set =(")
 
             // Emit first loading
@@ -92,7 +94,7 @@ class OneShot<T> private constructor(
             dataChannel.send(
                 dataResultError(
                     error = config.mapError?.invokeCatching(error)?.getOrNull() ?: error,
-                    data = localData ?: config.fallback?.invokeCatching(error)?.getOrNull(),
+                    data = localData ?: config.fallback?.invokeCatching(error)?.getOrNull()
                 )
             )
         }
@@ -175,18 +177,26 @@ class OneShot<T> private constructor(
             private var retainDataFromPastExecutions: Boolean = false
 
             fun request(request: suspend Context<T>.() -> T) = apply { this.request = request }
+
             fun mapError(map: suspend (Throwable) -> Throwable) = apply { this.mapError = map }
+
             fun fallback(fallback: suspend (Throwable) -> T) = apply { this.fallback = fallback }
+
             fun beforeRequest(func: suspend () -> Unit) = apply { this.beforeRequest = func }
+
             fun afterRequest(func: suspend (T) -> Unit) = apply { this.afterRequest = func }
+
             fun minDuration(duration: Duration) = minDuration(duration, duration)
+
             fun minDuration(onSuccess: Duration, onError: Duration) = apply {
                 minDurationOnSuccess = onSuccess
                 minDurationOnError = onError
             }
 
             fun maxDuration(maxDuration: Duration) = apply { this.maxDuration = maxDuration }
+
             fun cache(cache: CacheStrategy<T>) = apply { this.cache = cache }
+
             fun retainDataFromPastExecutions(enabled: Boolean) =
                 apply { retainDataFromPastExecutions = enabled }
 
@@ -200,7 +210,7 @@ class OneShot<T> private constructor(
                 minDurationOnError = minDurationOnError,
                 maxDuration = maxDuration,
                 cacheStrategy = cache,
-                retainDataFromPastExecutions = retainDataFromPastExecutions,
+                retainDataFromPastExecutions = retainDataFromPastExecutions
             )
         }
     }
@@ -210,7 +220,7 @@ class OneShot<T> private constructor(
      */
     class Context<T> internal constructor(
         private val dataChannel: Channel<DataResult<T>>,
-        private val logChannel: Channel<Splinter.Message>,
+        private val logChannel: Channel<Splinter.Message>
     ) {
         suspend fun sendSnapshot(data: T) {
             currentCoroutineContext().ensureActive()

@@ -154,7 +154,8 @@ class Splinter<RETURN> internal constructor(
      */
     //region Flags
     val isKilled: Boolean get() = masterJob.isActive.not()
-    val isRunning: Boolean get() = !isKilled && (hasRunningApprentice || isStarting || moreCreatedThenCompleted)
+    val isRunning: Boolean get() = !isKilled &&
+        (hasRunningApprentice || isStarting || moreCreatedThenCompleted)
     val isStarting: Boolean get() = moreCreatedThenStarted
     val hasRunningApprentice: Boolean
         get() = apprenticeFlow.replayCache.any(Apprentice<RETURN>::isRunning)
@@ -174,7 +175,7 @@ class Splinter<RETURN> internal constructor(
                 id = operationCount.incrementAsId(),
                 scope = config.scope + masterJob,
                 holder = resultHolder,
-                strategy = strategy,
+                strategy = strategy
             ).also { apprentice ->
                 if (config.policy == ParallelQueue) {
                     logFlow.tryInfo("[Splinter] - Apprentice ${apprentice.id} - Started!")
@@ -218,44 +219,45 @@ class Splinter<RETURN> internal constructor(
     }
 
     @Suppress("MagicNumber")
-    override fun toString() = """
-        ------------------------------------------------------------
-        ${"| [Splinter $id] - Statistics ".padEnd(60, '-')}
-        ------------------------------------------------------------
-        | - Counters:
-        |     - created ---> ${operationCount.load()}
-        |     - started ---> ${operationStartedCount.load()}
-        |     - completed -> ${operationCompletedCount.load()}
-        |     - cache -----> ${apprenticeFlow.replayCache.size}
-        |     - event -----> ${eventCount.load()}
-        |     - log -------> ${logCount.load()}
-        ------------------------------------------------------------
-        | - Jobs:
-        |     - master --> ${masterJob.isActive}
-        |     - log -----> ${operationCount.load() != 0 && logJob.isActive}
-        |     - collect -> ${operationCount.load() != 0 && collectJob.isActive}
-        |     - children -> ${
-        masterJob.children.mapIndexed { i, job -> "[$i] - ${job.isActive}" }.toList()
-    }
-        ------------------------------------------------------------
-        | - Data:
-        |     - status -> ${resultHolder.status}
-        |     - data ---> ${resultHolder.data}
-        |     - error --> ${resultHolder.error}       
-        ------------------------------------------------------------
-        | - Flags:
-        |     - isRunning ----------------> $isRunning
-        |     - isKilled -----------------> $isKilled
-        |     - isStarting ---------------> $isStarting
-        |     - hasRunningApprentice -----> $hasRunningApprentice
-        |     - moreCreatedThenStarted ---> $moreCreatedThenStarted
-        |     - moreCreatedThenCompleted -> $moreCreatedThenCompleted
-        ------------------------------------------------------------
-    """.trimIndent().trimStart()
+    override fun toString() =
+        """
+            ------------------------------------------------------------
+            ${"| [Splinter $id] - Statistics ".padEnd(60, '-')}
+            ------------------------------------------------------------
+            | - Counters:
+            |     - created ---> ${operationCount.load()}
+            |     - started ---> ${operationStartedCount.load()}
+            |     - completed -> ${operationCompletedCount.load()}
+            |     - cache -----> ${apprenticeFlow.replayCache.size}
+            |     - event -----> ${eventCount.load()}
+            |     - log -------> ${logCount.load()}
+            ------------------------------------------------------------
+            | - Jobs:
+            |     - master --> ${masterJob.isActive}
+            |     - log -----> ${operationCount.load() != 0 && logJob.isActive}
+            |     - collect -> ${operationCount.load() != 0 && collectJob.isActive}
+            |     - children -> ${
+            masterJob.children.mapIndexed { i, job -> "[$i] - ${job.isActive}" }.toList()
+        }
+            ------------------------------------------------------------
+            | - Data:
+            |     - status -> ${resultHolder.status}
+            |     - data ---> ${resultHolder.data}
+            |     - error --> ${resultHolder.error}
+            ------------------------------------------------------------
+            | - Flags:
+            |     - isRunning ----------------> $isRunning
+            |     - isKilled -----------------> $isKilled
+            |     - isStarting ---------------> $isStarting
+            |     - hasRunningApprentice -----> $hasRunningApprentice
+            |     - moreCreatedThenStarted ---> $moreCreatedThenStarted
+            |     - moreCreatedThenCompleted -> $moreCreatedThenCompleted
+            ------------------------------------------------------------
+        """.trimIndent().trimStart()
 
-    /* -------------------------------------------------------------------------------------------*/
-    /* Private Methods -----------------------------------------------------------------------------------*/
-    /* -------------------------------------------------------------------------------------------*/
+    // -------------------------------------------------------------------------------------------
+    // Private Methods -----------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     //region Private methods
     @Suppress("CyclomaticComplexMethod")
     private fun shouldProceedToExecute(): Boolean {
@@ -311,9 +313,9 @@ class Splinter<RETURN> internal constructor(
     )
     //endregion
 
-    /* -------------------------------------------------------------------------------------------*/
-    /* Classes -----------------------------------------------------------------------------------*/
-    /* -------------------------------------------------------------------------------------------*/
+    // -------------------------------------------------------------------------------------------
+    // Classes -----------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     //region Classes
     @ConsistentCopyVisibility
     data class Config<T> private constructor(
@@ -339,10 +341,15 @@ class Splinter<RETURN> internal constructor(
             private var onCancel: (() -> Unit)? = null
 
             fun scope(scope: CoroutineScope) = apply { this.scope = scope }
+
             fun logging(enabled: Boolean) = apply { this.quiet = enabled.not() }
+
             fun policy(policy: ExecutionPolicy) = apply { this.policy = policy }
+
             fun stop(policy: StopPolicy) = apply { this.stopPolicy = policy }
+
             fun owner(owner: LifecycleOwner) = apply { this.lifecycleOwner = owner }
+
             fun invokeOnCancel(listener: () -> Unit) = apply { this.onCancel = listener }
 
             internal fun build() = Config<T>(
@@ -351,7 +358,7 @@ class Splinter<RETURN> internal constructor(
                 policy = policy,
                 stopPolicy = stopPolicy,
                 lifecycleOwner = lifecycleOwner,
-                onCancel = onCancel,
+                onCancel = onCancel
             )
         }
     }
@@ -390,7 +397,7 @@ class Splinter<RETURN> internal constructor(
                 Regex("(\\[Mirror])") to "-- -- ",
                 Regex("(\\[Polling])") to "-- -- ",
                 Regex("(\\[Cache])") to "-- -- -- ",
-                Regex("(\\[.*])") to "-- -- -- -- ",
+                Regex("(\\[.*])") to "-- -- -- -- "
             )
 
             fun info(message: String) =
@@ -414,9 +421,9 @@ class Splinter<RETURN> internal constructor(
     }
     //endregion
 
-    /* -------------------------------------------------------------------------------------------*/
-    /* Enums -------------------------------------------------------------------------------------*/
-    /* -------------------------------------------------------------------------------------------*/
+    // -------------------------------------------------------------------------------------------
+    // Enums -------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     //region Enums
     enum class ExecutionPolicy {
         ParallelQueue,
@@ -428,7 +435,7 @@ class Splinter<RETURN> internal constructor(
     enum class StopPolicy {
         UntilRequest,
         AfterFirstExecution,
-        OnLifecycle, // Default
+        OnLifecycle // Default
     }
     //endregion
 }
