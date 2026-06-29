@@ -12,7 +12,7 @@ PR opened or updated
         v
 Branch Policy
         |
-        +-- base develop -> head must be feature/*, config/*, or bugfix/*
+        +-- base develop -> head must be feature/*, config/*, bugfix/*, or master
         |
         +-- base master  -> head must be release/x.y.0[-rcN]
                              or hotfix/x.y.z[-rcN]
@@ -81,6 +81,31 @@ create GitHub Release
 ```
 
 This avoids relying on a tag-created-by-CI to trigger another workflow.
+
+## Automatic Back-Merge
+
+The merge into `master` also triggers a separate synchronization workflow:
+
+```text
+merged PR into master
+        |
+        v
+find open master -> develop PR
+        |
+        +-- found: reuse it
+        |
+        +-- missing: create it with GITHUB_TOKEN
+        |
+        v
+maintainer approves pending workflow runs
+        |
+        v
+required checks pass -> auto-merge
+```
+
+The manual workflow approval is a GitHub security requirement for pull requests created by
+`GITHUB_TOKEN`. A conflict leaves the pull request open; CI never force-pushes `develop` or bypasses
+its protection rules.
 
 ## Repository Differences
 

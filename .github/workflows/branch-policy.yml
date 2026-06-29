@@ -32,11 +32,15 @@ jobs:
           echo "head=$HEAD_BRANCH"
 
           if [[ "$BASE_BRANCH" == "develop" ]]; then
+            if [[ "$HEAD_BRANCH" == "master" ]]; then
+              exit 0
+            fi
+
             if [[ "$HEAD_BRANCH" =~ ^(feature|config|bugfix)/.+$ ]]; then
               exit 0
             fi
 
-            echo "develop only accepts feature/*, config/*, or bugfix/* branches."
+            echo "develop only accepts master back-merges or feature/*, config/*, or bugfix/* branches."
             exit 1
           fi
 

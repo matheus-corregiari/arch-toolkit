@@ -42,6 +42,7 @@ hotfix/2.0.1-rc1
 | `develop` | `feature/*` | Product or API work. |
 | `develop` | `config/*` | Build, CI, tooling, docs infrastructure, or repository configuration. |
 | `develop` | `bugfix/*` | Fixes that are not emergency production patches. |
+| `develop` | `master` | Automated back-merge after publication. |
 | `master` | `release/x.y.0` | Stable major or minor release. |
 | `master` | `release/x.y.0-rcN` | Release candidate for a major or minor release. |
 | `master` | `hotfix/x.y.z` | Patch release, where `z >= 1`. |
@@ -109,7 +110,7 @@ Pull request
      v
 Branch Policy
      |
-     +-- develop accepts feature/*, config/*, bugfix/*
+     +-- develop accepts feature/*, config/*, bugfix/*, or master back-merge
      |
      +-- master accepts release/x.y.0[-rcN], hotfix/x.y.z[-rcN]
 ```
@@ -145,14 +146,19 @@ flowchart TD
     E --> F["Create Git tag"]
     F --> G["Publish artifacts"]
     G --> H["Create GitHub Release"]
-    H --> I["Open mergeback PR to develop"]
+    D --> I["Open or update master to develop PR"]
+    I --> J["Approve workflow runs"]
+    J --> K["Required checks"]
+    K --> L["Auto-merge into develop"]
 ```
 
 The branch name is the version source. CI should not ask for a second version input.
 
 ## Mergeback
 
-Every publication creates a mergeback PR into `develop`.
+Every merged release or hotfix PR creates or updates a `master -> develop` back-merge PR. The
+workflow uses the repository `GITHUB_TOKEN`, so GitHub requires a maintainer to approve the pending
+workflow runs. Auto-merge completes the PR after the required checks pass.
 
 ```text
 master tag 2.0.0
@@ -162,8 +168,12 @@ master tag 2.0.0
         +-- mergeback PR -> develop
 ```
 
-The mergeback is mandatory before the next release or hotfix. If it conflicts, fix the conflict in
-the mergeback PR. Do not patch published history on `master`.
+Only one open back-merge PR is kept. Later merges into `master` reuse it instead of creating
+duplicates. If the branches conflict, auto-merge stops and the PR remains open for manual conflict
+resolution. The workflow never force-pushes or bypasses branch protection.
+
+The mergeback is mandatory before the next release or hotfix. Do not patch published history on
+`master`.
 
 ## GitHub Release Content
 
