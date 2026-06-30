@@ -2,6 +2,10 @@ name: "Gets and stores the new version name so we can use it do deploy"
 description: "Boilerplate steps"
 
 inputs:
+  version:
+    description: Explicit release version; falls back to git describe when omitted
+    required: false
+    default: ""
   ossrh_username:
     description: User
     required: false
@@ -31,14 +35,17 @@ runs:
     # Setup versionName because we love it
     - name: Get next version name
       id: new-version
+      if: inputs.version == ''
       uses: proudust/gh-describe@v1.5.3
 
     # Write versionName into build file to use properly in the future
     - name: Write version into build file
       shell: bash
+      env:
+        VERSION_NAME: ${{ inputs.version || steps.new-version.outputs.describe }}
       run: |
         mkdir -p build
-        printf '%s\\n' "${{ steps.new-version.outputs.describe }}" > build/version-name.txt
+        printf '%s\n' "$VERSION_NAME" > build/version-name.txt
 
     # Put everything we need into gradle.properties to build properly
     - name: Inject sign into gradle.properties
