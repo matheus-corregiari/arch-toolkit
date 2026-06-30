@@ -1,7 +1,7 @@
 # Ecosystem Gitflow
 
 Arch libraries are independent, but they follow one release contract. Normal work flows through
-`develop`; anything that reaches `master` is a publication event.
+`develop`; release and hotfix merges into `master` are publication events.
 
 ```text
 feature/* --+
@@ -16,9 +16,11 @@ hotfix/x.y.z[-rcN] -------------------------------+
 | Branch | Responsibility |
 |:-------|:---------------|
 | `develop` | Receives normal development and keeps the next release candidate alive. |
-| `master` | Represents published history. A merge into `master` creates a tag and publishes. |
+| `master` | Represents published history. Release and hotfix merges create a tag and publish. |
 
-`master` is not a parking lot. It only receives release and hotfix branches.
+`master` is not a parking lot. It receives release and hotfix branches, plus narrowly scoped
+`config/*` pull requests needed to repair CI or repository configuration. Config merges do not
+publish.
 
 ## Allowed Branches
 
@@ -31,6 +33,7 @@ bugfix/fix-empty-state
 
 To master:
 
+config/recover-release-ci
 release/2.0.0
 release/2.0.0-rc1
 hotfix/2.0.1
@@ -43,6 +46,7 @@ hotfix/2.0.1-rc1
 | `develop` | `config/*` | Build, CI, tooling, docs infrastructure, or repository configuration. |
 | `develop` | `bugfix/*` | Fixes that are not emergency production patches. |
 | `develop` | `master` | Automated back-merge after publication. |
+| `master` | `config/*` | CI or repository recovery; never a publication trigger. |
 | `master` | `release/x.y.0` | Stable major or minor release. |
 | `master` | `release/x.y.0-rcN` | Release candidate for a major or minor release. |
 | `master` | `hotfix/x.y.z` | Patch release, where `z >= 1`. |
@@ -112,7 +116,7 @@ Branch Policy
      |
      +-- develop accepts feature/*, config/*, bugfix/*, or master back-merge
      |
-     +-- master accepts release/x.y.0[-rcN], hotfix/x.y.z[-rcN]
+     +-- master accepts config/*, release/x.y.0[-rcN], hotfix/x.y.z[-rcN]
 ```
 
 On `master`, a merged release or hotfix PR is the release trigger:
@@ -124,10 +128,10 @@ merge release/hotfix PR
 resolve version from branch
         |
         v
-create tag
+publish artifacts
         |
         v
-publish artifacts
+create tag
         |
         v
 create GitHub Release
@@ -143,8 +147,8 @@ flowchart TD
     B --> C["Release quality gate"]
     C --> D["Merge into master"]
     D --> E["Extract version from branch"]
-    E --> F["Create Git tag"]
-    F --> G["Publish artifacts"]
+    E --> F["Publish artifacts"]
+    F --> G["Create Git tag"]
     G --> H["Create GitHub Release"]
     D --> I["Open or update master to develop PR"]
     I --> J["Approve workflow runs"]

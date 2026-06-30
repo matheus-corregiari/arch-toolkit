@@ -7,21 +7,22 @@ This is the source contract for Gitflow across the Arch ecosystem.
 | Branch | Role |
 |:-------|:-----|
 | `develop` | Integration branch for normal development. |
-| `master` | Publication branch. Every merge into `master` must create a tag and publish. |
+| `master` | Publication branch. Release and hotfix merges create a tag and publish. |
 
 ## Allowed Pull Requests
 
 | Target | Allowed source branches |
 |:-------|:------------------------|
 | `develop` | `feature/*`, `config/*`, `bugfix/*` |
-| `master` | `release/x.y.0`, `release/x.y.0-rcN`, `hotfix/x.y.z`, `hotfix/x.y.z-rcN` |
+| `master` | `config/*`, `release/x.y.0`, `release/x.y.0-rcN`, `hotfix/x.y.z`, `hotfix/x.y.z-rcN` |
 
 Rules:
 
 - `release/*` branches must use patch `0`.
 - `hotfix/*` branches must use patch `1` or higher.
 - Release candidates use `-rcN`, for example `release/2.0.0-rc1`.
-- `master` must not accept feature, config, or bugfix branches directly.
+- `config/*` may target `master` only for CI or repository recovery and must not publish.
+- `master` must not accept feature or bugfix branches directly.
 - A pending mergeback from the last `master` release blocks the next release or hotfix.
 
 ## Quality Gates
@@ -50,8 +51,8 @@ When a release or hotfix branch is merged into `master`:
 
 1. CI extracts the version from the source branch name.
 2. CI verifies the release build.
-3. CI creates the matching Git tag.
-4. CI publishes artifacts in the same workflow run.
+3. CI publishes artifacts in the same workflow run.
+4. CI creates the matching Git tag after publication succeeds.
 5. CI creates a polished GitHub Release.
 6. CI opens a mergeback pull request into `develop` with generated changelog and release docs updates.
 

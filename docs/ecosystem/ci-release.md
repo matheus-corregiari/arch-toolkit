@@ -14,7 +14,7 @@ Branch Policy
         |
         +-- base develop -> head must be feature/*, config/*, bugfix/*, or master
         |
-        +-- base master  -> head must be release/x.y.0[-rcN]
+        +-- base master  -> head must be config/*, release/x.y.0[-rcN]
                              or hotfix/x.y.z[-rcN]
 ```
 
@@ -39,8 +39,8 @@ Pull requests into `master` are publication candidates:
 branch policy -> lint -> build -> tests -> coverage -> docs -> affected samples
 ```
 
-`master` receives only release and hotfix branches. A successful merge means the repository should
-publish.
+`master` normally receives release and hotfix branches. A `config/*` PR may repair CI or repository
+configuration without triggering publication.
 
 ## Automatic Tagging
 
@@ -68,24 +68,31 @@ merge into master
 resolve version from branch
         |
         v
-create local tag and version file
+write the explicit version file
         |
         v
 verify build and quality gates
         |
         v
-push tag
+publish artifacts
         |
         v
-publish artifacts
+push tag
         |
         v
 create GitHub Release
 ```
 
-The tag-triggered workflow is not part of this path, which prevents duplicate publication. The
-local tag provides the publication version before Gradle runs; the remote tag is pushed only after
-the release build passes.
+The tag-triggered workflow is not part of this path, which prevents duplicate publication. Gradle
+receives the resolved version explicitly, and the remote tag is pushed only after every publisher
+succeeds.
+
+## Release Recovery
+
+The master release workflow supports manual recovery after its workflow fix has reached `master`.
+The operator must provide both the original `release/*` or `hotfix/*` branch name and the exact
+master commit SHA. CI validates an existing tag against that commit, reuses it when correct, and
+rejects it when it points elsewhere.
 
 ## Automatic Back-Merge
 
