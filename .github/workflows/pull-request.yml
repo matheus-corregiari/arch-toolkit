@@ -1,0 +1,104 @@
+name: Pull Request
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'config/**'
+    paths:
+      - '**.kt'
+      - '**.gradle'
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-build:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    outputs:
+      modulesAll: ${{ steps.publishing-modules.outputs.modulesAll }}
+      modulesMulti: ${{ steps.publishing-modules.outputs.modulesMulti }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Base Setup
+        uses: ./.github/actions/setup-gradle
+
+      - name: List of Modules
+        id: publishing-modules
+        uses: ./.github/actions/publishing-modules
+
+  lint:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    needs: pre-build
+    strategy:
+      fail-fast: true
+      matrix:
+        module: ${{fromJSON(needs.pre-build.outputs.modulesAll)}}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Base Setup
+        uses: ./.github/actions/setup-gradle
+
+      - name: Lint ${{ matrix.module }}
+        run: ./gradlew :${{ matrix.module }}:lint
+
+      - name: Detekt ${{ matrix.module }}
+        run: ./gradlew :${{ matrix.module }}:detekt
+
+  build:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    needs: pre-build
+    strategy:
+      fail-fast: true
+      matrix:
+        module: ${{fromJSON(needs.pre-build.outputs.modulesAll)}}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Base Setup
+        uses: ./.github/actions/setup-gradle
+
+      - name: Assemble ${{ matrix.module }}
+        run: ./gradlew :${{ matrix.module }}:assembleRelease
+
+  test-multi:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    needs:
+      - pre-build
+      - lint
+      - build
+    strategy:
+      fail-fast: true
+      matrix:
+        module: ${{fromJSON(needs.pre-build.outputs.modulesMulti)}}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Base Setup
+        uses: ./.github/actions/setup-gradle
+
+      - name: Unit Tests ${{ matrix.module }}
+        run: ./gradlew :${{ matrix.module }}:allTests koverVerify --no-parallel

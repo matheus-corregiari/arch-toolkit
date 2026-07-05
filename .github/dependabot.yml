@@ -8,14 +8,7 @@ updates:
     open-pull-requests-limit: 1
 
   - package-ecosystem: "gradle"
-    directory: "/build-logic/"
-    schedule:
-      interval: "monthly"
-    rebase-strategy: "disabled"
-    open-pull-requests-limit: 1
-
-  - package-ecosystem: "github-actions"
-    directory: "/"
+    directory: "/tools/"
     schedule:
       interval: "monthly"
     rebase-strategy: "disabled"

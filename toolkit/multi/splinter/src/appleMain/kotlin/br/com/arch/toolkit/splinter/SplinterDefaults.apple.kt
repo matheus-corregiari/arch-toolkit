@@ -13,13 +13,10 @@ actual object SplinterDefaults {
 
     internal actual var scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
         private set
-
     internal actual var quiet: Boolean = false
         private set
-
     internal actual var policy: ExecutionPolicy = IgnoreWhenHasRunningOperations
         private set
-
     internal actual var stopPolicy: StopPolicy = AfterFirstExecution
         private set
 

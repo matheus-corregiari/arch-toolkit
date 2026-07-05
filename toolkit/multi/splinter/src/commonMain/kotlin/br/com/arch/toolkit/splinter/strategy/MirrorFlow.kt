@@ -94,8 +94,11 @@ class MirrorFlow<T>(
             internal var flow: (suspend () -> Flow<T>)? = null
 
             fun mapError(func: suspend (Throwable) -> Throwable) = apply { this.mapError = func }
+
             fun fallback(func: suspend (Throwable) -> T) = apply { this.fallback = func }
+
             fun flow(flow: suspend () -> Flow<T>) = apply { this.flow = flow }
+
             fun emitOnlyDistinct(enable: Boolean) = apply { this.emitOnlyDistinct = enable }
 
             internal fun build() = Config(

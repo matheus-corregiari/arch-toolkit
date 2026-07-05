@@ -2,7 +2,7 @@
 [versions]
 ## --- Plugins and more general stuff --- ##
 jacoco = "0.8.14"
-detekt = "2.0.0-alpha.3"
+detekt = "2.0.0-alpha.5"
 
 ## --- Build Config and SDK --- ##
 build-version-name = "1.0.0"
@@ -20,7 +20,6 @@ jetbrains-lifecycle = "2.10.0"
 jetbrains-coroutines = "1.11.0"
 jetbrains-serialization = "1.11.0"
 jetbrains-dokka = "2.2.0"
-jetbrains-kover = "0.9.8"
 jetbrains-datetime = "0.8.0"
 
 ## AndroidX
@@ -52,9 +51,9 @@ google-material = "1.13.0"
 google-ksp = "2.3.5"
 
 ## Arch Toolkit
-arch-lumber = "1.2.0"
+arch-lumber = "1.1.0"
 arch-android = "1.1.0"
-arch-event-observer = "2.1.0"
+arch-event-observer = "2.0.1"
 
 ## Dependency Injection
 di-koin = "4.2.1"
@@ -65,7 +64,7 @@ junit = "4.13.2"
 robolectric = "4.16.1"
 ktlint = "14.2.0"
 dexcount = "4.0.0"
-vanniktech-publish = "0.36.0"
+vanniktech-publish = "0.37.0"
 ktorfit = "2.7.3"
 ktor = "3.4.3"
 coil = "3.4.0"
@@ -83,15 +82,12 @@ jetbrains-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-corouti
 jetbrains-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "jetbrains-coroutines" }
 jetbrains-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "jetbrains-dokka" }
 jetbrains-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "jetbrains-kotlin" }
-jetbrains-multiplatform = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "jetbrains-kotlin" }
-jetbrains-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "jetbrains-kover" }
 jetbrains-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "jetbrains-datetime" }
 jetbrains-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "jetbrains-kotlin" }
 jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains-compose" }
 
 ## Androidx
 androidx-plugin = { module = "com.android.tools.build:gradle", version.ref = "androidx-plugin" }
-androidx-kmp-library = { module = "com.android.kotlin.multiplatform.library:com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "androidx-plugin" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "androidx-fragment" }
@@ -184,7 +180,6 @@ x-normalize-x021 = { module = "com.squareup.okhttp3:okhttp", version.ref = "squa
 ## Android
 android-application = { id = "com.android.application", version.ref = "androidx-plugin" }
 android-library = { id = "com.android.library", version.ref = "androidx-plugin" }
-android-kmp-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidx-plugin" }
 
 ## Android
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "google-ksp" }
@@ -197,7 +192,6 @@ jetbrains-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.r
 jetbrains-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "jetbrains-kotlin" }
 jetbrains-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "jetbrains-kotlin" }
 jetbrains-compose-kotlin = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
-jetbrains-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "jetbrains-kover" }
 
 ## Tools to make my life easier
 dexcount = { id = "com.getkeepsafe.dexcount", version.ref = "dexcount" }

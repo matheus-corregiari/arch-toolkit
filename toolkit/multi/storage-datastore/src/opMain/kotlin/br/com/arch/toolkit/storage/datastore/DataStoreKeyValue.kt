@@ -38,7 +38,7 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
  *
  * ### Behavior
  * - **Read:** Values are exposed as a [Flow] via [get]. Null if the key is not set.
- * - **Write:** Updates are performed inside `DataStore.edit`, replacing or removing the key.
+ * - **Write:** Updates are performed inside [DataStore.edit], replacing or removing the key.
  * - **Cache:** The last successfully read or written value is stored in [lastValue].
  * - **Concurrency:** Only one active write job is kept per key (previous is cancelled).
  * - **Errors:** Failures are logged via [Lumber].
@@ -77,7 +77,7 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
  * @property key The [Preferences.Key] associated with this entry.
  * @property store The [DataStore] used to persist and read values.
  *
- * @see DataStoreProvider For the public factory that exposes these keys.
+ * @see DataStoreProvider For the factory that exposes these keys through [StorageProvider].
  */
 @OptIn(ExperimentalAtomicApi::class)
 internal sealed class DataStoreKeyValue<Result>(

@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues>
+    <ID>MaxLineLength:_collectorExtension.kt$suspend</ID>
+    <ID>Filename:_collectorExtension.kt$br.com.arch.toolkit.splinter.extension._collectorExtension.kt</ID>
+    <ID>Filename:_functionExtension.kt$br.com.arch.toolkit.splinter.extension._functionExtension.kt</ID>
+    <ID>Filename:retrofitFactory.kt$br.com.arch.toolkit.splinter.factory.retrofitFactory.kt</ID>
+    <ID>Filename:_starterMethod.kt$br.com.arch.toolkit.splinter._starterMethod.kt</ID>
+    <ID>Filename:sceneStateMachineExtensions.kt$br.com.arch.toolkit.statemachine.sceneStateMachineExtensions.kt</ID>
+    <ID>Filename:stateMachineExtensions.kt$br.com.arch.toolkit.statemachine.stateMachineExtensions.kt</ID>
+    <ID>Filename:_dataResult.kt$br.com.arch.toolkit.util._dataResult.kt</ID>
+    <ID>Filename:_liveData.kt$br.com.arch.toolkit.util._liveData.kt</ID>
+    <ID>Filename:_util.kt$br.com.arch.toolkit._util.kt</ID>
+    <ID>LongParameterList:SampleData.kt$SampleData.NewData$( var nullableValue: T?, var value: T, var nullableListOfValue: List&lt;T>?, var listOfValue: List&lt;T>, var nullableMapOfValue: Map&lt;String, T>?, var mapOfValue: Map&lt;String, T>, )</ID>
+    <ID>ComplexCondition:Splinter.kt$Splinter$job.isActive || job.isCompleted || job.isCancelled</ID>
+    <ID>MaxLineLength:_liveData.kt$*</ID>
+    <ID>MaxLineLength:_responseLiveData.kt$*</ID>
+    <ID>MaxLineLength:_responseLiveData.kt$ResponseLiveDataScope$*</ID>
+    <ID>MagicNumber:GithubApplication.kt$GithubApplication$400L</ID>
+    <ID>CyclomaticComplexMethod:_sharedPref.kt$@Throws(UnsupportedOperationException::class) operator fun &lt;T : Any?> SharedPreferences.set(key: String, value: T)</ID>
+    <ID>Filename:_sharedPref.kt$br.com.arch.toolkit.storage.util._sharedPref.kt</ID>
+    <ID>Filename:_screen.kt$br.com.arch.toolkit.sample.github.shared.designSystem._screen.kt</ID>
+    <ID>Filename:_requestExtension.kt$br.com.arch.toolkit.splinter.extension._requestExtension.kt</ID>
+  </ManuallySuppressedIssues>
+  <CurrentIssues/>
+</SmellBaseline>

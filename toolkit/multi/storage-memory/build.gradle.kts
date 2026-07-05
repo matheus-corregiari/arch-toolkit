@@ -3,6 +3,10 @@ plugins {
     id("toolkit-multiplatform-publish")
 }
 
+android.namespace = "br.com.arch.toolkit.storage.memory"
+android.androidResources.enable = false
+android.buildFeatures.buildConfig = false
+
 kotlin {
     sourceSets {
         // Common Setup (all targets)

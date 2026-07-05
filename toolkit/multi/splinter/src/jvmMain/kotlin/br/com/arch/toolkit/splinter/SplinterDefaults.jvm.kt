@@ -21,7 +21,10 @@ actual object SplinterDefaults {
         private set
 
     actual fun scope(scope: CoroutineScope) = apply { this.scope = scope }
+
     actual fun logging(enabled: Boolean) = apply { this.quiet = enabled.not() }
+
     actual fun policy(policy: ExecutionPolicy) = apply { this.policy = policy }
+
     actual fun stop(policy: StopPolicy) = apply { this.stopPolicy = policy }
 }

@@ -1,6 +1,6 @@
 @file:Suppress(
     "LongMethod",
-    "CyclomaticComplexMethod",
+    "ComplexMethod",
     "TooManyFunctions",
     "ComplexCondition",
     "unused"
@@ -149,11 +149,13 @@ class Polling<T> private constructor(
                             config.maxErrorStreak > 0 &&
                             requestErrorCounter >= config.maxErrorStreak -> {
                             logChannel.info("Max error streak reached: $requestErrorCounter")
-                            val message =
+                            val maxErrorStreakMessage =
                                 "Polling stopped! Max error streak reached! $requestErrorCounter"
                             val newError = PollingMaxErrorStreakReachedException(
-                                message = message,
-                                cause = config.mapError?.invokeCatching(error)?.getOrNull() ?: error
+                                message = maxErrorStreakMessage,
+                                cause = config.mapError?.invokeCatching(
+                                    error
+                                )?.getOrNull() ?: error
                             )
                             val errorData = dataResultError(
                                 error = config.mapError?.invokeCatching(newError)?.getOrNull()
@@ -238,9 +240,13 @@ class Polling<T> private constructor(
             private var limitLoopCount: Long = Long.MAX_VALUE
 
             fun request(request: suspend () -> T) = apply { this.request = request }
+
             fun mapError(map: suspend (Throwable) -> Throwable) = apply { this.mapError = map }
+
             fun fallback(fallback: suspend (Throwable) -> T) = apply { this.fallback = fallback }
+
             fun beforeRequest(func: suspend () -> Unit) = apply { this.beforeRequest = func }
+
             fun afterRequest(func: suspend (T) -> Unit) = apply { this.afterRequest = func }
 
             fun stopOnError(stopOnError: (error: Throwable) -> Boolean) =
@@ -252,6 +258,7 @@ class Polling<T> private constructor(
             }
 
             fun delay(millis: Long) = delay(millis.milliseconds)
+
             fun delay(delay: Duration) = apply { this.delay = delay }
 
             fun minExecutionPerRequest(duration: Long) =
@@ -296,7 +303,8 @@ class Polling<T> private constructor(
 
     enum class DelayStrategy {
         AFTER_REQUEST,
-        BEFORE_REQUEST;
+        BEFORE_REQUEST
+        ;
 
         suspend fun delayIfPossible(targetStrategy: DelayStrategy, delay: Duration) {
             if (this == targetStrategy && delay.inWholeMilliseconds > 0) {

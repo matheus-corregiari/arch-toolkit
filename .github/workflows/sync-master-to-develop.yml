@@ -1,0 +1,59 @@
+name: Sync Master to Develop
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+
+concurrency:
+  group: sync-master-to-develop
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: Open back-merge PR
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create or reuse master to develop PR
+        id: pull-request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          pr_url="$(
+            gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --state open \
+              --base develop \
+              --head master \
+              --json url \
+              --jq '.[0].url // empty'
+          )"
+
+          if [[ -z "$pr_url" ]]; then
+            pr_url="$(
+              gh pr create \
+                --repo "$GITHUB_REPOSITORY" \
+                --base develop \
+                --head master \
+                --title "chore: sync master back to develop" \
+                --body "Automated back-merge after a pull request was merged into master. Approve the pending workflow runs so the configured checks can complete."
+            )"
+          fi
+
+          echo "url=$pr_url" >> "$GITHUB_OUTPUT"
+          echo "Back-merge PR: $pr_url"
+
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge "${{ steps.pull-request.outputs.url }}" --auto --merge

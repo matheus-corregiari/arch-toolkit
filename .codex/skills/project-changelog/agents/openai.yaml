@@ -1,4 +1,0 @@
-interface:
-  display_name: "Project Changelog"
-  short_description: "Generate Arch Toolkit release changelogs"
-  default_prompt: "Use $project-changelog to generate missing Arch Toolkit changelog pages."

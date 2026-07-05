@@ -5,6 +5,10 @@ plugins {
     alias(libs.plugins.jetbrains.compose.compiler)
 }
 
+android.namespace = "br.com.arch.toolkit.storage.core"
+android.androidResources.enable = false
+android.buildFeatures.buildConfig = false
+
 kotlin {
     // Libraries
     sourceSets.commonMain.dependencies {

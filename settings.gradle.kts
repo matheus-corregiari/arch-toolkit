@@ -1,14 +1,13 @@
 @file:Suppress("UnstableApiUsage")
 
 pluginManagement {
-    apply(from = "$rootDir/gradle/repositories.gradle.kts")
+    apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
     val repositoryList: RepositoryHandler.() -> Unit by extra
     repositories(repositoryList)
-    includeBuild("build-logic")
 }
 
 dependencyResolutionManagement {
-    apply(from = "$rootDir/gradle/repositories.gradle.kts")
+    apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
     val repositoryList: RepositoryHandler.() -> Unit by extra
     repositories(repositoryList)
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
@@ -26,10 +25,8 @@ include(":toolkit:multi:state-handle")
 include(":toolkit:multi:test")
 
 // Samples
-val includeSamples =
-    extra.properties["android.injected.invoked.from.ide"] == "true" ||
-        providers.gradleProperty("includeSamples").orNull == "true"
-if (includeSamples) {
+val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"
+if (isIdeBuild) {
     // Shared Modules with KMP Code to use in Targets
     include(":sample:shared:app")
     include(":sample:shared:feature:github-list")
@@ -41,9 +38,12 @@ if (includeSamples) {
     // Targets
     include(":sample:target:android")
     include(":sample:target:desktop")
-    include(":sample:target:web")
+    //include(":sample:target:web")
 }
 
 plugins {
+    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.6"
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
+
+kover { enableCoverage() }

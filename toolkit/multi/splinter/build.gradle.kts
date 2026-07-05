@@ -3,6 +3,10 @@ plugins {
     id("toolkit-multiplatform-publish")
 }
 
+android.namespace = "br.com.arch.toolkit.splinter"
+android.androidResources.enable = false
+android.buildFeatures.buildConfig = false
+
 kotlin {
     // Libraries
     sourceSets.commonMain.dependencies {

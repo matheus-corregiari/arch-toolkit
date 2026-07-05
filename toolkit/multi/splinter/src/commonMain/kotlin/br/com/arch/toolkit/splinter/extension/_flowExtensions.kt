@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.max
 
 internal fun <T> SharedFlow<T>.get(): T? = replayCache.lastOrNull()
+
 internal fun <T> SharedFlow<T>.live(): Flow<T> = flow {
     val countToIgnore = max(0, replayCache.size - 1)
     emitAll(drop(countToIgnore))

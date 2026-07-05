@@ -177,18 +177,26 @@ class OneShot<T> private constructor(
             private var retainDataFromPastExecutions: Boolean = false
 
             fun request(request: suspend Context<T>.() -> T) = apply { this.request = request }
+
             fun mapError(map: suspend (Throwable) -> Throwable) = apply { this.mapError = map }
+
             fun fallback(fallback: suspend (Throwable) -> T) = apply { this.fallback = fallback }
+
             fun beforeRequest(func: suspend () -> Unit) = apply { this.beforeRequest = func }
+
             fun afterRequest(func: suspend (T) -> Unit) = apply { this.afterRequest = func }
+
             fun minDuration(duration: Duration) = minDuration(duration, duration)
+
             fun minDuration(onSuccess: Duration, onError: Duration) = apply {
                 minDurationOnSuccess = onSuccess
                 minDurationOnError = onError
             }
 
             fun maxDuration(maxDuration: Duration) = apply { this.maxDuration = maxDuration }
+
             fun cache(cache: CacheStrategy<T>) = apply { this.cache = cache }
+
             fun retainDataFromPastExecutions(enabled: Boolean) =
                 apply { retainDataFromPastExecutions = enabled }
 

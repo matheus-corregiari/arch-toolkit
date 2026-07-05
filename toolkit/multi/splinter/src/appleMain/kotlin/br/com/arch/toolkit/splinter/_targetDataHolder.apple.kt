@@ -14,7 +14,7 @@ internal actual class ResultHolder<T> private constructor(
 
     override val flow get() = ResponseStateFlow.from(flow = liveFlow, initial = get())
 
-    actual constructor() : this(CoreResultHolder())
+    actual constructor () : this(CoreResultHolder())
 
     actual fun init(splinter: Splinter<T>) = core.init(splinter)
 }

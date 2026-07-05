@@ -5,6 +5,10 @@ plugins {
     alias(libs.plugins.jetbrains.serialization)
 }
 
+android.namespace = "br.com.arch.toolkit.stateHandle"
+android.androidResources.enable = false
+android.buildFeatures.buildConfig = false
+
 kotlin {
     // Libraries
     sourceSets {

@@ -15,6 +15,7 @@ abstract class CacheStrategy<T>(val id: String) {
     //region Getters
     private val _flow = MutableStateFlow<T?>(null)
     val flow: Flow<T?> get() = _flow.asSharedFlow()
+
     fun get(): T? = _flow.value
     //endregion
 

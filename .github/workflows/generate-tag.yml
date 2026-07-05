@@ -1,63 +1,91 @@
-name: Generate Release Tag
+name: Master Release
 
 on:
-  push:
-    branches: [ "master" ]
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+  workflow_dispatch:
+    inputs:
+      release_branch:
+        description: Release branch name, such as release/2.0.0-rc16
+        required: true
+        type: string
+      commit_sha:
+        description: Exact master commit to release
+        required: true
+        type: string
+
+concurrency:
+  group: master-release
+  cancel-in-progress: false
 
 permissions:
   contents: write
-  pull-requests: read
+  packages: write
 
 jobs:
-  tag:
+  release:
+    name: Tag and publish
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+      (startsWith(github.event.pull_request.head.ref, 'release/') ||
+      startsWith(github.event.pull_request.head.ref, 'hotfix/')))
     runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout master
+        uses: actions/checkout@v5
         with:
+          ref: ${{ inputs.commit_sha || github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
 
-      - name: Find merged release branch
-        id: release
-        uses: actions/github-script@v8
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const pulls = await github.paginate(
-              github.rest.repos.listPullRequestsAssociatedWithCommit,
-              { owner, repo, commit_sha: context.sha },
-            );
-            const pull = pulls.find(({ merged_at, head }) =>
-              merged_at && (head.ref.startsWith("release/") || head.ref.startsWith("hotfix/"))
-            );
-
-            if (!pull) {
-              core.notice("No merged release or hotfix branch is associated with this commit.");
-              core.setOutput("should_tag", "false");
-              return;
-            }
-
-            const match = /^(?:release|hotfix)\/(\d+\.\d+\.\d+(?:-rc\d{2})?)$/.exec(pull.head.ref);
-            if (!match) {
-              core.setFailed(`Invalid release branch: ${pull.head.ref}`);
-              return;
-            }
-
-            core.setOutput("should_tag", "true");
-            core.setOutput("version", match[1]);
-            core.setOutput("branch", pull.head.ref);
-
-      - name: Create and push tag
-        if: steps.release.outputs.should_tag == 'true'
-        env:
-          VERSION: ${{ steps.release.outputs.version }}
-          BRANCH: ${{ steps.release.outputs.branch }}
+      - name: Resolve release version
+        id: version
         run: |
-          git fetch --force --tags
-          if git rev-parse --verify --quiet "refs/tags/$VERSION"; then
-            echo "::error::Tag $VERSION already exists."
-            exit 1
-          fi
+          chmod +x .github/scripts/release-version.sh
+          .github/scripts/release-version.sh "${{ inputs.release_branch || github.event.pull_request.head.ref }}"
+
+      - name: Base Setup
+        uses: ./.github/actions/setup-gradle
+
+      - name: Version Name
+        uses: ./.github/actions/version-name
+        with:
+          version: ${{ steps.version.outputs.version }}
+          ossrh_username: ${{ secrets.OSSRH_USERNAME }}
+          ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
+          mavencentral_username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          mavencentral_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          sign_keyid: ${{ secrets.SIGN_KEYID }}
+          sign_password: ${{ secrets.SIGN_PASSWORD }}
+          sign_filename: ${{ secrets.SIGN_FILENAME }}
+
+      - name: Build publishable modules
+        run: ./gradlew ciBuild
+
+      - name: Publish modules
+        run: ./gradlew ciPublishMavenCentral
+
+      - name: Push release tag
+        run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions@users.noreply.github.com"
-          git tag -a "$VERSION" -m "$VERSION from $BRANCH"
-          git push origin "$VERSION"
+          if ! git rev-parse "refs/tags/${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
+          fi
+          git push origin "${{ steps.version.outputs.version }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Arch Toolkit ${{ steps.version.outputs.version }}
+          prerelease: ${{ steps.version.outputs.prerelease }}
+          generate_release_notes: true
