@@ -6,9 +6,19 @@ on:
       - master
     types:
       - closed
+  workflow_dispatch:
+    inputs:
+      release_branch:
+        description: Release branch name, such as release/2.0.0-rc16
+        required: true
+        type: string
+      commit_sha:
+        description: Exact master commit to release
+        required: true
+        type: string
 
 concurrency:
-  group: master-release-${{ github.event.pull_request.head.ref }}
+  group: master-release
   cancel-in-progress: false
 
 permissions:
@@ -18,7 +28,11 @@ permissions:
 jobs:
   release:
     name: Tag and publish
-    if: github.event.pull_request.merged == true
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+      (startsWith(github.event.pull_request.head.ref, 'release/') ||
+      startsWith(github.event.pull_request.head.ref, 'hotfix/')))
     runs-on: ubuntu-latest
 
     outputs:
@@ -29,28 +43,22 @@ jobs:
       - name: Checkout master
         uses: actions/checkout@v5
         with:
-          ref: master
+          ref: ${{ inputs.commit_sha || github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
 
       - name: Resolve release version
         id: version
         run: |
           chmod +x .github/scripts/release-version.sh
-          .github/scripts/release-version.sh "${{ github.event.pull_request.head.ref }}"
+          .github/scripts/release-version.sh "${{ inputs.release_branch || github.event.pull_request.head.ref }}"
 
       - name: Base Setup
         uses: ./.github/actions/setup-gradle
 
-      - name: Create release tag
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "github-actions@users.noreply.github.com"
-          git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
-          git push origin "${{ steps.version.outputs.version }}"
-
       - name: Version Name
         uses: ./.github/actions/version-name
         with:
+          version: ${{ steps.version.outputs.version }}
           ossrh_username: ${{ secrets.OSSRH_USERNAME }}
           ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
           mavencentral_username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
@@ -64,6 +72,15 @@ jobs:
 
       - name: Publish modules
         run: ./gradlew ciPublishMavenCentral
+
+      - name: Push release tag
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          if ! git rev-parse "refs/tags/${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
+          fi
+          git push origin "${{ steps.version.outputs.version }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3

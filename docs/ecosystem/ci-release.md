@@ -14,7 +14,7 @@ Branch Policy
         |
         +-- base develop -> head must be feature/*, config/*, bugfix/*, or master
         |
-        +-- base master  -> head must be release/x.y.0[-rcN]
+        +-- base master  -> head must be config/*, release/x.y.0[-rcN]
                              or hotfix/x.y.z[-rcN]
 ```
 
@@ -39,8 +39,8 @@ Pull requests into `master` are publication candidates:
 branch policy -> lint -> build -> tests -> coverage -> docs -> affected samples
 ```
 
-`master` receives only release and hotfix branches. A successful merge means the repository should
-publish.
+`master` normally receives release and hotfix branches. A `config/*` PR may repair CI or repository
+configuration without triggering publication.
 
 ## Automatic Tagging
 
@@ -68,19 +68,31 @@ merge into master
 resolve version from branch
         |
         v
-verify build and quality gates
+write the explicit version file
         |
         v
-create tag
+verify build and quality gates
         |
         v
 publish artifacts
         |
         v
+push tag
+        |
+        v
 create GitHub Release
 ```
 
-This avoids relying on a tag-created-by-CI to trigger another workflow.
+The tag-triggered workflow is not part of this path, which prevents duplicate publication. Gradle
+receives the resolved version explicitly, and the remote tag is pushed only after every publisher
+succeeds.
+
+## Release Recovery
+
+The master release workflow supports manual recovery after its workflow fix has reached `master`.
+The operator must provide both the original `release/*` or `hotfix/*` branch name and the exact
+master commit SHA. CI validates an existing tag against that commit, reuses it when correct, and
+rejects it when it points elsewhere.
 
 ## Automatic Back-Merge
 
@@ -120,8 +132,9 @@ The branch and version rules are shared. Build and publication commands stay rep
 
 ## Tag Workflow Fallback
 
-Repositories may keep a tag-triggered `release.yml` as an escape hatch for tags created outside the
-automatic master merge flow.
+Repositories may keep a manually dispatched `release.yml` as an escape hatch. It must not react to
+the tag pushed by the automatic master merge flow, otherwise both workflows can publish the same
+version concurrently.
 
 The normal path is still:
 
