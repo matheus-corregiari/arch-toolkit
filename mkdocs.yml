@@ -34,7 +34,7 @@ nav:
   - Home: wiki/overview.md
   - Ecosystem:
       - Overview: ecosystem/index.md
-      - Gitflow: ecosystem/gitflow.md
+      - Branching: ecosystem/gitflow.md
       - CI and Release: ecosystem/ci-release.md
   - Project:
       - Roadmap: wiki/roadmap.md

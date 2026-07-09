@@ -25,7 +25,7 @@ Each repository releases independently. There is no global ecosystem version.
 
 The hub keeps the public contract:
 
-- [Gitflow](gitflow.md)
+- [Branching](gitflow.md)
 - [CI and Release](ci-release.md)
 - central samples
 - compatibility notes

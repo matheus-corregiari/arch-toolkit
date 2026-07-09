@@ -3,7 +3,6 @@ name: Branch Policy
 on:
   pull_request:
     branches:
-      - develop
       - master
     types:
       - opened
@@ -31,21 +30,8 @@ jobs:
           echo "base=$BASE_BRANCH"
           echo "head=$HEAD_BRANCH"
 
-          if [[ "$BASE_BRANCH" == "develop" ]]; then
-            if [[ "$HEAD_BRANCH" == "master" ]]; then
-              exit 0
-            fi
-
-            if [[ "$HEAD_BRANCH" =~ ^(feature|config|bugfix)/.+$ ]]; then
-              exit 0
-            fi
-
-            echo "develop only accepts master back-merges or feature/*, config/*, or bugfix/* branches."
-            exit 1
-          fi
-
           if [[ "$BASE_BRANCH" == "master" ]]; then
-            if [[ "$HEAD_BRANCH" =~ ^config/.+$ ]]; then
+            if [[ "$HEAD_BRANCH" =~ ^(feature|fix|bugfix|config|docs|chore|dependabot)/.+$ ]]; then
               exit 0
             fi
 
@@ -57,7 +43,7 @@ jobs:
               exit 0
             fi
 
-            echo "master only accepts config/*, release/x.y.0[-rcN], or hotfix/x.y.z[-rcN] branches."
+            echo "master only accepts feature/*, fix/*, bugfix/*, config/*, docs/*, chore/*, dependabot/*, release/x.y.0[-rcN], or hotfix/x.y.z[-rcN] branches."
             exit 1
           fi
 
