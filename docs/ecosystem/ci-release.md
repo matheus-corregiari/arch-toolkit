@@ -1,6 +1,6 @@
 # CI and Release
 
-This page explains how the ecosystem Gitflow is enforced by GitHub Actions.
+This page explains how the ecosystem master-only release flow is enforced by GitHub Actions.
 
 ## Pull Request Validation
 
@@ -12,35 +12,24 @@ PR opened or updated
         v
 Branch Policy
         |
-        +-- base develop -> head must be feature/*, config/*, bugfix/*, or master
-        |
-        +-- base master  -> head must be config/*, release/x.y.0[-rcN]
-                             or hotfix/x.y.z[-rcN]
+        +-- base master -> head must be feature/*, fix/*, bugfix/*, config/*,
+                            docs/*, chore/*, dependabot/*, release/x.y.0[-rcN],
+                            or hotfix/x.y.z[-rcN]
 ```
 
 The branch policy runs before expensive build work. It keeps repository history aligned with the
 release model.
 
-## Develop Gate
-
-Pull requests into `develop` use the normal development gate:
-
-```text
-branch policy -> lint -> build -> tests -> docs when affected
-```
-
-Docs are affected when a change touches public API, behavior, setup, CI/release flow, or samples.
-
 ## Master Gate
 
-Pull requests into `master` are publication candidates:
+Pull requests into `master` use the normal development and release gate:
 
 ```text
 branch policy -> lint -> build -> tests -> coverage -> docs -> affected samples
 ```
 
-`master` normally receives release and hotfix branches. A `config/*` PR may repair CI or repository
-configuration without triggering publication.
+`release/*` and `hotfix/*` branches are publication candidates. Other branch types are normal code,
+docs, dependency, or repository maintenance changes and do not publish artifacts.
 
 ## Automatic Tagging
 
@@ -94,31 +83,6 @@ The operator must provide both the original `release/*` or `hotfix/*` branch nam
 master commit SHA. CI validates an existing tag against that commit, reuses it when correct, and
 rejects it when it points elsewhere.
 
-## Automatic Back-Merge
-
-The merge into `master` also triggers a separate synchronization workflow:
-
-```text
-merged PR into master
-        |
-        v
-find open master -> develop PR
-        |
-        +-- found: reuse it
-        |
-        +-- missing: create it with GITHUB_TOKEN
-        |
-        v
-maintainer approves pending workflow runs
-        |
-        v
-required checks pass -> auto-merge
-```
-
-The manual workflow approval is a GitHub security requirement for pull requests created by
-`GITHUB_TOKEN`. A conflict leaves the pull request open; CI never force-pushes `develop` or bypasses
-its protection rules.
-
 ## Repository Differences
 
 The branch and version rules are shared. Build and publication commands stay repository-specific.
@@ -132,8 +96,8 @@ The branch and version rules are shared. Build and publication commands stay rep
 
 ## Tag Workflow Fallback
 
-Repositories may keep a manually dispatched `release.yml` as an escape hatch. It must not react to
-the tag pushed by the automatic master merge flow, otherwise both workflows can publish the same
+Repositories may keep a manually dispatched release workflow as an escape hatch. It must not react
+to the tag pushed by the automatic master merge flow, otherwise both workflows can publish the same
 version concurrently.
 
 The normal path is still:

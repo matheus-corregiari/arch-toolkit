@@ -1,39 +1,44 @@
-# Ecosystem Gitflow
+# Ecosystem Branching
 
 Arch libraries are independent, but they follow one release contract. Normal work flows through
-`develop`; release and hotfix merges into `master` are publication events.
+`master`; release and hotfix merges into `master` are publication events.
 
 ```text
-feature/* --+
-config/*  --+--> develop ---> release/x.y.0[-rcN] --+
-bugfix/*  --+                                       |
-                                                  +--> master --> tag --> publish
-hotfix/x.y.z[-rcN] -------------------------------+
+feature/* ----+
+fix/* --------+
+bugfix/* -----+
+config/* -----+--> master
+docs/* -------+
+chore/* ------+
+dependabot/* -+
+
+release/x.y.0[-rcN] --+
+hotfix/x.y.z[-rcN] --+--> master --> tag --> publish
 ```
 
 ## Branch Roles
 
 | Branch | Responsibility |
 |:-------|:---------------|
-| `develop` | Receives normal development and keeps the next release candidate alive. |
-| `master` | Represents published history. Release and hotfix merges create a tag and publish. |
+| `master` | Main development line and published history. Release and hotfix merges create a tag and publish. |
+| `release/*` | Temporary branch for a major or minor release, where the patch version is `0`. |
+| `hotfix/*` | Temporary branch for a patch release, where the patch version is `1` or higher. |
 
-`master` is not a parking lot. It receives release and hotfix branches, plus narrowly scoped
-`config/*` pull requests needed to repair CI or repository configuration. Config merges do not
-publish.
+There is no long-lived `develop` branch in the release contract. This avoids drift between
+integration and published history.
 
 ## Allowed Branches
 
 ```text
-To develop:
-
-feature/my-new-api
-config/update-ci
-bugfix/fix-empty-state
-
 To master:
 
+feature/my-new-api
+fix/fix-empty-state
+bugfix/fix-empty-state
 config/recover-release-ci
+docs/update-release-guide
+chore/update-tooling
+dependabot/gradle/gradle-wrapper-9.6.1
 release/2.0.0
 release/2.0.0-rc1
 hotfix/2.0.1
@@ -42,11 +47,12 @@ hotfix/2.0.1-rc1
 
 | Target | Accepted branch patterns | Meaning |
 |:-------|:-------------------------|:--------|
-| `develop` | `feature/*` | Product or API work. |
-| `develop` | `config/*` | Build, CI, tooling, docs infrastructure, or repository configuration. |
-| `develop` | `bugfix/*` | Fixes that are not emergency production patches. |
-| `develop` | `master` | Automated back-merge after publication. |
-| `master` | `config/*` | CI or repository recovery; never a publication trigger. |
+| `master` | `feature/*` | Product or API work. |
+| `master` | `fix/*`, `bugfix/*` | Normal bug fixes. |
+| `master` | `config/*` | Build, CI, tooling, docs infrastructure, or repository configuration. |
+| `master` | `docs/*` | Documentation-only changes. |
+| `master` | `chore/*` | Maintenance that does not change runtime behavior. |
+| `master` | `dependabot/*` | Automated dependency updates. |
 | `master` | `release/x.y.0` | Stable major or minor release. |
 | `master` | `release/x.y.0-rcN` | Release candidate for a major or minor release. |
 | `master` | `hotfix/x.y.z` | Patch release, where `z >= 1`. |
@@ -72,12 +78,10 @@ This keeps version intent visible before CI runs.
 
 ## Pull Request Gates
 
-### Into develop
-
-PRs into `develop` must pass the everyday quality gate:
+Every PR into `master` must pass the standard quality gate:
 
 ```text
-lint -> build -> tests -> docs when affected
+lint -> build -> tests -> coverage -> docs review -> affected samples
 ```
 
 Docs are affected when the PR changes:
@@ -87,14 +91,6 @@ Docs are affected when the PR changes:
 - setup or installation;
 - CI or release flow;
 - samples.
-
-### Into master
-
-PRs into `master` must pass the release gate:
-
-```text
-lint -> build -> tests -> coverage -> docs review -> affected samples
-```
 
 For `arch-toolkit`, the web sample is part of the release product. A tag publication must build:
 
@@ -106,7 +102,7 @@ If the web sample does not build, the `arch-toolkit` release fails.
 
 ## CI Enforcement
 
-Gitflow is enforced by GitHub Actions, not by convention alone.
+Branching is enforced by GitHub Actions, not by convention alone.
 
 ```text
 Pull request
@@ -114,9 +110,8 @@ Pull request
      v
 Branch Policy
      |
-     +-- develop accepts feature/*, config/*, bugfix/*, or master back-merge
-     |
-     +-- master accepts config/*, release/x.y.0[-rcN], hotfix/x.y.z[-rcN]
+     +-- master accepts feature/*, fix/*, bugfix/*, config/*, docs/*,
+         chore/*, dependabot/*, release/x.y.0[-rcN], or hotfix/x.y.z[-rcN]
 ```
 
 On `master`, a merged release or hotfix PR is the release trigger:
@@ -146,38 +141,13 @@ flowchart TD
     A["release/x.y.0 or hotfix/x.y.z"] --> B["Pull request to master"]
     B --> C["Release quality gate"]
     C --> D["Merge into master"]
-    D --> E["Extract version from branch"]
-    E --> F["Publish artifacts"]
-    F --> G["Create Git tag"]
-    G --> H["Create GitHub Release"]
-    D --> I["Open or update master to develop PR"]
-    I --> J["Approve workflow runs"]
-    J --> K["Required checks"]
-    K --> L["Auto-merge into develop"]
+D --> E["Extract version from branch"]
+E --> F["Publish artifacts"]
+F --> G["Create Git tag"]
+G --> H["Create GitHub Release"]
 ```
 
 The branch name is the version source. CI should not ask for a second version input.
-
-## Mergeback
-
-Every merged release or hotfix PR creates or updates a `master -> develop` back-merge PR. The
-workflow uses the repository `GITHUB_TOKEN`, so GitHub requires a maintainer to approve the pending
-workflow runs. Auto-merge completes the PR after the required checks pass.
-
-```text
-master tag 2.0.0
-        |
-        +-- generated changelog
-        +-- release notes metadata
-        +-- mergeback PR -> develop
-```
-
-Only one open back-merge PR is kept. Later merges into `master` reuse it instead of creating
-duplicates. If the branches conflict, auto-merge stops and the PR remains open for manual conflict
-resolution. The workflow never force-pushes or bypasses branch protection.
-
-The mergeback is mandatory before the next release or hotfix. Do not patch published history on
-`master`.
 
 ## GitHub Release Content
 

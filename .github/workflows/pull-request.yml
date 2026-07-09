@@ -1,18 +1,9 @@
 name: Pull Request
 
-permissions:
-  contents: read
-
 on:
   pull_request:
     branches:
       - master
-      - develop
-      - 'release/**'
-      - 'hotfix/**'
-      - 'feature/**'
-      - 'bugfix/**'
-      - 'config/**'
     paths:
       - '**.kt'
       - '**.gradle'
