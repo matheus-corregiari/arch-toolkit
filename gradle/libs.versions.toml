@@ -15,7 +15,7 @@ build-tools = "37.0.0"
 
 ## JetBrains
 jetbrains-kotlin = "2.4.0"
-jetbrains-compose = "1.10.3"
+jetbrains-compose = "1.11.0"
 jetbrains-lifecycle = "2.10.0"
 jetbrains-coroutines = "1.11.0"
 jetbrains-serialization = "1.11.0"
@@ -52,8 +52,8 @@ google-ksp = "2.3.5"
 
 ## Arch Toolkit
 arch-lumber = "1.1.0"
-arch-android = "1.1.0"
-arch-event-observer = "2.0.1"
+arch-android = "1.2.0"
+arch-event-observer = "2.1.0"
 
 ## Dependency Injection
 di-koin = "4.2.1"

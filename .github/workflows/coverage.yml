@@ -1,0 +1,56 @@
+name: Coverage
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  coverage:
+    name: Coverage Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup
+        uses: ./.github/actions/setup-gradle
+
+      - name: Tests and merged coverage
+        run: ./gradlew ciCoverage
+
+      - name: Upload coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: merged-kover-html
+          path: |
+            build/reports/kover/html
+            **/build/reports/kover/html
+          if-no-files-found: error
+
+      - name: Upload coverage XML
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: merged-kover-xml
+          path: |
+            build/reports/kover/report.xml
+            **/build/reports/kover/report.xml
+          if-no-files-found: error
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/kover/report.xml
+          fail_ci_if_error: true

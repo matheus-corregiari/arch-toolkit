@@ -1,0 +1,42 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  security-events: write
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze Java-Kotlin
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup
+        uses: ./.github/actions/setup-gradle
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: java-kotlin
+          build-mode: manual
+
+      - name: Select CodeQL-compatible Kotlin
+        run: sed -i 's/jetbrains-kotlin = "2.4.0"/jetbrains-kotlin = "2.3.21"/' gradle/libs.versions.toml
+
+      - name: Build public modules
+        run: ./gradlew ciBuild
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4

@@ -16,6 +16,11 @@ on:
         description: Exact master commit to release
         required: true
         type: string
+      skip_maven_central:
+        description: Skip Maven Central when this version is already published
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: master-release
@@ -23,7 +28,6 @@ concurrency:
 
 permissions:
   contents: write
-  packages: write
 
 jobs:
   release:
@@ -41,7 +45,7 @@ jobs:
 
     steps:
       - name: Checkout master
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.commit_sha || github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
@@ -52,25 +56,25 @@ jobs:
           chmod +x .github/scripts/release-version.sh
           .github/scripts/release-version.sh "${{ inputs.release_branch || github.event.pull_request.head.ref }}"
 
-      - name: Base Setup
+      - name: Setup
         uses: ./.github/actions/setup-gradle
 
       - name: Version Name
         uses: ./.github/actions/version-name
         with:
           version: ${{ steps.version.outputs.version }}
-          ossrh_username: ${{ secrets.OSSRH_USERNAME }}
-          ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
-          mavencentral_username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          mavencentral_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          sign_keyid: ${{ secrets.SIGN_KEYID }}
-          sign_password: ${{ secrets.SIGN_PASSWORD }}
-          sign_filename: ${{ secrets.SIGN_FILENAME }}
 
-      - name: Build publishable modules
+      - name: Verify release build
         run: ./gradlew ciBuild
 
-      - name: Publish modules
+      - name: Publish to Maven Central
+        if: github.event_name != 'workflow_dispatch' || inputs.skip_maven_central != true
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGN_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGN_KEYID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGN_PASSWORD }}
         run: ./gradlew ciPublishMavenCentral
 
       - name: Push release tag
