@@ -35,8 +35,8 @@ jobs:
       - name: Select CodeQL-compatible Kotlin
         run: sed -i 's/jetbrains-kotlin = "2.4.0"/jetbrains-kotlin = "2.3.21"/' gradle/libs.versions.toml
 
-      - name: Build public modules
-        run: ./gradlew ciBuild
+      - name: Build public modules and samples
+        run: ./gradlew -PincludeSamples=true ciBuild
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4

@@ -26,7 +26,8 @@ include(":toolkit:multi:test")
 
 // Samples
 val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"
-if (isIdeBuild) {
+val includeSamples: Boolean = isIdeBuild || providers.gradleProperty("includeSamples").isPresent
+if (includeSamples) {
     // Shared Modules with KMP Code to use in Targets
     include(":sample:shared:app")
     include(":sample:shared:feature:github-list")

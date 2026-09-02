@@ -56,6 +56,11 @@ jobs:
           chmod +x .github/scripts/release-version.sh
           .github/scripts/release-version.sh "${{ inputs.release_branch || github.event.pull_request.head.ref }}"
 
+      - name: Reject duplicate or historical tag
+        run: |
+          chmod +x .github/scripts/validate-release-version.sh
+          .github/scripts/validate-release-version.sh "${{ steps.version.outputs.version }}"
+
       - name: Setup
         uses: ./.github/actions/setup-gradle
 
@@ -64,8 +69,8 @@ jobs:
         with:
           version: ${{ steps.version.outputs.version }}
 
-      - name: Verify release build
-        run: ./gradlew ciBuild
+      - name: Verify release build and samples
+        run: ./gradlew -PincludeSamples=true ciBuild
 
       - name: Publish to Maven Central
         if: github.event_name != 'workflow_dispatch' || inputs.skip_maven_central != true
@@ -81,9 +86,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions@users.noreply.github.com"
-          if ! git rev-parse "refs/tags/${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-            git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
-          fi
+          git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
           git push origin "${{ steps.version.outputs.version }}"
 
       - name: Create GitHub Release

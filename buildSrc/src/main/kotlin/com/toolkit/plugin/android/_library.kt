@@ -16,7 +16,9 @@ internal fun Project.setupAndroidLibraryModule() = with(androidLibrary) {
 
     // Exclusive Library Configurations
     defaultConfig {
-        consumerProguardFiles("consumer-proguard-rules.pro")
+        if (project.file("consumer-proguard-rules.pro").exists()) {
+            consumerProguardFiles("consumer-proguard-rules.pro")
+        }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }

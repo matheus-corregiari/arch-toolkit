@@ -25,5 +25,7 @@ echo "Message: $merge_message"
 echo "Tag: $version"
 
 # Create and push tag
+chmod +x .github/scripts/validate-release-version.sh
+./.github/scripts/validate-release-version.sh "$version"
 git tag -a "$version" -m "$version"
 git push -u origin "$version"

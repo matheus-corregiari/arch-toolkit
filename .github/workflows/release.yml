@@ -25,8 +25,8 @@ jobs:
       - name: Version Name
         uses: ./.github/actions/version-name
 
-      - name: Assemble publishable artifacts
-        run: ./gradlew ciBuild
+      - name: Assemble publishable artifacts and samples
+        run: ./gradlew -PincludeSamples=true ciBuild
 
   publish:
     name: Publish Artifacts
