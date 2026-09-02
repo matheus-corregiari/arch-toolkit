@@ -31,7 +31,7 @@ jobs:
           echo "head=$HEAD_BRANCH"
 
           if [[ "$BASE_BRANCH" == "master" ]]; then
-            if [[ "$HEAD_BRANCH" =~ ^(feature|fix|bugfix|config|docs|chore)/.+$ ]]; then
+            if [[ "$HEAD_BRANCH" =~ ^(feature|fix|bugfix|config|docs|chore|agent)/.+$ ]]; then
               exit 0
             fi
 
@@ -43,7 +43,7 @@ jobs:
               exit 0
             fi
 
-            echo "master only accepts feature/*, fix/*, bugfix/*, config/*, docs/*, chore/*, release/x.y.0[-rcN], or hotfix/x.y.z[-rcN] branches."
+            echo "master only accepts feature/*, fix/*, bugfix/*, config/*, docs/*, chore/*, agent/*, release/x.y.0[-rcN], or hotfix/x.y.z[-rcN] branches."
             exit 1
           fi
 
