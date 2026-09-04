@@ -49,6 +49,7 @@ jobs:
         with:
           ref: ${{ inputs.commit_sha || github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Resolve release version
         id: version
@@ -72,13 +73,6 @@ jobs:
       - name: Verify release build and samples
         run: ./gradlew ciBuild
 
-      - name: Create release token
-        id: release-app-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.RELEASE_APP_ID }}
-          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
-
       - name: Publish to Maven Central
         if: github.event_name != 'workflow_dispatch' || inputs.skip_maven_central != true
         env:
@@ -88,6 +82,13 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGN_KEYID }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGN_PASSWORD }}
         run: ./gradlew ciPublishMavenCentral
+
+      - name: Create release token
+        id: release-app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
 
       - name: Push release tag
         run: |
