@@ -33,9 +33,14 @@ jobs:
           build-mode: manual
 
       # CodeQL currently supports Kotlin through 2.3.x. Use the latest compatible compiler
-      # only for the instrumented analysis build, regardless of the project catalog version.
+      # and dependency ABI only for the instrumented analysis build, regardless of the project
+      # catalog versions.
       - name: Select CodeQL-compatible Kotlin
-        run: sed -E -i 's/jetbrains-kotlin = "[^"]+"/jetbrains-kotlin = "2.3.21"/' gradle/libs.versions.toml
+        run: |
+          sed -E -i \
+            -e 's/jetbrains-kotlin = "[^"]+"/jetbrains-kotlin = "2.3.21"/' \
+            -e 's/arch-event-observer = "[^"]+"/arch-event-observer = "2.0.1"/' \
+            gradle/libs.versions.toml
 
       - name: Build public modules
         run: ./gradlew ciBuild
