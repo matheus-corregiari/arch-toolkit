@@ -16,6 +16,11 @@ on:
         description: Exact master commit to release
         required: true
         type: string
+      skip_maven_central:
+        description: Skip Maven Central when this version is already published
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: master-release
@@ -23,7 +28,6 @@ concurrency:
 
 permissions:
   contents: write
-  packages: write
 
 jobs:
   release:
@@ -35,16 +39,13 @@ jobs:
       startsWith(github.event.pull_request.head.ref, 'hotfix/')))
     runs-on: ubuntu-latest
 
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      prerelease: ${{ steps.version.outputs.prerelease }}
-
     steps:
       - name: Checkout master
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.commit_sha || github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Resolve release version
         id: version
@@ -52,39 +53,54 @@ jobs:
           chmod +x .github/scripts/release-version.sh
           .github/scripts/release-version.sh "${{ inputs.release_branch || github.event.pull_request.head.ref }}"
 
-      - name: Base Setup
+      - name: Reject duplicate or historical tag
+        run: |
+          chmod +x .github/scripts/validate-release-version.sh
+          .github/scripts/validate-release-version.sh "${{ steps.version.outputs.version }}"
+
+      - name: Setup
         uses: ./.github/actions/setup-gradle
 
       - name: Version Name
         uses: ./.github/actions/version-name
         with:
           version: ${{ steps.version.outputs.version }}
-          ossrh_username: ${{ secrets.OSSRH_USERNAME }}
-          ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
-          mavencentral_username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          mavencentral_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          sign_keyid: ${{ secrets.SIGN_KEYID }}
-          sign_password: ${{ secrets.SIGN_PASSWORD }}
-          sign_filename: ${{ secrets.SIGN_FILENAME }}
 
-      - name: Build publishable modules
+      - name: Verify release build
         run: ./gradlew ciBuild
 
-      - name: Publish modules
+      - name: Publish to Maven Central
+        if: github.event_name != 'workflow_dispatch' || inputs.skip_maven_central != true
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGN_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGN_KEYID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGN_PASSWORD }}
         run: ./gradlew ciPublishMavenCentral
+
+      - name: Create release token
+        id: release-app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
 
       - name: Push release tag
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions@users.noreply.github.com"
-          if ! git rev-parse "refs/tags/${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+          if git rev-parse "refs/tags/${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            test "$(git rev-parse "refs/tags/${{ steps.version.outputs.version }}^")" = "$(git rev-parse HEAD)"
+          else
             git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
           fi
-          git push origin "${{ steps.version.outputs.version }}"
+          git push "https://x-access-token:${{ steps.release-app-token.outputs.token }}@github.com/${{ github.repository }}.git" "${{ steps.version.outputs.version }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
+          token: ${{ steps.release-app-token.outputs.token }}
           tag_name: ${{ steps.version.outputs.version }}
           name: Arch Toolkit ${{ steps.version.outputs.version }}
           prerelease: ${{ steps.version.outputs.prerelease }}
