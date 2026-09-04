@@ -72,6 +72,13 @@ jobs:
       - name: Verify release build and samples
         run: ./gradlew ciBuild
 
+      - name: Create release token
+        id: release-app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - name: Publish to Maven Central
         if: github.event_name != 'workflow_dispatch' || inputs.skip_maven_central != true
         env:
@@ -91,11 +98,12 @@ jobs:
           else
             git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
           fi
-          git push origin "${{ steps.version.outputs.version }}"
+          git push "https://x-access-token:${{ steps.release-app-token.outputs.token }}@github.com/${{ github.repository }}.git" "${{ steps.version.outputs.version }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
+          token: ${{ steps.release-app-token.outputs.token }}
           tag_name: ${{ steps.version.outputs.version }}
           name: Arch Toolkit ${{ steps.version.outputs.version }}
           prerelease: ${{ steps.version.outputs.prerelease }}
