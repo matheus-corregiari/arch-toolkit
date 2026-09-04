@@ -40,3 +40,4 @@ nav:
       - Roadmap: wiki/roadmap.md
       - Contribution Guide: wiki/contribution-guide.md
       - Artifact Publishing: wiki/artifact-publishing.md
+  - Changelog: CHANGELOG.md

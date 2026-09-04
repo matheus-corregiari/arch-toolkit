@@ -2,7 +2,7 @@
 [versions]
 ## --- Plugins and more general stuff --- ##
 jacoco = "0.8.14"
-detekt = "2.0.0-alpha.5"
+detekt = "2.0.0-alpha.6"
 
 ## --- Build Config and SDK --- ##
 build-version-name = "1.0.0"
@@ -14,8 +14,8 @@ build-sdk-target = "37"
 build-tools = "37.0.0"
 
 ## JetBrains
-jetbrains-kotlin = "2.4.0"
-jetbrains-compose = "1.10.3"
+jetbrains-kotlin = "2.4.10"
+jetbrains-compose = "1.12.0"
 jetbrains-lifecycle = "2.10.0"
 jetbrains-coroutines = "1.11.0"
 jetbrains-serialization = "1.11.0"
@@ -23,7 +23,7 @@ jetbrains-dokka = "2.2.0"
 jetbrains-datetime = "0.8.0"
 
 ## AndroidX
-androidx-plugin = "9.2.1"
+androidx-plugin = "9.3.2"
 androidx-appcompat = "1.7.1"
 androidx-fragment = "1.8.9"
 androidx-annotation = "1.10.0"
@@ -51,12 +51,12 @@ google-material = "1.13.0"
 google-ksp = "2.3.5"
 
 ## Arch Toolkit
-arch-lumber = "1.1.0"
-arch-android = "1.1.0"
-arch-event-observer = "2.0.1"
+arch-lumber = "1.3.0"
+arch-android = "1.2.1"
+arch-event-observer = "2.1.1"
 
 ## Dependency Injection
-di-koin = "4.2.1"
+di-koin = "4.2.2"
 
 ## Tools
 mockk = "1.14.11"
@@ -65,9 +65,9 @@ robolectric = "4.16.1"
 ktlint = "14.2.0"
 dexcount = "4.0.0"
 vanniktech-publish = "0.37.0"
-ktorfit = "2.7.3"
-ktor = "3.4.3"
-coil = "3.4.0"
+ktorfit = "2.7.2"
+ktor = "3.5.2"
+coil = "3.6.1"
 haze = "1.7.2"
 
 # ------------------------------------------------------------------------------------------------ #

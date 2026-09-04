@@ -69,6 +69,7 @@ internal class ToolkitCiPlugin : Plugin<Project> {
             val testedProjects = target.subprojects.filter {
                 it.plugins.hasPlugin("toolkit-test")
             }
+            val sampleProjects = target.subprojects.filter { it.path.startsWith(":sample:") }
 
             ciLint.configure {
                 it.dependsOn(lintedProjects.mapNotNull { project -> project.taskPath("detekt") })
@@ -80,10 +81,16 @@ internal class ToolkitCiPlugin : Plugin<Project> {
             }
             ciBuild.configure {
                 it.dependsOn(publishableProjects.mapNotNull { project -> project.taskPath("assemble") })
+                if (target.providers.gradleProperty("includeSamples").isPresent) {
+                    it.dependsOn(sampleProjects.mapNotNull { project -> project.taskPath("assemble") })
+                }
             }
             ciTest.configure {
                 it.dependsOn(testedProjects.mapNotNull { project -> project.taskPath("allTests") })
                 it.dependsOn(testedProjects.mapNotNull { project -> project.taskPath("test") })
+                if (target.providers.gradleProperty("includeSamples").isPresent) {
+                    it.dependsOn(sampleProjects.mapNotNull { project -> project.taskPath("test") })
+                }
             }
             ciCoverage.configure {
                 it.dependsOn(
