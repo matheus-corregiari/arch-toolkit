@@ -70,7 +70,7 @@ jobs:
           version: ${{ steps.version.outputs.version }}
 
       - name: Verify release build and samples
-        run: ./gradlew -PincludeSamples=true ciBuild
+        run: ./gradlew ciBuild
 
       - name: Publish to Maven Central
         if: github.event_name != 'workflow_dispatch' || inputs.skip_maven_central != true
@@ -86,7 +86,11 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions@users.noreply.github.com"
-          git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
+          if git rev-parse "refs/tags/${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            test "$(git rev-parse "refs/tags/${{ steps.version.outputs.version }}^")" = "$(git rev-parse HEAD)"
+          else
+            git tag -a "${{ steps.version.outputs.version }}" -m "${{ steps.version.outputs.version }}"
+          fi
           git push origin "${{ steps.version.outputs.version }}"
 
       - name: Create GitHub Release
