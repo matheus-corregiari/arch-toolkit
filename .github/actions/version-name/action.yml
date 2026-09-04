@@ -6,6 +6,7 @@ inputs:
     description: Explicit release version; falls back to git describe when omitted
     required: false
     default: ""
+
 runs:
   using: "composite"
   steps:
@@ -14,7 +15,7 @@ runs:
     - name: Get next version name
       id: new-version
       if: inputs.version == ''
-      uses: proudust/gh-describe@v1.5.3
+      uses: proudust/gh-describe@v2
 
     # Write versionName into build file to use properly in the future
     - name: Write version into build file

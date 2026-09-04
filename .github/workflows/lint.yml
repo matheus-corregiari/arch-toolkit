@@ -26,7 +26,7 @@ jobs:
         uses: ./.github/actions/setup-gradle
 
       - name: Run lint
-        run: ./gradlew -PincludeSamples=true ciLint
+        run: ./gradlew ciLint
 
       - name: Upload Detekt reports
         if: always()

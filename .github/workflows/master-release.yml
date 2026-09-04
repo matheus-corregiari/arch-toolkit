@@ -39,10 +39,6 @@ jobs:
       startsWith(github.event.pull_request.head.ref, 'hotfix/')))
     runs-on: ubuntu-latest
 
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      prerelease: ${{ steps.version.outputs.prerelease }}
-
     steps:
       - name: Checkout master
         uses: actions/checkout@v6
@@ -70,7 +66,7 @@ jobs:
         with:
           version: ${{ steps.version.outputs.version }}
 
-      - name: Verify release build and samples
+      - name: Verify release build
         run: ./gradlew ciBuild
 
       - name: Publish to Maven Central

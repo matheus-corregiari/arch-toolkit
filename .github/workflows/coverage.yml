@@ -25,7 +25,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-gradle
 
-      - name: Tests, samples, and merged coverage
+      - name: Tests and merged coverage
         run: ./gradlew ciCoverage
 
       - name: Upload coverage HTML
