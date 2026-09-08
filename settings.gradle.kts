@@ -18,9 +18,6 @@ rootProject.name = "arch-toolkit"
 
 // Toolkit Libraries
 include(":toolkit:multi:splinter")
-include(":toolkit:multi:storage-core")
-include(":toolkit:multi:storage-datastore")
-include(":toolkit:multi:storage-memory")
 include(":toolkit:multi:state-handle")
 include(":toolkit:multi:test")
 

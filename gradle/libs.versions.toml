@@ -1,5 +1,6 @@
 # ------------------------------------------------------------------------------------------------ #
 [versions]
+arch-storage = { strictly = "1.0.0" }
 ## --- Plugins and more general stuff --- ##
 jacoco = "0.8.14"
 detekt = "2.0.0-alpha.5"
@@ -72,6 +73,9 @@ haze = "1.7.2"
 
 # ------------------------------------------------------------------------------------------------ #
 [libraries]
+arch-storage-core = { module = "io.github.matheus-corregiari:storage-core", version.ref = "arch-storage" }
+arch-storage-memory = { module = "io.github.matheus-corregiari:storage-memory", version.ref = "arch-storage" }
+arch-storage-datastore = { module = "io.github.matheus-corregiari:storage-datastore", version.ref = "arch-storage" }
 ## JetBrains
 jetbrains-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "jetbrains-kotlin" }
 jetbrains-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "jetbrains-kotlin" }

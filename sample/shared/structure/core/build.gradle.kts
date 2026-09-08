@@ -16,7 +16,7 @@ kotlin {
                 // Arch Toolkit Dependencies
                 api(libs.arch.lumber)
                 api(project(":toolkit:multi:state-handle"))
-                api(project(":toolkit:multi:storage-core"))
+                api(libs.arch.storage.core)
 
                 // Jetbrains Compose Tools
                 api(compose.ui)

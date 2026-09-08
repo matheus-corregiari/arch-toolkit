@@ -40,31 +40,31 @@ kotlin {
         androidMain {
             dependencies {
                 implementation(libs.arch.android)
-                implementation(project(":toolkit:multi:storage-datastore"))
+                implementation(libs.arch.storage.datastore)
             }
         }
 
         jvmMain {
             dependencies {
-                implementation(project(":toolkit:multi:storage-datastore"))
+                implementation(libs.arch.storage.datastore)
             }
         }
 
         appleMain {
             dependencies {
-                implementation(project(":toolkit:multi:storage-datastore"))
+                implementation(libs.arch.storage.datastore)
                 implementation(libs.ktor.client.darwin)
             }
         }
 
         wasmJsMain {
             dependencies {
-                implementation(project(":toolkit:multi:storage-memory"))
+                implementation(libs.arch.storage.memory)
             }
         }
         jsMain {
             dependencies {
-                implementation(project(":toolkit:multi:storage-memory"))
+                implementation(libs.arch.storage.memory)
             }
         }
     }
