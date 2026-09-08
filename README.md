@@ -66,40 +66,42 @@ Provide production-ready Kotlin Multiplatform (KMP) building blocks for state ma
 
 Add the toolkit artifacts you need to your shared module. Examples below use the Kotlin Multiplatform DSL with version catalogs.
 
-```kotlin
-// settings.gradle.kts
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-```
+Storage is released independently by [Arch Storage](https://github.com/matheus-corregiari/arch-storage).
+Use its own version and a strict constraint for every storage artifact to avoid resolving older
+Arch Toolkit 2.0.0 RC artifacts.
 
-```kotlin
-// gradle/libs.versions.toml
+```toml
+# gradle/libs.versions.toml
 [versions]
-arch-toolkit = "<latest-version>"
+arch-storage = { strictly = "1.0.0" }
 
 [libraries]
-storage-core = { module = "io.github.matheus-corregiari:storage-core", version.ref = "arch-toolkit" }
+storage-core = { module = "io.github.matheus-corregiari:storage-core", version.ref = "arch-storage" }
+storage-datastore = { module = "io.github.matheus-corregiari:storage-datastore", version.ref = "arch-storage" }
+storage-memory = { module = "io.github.matheus-corregiari:storage-memory", version.ref = "arch-storage" }
 ```
 
 ```kotlin
 // build.gradle.kts
 kotlin {
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.storage.core)
-                implementation("io.github.matheus-corregiari:storage-datastore:<latest-version>")
-            }
+        commonMain.dependencies {
+            implementation(libs.storage.core)
         }
-        val androidMain by getting {
-            dependencies {
-                implementation("io.github.matheus-corregiari:event-observer-compose:<latest-version>")
-            }
+        androidMain.dependencies {
+            implementation(libs.storage.datastore)
         }
+        jvmMain.dependencies {
+            implementation(libs.storage.datastore)
+        }
+        // For browser targets, use storage-memory; DataStore is not available there.
     }
 }
 ```
 
-> Tip: Align versions through your version catalog to keep every toolkit module on the same release train.
+> Tip: Align storage artifacts with the shared strict Arch Storage version, not the Arch Toolkit
+> version. Event Observer has its own release version as well. See the
+> [storage migration guide](docs/storage-migration.md) for platform and dependency details.
 
 ---
 
