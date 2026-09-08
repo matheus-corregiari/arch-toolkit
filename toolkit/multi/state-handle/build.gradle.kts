@@ -9,6 +9,18 @@ android.namespace = "br.com.arch.toolkit.stateHandle"
 android.androidResources.enable = false
 android.buildFeatures.buildConfig = false
 
+// Inform consumers without redirecting them to an incompatible package/API.
+publishing.publications.withType<MavenPublication>().configureEach {
+    pom.description.set(
+        "Legacy State Handle. Migrated to " +
+            "io.github.matheus-corregiari:event-observer-state:2.3.0 " +
+            "(package br.com.arch.toolkit.eventObserver.state). " +
+            "Migration guide: " +
+            "https://matheus-corregiari.github.io/arch-event-observer/migration-state/. " +
+            "Update dependencies and imports explicitly; this artifact is not redirected."
+    )
+}
+
 kotlin {
     // Libraries
     sourceSets {

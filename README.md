@@ -1,5 +1,8 @@
 # Arch Toolkit
 
+Storage modules moved to [Arch Storage](https://github.com/matheus-corregiari/arch-storage).
+See the [RC17 migration guide](docs/storage-migration.md) for dependencies and version constraints.
+
 [![CI](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml/badge.svg?branch=master)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
 [![Codebeat](https://codebeat.co/badges/1add62ed-f5fc-4bd2-9054-501685ca007c)](https://codebeat.co/projects/github-com-matheus-corregiari-arch-toolkit-master)
 [![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fmatheus-corregiari%2F4fbcfa4cec61deb2262b16c19ab14138%2Fraw%2Fcoverage-badge.json&logo=kotlin)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
@@ -20,9 +23,6 @@ Provide production-ready Kotlin Multiplatform (KMP) building blocks for state ma
 
 | Module | Gradle Artifact | Stability | Supported Targets | Highlights |
 |--------|-----------------|-----------|-------------------|------------|
-| `toolkit/multi/storage-core` | `io.github.matheus-corregiari:storage-core` | Stable | Android, JVM, iOS, macOS, JS (stub), WASM (stub) | Reactive key–value storage contract with Flow support. |
-| `toolkit/multi/storage-datastore` | `io.github.matheus-corregiari:storage-datastore` | Beta | Android, JVM, iOS, macOS | DataStore-backed implementation for persistent storage. |
-| `toolkit/multi/storage-memory` | `io.github.matheus-corregiari:storage-memory` | Stable | All KMP targets | In-memory storage for tests and ephemeral state. |
 | `toolkit/multi/event-observer` | `io.github.matheus-corregiari:event-observer` | Beta | Android, JVM, iOS, macOS | Multiplatform event channels with lifecycle awareness. |
 | `toolkit/multi/event-observer-compose` | `io.github.matheus-corregiari:event-observer-compose` | Experimental | Android | Compose extensions for event observers. |
 | `toolkit/multi/state-handle` | `io.github.matheus-corregiari:state-handle` | Incubating | Android, JVM | Lifecycle-friendly state persistence for shared logic. |
@@ -105,7 +105,6 @@ kotlin {
 
 ## 📖 Usage Examples
 
-* **Reactive storage** – Observe values in Compose or SwiftUI with `Flow` and `state()` helpers. See [`toolkit/multi/storage-core`](toolkit/multi/storage-core/README.md).
 * **Lifecycle events** – Connect shared logic to UI layers via the [`event-observer`](toolkit/multi/event-observer/README.md) channel APIs.
 * **Android UI state** – Drive screen transitions predictably with [`statemachine`](toolkit/android/statemachine/README.md).
 * **Delegated properties** – Simplify Android component setup with [`delegate`](toolkit/android/delegate/README.md).

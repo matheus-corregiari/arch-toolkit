@@ -37,6 +37,7 @@ nav:
       - Branching: ecosystem/gitflow.md
       - CI and Release: ecosystem/ci-release.md
   - Project:
+      - Storage Migration: storage-migration.md
       - Roadmap: wiki/roadmap.md
       - Contribution Guide: wiki/contribution-guide.md
       - Artifact Publishing: wiki/artifact-publishing.md
