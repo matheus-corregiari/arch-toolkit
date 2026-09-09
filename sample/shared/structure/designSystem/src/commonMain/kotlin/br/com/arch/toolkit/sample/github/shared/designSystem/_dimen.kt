@@ -110,4 +110,3 @@ private data object MediumScreenDimen : AppDimen()
 
 @Immutable
 private data object LargeScreenDimen : AppDimen()
-

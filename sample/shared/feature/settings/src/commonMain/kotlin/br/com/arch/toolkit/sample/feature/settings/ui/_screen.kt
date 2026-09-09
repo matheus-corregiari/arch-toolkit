@@ -38,7 +38,7 @@ internal fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                 modifier = Modifier.fillMaxWidth().haze(hazeState),
                 text = stringResource(Res.string.sample_settings_title)
             )
-        },
+        }
     ) { padding ->
         LazyColumn(
             modifier = Modifier.hazeSource(hazeState).fillAdjustableSize(),
@@ -46,8 +46,12 @@ internal fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
             contentPadding = PaddingValues(
                 top = padding.calculateTopPadding(),
                 bottom = padding.calculateBottomPadding(),
-                start = padding.calculateStartPadding(LocalLayoutDirection.current) + AppTheme.dimen.spacingM,
-                end = padding.calculateEndPadding(LocalLayoutDirection.current) + AppTheme.dimen.spacingM,
+                start =
+                padding.calculateStartPadding(LocalLayoutDirection.current) +
+                    AppTheme.dimen.spacingM,
+                end =
+                padding.calculateEndPadding(LocalLayoutDirection.current) +
+                    AppTheme.dimen.spacingM
             )
         ) {
             item { Group(allAppStyleOptions(viewModel)) }

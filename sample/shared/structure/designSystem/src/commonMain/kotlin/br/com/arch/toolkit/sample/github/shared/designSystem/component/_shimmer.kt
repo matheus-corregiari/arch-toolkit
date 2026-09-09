@@ -48,7 +48,7 @@ fun shimmerBrush(): Brush {
         colors = listOf(
             AppTheme.color.backgroundSurfaceSecondary.copy(alpha = surface),
             AppTheme.color.fillSecondary.copy(alpha = fill),
-            AppTheme.color.backgroundSurfaceSecondary.copy(alpha = surface),
+            AppTheme.color.backgroundSurfaceSecondary.copy(alpha = surface)
         ),
         start = Offset(translateAnim, 0f),
         end = Offset(translateAnim + RATIO, 0f)

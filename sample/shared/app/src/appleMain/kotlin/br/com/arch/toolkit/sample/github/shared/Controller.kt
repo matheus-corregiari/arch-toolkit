@@ -8,7 +8,7 @@ import br.com.arch.toolkit.sample.shared.initKoin
 import br.com.arch.toolkit.sample.shared.ui.home.AppHome
 import platform.UIKit.UIViewController
 
-fun Controller(): UIViewController = ComposeUIViewController {
+fun createController(): UIViewController = ComposeUIViewController {
     Lumber.plant(DebugOak())
     initKoin()
     AppTheme { AppHome() }

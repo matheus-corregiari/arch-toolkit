@@ -118,7 +118,6 @@ sealed class AppColor {
             contrast: ContrastMode,
             isSystemInDarkTheme: Boolean
         ): AppColor = when (theme) {
-
             ThemeMode.DARK -> when (contrast) {
                 ContrastMode.STANDARD -> DarkColor.LowContrast
                 ContrastMode.MEDIUM -> DarkColor.MediumContrast
@@ -264,7 +263,6 @@ private sealed class LightColor : AppColor() {
         error = textNegative,
         onError = textTitle
     )
-
 }
 
 private sealed class DarkColor : AppColor() {

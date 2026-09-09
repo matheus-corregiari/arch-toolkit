@@ -47,7 +47,3 @@ fun RepositoryListScreen(
     }
     LaunchedEffect(Unit) { viewModel.loadRepositories() }
 }
-
-
-
-

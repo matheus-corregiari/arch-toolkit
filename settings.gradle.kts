@@ -23,7 +23,8 @@ include(":toolkit:multi:test")
 
 // Samples
 val isIdeBuild: Boolean = extra.properties["android.injected.invoked.from.ide"] == "true"
-if (isIdeBuild) {
+val includeSamples: Boolean = isIdeBuild || providers.gradleProperty("includeSamples").isPresent
+if (includeSamples) {
     // Shared Modules with KMP Code to use in Targets
     include(":sample:shared:app")
     include(":sample:shared:feature:github-list")
@@ -39,7 +40,7 @@ if (isIdeBuild) {
 }
 
 plugins {
-    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.6"
+    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.9"
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 

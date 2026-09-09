@@ -23,7 +23,7 @@ fun EmptyState(
     icon: ImageVector = Icons.Filled.Search,
     titleColor: Color = AppTheme.color.textTitle,
     descriptionColor: Color = AppTheme.color.textParagraph,
-    iconColor: Color = AppTheme.color.iconPrimary,
+    iconColor: Color = AppTheme.color.iconPrimary
 ) = Column(
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,

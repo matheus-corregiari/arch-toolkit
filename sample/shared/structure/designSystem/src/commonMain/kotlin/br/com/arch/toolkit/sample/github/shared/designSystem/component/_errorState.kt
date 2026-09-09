@@ -72,7 +72,7 @@ fun ErrorState(
             Text(
                 modifier = Modifier.fillAdjustableSize().padding(
                     vertical = AppTheme.dimen.spacingS,
-                    horizontal = AppTheme.dimen.spacingM,
+                    horizontal = AppTheme.dimen.spacingM
                 ),
                 text = it.stackTraceToString(),
                 style = AppTheme.textStyle.paragraphM,
@@ -90,5 +90,4 @@ fun ErrorState(
             size = AppButton.Size.Small
         )
     }
-
 }

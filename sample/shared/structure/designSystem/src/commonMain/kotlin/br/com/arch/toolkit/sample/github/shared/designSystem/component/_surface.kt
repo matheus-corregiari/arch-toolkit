@@ -34,11 +34,16 @@ import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 
 enum class StrokeGravity {
     ALL,
-    START, END, TOP, BOTTOM,
-    TOP_START, TOP_END,
-    BOTTOM_START, BOTTOM_END,
+    START,
+    END,
+    TOP,
+    BOTTOM,
+    TOP_START,
+    TOP_END,
+    BOTTOM_START,
+    BOTTOM_END,
     TOP_BOTTOM,
-    NONE;
+    NONE
 }
 
 private fun DrawScope.layerSize(strokeGravity: StrokeGravity, radiusPx: Float) =
@@ -86,7 +91,7 @@ fun Modifier.layeredBackground(
     bottomEndRadius: Dp = 0.dp,
     strokeGravity: StrokeGravity,
     accentColor: Brush,
-    layeredColors: List<Brush>,
+    layeredColors: List<Brush>
 ) = surfaceWithRadius(
     color = Color.Transparent,
     topStartRadius = topStartRadius,
@@ -137,12 +142,12 @@ fun Modifier.layeredBackground(
                 RoundRect(
                     rect = Rect(
                         offset = offset,
-                        size = layerSize,
+                        size = layerSize
                     ),
                     topLeft = CornerRadius(x = topStartRadiusPx),
                     topRight = CornerRadius(x = topEndRadiusPx),
                     bottomLeft = CornerRadius(x = bottomStartRadiusPx),
-                    bottomRight = CornerRadius(x = bottomEndRadiusPx),
+                    bottomRight = CornerRadius(x = bottomEndRadiusPx)
                 )
             )
         }
@@ -190,13 +195,13 @@ fun Modifier.layeredBackground(
                             offset = offset,
                             size = layerSize ?: Size(
                                 height = size.height - offset.y,
-                                width = size.width - offset.x,
-                            ),
+                                width = size.width - offset.x
+                            )
                         ),
                         topLeft = CornerRadius(x = topStartRadiusPx),
                         topRight = CornerRadius(x = topEndRadiusPx),
                         bottomLeft = CornerRadius(x = bottomStartRadiusPx),
-                        bottomRight = CornerRadius(x = bottomEndRadiusPx),
+                        bottomRight = CornerRadius(x = bottomEndRadiusPx)
                     )
                 )
             }
@@ -227,7 +232,7 @@ fun Modifier.layeredBackground(
     bottomRadius: Dp,
     strokeGravity: StrokeGravity,
     accentColor: Brush,
-    layeredColors: List<Brush>,
+    layeredColors: List<Brush>
 ) = layeredBackground(
     topStartRadius = topRadius,
     topEndRadius = topRadius,
@@ -243,7 +248,7 @@ fun Modifier.layeredBackground(
     radius: Dp,
     strokeGravity: StrokeGravity,
     accentColor: Brush,
-    layeredColors: List<Brush>,
+    layeredColors: List<Brush>
 ) = layeredBackground(
     topRadius = radius,
     bottomRadius = radius,
@@ -260,7 +265,7 @@ fun Modifier.layeredBackground(
     bottomEndRadius: Dp = 0.dp,
     strokeGravity: StrokeGravity,
     accentColor: Color,
-    layeredColors: List<Color>,
+    layeredColors: List<Color>
 ) = layeredBackground(
     topStartRadius = topStartRadius,
     topEndRadius = topEndRadius,
@@ -277,7 +282,7 @@ fun Modifier.layeredBackground(
     bottomRadius: Dp,
     strokeGravity: StrokeGravity,
     accentColor: Color,
-    layeredColors: List<Color>,
+    layeredColors: List<Color>
 ) = layeredBackground(
     topStartRadius = topRadius,
     topEndRadius = topRadius,
@@ -293,7 +298,7 @@ fun Modifier.layeredBackground(
     radius: Dp,
     strokeGravity: StrokeGravity,
     accentColor: Color,
-    layeredColors: List<Color>,
+    layeredColors: List<Color>
 ) = layeredBackground(
     radius = radius,
     strokeGravity = strokeGravity,
@@ -307,7 +312,7 @@ fun Modifier.surfaceWithRadius(
     topStartRadius: Dp = 0.dp,
     topEndRadius: Dp = 0.dp,
     bottomStartRadius: Dp = 0.dp,
-    bottomEndRadius: Dp = 0.dp,
+    bottomEndRadius: Dp = 0.dp
 ): Modifier = clip(
     shape = RoundedCornerShape(
         topStart = topStartRadius,
@@ -336,7 +341,7 @@ fun Modifier.surfaceWithRadius(
     topStartRadius: Dp,
     topEndRadius: Dp,
     bottomStartRadius: Dp,
-    bottomEndRadius: Dp,
+    bottomEndRadius: Dp
 ): Modifier = surfaceWithRadius(
     color = SolidColor(color),
     topStartRadius = topStartRadius,

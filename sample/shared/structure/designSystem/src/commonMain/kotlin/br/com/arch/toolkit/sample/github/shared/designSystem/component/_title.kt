@@ -16,7 +16,7 @@ import br.com.arch.toolkit.sample.github.shared.structure.core.model.WindowSize
 fun ScreenTitle(modifier: Modifier, text: String) {
     val colors = TopAppBarDefaults.topAppBarColors(
         containerColor = Color.Transparent,
-        scrolledContainerColor = Color.Transparent,
+        scrolledContainerColor = Color.Transparent
     )
     val style = when (AppTheme.screen.windowSize) {
         WindowSize.SMALL -> AppTheme.textStyle.titleXLMedium

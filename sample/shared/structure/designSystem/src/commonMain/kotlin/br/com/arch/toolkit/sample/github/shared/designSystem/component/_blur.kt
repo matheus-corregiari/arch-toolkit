@@ -34,19 +34,19 @@ private fun hazeStyle() = HazeStyle(
         color = AppTheme.color.backgroundSurfaceDefault.copy(
             alpha = AppTheme.dimen.opacityLevel4
         )
-    ),
+    )
 )
 
 @Composable
 fun Modifier.haze(state: HazeState): Modifier {
-    val enableBlur = state.blurEnabled
-            && AppTheme.screen.windowSize == WindowSize.SMALL
-            && AppTheme.screen.type == DeviceType.MOBILE
+    val enableBlur = state.blurEnabled &&
+        AppTheme.screen.windowSize == WindowSize.SMALL &&
+        AppTheme.screen.type == DeviceType.MOBILE
     return hazeEffect(state = state, style = hazeStyle()) {
         blurEnabled = enableBlur
         progressive = HazeProgressive.verticalGradient(
             startIntensity = if (enableBlur) 1f else 0.98f,
-            endIntensity = if (enableBlur) 0f else 0.98f,
+            endIntensity = if (enableBlur) 0f else 0.98f
         )
     }
 }
