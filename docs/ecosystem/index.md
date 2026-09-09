@@ -16,7 +16,8 @@ one ecosystem.
 |:-----------|:-----|
 | `arch-toolkit` | Ecosystem hub, samples, shared standards, and incubating libraries. |
 | `arch-android` | Android-specific architecture utilities. |
-| `arch-event-observer` | Event, result, LiveData, Flow, and Compose observation APIs. |
+| `arch-event-observer` | Event, result, LiveData, Flow, Compose and saved-state APIs. |
+| `arch-storage` | Independently released key-value storage modules. |
 | `arch-lumber` | Multiplatform logging. |
 
 ## Operating Model

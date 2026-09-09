@@ -4,7 +4,10 @@ This page explains how the ecosystem master-only release flow is enforced by Git
 
 ## Pull Request Validation
 
-Every repository has a branch policy workflow.
+Arch Toolkit retains its branch policy workflow. The build workflow validates pull requests
+against master on Linux and macOS, and also supports manual validation. It runs library builds,
+Android/desktop samples, tests, coverage, Android lint, Detekt, Ktlint, Dokka and strict MkDocs.
+macOS covers the configured iOS targets; Linux cannot execute their compiler or simulator tests.
 
 ```text
 PR opened or updated
@@ -89,7 +92,7 @@ The branch and version rules are shared. Build and publication commands stay rep
 
 | Repository | Release verification | Publication |
 |:-----------|:---------------------|:------------|
-| `arch-toolkit` | module assemble matrix | Maven Central per publishable module |
+| `arch-toolkit` | Linux/macOS build, lint, tests, docs and samples | Splinter variants only; Maven Central from macOS |
 | `arch-android` | `./gradlew ciBuild` | `ciPublishMavenCentral`, `ciPublishGithubPackages` |
 | `arch-event-observer` | `./gradlew ciBuild` | `ciPublishMavenCentral`, `ciPublishGithubPackages` |
 | `arch-lumber` | `./gradlew build`, `:lumber:koverVerify` | Maven Central and GitHub Packages tasks |

@@ -20,8 +20,8 @@ cd arch-toolkit
 
 Install the recommended toolchain:
 
-* **JDK**: 17+
-* **Kotlin**: Managed by the Gradle wrapper (see `gradle/libs.versions.toml`).
+* **JDK**: 21
+* **Kotlin**: Pinned in the version catalog (see `gradle/libs.versions.toml`).
 * **Android Studio / IntelliJ IDEA**: For IDE inspections and Compose previews.
 
 ## Usage Examples
@@ -31,7 +31,7 @@ Follow these practices when contributing:
 1. **Target KMP first** – add behavior to shared modules before platform-specific forks.
 2. **Keep implementations untouched** unless you pair them with unit tests and documentation updates.
 3. **Write tests** – place them under the relevant `commonTest`, `androidUnitTest`, or `iosTest` source set.
-4. **Run CI locally** – `./gradlew clean check` covers lint, tests, and static analysis.
+4. **Run CI locally** – `./gradlew ciBuild ciTest ciCoverage ciLint ciDocs -PincludeSamples` includes samples. Run Apple checks on macOS with Xcode and build MkDocs with `--strict`.
 5. **Document your changes** – update the module README and wiki pages if workflows change.
 
 ## Branching and Releases
