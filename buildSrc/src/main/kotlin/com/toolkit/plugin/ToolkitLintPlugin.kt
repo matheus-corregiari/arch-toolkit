@@ -30,16 +30,19 @@ internal class ToolkitLintPlugin : Plugin<Project> {
         // Detekt configuration
         with(target.detekt) {
             parallel.set(true)
-            disableDefaultRuleSets.set(true)
+            disableDefaultRuleSets.set(false)
             buildUponDefaultConfig.set(true)
 
-            autoCorrect.set(true)
+            autoCorrect.set(false)
             allRules.set(false)
             config.setFrom("${target.rootDir}/tools/detekt-config.yml")
             baseline.set(File("${target.rootDir}/tools/detekt-baseline.xml"))
         }
         with(target.tasks) {
             withType(Detekt::class.java).configureEach { detekt ->
+                if (detekt.name == "detekt") {
+                    detekt.setSource(target.fileTree("src") { it.include("**/*.kt") })
+                }
                 detekt.jvmTarget.set(projectJavaVersionName)
                 detekt.reports {
                     it.checkstyle.required.set(true)
@@ -57,6 +60,16 @@ internal class ToolkitLintPlugin : Plugin<Project> {
         with(target.ktLint) {
             android.set(true)
             outputColorName.set("RED")
+            filter { patterns ->
+                patterns.exclude { element ->
+                    element.file.toPath().startsWith(target.layout.buildDirectory.get().asFile.toPath())
+                }
+            }
+        }
+        // KSP adds generated source directories to common source sets. Gradle still tracks
+        // those directory producers even when lint excludes the generated files.
+        target.tasks.matching { it.name.startsWith("runKtlint") }.configureEach {
+            it.mustRunAfter(target.tasks.matching { task -> task.name.startsWith("ksp") })
         }
 
         // Regular Lint configuration

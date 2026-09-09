@@ -80,28 +80,7 @@ class Polling<T> private constructor(
 
                 logChannel.info("Request looped - $loopCounter")
 
-                // Delay Before Request
-                config.delayStrategy.delayIfPossible(DelayStrategy.BEFORE_REQUEST, config.delay)
-
-                // Before Request
-                config.beforeRequest?.invokeCatching()
-                    ?.onSuccess { logChannel.info("[OneShot] Before - Success!") }
-                    ?.onFailure { logChannel.error("[OneShot] Before - Error!", it) }
-
-                // Request
-                val data =
-                    requireNotNull(config.request) { "request() config is mandatory" }.invoke()
-                logChannel.info("[OneShot] Executed with success, data: $data")
-
-                // After Request
-                config.afterRequest?.invokeCatching(data)
-                    ?.onSuccess { logChannel.info("[OneShot] After - Success!") }
-                    ?.onFailure { logChannel.error("[OneShot] After - Error!", it) }
-
-                // Delay After Request
-                config.delayStrategy.delayIfPossible(DelayStrategy.AFTER_REQUEST, config.delay)
-
-                return@measureTimeResult data
+                performRequest(logChannel)
             }
 
             with(result) {
@@ -112,17 +91,7 @@ class Polling<T> private constructor(
                     /**
                      * Evaluate if we must stop
                      */
-                    shouldStop = config.shouldStopAfterLoad.invokeCatching(it)
-                        .onFailure { logChannel.info("Error inside ShouldStopAfterLoad block!") }
-                        .getOrDefault(false)
-
-                    if (shouldStop.not()) {
-                        logChannel.info("[MirrorFlow] Emit - Still Loading")
-                        dataChannel.trySend(dataResultLoading(it))
-                    } else {
-                        logChannel.info("[MirrorFlow] Emit - Success")
-                        dataChannel.trySend(dataResultSuccess(it))
-                    }
+                    shouldStop = emitSuccessfulResponse(it, dataChannel, logChannel)
 
                     if (requestErrorCounter > 0) {
                         logChannel.info("Error streak invalidated!")
@@ -141,54 +110,115 @@ class Polling<T> private constructor(
                     /**
                      * Evaluate if we must stop
                      */
-                    shouldStop =
-                        config.stopOnError.runCatching { invoke(error) }.getOrDefault(false)
-
-                    when {
-                        shouldStop.not() &&
-                            config.maxErrorStreak > 0 &&
-                            requestErrorCounter >= config.maxErrorStreak -> {
-                            logChannel.info("Max error streak reached: $requestErrorCounter")
-                            val maxErrorStreakMessage =
-                                "Polling stopped! Max error streak reached! $requestErrorCounter"
-                            val newError = PollingMaxErrorStreakReachedException(
-                                message = maxErrorStreakMessage,
-                                cause = config.mapError?.invokeCatching(
-                                    error
-                                )?.getOrNull() ?: error
-                            )
-                            val errorData = dataResultError(
-                                error = config.mapError?.invokeCatching(newError)?.getOrNull()
-                                    ?: newError,
-                                data = holder.data ?: config.fallback?.invokeCatching(newError)
-                                    ?.getOrNull()
-                            )
-                            dataChannel.send(errorData)
-                            shouldStop = true
-                        }
-
-                        holder.get().isSuccess.not() -> {
-                            val data =
-                                holder.data ?: config.fallback?.invokeCatching(error)?.getOrNull()
-                            val formattedError = config.mapError?.invoke(error) ?: error
-                            if (shouldStop) {
-                                logChannel.info("Loop stopped: $formattedError")
-                                dataChannel.send(dataResultError(formattedError, data))
-                            } else {
-                                logChannel.info("Emit still loading!")
-                                dataChannel.send(dataResultLoading(data, formattedError))
-                            }
-                        }
-
-                        else -> {
-                            logChannel.info("Something really awkward is going on, prey!")
-                            shouldStop = true
-                        }
-                    }
+                    shouldStop = handleFailure(
+                        error,
+                        requestErrorCounter,
+                        holder,
+                        dataChannel,
+                        logChannel
+                    )
                 }
             }
         }
         logChannel.info("[Polling] Stopped at loop - $loopCounter")
+    }
+
+    private suspend fun handleFailure(
+        error: Throwable,
+        requestErrorCounter: Int,
+        holder: ResponseDataHolder<T>,
+        dataChannel: Channel<DataResult<T>>,
+        logChannel: Channel<Splinter.Message>
+    ): Boolean {
+        var shouldStop =
+            config.stopOnError.runCatching { invoke(error) }.getOrDefault(false)
+
+        when {
+            shouldStop.not() &&
+                config.maxErrorStreak > 0 &&
+                requestErrorCounter >= config.maxErrorStreak -> {
+                logChannel.info("Max error streak reached: $requestErrorCounter")
+                val maxErrorStreakMessage =
+                    "Polling stopped! Max error streak reached! $requestErrorCounter"
+                val newError = PollingMaxErrorStreakReachedException(
+                    message = maxErrorStreakMessage,
+                    cause = config.mapError?.invokeCatching(
+                        error
+                    )?.getOrNull() ?: error
+                )
+                val errorData = dataResultError(
+                    error = config.mapError?.invokeCatching(newError)?.getOrNull()
+                        ?: newError,
+                    data = holder.data ?: config.fallback?.invokeCatching(newError)
+                        ?.getOrNull()
+                )
+                dataChannel.send(errorData)
+                shouldStop = true
+            }
+
+            holder.get().isSuccess.not() -> {
+                val data =
+                    holder.data ?: config.fallback?.invokeCatching(error)?.getOrNull()
+                val formattedError = config.mapError?.invoke(error) ?: error
+                if (shouldStop) {
+                    logChannel.info("Loop stopped: $formattedError")
+                    dataChannel.send(dataResultError(formattedError, data))
+                } else {
+                    logChannel.info("Emit still loading!")
+                    dataChannel.send(dataResultLoading(data, formattedError))
+                }
+            }
+
+            else -> {
+                logChannel.info("Something really awkward is going on, prey!")
+                shouldStop = true
+            }
+        }
+        return shouldStop
+    }
+
+    private suspend fun performRequest(logChannel: Channel<Splinter.Message>): T {
+        // Delay Before Request
+        config.delayStrategy.delayIfPossible(DelayStrategy.BEFORE_REQUEST, config.delay)
+
+        // Before Request
+        config.beforeRequest?.invokeCatching()
+            ?.onSuccess { logChannel.info("[OneShot] Before - Success!") }
+            ?.onFailure { logChannel.error("[OneShot] Before - Error!", it) }
+
+        // Request
+        val data =
+            requireNotNull(config.request) { "request() config is mandatory" }.invoke()
+        logChannel.info("[OneShot] Executed with success, data: $data")
+
+        // After Request
+        config.afterRequest?.invokeCatching(data)
+            ?.onSuccess { logChannel.info("[OneShot] After - Success!") }
+            ?.onFailure { logChannel.error("[OneShot] After - Error!", it) }
+
+        // Delay After Request
+        config.delayStrategy.delayIfPossible(DelayStrategy.AFTER_REQUEST, config.delay)
+
+        return data
+    }
+
+    private suspend fun emitSuccessfulResponse(
+        data: T,
+        dataChannel: Channel<DataResult<T>>,
+        logChannel: Channel<Splinter.Message>
+    ): Boolean {
+        val shouldStop = config.shouldStopAfterLoad.invokeCatching(data)
+            .onFailure { logChannel.info("Error inside ShouldStopAfterLoad block!") }
+            .getOrDefault(false)
+
+        if (shouldStop.not()) {
+            logChannel.info("[MirrorFlow] Emit - Still Loading")
+            dataChannel.trySend(dataResultLoading(data))
+        } else {
+            logChannel.info("[MirrorFlow] Emit - Success")
+            dataChannel.trySend(dataResultSuccess(data))
+        }
+        return shouldStop
     }
 
     /**

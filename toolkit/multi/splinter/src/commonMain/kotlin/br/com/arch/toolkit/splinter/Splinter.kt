@@ -376,7 +376,7 @@ class Splinter<RETURN> internal constructor(
 
         private fun String?.messageTag(): String? {
             if (isNullOrBlank()) return null
-            val matches = "(\\[.*])".toRegex().findAll(this)
+            val matches = "(\\[.*\\])".toRegex().findAll(this)
             return matches.firstOrNull()?.groupValues?.firstOrNull()
         }
 
@@ -391,13 +391,13 @@ class Splinter<RETURN> internal constructor(
         companion object Creator {
 
             private val indentMap = mapOf(
-                Regex("(\\[Splinter])") to "",
-                Regex("(\\[Apprentice #[0-9]{3}])") to "-- ",
-                Regex("(\\[OneShot])") to "-- -- ",
-                Regex("(\\[Mirror])") to "-- -- ",
-                Regex("(\\[Polling])") to "-- -- ",
-                Regex("(\\[Cache])") to "-- -- -- ",
-                Regex("(\\[.*])") to "-- -- -- -- "
+                Regex("(\\[Splinter\\])") to "",
+                Regex("(\\[Apprentice #[0-9]{3}\\])") to "-- ",
+                Regex("(\\[OneShot\\])") to "-- -- ",
+                Regex("(\\[Mirror\\])") to "-- -- ",
+                Regex("(\\[Polling\\])") to "-- -- ",
+                Regex("(\\[Cache\\])") to "-- -- -- ",
+                Regex("(\\[.*\\])") to "-- -- -- -- "
             )
 
             fun info(message: String) =
