@@ -126,6 +126,7 @@ square-retrofit-main = { module = "com.squareup.retrofit2:retrofit", version.ref
 arch-lumber = { module = "io.github.matheus-corregiari:arch-lumber", version.ref = "arch-lumber" }
 arch-android = { module = "io.github.matheus-corregiari:arch-android", version.ref = "arch-android" }
 arch-event-observer = { module = "io.github.matheus-corregiari:event-observer", version.ref = "arch-event-observer" }
+arch-event-observer-state = { module = "io.github.matheus-corregiari:event-observer-state", version.ref = "arch-event-observer" }
 arch-event-observer-compose = { module = "io.github.matheus-corregiari:event-observer-compose", version.ref = "arch-event-observer" }
 
 ## Google

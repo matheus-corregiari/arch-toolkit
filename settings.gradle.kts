@@ -18,7 +18,6 @@ rootProject.name = "arch-toolkit"
 
 // Toolkit Libraries
 include(":toolkit:multi:splinter")
-include(":toolkit:multi:state-handle")
 include(":toolkit:multi:test")
 
 // Samples

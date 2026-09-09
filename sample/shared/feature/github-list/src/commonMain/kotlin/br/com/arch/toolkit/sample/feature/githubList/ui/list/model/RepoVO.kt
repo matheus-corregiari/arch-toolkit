@@ -2,7 +2,6 @@ package br.com.arch.toolkit.sample.feature.githubList.ui.list.model
 
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.RepoDTO
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.UserDTO
-import br.com.arch.toolkit.stateHandle.SavableObject
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
@@ -21,7 +20,7 @@ class RepoVO(
     val openIssuesCount: Long,
     val topics: List<String>,
     val owner: UserDTO
-) : SavableObject() {
+) {
     constructor(dto: RepoDTO) : this(
         id = dto.id,
         name = dto.name,
@@ -34,6 +33,6 @@ class RepoVO(
         forksCount = dto.forksCount,
         openIssuesCount = dto.openIssuesCount,
         topics = dto.topics,
-        owner = dto.owner,
+        owner = dto.owner
     )
 }
