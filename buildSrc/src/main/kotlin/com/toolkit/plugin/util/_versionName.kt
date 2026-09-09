@@ -5,7 +5,7 @@ import org.gradle.api.Project
 import java.io.File
 
 internal val Project.versionName: String
-    get() = runGitCommand(
+    get() = providers.gradleProperty("releaseVersion").orNull ?: runGitCommand(
         fileName = "version-name.txt",
         command = "git describe",
         default = "0.0.0",
