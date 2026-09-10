@@ -53,7 +53,7 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
                 target.binaries.framework {
                     baseName = "${exportName}Kit"
                     isStatic = true
-                    freeCompilerArgs += listOf("-bundle-id", exportId)
+                    binaryOption("bundleId", exportId)
                 }
             }
         }
