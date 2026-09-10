@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import br.com.arch.toolkit.sample.github.shared.structure.repository.SettingsRepository
 
 class SettingsViewModel(
-    private val repository: SettingsRepository,
+    private val repository: SettingsRepository
 ) : ViewModel() {
     @Composable
     fun themeMode() = repository.themeMode.state()

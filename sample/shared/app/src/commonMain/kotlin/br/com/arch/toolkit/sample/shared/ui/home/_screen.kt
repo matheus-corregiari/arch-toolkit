@@ -41,7 +41,7 @@ fun AppHome(
             unselectedIconColor = AppTheme.color.iconSecondary,
             unselectedTextColor = AppTheme.color.textParagraph,
             disabledIconColor = AppTheme.color.iconDisabled,
-            disabledTextColor = AppTheme.color.textDisabled,
+            disabledTextColor = AppTheme.color.textDisabled
         ),
         navigationRailItemColors = NavigationRailItemColors(
             selectedIconColor = AppTheme.color.iconPrimary,
@@ -50,7 +50,7 @@ fun AppHome(
             unselectedIconColor = AppTheme.color.iconSecondary,
             unselectedTextColor = AppTheme.color.textParagraph,
             disabledIconColor = AppTheme.color.iconDisabled,
-            disabledTextColor = AppTheme.color.textDisabled,
+            disabledTextColor = AppTheme.color.textDisabled
         ),
         navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
             selectedContainerColor = AppTheme.color.backgroundSurfaceTertiary,
@@ -60,8 +60,8 @@ fun AppHome(
             selectedTextColor = AppTheme.color.textTitle,
             unselectedTextColor = AppTheme.color.textParagraph,
             selectedBadgeColor = AppTheme.color.backgroundBrandPrimary,
-            unselectedBadgeColor = AppTheme.color.backgroundSurfaceTertiaryDisabled,
-        ),
+            unselectedBadgeColor = AppTheme.color.backgroundSurfaceTertiaryDisabled
+        )
     )
 
     val items by viewModel.featureFlow.collectAsState()
@@ -76,7 +76,7 @@ fun AppHome(
             navigationRailContainerColor = AppTheme.color.backgroundSurfaceSecondary,
             navigationRailContentColor = AppTheme.color.backgroundSurfaceDefault,
             navigationDrawerContainerColor = AppTheme.color.backgroundSurfaceSecondary,
-            navigationDrawerContentColor = AppTheme.color.backgroundSurfaceDefault,
+            navigationDrawerContentColor = AppTheme.color.backgroundSurfaceDefault
         ),
         containerColor = AppTheme.color.backgroundSurfaceDefault,
         contentColor = AppTheme.color.backgroundSurfaceSecondary,
@@ -95,7 +95,7 @@ private fun NavigationSuiteScope.addItems(
     selected: FeatureRegistry,
     items: List<FeatureRegistry>,
     colors: NavigationSuiteItemColors,
-    onMenuSelected: (FeatureRegistry) -> Unit,
+    onMenuSelected: (FeatureRegistry) -> Unit
 ) = items.forEachIndexed { index, option ->
     item(
         colors = colors,
@@ -115,6 +115,6 @@ private fun NavigationSuiteScope.addItems(
                 contentDescription = stringResource(option.title)
             )
         },
-        alwaysShowLabel = true,
+        alwaysShowLabel = true
     )
 }

@@ -8,5 +8,5 @@ class PullRequestDTO(
     @SerialName("id") val id: Long,
     @SerialName("title") val title: String,
     @SerialName("user") val user: UserDTO,
-    @SerialName("body") val body: String?,
+    @SerialName("body") val body: String?
 )

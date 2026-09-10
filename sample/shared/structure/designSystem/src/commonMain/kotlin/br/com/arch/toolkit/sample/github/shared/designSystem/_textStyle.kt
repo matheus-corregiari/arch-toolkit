@@ -17,21 +17,21 @@ sealed class AppTextStyle {
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = TextStyle.Default.fontSize,
-            fontFamily = TextStyle.Default.fontFamily,
+            fontFamily = TextStyle.Default.fontFamily
         )
 
     val actionG: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeL,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val actionGBold: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeL,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val actionGSemiBold: TextStyle
@@ -39,21 +39,21 @@ sealed class AppTextStyle {
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeL,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val actionM: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeM,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val actionMBold: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeM,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val actionMSemiBold: TextStyle
@@ -61,14 +61,14 @@ sealed class AppTextStyle {
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeM,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val actionS: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val actionSBold: TextStyle
@@ -76,7 +76,7 @@ sealed class AppTextStyle {
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val actionSSemiBold: TextStyle
@@ -84,42 +84,42 @@ sealed class AppTextStyle {
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val comp: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = TextStyle.Default.fontSize,
-            fontFamily = TextStyle.Default.fontFamily,
+            fontFamily = TextStyle.Default.fontFamily
         )
 
     val compH: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeH,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compHMedium: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeH,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compHRegular: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeH,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compL: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeL,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compLSemiBold: TextStyle
@@ -127,14 +127,14 @@ sealed class AppTextStyle {
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeL,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compM: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeM,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compMSemiBold: TextStyle
@@ -142,14 +142,14 @@ sealed class AppTextStyle {
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeM,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compS: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compSSemiBold: TextStyle
@@ -157,56 +157,56 @@ sealed class AppTextStyle {
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compXXL: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compXXLMedium: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compXXLRegular: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compXXXL: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compXXXLMedium: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val compXXXLRegular: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val paragraph: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = TextStyle.Default.fontSize,
-            fontFamily = TextStyle.Default.fontFamily,
+            fontFamily = TextStyle.Default.fontFamily
         )
 
     val paragraphCaptionXs: TextStyle
@@ -215,14 +215,14 @@ sealed class AppTextStyle {
             fontSize = AppTheme.dimen.fontSizeXs,
             lineHeight = AppTheme.dimen.fontLineHeightXs,
             fontWeight = FontWeight.Normal,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val paragraphCaptionS: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textParagraph,
             fontSize = AppTheme.dimen.fontSizeS,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val paragraphCaptionSSemiBold: TextStyle
@@ -230,7 +230,7 @@ sealed class AppTextStyle {
             color = AppTheme.color.textParagraph,
             fontSize = AppTheme.dimen.fontSizeS,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val paragraphM: TextStyle
@@ -255,56 +255,56 @@ sealed class AppTextStyle {
             color = AppTheme.color.textParagraph,
             fontSize = AppTheme.dimen.fontSizeM,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val status: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = TextStyle.Default.fontSize,
-            fontFamily = TextStyle.Default.fontFamily,
+            fontFamily = TextStyle.Default.fontFamily
         )
 
     val statusActive: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val statusAttention: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val statusBrand: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val statusIntermediate: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val statusNegative: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeS,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val subtitle: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = TextStyle.Default.fontSize,
-            fontFamily = TextStyle.Default.fontFamily,
+            fontFamily = TextStyle.Default.fontFamily
         )
 
     val subtitleXBold: TextStyle
@@ -312,7 +312,7 @@ sealed class AppTextStyle {
             color = AppTheme.color.textSubtitle,
             fontSize = AppTheme.dimen.fontSizeL,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val subtitleXLight: TextStyle
@@ -320,7 +320,7 @@ sealed class AppTextStyle {
             color = AppTheme.color.textSubtitle,
             fontSize = AppTheme.dimen.fontSizeL,
             fontWeight = FontWeight.Light,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val subtitleXMedium: TextStyle
@@ -328,14 +328,14 @@ sealed class AppTextStyle {
             color = AppTheme.color.textSubtitle,
             fontSize = AppTheme.dimen.fontSizeL,
             fontWeight = FontWeight.Medium,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val subtitleXRegular: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textSubtitle,
             fontSize = AppTheme.dimen.fontSizeL,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val subtitleXSemiBold: TextStyle
@@ -343,49 +343,49 @@ sealed class AppTextStyle {
             color = AppTheme.color.textSubtitle,
             fontSize = AppTheme.dimen.fontSizeL,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val subtitleXXL: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textSubtitle,
             fontSize = AppTheme.dimen.fontSizeXxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val title: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = TextStyle.Default.fontSize,
-            fontFamily = TextStyle.Default.fontFamily,
+            fontFamily = TextStyle.Default.fontFamily
         )
 
     val titleH: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeH,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleHMedium: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeH,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleHRegular: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeH,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleXLLight: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleXLMedium: TextStyle
@@ -393,35 +393,35 @@ sealed class AppTextStyle {
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXl,
             fontWeight = FontWeight.Medium,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleXLRegular: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleXXL: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleXXLLight: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleXXXL: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleXXXLMedium: TextStyle
@@ -429,17 +429,17 @@ sealed class AppTextStyle {
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxxl,
             fontWeight = FontWeight.Medium,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
     val titleXXXLRegular: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textTitle,
             fontSize = AppTheme.dimen.fontSizeXxxl,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.SansSerif
         )
 
-    //TODO
+    // TODO
     @Composable
     internal fun typography() = MaterialTheme.typography.copy(
         displayLarge = MaterialTheme.typography.displayLarge,
@@ -456,7 +456,7 @@ sealed class AppTextStyle {
         bodySmall = MaterialTheme.typography.bodySmall,
         labelLarge = MaterialTheme.typography.labelLarge,
         labelMedium = MaterialTheme.typography.labelMedium,
-        labelSmall = MaterialTheme.typography.labelSmall,
+        labelSmall = MaterialTheme.typography.labelSmall
     )
 
     companion object {
@@ -476,5 +476,3 @@ private data object MediumScreenTextStyle : AppTextStyle()
 
 @Immutable
 private data object LargeScreenTextStyle : AppTextStyle()
-
-

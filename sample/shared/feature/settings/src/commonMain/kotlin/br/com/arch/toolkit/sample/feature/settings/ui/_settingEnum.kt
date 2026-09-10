@@ -60,12 +60,12 @@ private inline fun <reified T : Enum<T>> EnumSetting(
         modifier = modifier.padding(
             horizontal = AppTheme.dimen.spacingM,
             vertical = AppTheme.dimen.spacingS
-        ),
+        )
     ) {
         Text(
             name,
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(Modifier.size(AppTheme.dimen.spacingXs))
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
@@ -86,7 +86,7 @@ private inline fun <reified T : Enum<T>> EnumSetting(
                         disabledActiveBorderColor = AppTheme.color.stroke8,
                         disabledInactiveContainerColor = Color.Unspecified,
                         disabledInactiveContentColor = AppTheme.color.textDisabled,
-                        disabledInactiveBorderColor = AppTheme.color.stroke8,
+                        disabledInactiveBorderColor = AppTheme.color.stroke8
                     ),
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = entries.size)
                 ) {

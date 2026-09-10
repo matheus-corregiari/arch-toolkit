@@ -11,6 +11,8 @@ import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.ShimmerRoundedM
 
 internal data object LoadingListState : ListState() {
+    private const val PLACEHOLDER_COUNT = 6
+
     @Composable
     override fun Draw(modifier: Modifier) = Column(
         modifier = modifier
@@ -18,7 +20,7 @@ internal data object LoadingListState : ListState() {
             .padding(bottom = AppTheme.dimen.spacingG),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
     ) {
-        repeat(6) {
+        repeat(PLACEHOLDER_COUNT) {
             ShimmerRoundedM(Modifier.fillMaxWidth().height(AppTheme.dimen.spacingG))
         }
     }

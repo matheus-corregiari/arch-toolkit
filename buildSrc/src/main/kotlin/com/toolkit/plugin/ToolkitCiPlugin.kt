@@ -2,6 +2,8 @@ package com.toolkit.plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.Copy
 
 /**
@@ -58,6 +60,11 @@ internal class ToolkitCiPlugin : Plugin<Project> {
             description = "Publishes all publishable modules to the local Maven repository.",
         )
 
+        val ciSample = target.registerCiTask("ciSample", "Builds Android and desktop samples.")
+        val ciPublicationManifest = target.registerCiTask(
+            "ciPublicationManifest", "Verifies and lists the release coordinates.",
+        )
+
         target.gradle.projectsEvaluated {
             val lintedProjects = target.subprojects.filter {
                 it.plugins.hasPlugin("toolkit-lint")
@@ -69,8 +76,38 @@ internal class ToolkitCiPlugin : Plugin<Project> {
             val testedProjects = target.subprojects.filter {
                 it.plugins.hasPlugin("toolkit-test")
             }
+            check(publishableProjects.map { it.path }.toSet() == setOf(":toolkit:multi:splinter")) {
+                "Only Splinter may be published by Arch Toolkit"
+            }
+            val sampleProjects = target.subprojects.filter { it.path.startsWith(":sample:") }
+            ciSample.configure {
+                it.doFirst { check(sampleProjects.isNotEmpty()) { "Use -PincludeSamples" } }
+                it.dependsOn(sampleProjects.mapNotNull { project -> project.taskPath("assembleDebug") })
+                it.dependsOn(sampleProjects.mapNotNull { project -> project.taskPath("assembleRelease") })
+                it.dependsOn(sampleProjects.mapNotNull { project -> project.taskPath("jvmJar") })
+                it.dependsOn(sampleProjects.mapNotNull { project -> project.taskPath("jar") })
+            }
+            ciPublicationManifest.configure {
+                it.dependsOn(publishableProjects.map { project ->
+                    project.tasks.matching { task -> task.name.startsWith("generatePomFileFor") }
+                })
+                it.doLast {
+                    val coordinates = publishableProjects.flatMap { project ->
+                        project.extensions.getByType(PublishingExtension::class.java)
+                            .publications.withType(MavenPublication::class.java)
+                            .map { publication ->
+                                "${publication.groupId}\t${publication.artifactId}\t${publication.version}"
+                            }
+                    }.sorted()
+                    check(coordinates.isNotEmpty()) { "No Maven publications found" }
+                    val manifest = target.layout.buildDirectory.file("ci/publications.tsv").get().asFile
+                    manifest.parentFile.mkdirs()
+                    manifest.writeText(coordinates.joinToString("\n"))
+                }
+            }
 
             ciLint.configure {
+                it.dependsOn(lintedProjects.mapNotNull { project -> project.taskPath("lint") })
                 it.dependsOn(lintedProjects.mapNotNull { project -> project.taskPath("detekt") })
                 it.dependsOn(lintedProjects.mapNotNull { project -> project.taskPath("ktlintCheck") })
             }
@@ -80,6 +117,9 @@ internal class ToolkitCiPlugin : Plugin<Project> {
             }
             ciBuild.configure {
                 it.dependsOn(publishableProjects.mapNotNull { project -> project.taskPath("assemble") })
+                if (target.providers.gradleProperty("includeSamples").isPresent) {
+                    it.dependsOn(ciSample)
+                }
             }
             ciTest.configure {
                 it.dependsOn(testedProjects.mapNotNull { project -> project.taskPath("allTests") })

@@ -4,14 +4,14 @@ import kotlin.math.pow
 import kotlin.math.roundToLong
 
 private val prefixes = arrayOf("", "K", "M", "B", "T")
-private const val groupSize = 1000
+private const val GROUP_SIZE = 1000
 
 fun Number.abbreviate(): String {
     var current = this.toDouble()
     var index = 0
 
-    while (current >= groupSize && index < prefixes.size - 1) {
-        current /= groupSize
+    while (current >= GROUP_SIZE && index < prefixes.size - 1) {
+        current /= GROUP_SIZE
         index++
     }
 
@@ -24,7 +24,7 @@ fun Number.formatNumber(decimals: Int): String {
 
     // Format the integer part
     val intPart = parts[0].reversed()
-        .chunked("$groupSize".count { it == '0' })
+        .chunked("$GROUP_SIZE".count { it == '0' })
         .joinToString(",").reversed()
 
     // Format the decimal part

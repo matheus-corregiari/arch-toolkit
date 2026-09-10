@@ -33,12 +33,12 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
 import arch_toolkit.sample.shared.feature.github_list.generated.resources.Res
 import arch_toolkit.sample.shared.feature.github_list.generated.resources.sample_github_list_last_updated
+import br.com.arch.toolkit.sample.feature.githubList.ui.list.model.RepoVO
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusM
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusXs
 import br.com.arch.toolkit.sample.github.shared.structure.core.extension.abbreviate
 import br.com.arch.toolkit.sample.github.shared.structure.core.extension.formatAsString
-import br.com.arch.toolkit.sample.feature.githubList.ui.list.model.RepoVO
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
@@ -54,8 +54,11 @@ internal class ManyListState(
         contentPadding = PaddingValues(
             top = padding.calculateTopPadding(),
             bottom = padding.calculateBottomPadding(),
-            start = padding.calculateStartPadding(LocalLayoutDirection.current) + AppTheme.dimen.spacingM,
-            end = padding.calculateEndPadding(LocalLayoutDirection.current) + AppTheme.dimen.spacingM,
+            start =
+            padding.calculateStartPadding(LocalLayoutDirection.current) +
+                AppTheme.dimen.spacingM,
+            end =
+            padding.calculateEndPadding(LocalLayoutDirection.current) + AppTheme.dimen.spacingM
         ),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
     ) {
@@ -86,12 +89,12 @@ internal class ManyListState(
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingXxs),
                 verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingXxs),
-                content = { for (topic in item.topics) Tag(topic) },
+                content = { for (topic in item.topics) Tag(topic) }
             )
         }
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingS),
-            verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingXs),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingXs)
         ) {
             Badge(
                 icon = Icons.Outlined.Star,
@@ -110,6 +113,11 @@ internal class ManyListState(
                 text = item.openIssuesCount.abbreviate()
             )
         }
+        RepositoryDetails(item)
+    }
+
+    @Composable
+    private fun RepositoryDetails(item: RepoVO) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -121,7 +129,8 @@ internal class ManyListState(
             Spacer(Modifier.size(AppTheme.dimen.spacingXxs))
             Text(
                 text = stringResource(
-                    Res.string.sample_github_list_last_updated, item.updatedAt.formatAsString()
+                    Res.string.sample_github_list_last_updated,
+                    item.updatedAt.formatAsString()
                 ),
                 style = AppTheme.textStyle.paragraphCaptionXs
             )

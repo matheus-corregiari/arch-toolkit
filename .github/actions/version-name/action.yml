@@ -36,7 +36,7 @@ runs:
     - name: Get next version name
       id: new-version
       if: inputs.version == ''
-      uses: proudust/gh-describe@v1.5.3
+      uses: proudust/gh-describe@v2.2.0
 
     # Write versionName into build file to use properly in the future
     - name: Write version into build file

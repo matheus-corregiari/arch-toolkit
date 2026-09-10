@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.context.stopKoin
 
+private const val THEME_TRANSITION_DELAY_MILLIS = 400L
+
 internal class GithubApplication : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -25,7 +27,8 @@ internal class GithubApplication : Application() {
             val settings by inject<SettingsRepository>()
             var count = 0
             settings.themeMode.get().collectLatest {
-                if (count != 0) delay(400L) // <-- To avoid flaky transition
+                // Avoid a flaky transition after the initial theme.
+                if (count != 0) delay(THEME_TRANSITION_DELAY_MILLIS)
                 AppCompatDelegate.setDefaultNightMode(it.toAndroidMode)
                 count++
             }

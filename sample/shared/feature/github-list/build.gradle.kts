@@ -27,6 +27,11 @@ kotlin {
 
         androidMain {}
         jvmMain {}
+        jvmTest.dependencies {
+            implementation(libs.jetbrains.kotlin.test)
+            implementation(libs.jetbrains.coroutines.test)
+            implementation(libs.mockk.test.agent)
+        }
         wasmJsMain {}
         jsMain {}
     }

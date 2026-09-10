@@ -9,5 +9,5 @@ actual sealed class FeatureContent
 class WindowContent(val open: () -> Unit) : FeatureContent()
 class AdjustableDoubleContent(
     val mainContent: @Composable (Modifier) -> Unit,
-    val secondaryContent: @Composable (Modifier) -> Unit,
+    val secondaryContent: @Composable (Modifier) -> Unit
 )

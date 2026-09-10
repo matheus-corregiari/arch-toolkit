@@ -125,7 +125,7 @@ object AppButton {
             enabled = enabled,
             onClick = { onClick() },
             border = if (enabled) style.border() else null,
-            contentPadding = padding,
+            contentPadding = padding
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),

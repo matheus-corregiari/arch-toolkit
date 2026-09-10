@@ -13,5 +13,6 @@ internal val VersionCatalog.allDefinedDependencies: Set<String>
         .map(::findLibrary)
         .mapNotNull {
             it.getOrNull()?.get()
+                ?.takeIf { dependency -> dependency.versionConstraint.strictVersion.isEmpty() }
                 ?.run { "${module.group}:${module.name}:${versionConstraint.requiredVersion}:" }
         }.toSet()

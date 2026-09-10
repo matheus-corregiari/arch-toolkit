@@ -1,141 +1,52 @@
 # Arch Toolkit
 
-Storage modules moved to [Arch Storage](https://github.com/matheus-corregiari/arch-storage).
-See the [RC17 migration guide](docs/storage-migration.md) for dependencies and version constraints.
+Kotlin Multiplatform utilities for asynchronous loading with Splinter.
 
-[![CI](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml/badge.svg?branch=master)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
-[![Codebeat](https://codebeat.co/badges/1add62ed-f5fc-4bd2-9054-501685ca007c)](https://codebeat.co/projects/github-com-matheus-corregiari-arch-toolkit-master)
-[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fmatheus-corregiari%2F4fbcfa4cec61deb2262b16c19ab14138%2Fraw%2Fcoverage-badge.json&logo=kotlin)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.matheus-corregiari/storage-core?logo=apache-maven&style=flat-square)](https://central.sonatype.com/search?q=io.github.matheus-corregiari)
-[![License](https://img.shields.io/github/license/matheus-corregiari/arch-toolkit?style=flat-square)](LICENSE.md)
+[![CI](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml/badge.svg)](https://github.com/matheus-corregiari/arch-toolkit/actions/workflows/pull-request.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.matheus-corregiari/splinter)](https://central.sonatype.com/artifact/io.github.matheus-corregiari/splinter)
+[![License](https://img.shields.io/github/license/matheus-corregiari/arch-toolkit)](LICENSE.md)
 
-> Kotlin Multiplatform utilities collected from real-world architecture work, shared as focused modules you can mix and match across platforms.
+## Modules
 
----
+| Module | Artifact | Status |
+| --- | --- | --- |
+| Splinter | `io.github.matheus-corregiari:splinter` | `2.0.0-rc18` candidate |
+| Test helpers | Internal module | Not published |
 
-## 🎯 Objective
+State management moved to [Arch Event Observer](https://github.com/matheus-corregiari/arch-event-observer)
+as `event-observer-state`. See the [state migration guide](docs/state-migration.md).
+Storage moved to [Arch Storage](https://github.com/matheus-corregiari/arch-storage);
+see the [storage migration guide](docs/storage-migration.md).
 
-Provide production-ready Kotlin Multiplatform (KMP) building blocks for state management, storage, delegation utilities, and platform integrations while keeping APIs lightweight and well tested. Each module is released when it reaches a stable level of documentation, CI coverage, and publishing automation.
+## Installation
 
----
-
-## 🧭 Modules Overview
-
-| Module | Gradle Artifact | Stability | Supported Targets | Highlights |
-|--------|-----------------|-----------|-------------------|------------|
-| `toolkit/multi/event-observer` | `io.github.matheus-corregiari:event-observer` | Beta | Android, JVM, iOS, macOS | Multiplatform event channels with lifecycle awareness. |
-| `toolkit/multi/event-observer-compose` | `io.github.matheus-corregiari:event-observer-compose` | Experimental | Android | Compose extensions for event observers. |
-| `toolkit/multi/state-handle` | `io.github.matheus-corregiari:state-handle` | Incubating | Android, JVM | Lifecycle-friendly state persistence for shared logic. |
-| `toolkit/multi/splinter` | `io.github.matheus-corregiari:splinter` | Work in Progress | Android, JVM, iOS, macOS | Code generation helpers for DI-less modularization. |
-| `toolkit/android/statemachine` | `io.github.matheus-corregiari:statemachine` | Stable | Android | Declarative state transitions for UI flows. |
-| `toolkit/android/recycler-adapter` | `io.github.matheus-corregiari:recycler-adapter` | Stable | Android | RecyclerView adapter utilities with View binding hooks. |
-| `toolkit/android/delegate` | `io.github.matheus-corregiari:delegate` | Stable | Android | Kotlin property delegates for Android components. |
-| `toolkit/android/foldable` | `io.github.matheus-corregiari:foldable` | Beta | Android | Jetpack Window Manager helpers for foldable devices. |
-| `toolkit/android/storage` | `io.github.matheus-corregiari:storage` | Deprecated | Android | Legacy storage helpers superseded by KMP storage modules. |
-| `toolkit/android/util` | `io.github.matheus-corregiari:util` | Deprecated | Android | Legacy utility extensions scheduled for archival. |
-
-> ℹ️ Detailed usage guides for every module live inside their respective directories. All READMEs follow the same structure with badges, installation instructions, usage examples, and licensing notes for easy scanning.
-
----
-
-## 🧪 Stability Matrix
-
-| Stability Level | Description |
-|-----------------|-------------|
-| Stable | API ready for production; published to Maven Central with semantic versioning. |
-| Beta | Feature complete but gathering feedback; expect minor API adjustments. |
-| Experimental | Available for early adopters; APIs may change between releases. |
-| Incubating / Work in Progress | Under heavy development; not yet published. |
-| Deprecated | Maintained for compatibility only; prefer the newer KMP alternatives. |
-
----
-
-## 🖥️ Platform Support
-
-| Platform | Status | Notes |
-|----------|--------|-------|
-| Android / JVM | ✅ | Primary target with full CI coverage. |
-| iOS / macOS | ✅ | Supported across storage and logging modules via KMP. |
-| JavaScript | ⚠️ | Storage modules provide stub implementations; APIs compile but act as no-ops. |
-| WASM | ⚠️ | Follows the same stub strategy as JavaScript until runtime libraries mature. |
-| Desktop (Compose) | 🚧 | Planned via shared KMP modules; follow the [roadmap](docs/wiki/roadmap.md). |
-
----
-
-## ⚙️ Installation (Gradle Kotlin DSL)
-
-Add the toolkit artifacts you need to your shared module. Examples below use the Kotlin Multiplatform DSL with version catalogs.
-
-Storage is released independently by [Arch Storage](https://github.com/matheus-corregiari/arch-storage).
-Use its own version and a strict constraint for every storage artifact to avoid resolving older
-Arch Toolkit 2.0.0 RC artifacts.
-
-```toml
-# gradle/libs.versions.toml
-[versions]
-arch-storage = { strictly = "1.0.0" }
-
-[libraries]
-storage-core = { module = "io.github.matheus-corregiari:storage-core", version.ref = "arch-storage" }
-storage-datastore = { module = "io.github.matheus-corregiari:storage-datastore", version.ref = "arch-storage" }
-storage-memory = { module = "io.github.matheus-corregiari:storage-memory", version.ref = "arch-storage" }
-```
+Use Maven Central. This branch prepares the following Splinter candidate:
 
 ```kotlin
-// build.gradle.kts
-kotlin {
-    sourceSets {
-        commonMain.dependencies {
-            implementation(libs.storage.core)
-        }
-        androidMain.dependencies {
-            implementation(libs.storage.datastore)
-        }
-        jvmMain.dependencies {
-            implementation(libs.storage.datastore)
-        }
-        // For browser targets, use storage-memory; DataStore is not available there.
-    }
+commonMain.dependencies {
+    implementation("io.github.matheus-corregiari:splinter:2.0.0-rc18")
+    implementation("io.github.matheus-corregiari:event-observer-state:2.3.0")
 }
 ```
 
-> Tip: Align storage artifacts with the shared strict Arch Storage version, not the Arch Toolkit
-> version. Event Observer has its own release version as well. See the
-> [storage migration guide](docs/storage-migration.md) for platform and dependency details.
+The artifacts have independent versions. Add Event Observer State when you need saved state;
+apply Kotlin serialization in modules declaring serializable models.
 
----
+## Platforms
 
-## 📖 Usage Examples
+Splinter targets Android, JVM, JS, Wasm, iOS ARM64 and iOS Simulator ARM64.
+The Compose sample targets Android and desktop JVM. Apple builds require macOS and Xcode.
 
-* **Lifecycle events** – Connect shared logic to UI layers via the [`event-observer`](toolkit/multi/event-observer/README.md) channel APIs.
-* **Android UI state** – Drive screen transitions predictably with [`statemachine`](toolkit/android/statemachine/README.md).
-* **Delegated properties** – Simplify Android component setup with [`delegate`](toolkit/android/delegate/README.md).
+## Development
 
-Every module README includes installation, setup walkthroughs, and runnable snippets to get you productive fast.
+Use JDK 21 and the Gradle wrapper. See the [dependency inventory](docs/dependencies.md).
 
----
+```shell
+./gradlew ciLint ciBuild ciTest ciCoverage -PincludeSamples
+./gradlew ciSample ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc18
+python -m pip install -r .github/requirements-docs.txt
+python -m mkdocs build --strict
+```
 
-## 📚 Documentation & Wiki
-
-The project wiki consolidates in-depth guides and operational processes:
-
-* [Overview](docs/wiki/overview.md)
-* [Ecosystem Branching](docs/ecosystem/gitflow.md)
-* [Contribution Guide](docs/wiki/contribution-guide.md)
-* [Artifact Publishing](docs/wiki/artifact-publishing.md)
-* [Roadmap](docs/wiki/roadmap.md)
-
-Each section mirrors the structure used across READMEs, keeping terminology and tone consistent. Feel free to open issues suggesting additional topics.
-
----
-
-## 🛡️ License
-
-Licensed under the [Apache License 2.0](LICENSE.md). Refer to individual module READMEs for any additional notes.
-
----
-
-## 🤝 Contributing
-
-Pull requests are always welcome! Start with the [contribution guide](docs/wiki/contribution-guide.md) to learn about tooling, coding standards, and CI expectations. For ideas, check the [roadmap](docs/wiki/roadmap.md) and join discussions in GitHub issues.
-
+See the [Splinter guide](toolkit/multi/splinter/README.md), [changelog](docs/CHANGELOG.md),
+and [contribution guide](docs/wiki/contribution-guide.md).

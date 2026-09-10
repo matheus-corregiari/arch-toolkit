@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       release_branch:
-        description: Release branch name, such as release/2.0.0-rc16
+        description: Release branch name, such as release/2.0.0-rc18
         required: true
         type: string
       commit_sha:
@@ -33,7 +33,7 @@ jobs:
       (github.event.pull_request.merged == true &&
       (startsWith(github.event.pull_request.head.ref, 'release/') ||
       startsWith(github.event.pull_request.head.ref, 'hotfix/')))
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -41,16 +41,18 @@ jobs:
 
     steps:
       - name: Checkout master
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7.0.1
         with:
           ref: ${{ inputs.commit_sha || github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
 
       - name: Resolve release version
         id: version
+        env:
+          RELEASE_BRANCH: ${{ inputs.release_branch || github.event.pull_request.head.ref }}
         run: |
           chmod +x .github/scripts/release-version.sh
-          .github/scripts/release-version.sh "${{ inputs.release_branch || github.event.pull_request.head.ref }}"
+          .github/scripts/release-version.sh "$RELEASE_BRANCH"
 
       - name: Base Setup
         uses: ./.github/actions/setup-gradle
@@ -83,7 +85,7 @@ jobs:
           git push origin "${{ steps.version.outputs.version }}"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v3.0.3
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: Arch Toolkit ${{ steps.version.outputs.version }}

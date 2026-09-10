@@ -15,5 +15,4 @@ data class ScreenInfo(
     val isLandscape = orientation == Orientation.LANDSCAPE
     val isPortrait = orientation == Orientation.PORTRAIT
     val isValid = size != DpSize.Zero
-
 }

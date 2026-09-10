@@ -39,5 +39,4 @@ object GithubListModule {
             content = listOf(ComposeContent { RepositoryListScreen() })
         )
     )
-
 }
