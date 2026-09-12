@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.jetbrains.kover)
     id("toolkit-multiplatform-library")
     id("toolkit-multiplatform-publish")
 }

@@ -30,6 +30,13 @@ jobs:
       - name: Install documentation dependencies
         run: python -m pip install -r .github/requirements-docs.txt
       - name: Build, test and lint all configured targets and samples
-        run: ./gradlew ciBuild ciTest ciCoverage ciLint ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc18 --continue --no-daemon
+        run: ./gradlew ciBuild ciTest ciCoverage ciLint ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc19 --continue --no-daemon
       - name: Verify documentation
         run: python -m mkdocs build --strict
+      - name: Save merged coverage reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ matrix.os }}
+          path: build/reports/kover/
+          if-no-files-found: error

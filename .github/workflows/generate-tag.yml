@@ -69,8 +69,16 @@ jobs:
           sign_password: ${{ secrets.SIGN_PASSWORD }}
           sign_filename: ${{ secrets.SIGN_FILENAME }}
 
-      - name: Build publishable modules
-        run: ./gradlew ciBuild
+      - name: Build publishable modules and generate coverage
+        run: ./gradlew ciBuild ciCoverage
+
+      - name: Report coverage to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/kover/report.xml
+          disable_search: true
+          fail_ci_if_error: false
 
       - name: Publish modules
         run: ./gradlew ciPublishMavenCentral
@@ -84,10 +92,18 @@ jobs:
           fi
           git push origin "${{ steps.version.outputs.version }}"
 
+      - name: Select curated release notes
+        id: notes
+        shell: bash
+        run: |
+          if [ -f RELEASE_NOTES.md ]; then
+            echo 'path=RELEASE_NOTES.md' >> "$GITHUB_OUTPUT"
+          fi
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3.0.3
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: Arch Toolkit ${{ steps.version.outputs.version }}
           prerelease: ${{ steps.version.outputs.prerelease }}
+          body_path: ${{ steps.notes.outputs.path }}
           generate_release_notes: true
