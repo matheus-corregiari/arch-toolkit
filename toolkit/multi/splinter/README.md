@@ -1,10 +1,10 @@
 # Splinter
 
 Splinter provides asynchronous request execution, loading/result state and execution strategies.
-It remains a release candidate in Arch Toolkit `2.0.0-rc18`.
+It remains a release candidate in Arch Toolkit `2.0.0-rc19`.
 
 ```kotlin
-implementation("io.github.matheus-corregiari:splinter:2.0.0-rc18")
+implementation("io.github.matheus-corregiari:splinter:2.0.0-rc19")
 ```
 
 Supported library targets: Android, JVM, JS, Wasm, iOS ARM64 and iOS Simulator ARM64.

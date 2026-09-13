@@ -14,7 +14,7 @@ see [Storage migration](../storage-migration.md).
 ## Installation
 
 ```kotlin
-implementation("io.github.matheus-corregiari:splinter:2.0.0-rc18")
+implementation("io.github.matheus-corregiari:splinter:2.0.0-rc19")
 ```
 
 This is the candidate prepared by this branch, not a claim of publication.

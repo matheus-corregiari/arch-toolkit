@@ -1,6 +1,6 @@
 # Artifact publishing
 
-Arch Toolkit rc18 publishes only Splinter and its Android, JVM, JS, Wasm and iOS variants.
+Arch Toolkit rc19 publishes only Splinter and its Android, JVM, JS, Wasm and iOS variants.
 The test module stays internal. State and storage have independent releases:
 [State migration](../state-migration.md), [Storage migration](../storage-migration.md).
 
@@ -10,7 +10,7 @@ Use JDK 21 and the wrapper. Run Apple checks on macOS with Xcode.
 
 ```shell
 ./gradlew ciLint ciBuild ciTest ciCoverage ciDocs -PincludeSamples
-./gradlew ciPublicationManifest -PreleaseVersion=2.0.0-rc18
+./gradlew ciPublicationManifest -PreleaseVersion=2.0.0-rc19
 ```
 
 Inspect `build/ci/publications.tsv`: every coordinate must be Splinter at the intended version.

@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       release_branch:
-        description: Release branch name, such as release/2.0.0-rc18
+        description: Release branch name, such as release/2.0.0-rc19
         required: true
         type: string
       commit_sha:
