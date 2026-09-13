@@ -10,7 +10,7 @@ Kotlin Multiplatform utilities for asynchronous loading with Splinter.
 
 | Module | Artifact | Status |
 | --- | --- | --- |
-| Splinter | `io.github.matheus-corregiari:splinter` | `2.0.0-rc18` candidate |
+| Splinter | `io.github.matheus-corregiari:splinter` | `2.0.0-rc19` candidate |
 | Test helpers | Internal module | Not published |
 
 State management moved to [Arch Event Observer](https://github.com/matheus-corregiari/arch-event-observer)
@@ -24,7 +24,7 @@ Use Maven Central. This branch prepares the following Splinter candidate:
 
 ```kotlin
 commonMain.dependencies {
-    implementation("io.github.matheus-corregiari:splinter:2.0.0-rc18")
+    implementation("io.github.matheus-corregiari:splinter:2.0.0-rc19")
     implementation("io.github.matheus-corregiari:event-observer-state:2.3.0")
 }
 ```
@@ -43,7 +43,7 @@ Use JDK 21 and the Gradle wrapper. See the [dependency inventory](docs/dependenc
 
 ```shell
 ./gradlew ciLint ciBuild ciTest ciCoverage -PincludeSamples
-./gradlew ciSample ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc18
+./gradlew ciSample ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc19
 python -m pip install -r .github/requirements-docs.txt
 python -m mkdocs build --strict
 ```
