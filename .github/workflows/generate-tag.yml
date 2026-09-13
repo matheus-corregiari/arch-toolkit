@@ -95,9 +95,16 @@ jobs:
       - name: Select curated release notes
         id: notes
         shell: bash
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          if [ -f RELEASE_NOTES.md ]; then
-            echo 'path=RELEASE_NOTES.md' >> "$GITHUB_OUTPUT"
+          notes="$RUNNER_TEMP/release-notes.md"
+          : > "$notes"
+          if [ -f .github/scripts/extract-release-notes.py ]; then
+            python3 .github/scripts/extract-release-notes.py "$RELEASE_VERSION" docs/CHANGELOG.md "$notes"
+          fi
+          if [ -s "$notes" ]; then
+            echo "path=$notes" >> "$GITHUB_OUTPUT"
           fi
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3.0.3

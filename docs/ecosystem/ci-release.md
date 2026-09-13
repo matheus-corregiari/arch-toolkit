@@ -111,7 +111,7 @@ release/hotfix PR -> master -> tag + publish in the same workflow
 
 ## Coverage and Codecov
 
-`build.gradle.kts` is the single source of report exclusions. It applies the same Kover filter
+`buildSrc/src/main/kotlin/com/toolkit/plugin/ToolkitCoveragePlugin.kt` is the single source of report exclusions. It applies the same Kover filter
 to every covered module and the root report. Only Android-generated `*.BuildConfig`, `*.R`
 and `*.R$*` are excluded: they contain generated constants/resources, not application behavior.
 Do not exclude DTOs, state classes, Compose functions or entire packages just to raise coverage.
@@ -146,3 +146,6 @@ used a different task contract; the project plugin supplies the tasks required b
 
 Toolkit currently has no numerical coverage floor configured. `ciCoverage` runs tests and generates
 the reports; `koverVerify` becomes a percentage gate only when explicit rules are added.
+
+The GitHub Release body is extracted from the exact version section in `docs/CHANGELOG.md`.
+Historical versions without a section use generated GitHub notes. No root release-notes copy is maintained.

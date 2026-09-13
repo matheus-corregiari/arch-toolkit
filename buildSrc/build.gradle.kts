@@ -10,6 +10,7 @@ version = "1.0.0"
 
 dependencies {
     compileOnly(gradleApi())
+    implementation("org.jetbrains.kotlinx:kover-gradle-plugin:${libs.versions.jetbrains.kover.get()}")
 
     implementation(libs.androidx.plugin) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
@@ -147,6 +148,11 @@ gradlePlugin {
             displayName = "Toolkit Group Plugin"
             description = "Enables and configure group for module"
             implementationClass = "com.toolkit.plugin.ToolkitGroupPlugin"
+        }
+
+        create("toolkit-coverage") {
+            id = "toolkit-coverage"
+            implementationClass = "com.toolkit.plugin.ToolkitCoveragePlugin"
         }
 
         create("toolkit-ci") {

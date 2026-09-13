@@ -53,5 +53,5 @@ and [contribution guide](docs/wiki/contribution-guide.md).
 
 ## Next release: 2.0.0-rc19
 
-See [release notes](RELEASE_NOTES.md), [dependency versions](docs/dependencies.md) and
+See [release notes](docs/CHANGELOG.md#200-rc19), [dependency versions](docs/dependencies.md) and
 [coverage configuration](docs/ecosystem/ci-release.md#coverage-and-codecov). This release is a candidate until tagged and published.

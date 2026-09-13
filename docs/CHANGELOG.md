@@ -2,7 +2,7 @@
 
 ## 2.0.0-rc19
 
-Status: planned prerelease; based on tag `2.0.0-rc18`.
+Maintenance changes based on tag `2.0.0-rc18`.
 
 ### Changes
 
@@ -11,7 +11,7 @@ Status: planned prerelease; based on tag `2.0.0-rc18`.
 - Exclude only Android-generated `BuildConfig`, `R` and nested `R` classes; retain handwritten code and existing coverage floors.
 - Configure Android test JVM access required by Robolectric 4.17 on JDK 21.
 - Update the pinned Java setup action to 6.0.1.
-- Include these curated notes when the release workflow creates the GitHub Release.
+- Extract this version section from the changelog when creating the GitHub Release, without a duplicate root notes file.
 - Document coverage scope, local commands and the audited dependency versions.
 - Verify the existing Gradle 9.7.1 distribution with its official SHA-256 checksum.
 
