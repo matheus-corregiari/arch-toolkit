@@ -69,7 +69,7 @@ ktlint = "14.2.0"
 dexcount = "4.0.0"
 vanniktech-publish = "0.37.0"
 ktorfit = "2.7.5"
-ktor = "3.5.2"
+ktor = "3.6.0"
 coil = "3.6.2"
 haze = "1.7.3"
 

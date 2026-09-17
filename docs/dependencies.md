@@ -1,6 +1,6 @@
 # Dependencies
 
-Audited against Maven Central, Google Maven and the Gradle Plugin Portal on 2026-09-12 for `2.0.0-rc19`.
+Audited against Maven Central, Google Maven and the Gradle Plugin Portal on 2026-09-16 for `2.0.0-rc19`.
 Runtime dependencies and AGP use stable releases. Detekt retains its existing alpha line.
 Gradle **9.7.1**, JDK **21**, Kover **0.9.9**, MkDocs Material **9.7.7**.
 
@@ -67,11 +67,11 @@ The patches in sibling repositories can be adopted after their artifacts are pub
 | `ktlint` | `14.2.0` | [Metadata](https://plugins.gradle.org/m2/org/jlleitschuh/gradle/ktlint/org.jlleitschuh.gradle.ktlint.gradle.plugin/maven-metadata.xml) |
 | `vanniktech-publish` | `0.37.0` | [Metadata](https://repo.maven.apache.org/maven2/com/vanniktech/gradle-maven-publish-plugin/maven-metadata.xml) |
 | `ktorfit` | `2.7.5` | [Metadata](https://repo.maven.apache.org/maven2/de/jensklingenberg/ktorfit/ktorfit-lib/maven-metadata.xml) |
-| `ktor-client-okhttp` | `3.5.2` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-client-okhttp/maven-metadata.xml) |
-| `ktor-client-darwin` | `3.5.2` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-client-darwin/maven-metadata.xml) |
-| `ktor-content-negotiation` | `3.5.2` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-client-content-negotiation/maven-metadata.xml) |
-| `ktor-serialization-json` | `3.5.2` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-serialization-kotlinx-json/maven-metadata.xml) |
-| `ktor-logging` | `3.5.2` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-client-logging/maven-metadata.xml) |
+| `ktor-client-okhttp` | `3.6.0` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-client-okhttp/maven-metadata.xml) |
+| `ktor-client-darwin` | `3.6.0` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-client-darwin/maven-metadata.xml) |
+| `ktor-content-negotiation` | `3.6.0` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-client-content-negotiation/maven-metadata.xml) |
+| `ktor-serialization-json` | `3.6.0` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-serialization-kotlinx-json/maven-metadata.xml) |
+| `ktor-logging` | `3.6.0` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-client-logging/maven-metadata.xml) |
 | `coil-core` | `3.6.2` | [Metadata](https://repo.maven.apache.org/maven2/io/coil-kt/coil3/coil-compose/maven-metadata.xml) |
 | `coil-network` | `3.6.2` | [Metadata](https://repo.maven.apache.org/maven2/io/coil-kt/coil3/coil-network-ktor3/maven-metadata.xml) |
 | `haze-core` | `1.7.3` | [Metadata](https://repo.maven.apache.org/maven2/dev/chrisbanes/haze/haze/maven-metadata.xml) |

@@ -6,6 +6,7 @@ Maintenance changes based on tag `2.0.0-rc18`.
 
 ### Changes
 
+- Update the sample HTTP clients and serialization integration from Ktor 3.5.2 to 3.6.0.
 - Replace the settings aggregation plugin with the Kover project plugin so `ciCoverage` generates the merged XML/HTML reports for Splinter.
 - Share generated-class filters between Splinter and the root report, and upload only that XML to Codecov after release validation.
 - Exclude only Android-generated `BuildConfig`, `R` and nested `R` classes; retain handwritten code and existing coverage floors.
@@ -22,6 +23,7 @@ Maintenance changes based on tag `2.0.0-rc18`.
 | `androidx-compose-core` | `1.12.0` | `1.12.1` |
 | `google-ksp` | `2.3.11` | `2.3.12` |
 | `robolectric` | `4.16.1` | `4.17` |
+| `ktor` | `3.5.2` | `3.6.0` |
 
 ### Compatibility
 
