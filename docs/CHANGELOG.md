@@ -6,6 +6,8 @@ Maintenance changes based on tag `2.0.0-rc18`.
 
 ### Changes
 
+- Update sample image loading and Ktor integration from Coil 3.6.2 to 3.6.3, including the upstream AGP 9.4/R8 Kotlin module metadata fix.
+
 - Update the sample HTTP clients and serialization integration from Ktor 3.5.2 to 3.6.0.
 - Replace the settings aggregation plugin with the Kover project plugin so `ciCoverage` generates the merged XML/HTML reports for Splinter.
 - Share generated-class filters between Splinter and the root report, and upload only that XML to Codecov after release validation.
@@ -24,6 +26,7 @@ Maintenance changes based on tag `2.0.0-rc18`.
 | `google-ksp` | `2.3.11` | `2.3.12` |
 | `robolectric` | `4.16.1` | `4.17` |
 | `ktor` | `3.5.2` | `3.6.0` |
+| `coil` | `3.6.2` | `3.6.3` |
 
 ### Compatibility
 
