@@ -16,7 +16,7 @@ implementation("io.github.matheus-corregiari:storage-datastore") {
 Apply the same constraint to core and memory when used. Resolve conflicting callers together.
 
 ```sh
-./gradlew :sample:shared:structure:repository:dependencyInsight --dependency storage-core --configuration jvmRuntimeClasspath -Pandroid.injected.invoked.from.ide=true
+./gradlew :sample:shared:data:repository:dependencyInsight --dependency storage-core --configuration jvmRuntimeClasspath -Pandroid.injected.invoked.from.ide=true
 ```
 
 The enabled sample targets are Android and desktop, using DataStore. Web provider sources use memory;

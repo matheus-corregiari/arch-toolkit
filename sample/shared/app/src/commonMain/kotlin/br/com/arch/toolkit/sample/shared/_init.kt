@@ -3,7 +3,7 @@
 package br.com.arch.toolkit.sample.shared
 
 import br.com.arch.toolkit.lumber.Lumber
-import br.com.arch.toolkit.sample.feature.GithubListModule
+import br.com.arch.toolkit.sample.feature.GithubSampleModule
 import br.com.arch.toolkit.sample.feature.SettingsModule
 import br.com.arch.toolkit.sample.github.shared.structure.core.featureRegistry
 import br.com.arch.toolkit.sample.github.shared.structure.data.local.LocalSourceModule
@@ -33,7 +33,7 @@ fun initKoin() {
 
             // Features
             SettingsModule.module,
-            GithubListModule.module,
+            GithubSampleModule.module,
 
             // Main Module
             module {

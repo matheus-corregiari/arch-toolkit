@@ -26,10 +26,10 @@ val includeSamples: Boolean = isIdeBuild || providers.gradleProperty("includeSam
 if (includeSamples) {
     // Shared Modules with KMP Code to use in Targets
     include(":sample:shared:app")
-    include(":sample:shared:feature:github-list")
-    include(":sample:shared:feature:settings")
-    include(":sample:shared:structure:repository")
-    include(":sample:shared:structure:designSystem")
+    include(":sample:shared:features:github-sample")
+    include(":sample:shared:features:settings")
+    include(":sample:shared:data:repository")
+    include(":sample:shared:structure:design:widget")
     include(":sample:shared:structure:core")
 
     // Targets

@@ -9,7 +9,7 @@ Preserve the pre-existing staged `.codex/` files; commit only explicit task path
 
 ## Checklist
 
-- [ ] 1. Inventory, baseline builds and durable evidence.
+- [x] 1. Inventory, baseline builds and durable evidence.
 - [ ] 2. Verify published Easy Navigation compatibility; minimal Android, iOS,
   web and desktop integration, including macOS CI for iOS.
 - [ ] 3. Reorganize Gradle modules/packages and enforce dependency boundaries.
@@ -23,6 +23,8 @@ Preserve the pre-existing staged `.codex/` files; commit only explicit task path
 
 ## Decisions
 
+- User decision: retain Easy Navigation for Android, iOS and desktop; web stays
+  pending. Do not introduce a separate web navigation implementation.
 - App owns composition, DI and global navigation. Features depend on repository
   contracts, never sources. Core must not re-export unrelated dependencies.
 - Repository exposes its own RO models; remote models use Request/Response;
@@ -46,4 +48,16 @@ Preserve the pre-existing staged `.codex/` files; commit only explicit task path
 
 ## Validation and remaining limitations
 
-Fresh baseline, compatibility probes and runtime evidence pending.
+Baseline `ciBuild ciCoverage ciLint -PincludeSamples -PreleaseVersion=2.0.0-rc19`
+passed (1009 tasks, 50 seconds). Runtime execution evidence remains pending.
+
+Easy Navigation 1.0.1 Maven metadata publishes Android, JVM, iosArm64 and
+iosSimulatorArm64, but no JS/Wasm. Versions 1.0.0 and beta04 also lack web.
+Navigation3 UI and adaptive-navigation3 themselves publish JS/Wasm; upstream
+Easy Navigation additionally uses `KClass.qualifiedName` and a non-web test
+annotation artifact. A separate source probe was prepared outside the repository;
+no upstream changes or fork publication are authorized or required by the chosen scope.
+
+Found during HTTP inventory: JVM clients install a trust-all X509TrustManager and
+change the global SSL socket factory; Apple request client overrides server trust.
+Remove these overrides in the HTTP extraction and retain platform TLS validation.

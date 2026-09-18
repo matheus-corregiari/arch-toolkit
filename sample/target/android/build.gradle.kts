@@ -16,7 +16,7 @@ android {
 dependencies {
     // Arch Toolkit Dependencies
     implementation(project(":sample:shared:app"))
-    implementation(project(":sample:shared:structure:repository"))
+    implementation(project(":sample:shared:data:repository"))
 
     // Jetbrains Compose Tools
     implementation(compose.runtime)
