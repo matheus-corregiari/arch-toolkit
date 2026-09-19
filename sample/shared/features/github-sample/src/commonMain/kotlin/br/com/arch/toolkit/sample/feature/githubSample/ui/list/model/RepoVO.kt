@@ -1,7 +1,7 @@
 package br.com.arch.toolkit.sample.feature.githubSample.ui.list.model
 
-import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.RepoDTO
-import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.UserDTO
+import br.com.arch.toolkit.sample.github.shared.structure.repository.model.RepoRO
+import br.com.arch.toolkit.sample.github.shared.structure.repository.model.UserRO
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
@@ -19,15 +19,15 @@ class RepoVO(
     val forksCount: Long,
     val openIssuesCount: Long,
     val topics: List<String>,
-    val owner: UserDTO
+    val owner: UserRO
 ) {
-    constructor(dto: RepoDTO) : this(
+    constructor(dto: RepoRO) : this(
         id = dto.id,
         name = dto.name,
         fullName = dto.fullName,
         description = dto.description,
         updatedAt = dto.updatedAt,
-        language = dto.language,
+        language = dto.language.orEmpty(),
         stargazersCount = dto.stargazersCount,
         watchersCount = dto.watchersCount,
         forksCount = dto.forksCount,

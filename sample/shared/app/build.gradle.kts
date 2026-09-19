@@ -18,6 +18,12 @@ kotlin {
                 api(project(":sample:shared:structure:design:widget"))
                 implementation(project(":sample:shared:data:repository"))
 
+                implementation(project(":sample:shared:data:source:remote"))
+                implementation(project(":sample:shared:structure:http"))
+                implementation(libs.ktorfit)
+                implementation(libs.ktor.content.negotiation)
+                implementation(libs.jetbrains.serialization)
+
                 // Features
                 implementation(project(":sample:shared:features:github-sample"))
                 implementation(project(":sample:shared:features:settings"))

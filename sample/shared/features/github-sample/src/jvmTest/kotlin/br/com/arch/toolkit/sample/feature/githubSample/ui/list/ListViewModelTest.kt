@@ -2,9 +2,9 @@ package br.com.arch.toolkit.sample.feature.githubSample.ui.list
 
 import androidx.lifecycle.SavedStateHandle
 import br.com.arch.toolkit.result.DataResultStatus
-import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.PageDTO
-import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.RepoDTO
-import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.UserDTO
+import br.com.arch.toolkit.sample.github.shared.structure.repository.model.PageRO
+import br.com.arch.toolkit.sample.github.shared.structure.repository.model.RepoRO
+import br.com.arch.toolkit.sample.github.shared.structure.repository.model.UserRO
 import br.com.arch.toolkit.sample.github.shared.structure.repository.GithubRepository
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultSuccess
@@ -95,16 +95,16 @@ class ListViewModelTest {
         assertEquals(listOf("kotlin"), item.topics)
         assertEquals(legacy, handle.get<String>("lastPageState"))
 
-        val roundTrip = Json.decodeFromString<PageDTO>(Json.encodeToString(page(3)))
+        val roundTrip = Json.decodeFromString<PageRO>(Json.encodeToString(page(3)))
         assertEquals(3L, roundTrip.items.single().id)
         verify(exactly = 1) { repository.lisRepositories() }
     }
 
-    private fun page(id: Long) = PageDTO(
+    private fun page(id: Long) = PageRO(
         totalCount = 1,
         incompleteResults = false,
         items = listOf(
-            RepoDTO(
+            RepoRO(
                 id = id,
                 name = "toolkit",
                 fullName = "owner/toolkit",
@@ -116,7 +116,7 @@ class ListViewModelTest {
                 forksCount = 3,
                 openIssuesCount = 4,
                 topics = listOf("kotlin"),
-                owner = UserDTO(1, "owner", "avatar")
+                owner = UserRO(1, "owner", "avatar")
             )
         )
     )

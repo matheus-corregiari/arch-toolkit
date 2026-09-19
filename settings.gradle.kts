@@ -32,6 +32,9 @@ if (includeSamples) {
     include(":sample:shared:structure:design:widget")
     include(":sample:shared:structure:core")
 
+    include(":sample:shared:data:source:remote")
+    include(":sample:shared:structure:http")
+
     // Targets
     include(":sample:target:android")
     include(":sample:target:desktop")
