@@ -14,6 +14,8 @@ kotlin {
             dependencies {
                 implementation(project(":sample:shared:structure:core"))
 
+                api(project(":sample:shared:structure:design:core"))
+
                 // Other Tools
                 implementation(libs.androidx.compose.material3.window)
                 implementation(libs.androidx.compose.material3.adaptive)

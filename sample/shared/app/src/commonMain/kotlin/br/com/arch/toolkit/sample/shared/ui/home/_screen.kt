@@ -1,4 +1,5 @@
 @file:Suppress("FunctionNaming")
+@file:OptIn(androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi::class)
 
 package br.com.arch.toolkit.sample.shared.ui.home
 
@@ -15,16 +16,11 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.structure.core.ComposeContent
 import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureRegistry
-import br.com.arch.toolkit.sample.github.shared.structure.core.extension.firstInstance
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -64,10 +60,20 @@ fun AppHome(
         )
     )
 
+    val registries = androidx.compose.runtime.remember {
+        listOf(
+            com.pedrobneto.easy.navigation.registry.GithubDirectionRegistry,
+            com.pedrobneto.easy.navigation.registry.SettingsDirectionRegistry
+        )
+    }
+    val navigation = com.pedrobneto.easy.navigation.core.rememberNavigationController(
+        initialRoute = br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute,
+        directionRegistries = registries
+    )
     val items by viewModel.featureFlow.collectAsState()
-    var selectedItemId: String by rememberSaveable { mutableStateOf(items.first().id) }
-
-    val selectedItem: FeatureRegistry = viewModel.itemById(selectedItemId)
+    val selectedItem = viewModel.itemById(
+        if (navigation.currentRoute is br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute) "settings" else "repository-list-home"
+    )
     NavigationSuiteScaffold(
         layoutType = AppTheme.screen.navigationSuiteType,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
@@ -81,10 +87,22 @@ fun AppHome(
         containerColor = AppTheme.color.backgroundSurfaceDefault,
         contentColor = AppTheme.color.backgroundSurfaceSecondary,
         navigationSuiteItems = {
-            addItems(itemModifier, selectedItem, items, itemColors) { selectedItemId = it.id }
+            addItems(itemModifier, selectedItem, items, itemColors) { item ->
+                val route = if (item.id == "settings") {
+                    br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
+                } else {
+                    br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute
+                }
+                navigation.navigateTo(route, com.pedrobneto.easy.navigation.core.model.LaunchStrategy.NewStack)
+            }
         },
         content = {
-            selectedItem.content.firstInstance<ComposeContent>().create()
+            com.pedrobneto.easy.navigation.core.Navigation(
+                modifier = Modifier,
+                initialRoute = br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute,
+                directionRegistries = registries,
+                controller = navigation
+            )
         }
     )
 }

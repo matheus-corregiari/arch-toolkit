@@ -72,9 +72,11 @@ ktorfit = "2.7.5"
 ktor = "3.6.0"
 coil = "3.6.3"
 haze = "1.7.3"
+easy-navigation = "1.0.1"
 
 # ------------------------------------------------------------------------------------------------ #
 [libraries]
+easy-navigation = { module = "io.github.pedro-bachiega:easy-navigation-core", version.ref = "easy-navigation" }
 arch-storage-core = { module = "io.github.matheus-corregiari:storage-core", version.ref = "arch-storage" }
 arch-storage-memory = { module = "io.github.matheus-corregiari:storage-memory", version.ref = "arch-storage" }
 arch-storage-datastore = { module = "io.github.matheus-corregiari:storage-datastore", version.ref = "arch-storage" }
@@ -184,6 +186,7 @@ x-normalize-x021 = { module = "com.squareup.okhttp3:okhttp", version.ref = "squa
 
 # ------------------------------------------------------------------------------------------------ #
 [plugins]
+easy-navigation = { id = "io.github.pedro-bachiega.easy-navigation-library", version.ref = "easy-navigation" }
 jetbrains-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "jetbrains-kover" }
 ## Android
 android-application = { id = "com.android.application", version.ref = "androidx-plugin" }

@@ -11,9 +11,8 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import br.com.arch.toolkit.lumber.DebugOak
 import br.com.arch.toolkit.lumber.Lumber
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
+import br.com.arch.toolkit.sample.shared.ShowcaseApp
 import br.com.arch.toolkit.sample.shared.initKoin
-import br.com.arch.toolkit.sample.shared.ui.home.AppHome
 import org.koin.core.context.stopKoin
 import java.awt.Dimension
 
@@ -30,6 +29,6 @@ fun main() = application {
         },
     ) {
         LaunchedEffect(Unit) { window.minimumSize = Dimension(320, 480) }
-        AppTheme { AppHome() }
+        ShowcaseApp()
     }
 }

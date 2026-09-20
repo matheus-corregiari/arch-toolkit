@@ -37,6 +37,22 @@ Preserve the pre-existing staged `.codex/` files; commit only explicit task path
 
 ## Evidence log
 
+- Completed commits: `c48eba0` plan; `43443ef` module paths; `95d001a`
+  remote source, repository-owned models and HTTP extraction.
+- Module-path refactor passed `ciBuild ciCoverage ciLint` (1009 tasks).
+- HTTP extraction passed JVM app compilation and GitHub feature JVM tests;
+  trust-all TLS overrides were removed and request timeouts configured.
+- Design/core and data/source/local extraction is present in the working tree.
+  App now composes persistence and image loading outside design components.
+- Easy Navigation requires its plugin after the Kotlin convention and explicit
+  Navigation3 runtime dependencies in consumers (upstream uses implementation).
+  Compilation of this correction is in progress; not yet validated on iOS.
+- Prepared, not yet applied: GitHub search/detail, localized strings and UI
+  scripts in `D:/DEV/.release-worktrees/showcase_*.py`. Do not rerun extraction
+  scripts already applied; inspect the working tree before any replay.
+- 2026-09-20: resumed after approval-service usage-limit interruptions. No Gradle
+  daemons were running at resume. PR #157 is still open at the pre-showcase SHA;
+  showcase commits have not yet been pushed.
 - Initial branch/head: `release/2.0.0-rc19` at `ca49c25221d6e78373b2c5bbd4a761e83b5ab017`.
 - Live GitHub verification: PR #157 is open on the expected branch; fetch confirms
   local and origin heads match.

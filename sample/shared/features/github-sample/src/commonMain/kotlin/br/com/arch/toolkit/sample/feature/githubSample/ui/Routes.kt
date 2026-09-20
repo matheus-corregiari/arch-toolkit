@@ -1,0 +1,18 @@
+package br.com.arch.toolkit.sample.feature.githubSample.ui
+
+import androidx.compose.runtime.Composable
+import br.com.arch.toolkit.sample.feature.githubSample.ui.list.RepositoryListScreen
+import com.pedrobneto.easy.navigation.core.annotation.Deeplink
+import com.pedrobneto.easy.navigation.core.annotation.Route
+import com.pedrobneto.easy.navigation.core.annotation.Scope
+import com.pedrobneto.easy.navigation.core.model.NavigationRoute
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object GithubRoute : NavigationRoute
+
+@Route(GithubRoute::class)
+@Scope("github")
+@Deeplink("/github")
+@Composable
+fun GithubDestination() { RepositoryListScreen() }

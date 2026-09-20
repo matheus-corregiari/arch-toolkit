@@ -6,7 +6,7 @@ fun main() {
     initKoin()
     onWasmReady {
         renderComposable(rootElementId = "bacate") {
-            AppTheme { AppHome() }
+            ShowcaseApp()
         }
     }
 }

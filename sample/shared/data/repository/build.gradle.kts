@@ -34,31 +34,25 @@ kotlin {
         }
         androidMain {
             dependencies {
-                implementation(libs.arch.android)
-                implementation(libs.arch.storage.datastore)
             }
         }
 
         jvmMain {
             dependencies {
-                implementation(libs.arch.storage.datastore)
             }
         }
 
         appleMain {
             dependencies {
-                implementation(libs.arch.storage.datastore)
             }
         }
 
         wasmJsMain {
             dependencies {
-                implementation(libs.arch.storage.memory)
             }
         }
         jsMain {
             dependencies {
-                implementation(libs.arch.storage.memory)
             }
         }
     }
