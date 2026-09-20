@@ -24,6 +24,8 @@ kotlin {
 
                 implementation(project(":sample:shared:data:source:remote"))
 
+                implementation(libs.ktor.content.negotiation)
+
                 // Http
             }
         }

@@ -2,7 +2,6 @@ package br.com.arch.toolkit.sample.github.shared.structure.repository
 
 import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureRegistry
 import br.com.arch.toolkit.sample.github.shared.structure.core.defaultStorage
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
 
@@ -12,7 +11,7 @@ object RepositoryModule {
 
     val module = module {
         single { FeatureRepository(allFeatureMap) }
-        singleOf(::GithubRepository)
+        single<GithubRepository> { RemoteGithubRepository(get()) }
         single { SettingsRepository(defaultStorage) }
     }
 }

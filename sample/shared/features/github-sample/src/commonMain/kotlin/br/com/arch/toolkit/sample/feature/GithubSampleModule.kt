@@ -2,6 +2,7 @@
 
 package br.com.arch.toolkit.sample.feature
 
+import br.com.arch.toolkit.sample.feature.githubSample.ui.detail.DetailViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.outlined.Code
@@ -21,6 +22,7 @@ object GithubSampleModule {
     val module = module {
         // ViewModels
         viewModel { ListViewModel(get(), get()) }
+        viewModel { params -> DetailViewModel(get(), params.get(), params.get()) }
 
         // Features
         featureRegistry("repository-list-home") { repositoryList() }

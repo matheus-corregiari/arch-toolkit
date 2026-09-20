@@ -1,5 +1,6 @@
 package br.com.arch.toolkit.sample.feature.githubSample.ui.list.state
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -46,7 +47,8 @@ import org.jetbrains.compose.resources.stringResource
 
 internal class ManyListState(
     private val list: List<RepoVO>,
-    private val padding: PaddingValues
+    private val padding: PaddingValues,
+    private val onSelect: (RepoVO) -> Unit = {}
 ) : ListState() {
     @Composable
     override fun Draw(modifier: Modifier) = LazyColumn(
@@ -62,7 +64,7 @@ internal class ManyListState(
         ),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
     ) {
-        items(list) { item -> Item(Modifier.fillMaxWidth(), item) }
+        items(list, key = { it.id }) { item -> Item(Modifier.fillMaxWidth().clickable { onSelect(item) }, item) }
         item { Spacer(Modifier.size(AppTheme.dimen.spacingG)) }
     }
 

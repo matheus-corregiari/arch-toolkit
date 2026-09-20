@@ -1,5 +1,6 @@
 package br.com.arch.toolkit.sample.github.shared.structure.data.remote.api
 
+import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.RepoResponse
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.PageResponse
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.model.PullRequestResponse
 import de.jensklingenberg.ktorfit.http.GET
@@ -8,6 +9,9 @@ import de.jensklingenberg.ktorfit.http.Query
 
 @Suppress("LongParameterList")
 interface GithubApi {
+    @GET("repos/{owner}/{name}")
+    suspend fun repository(@Path("owner") owner: String, @Path("name") name: String): RepoResponse
+
 
     @GET("search/repositories")
     suspend fun searchRepositories(

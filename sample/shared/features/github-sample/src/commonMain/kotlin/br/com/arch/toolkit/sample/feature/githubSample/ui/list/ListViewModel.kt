@@ -1,33 +1,85 @@
 package br.com.arch.toolkit.sample.feature.githubSample.ui.list
 
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import br.com.arch.toolkit.compose.ComposableDataResult
-import br.com.arch.toolkit.compose.composable
-import br.com.arch.toolkit.eventObserver.state.saveResponseState
-import br.com.arch.toolkit.sample.feature.githubSample.ui.list.model.RepoVO
+import androidx.lifecycle.viewModelScope
+import br.com.arch.toolkit.sample.github.shared.structure.repository.GithubException
+import br.com.arch.toolkit.sample.github.shared.structure.repository.GithubFailure
 import br.com.arch.toolkit.sample.github.shared.structure.repository.GithubRepository
-import kotlinx.coroutines.flow.map
+import br.com.arch.toolkit.sample.github.shared.structure.repository.model.RepoRO
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+@Serializable
+data class GithubListState(
+    val query: String = "kotlin",
+    val language: String = "",
+    val items: List<RepoRO> = emptyList(),
+    val nextPage: Int? = 1,
+    val loading: Boolean = false,
+    val failure: GithubFailure? = null
+)
 
 class ListViewModel(
     private val repository: GithubRepository,
-    state: SavedStateHandle
+    private val savedState: SavedStateHandle
 ) : ViewModel() {
+    private val mutableState = MutableStateFlow(restore())
+    val state = mutableState.asStateFlow()
+    private var request: Job? = null
+    private var generation = 0
 
-    internal val lastPageState by state.saveResponseState<List<RepoVO>>(
-        name = "github-repositories-v2"
-    )
+    fun search(query: String, language: String = state.value.language) {
+        request?.cancel()
+        generation++
+        update(GithubListState(query = query, language = language))
+        loadMore()
+    }
 
-    @get:Composable
-    val stateList: ComposableDataResult<List<RepoVO>>
-        get() = lastPageState.flow().composable
+    fun loadIfNeeded() {
+        if (state.value.items.isEmpty() && state.value.failure == null) loadMore()
+    }
 
-    fun loadRepositories() = lastPageState.load {
-        repository.lisRepositories().map { result ->
-            result.transform { page -> page.items.map(::RepoVO) }
+    fun loadMore() {
+        val snapshot = state.value
+        val page = snapshot.nextPage ?: return
+        if (snapshot.loading) return
+        val currentGeneration = generation
+        update(snapshot.copy(loading = true, failure = null))
+        request = viewModelScope.launch {
+            try {
+                val result = repository.search(snapshot.query, snapshot.language, page)
+                if (generation != currentGeneration) return@launch
+                update(snapshot.copy(
+                    items = (snapshot.items + result.items).distinctBy { it.id },
+                    nextPage = result.nextPage
+                ))
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (failure: GithubException) {
+                if (generation == currentGeneration) update(snapshot.copy(failure = failure.failure))
+            }
         }
     }
 
-    fun reload() = loadRepositories()
+    private fun update(value: GithubListState) {
+        mutableState.value = value
+        savedState[STATE_KEY] = Json.encodeToString(value.copy(loading = false))
+    }
+
+    private fun restore(): GithubListState {
+        val snapshot = savedState.get<String>(STATE_KEY) ?: return GithubListState()
+        return try {
+            Json.decodeFromString<GithubListState>(snapshot).copy(loading = false)
+        } catch (invalid: IllegalArgumentException) {
+            GithubListState()
+        }
+    }
+
+    private companion object { const val STATE_KEY = "github-search-v3" }
 }
