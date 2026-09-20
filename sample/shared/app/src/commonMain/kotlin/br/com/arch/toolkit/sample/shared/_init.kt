@@ -3,17 +3,16 @@
 package br.com.arch.toolkit.sample.shared
 
 import br.com.arch.toolkit.lumber.Lumber
-import br.com.arch.toolkit.sample.feature.GithubSampleModule
-import br.com.arch.toolkit.sample.feature.SettingsModule
-import br.com.arch.toolkit.sample.github.shared.structure.core.featureRegistry
 import br.com.arch.toolkit.sample.github.shared.structure.data.local.LocalSourceModule
 import br.com.arch.toolkit.sample.github.shared.structure.data.remote.RemoteSourceModule
 import br.com.arch.toolkit.sample.github.shared.structure.repository.RepositoryModule
-import br.com.arch.toolkit.sample.shared.ui.home.HomeViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
+import org.koin.core.module.dsl.viewModel
+import br.com.arch.toolkit.sample.feature.githubSample.ui.list.ListViewModel
+import br.com.arch.toolkit.sample.feature.githubSample.ui.detail.DetailViewModel
+import br.com.arch.toolkit.sample.feature.settings.ui.SettingsViewModel
 import org.koin.core.logger.Logger as KoinLogger
 
 fun initKoin() {
@@ -32,16 +31,12 @@ fun initKoin() {
             RepositoryModule.module,
 
             // Features
-            SettingsModule.module,
-            GithubSampleModule.module,
 
             // Main Module
             module {
-                // ViewModels
-                viewModelOf(::HomeViewModel)
-
-                // Features
-                featureRegistry("main") { mainRegistry() }
+                viewModel { ListViewModel(get(), get()) }
+                viewModel { parameters -> DetailViewModel(get(), parameters.get(), parameters.get()) }
+                viewModel { SettingsViewModel(get()) }
             }
         )
     }

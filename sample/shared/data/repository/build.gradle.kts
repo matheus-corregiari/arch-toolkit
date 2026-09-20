@@ -14,6 +14,9 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(libs.jetbrains.datetime)
+                implementation(libs.arch.storage.core)
+
                 implementation(project(":sample:shared:structure:core"))
 
                 // Arch Toolkit Dependencies

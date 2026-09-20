@@ -2,6 +2,10 @@
 
 package br.com.arch.toolkit.sample.feature.settings.ui
 
+import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.LocalAppLanguage
+import br.com.arch.toolkit.sample.design.text
+import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +38,7 @@ import kotlin.enums.EnumEntries
 @Composable
 internal fun ThemeSetting(modifier: Modifier, state: MutableState<ThemeMode>) = EnumSetting(
     modifier = modifier,
-    name = stringResource(Res.string.sample_settings_theme),
+    name = text(AppText.THEME),
     entries = ThemeMode.entries,
     state = state
 )
@@ -42,7 +46,7 @@ internal fun ThemeSetting(modifier: Modifier, state: MutableState<ThemeMode>) = 
 @Composable
 internal fun ContrastSetting(modifier: Modifier, state: MutableState<ContrastMode>) = EnumSetting(
     modifier = modifier,
-    name = stringResource(Res.string.sample_settings_contrast),
+    name = text(AppText.CONTRAST),
     entries = ContrastMode.entries,
     state = state
 )
@@ -91,7 +95,11 @@ private inline fun <reified T : Enum<T>> EnumSetting(
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = entries.size)
                 ) {
                     Text(
-                        text = entry.name.lowercase().capitalize(Locale.current),
+                        text = when (entry.name) {
+                            "ENGLISH" -> "English"
+                            "PORTUGUESE_BRAZIL" -> "Português do Brasil"
+                            else -> AppText.valueOf(entry.name).resolve(LocalAppLanguage.current)
+                        },
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.labelMedium
                     )
@@ -100,3 +108,11 @@ private inline fun <reified T : Enum<T>> EnumSetting(
         }
     }
 }
+
+@Composable
+internal fun LanguageSetting(modifier: Modifier, state: MutableState<AppLanguage>) = EnumSetting(
+    modifier = modifier,
+    name = text(AppText.APP_LANGUAGE),
+    entries = AppLanguage.entries,
+    state = state
+)

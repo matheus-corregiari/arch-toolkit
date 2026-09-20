@@ -1,53 +1,12 @@
-plugins {
-    id("toolkit-multiplatform-sample")
-    id("kotlin-parcelize")
-    alias(libs.plugins.jetbrains.compose.compiler)
-    alias(libs.plugins.jetbrains.compose.kotlin)
-}
+plugins { id("toolkit-multiplatform-sample") }
 
-android.namespace = "br.com.arch.toolkit.sample.github.shared.structure.core"
+android.namespace = "br.com.arch.toolkit.sample.core"
 android.androidResources.enable = false
 android.buildFeatures.buildConfig = false
 
 kotlin {
     sourceSets {
-        commonMain {
-            dependencies {
-                // Arch Toolkit Dependencies
-                api(libs.arch.lumber)
-                api(libs.arch.event.observer.state)
-                api(libs.arch.storage.core)
-
-                // Jetbrains Compose Tools
-                api(compose.ui)
-                api(compose.uiUtil)
-                api(compose.runtime)
-                api(compose.runtimeSaveable)
-                api(compose.components.resources)
-                api(compose.materialIconsExtended)
-                api(compose.material3)
-                api(compose.material3AdaptiveNavigationSuite)
-                api(compose.foundation)
-                api(compose.animation)
-
-                // Jetbrains
-                api(libs.jetbrains.datetime)
-
-                // Dependency Injection
-                api(libs.di.koin.core)
-                api(libs.di.koin.compose)
-                api(libs.di.koin.composeViewModel)
-            }
-        }
-
-        androidMain {
-            dependencies {
-                api(libs.androidx.appcompat)
-            }
-        }
-
-        jvmMain { }
-        wasmJsMain { }
-        jsMain { }
+        commonMain { dependencies { implementation(libs.jetbrains.datetime) } }
+        commonTest { dependencies { implementation(libs.jetbrains.kotlin.test) } }
     }
 }

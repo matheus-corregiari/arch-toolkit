@@ -36,7 +36,7 @@ internal fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
         topBar = {
             ScreenTitle(
                 modifier = Modifier.fillMaxWidth().haze(hazeState),
-                text = stringResource(Res.string.sample_settings_title)
+                text = br.com.arch.toolkit.sample.design.text(br.com.arch.toolkit.sample.design.AppText.SETTINGS)
             )
         }
     ) { padding ->
@@ -78,6 +78,7 @@ private fun Group(items: List<@Composable (modifier: Modifier) -> Unit>) {
 
 private fun allAppStyleOptions(viewModel: SettingsViewModel) =
     listOf<@Composable (Modifier) -> Unit>(
+        { LanguageSetting(it, viewModel.language()) },
         { ThemeSetting(it, viewModel.themeMode()) },
         { ContrastSetting(it, viewModel.contrastMode()) }
     )

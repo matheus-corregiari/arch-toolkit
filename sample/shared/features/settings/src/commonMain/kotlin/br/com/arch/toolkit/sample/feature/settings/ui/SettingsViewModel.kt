@@ -8,6 +8,9 @@ class SettingsViewModel(
     private val repository: SettingsRepository
 ) : ViewModel() {
     @Composable
+    fun language() = repository.language.state()
+
+    @Composable
     fun themeMode() = repository.themeMode.state()
 
     @Composable

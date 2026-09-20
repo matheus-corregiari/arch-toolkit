@@ -4,6 +4,15 @@
 package br.com.arch.toolkit.sample.shared.ui.home
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.graphics.vector.ImageVector
+import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.text
+import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute
+import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
+import com.pedrobneto.easy.navigation.core.model.NavigationRoute
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationDrawerItemDefaults
@@ -14,20 +23,13 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItemCo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.structure.core.FeatureRegistry
-import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun AppHome(
-    viewModel: HomeViewModel = koinViewModel()
-) {
+fun AppHome() {
     val itemModifier = Modifier.padding(horizontal = AppTheme.dimen.spacingXs)
     val itemColors = NavigationSuiteItemColors(
         navigationBarItemColors = NavigationBarItemColors(
@@ -70,10 +72,11 @@ fun AppHome(
         initialRoute = br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute,
         directionRegistries = registries
     )
-    val items by viewModel.featureFlow.collectAsState()
-    val selectedItem = viewModel.itemById(
-        if (navigation.currentRoute is br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute) "settings" else "repository-list-home"
+    val items = listOf(
+        NavigationItem(GithubRoute, AppText.GITHUB, Icons.Default.Code),
+        NavigationItem(SettingsRoute, AppText.SETTINGS, Icons.Default.Settings)
     )
+    val selectedItem = items.firstOrNull { it.route::class == navigation.currentRoute::class } ?: items.first()
     NavigationSuiteScaffold(
         layoutType = AppTheme.screen.navigationSuiteType,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
@@ -88,12 +91,7 @@ fun AppHome(
         contentColor = AppTheme.color.backgroundSurfaceSecondary,
         navigationSuiteItems = {
             addItems(itemModifier, selectedItem, items, itemColors) { item ->
-                val route = if (item.id == "settings") {
-                    br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
-                } else {
-                    br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute
-                }
-                navigation.navigateTo(route, com.pedrobneto.easy.navigation.core.model.LaunchStrategy.NewStack)
+                navigation.navigateTo(item.route, com.pedrobneto.easy.navigation.core.model.LaunchStrategy.NewStack)
             }
         },
         content = {
@@ -110,29 +108,31 @@ fun AppHome(
 @Suppress("LongParameterList")
 private fun NavigationSuiteScope.addItems(
     modifier: Modifier,
-    selected: FeatureRegistry,
-    items: List<FeatureRegistry>,
+    selected: NavigationItem,
+    items: List<NavigationItem>,
     colors: NavigationSuiteItemColors,
-    onMenuSelected: (FeatureRegistry) -> Unit
+    onMenuSelected: (NavigationItem) -> Unit
 ) = items.forEachIndexed { index, option ->
     item(
         colors = colors,
         modifier = modifier,
-        selected = selected.id == option.id,
+        selected = selected.route == option.route,
         onClick = { onMenuSelected(option) },
         label = {
             Text(
-                text = stringResource(option.title),
+                text = text(option.label),
                 textAlign = TextAlign.Center,
                 style = AppTheme.textStyle.paragraphCaptionS
             )
         },
         icon = {
             Icon(
-                imageVector = option.icon.getIcon(selected.id == option.id),
-                contentDescription = stringResource(option.title)
+                imageVector = option.icon,
+                contentDescription = text(option.label)
             )
         },
         alwaysShowLabel = true
     )
 }
+
+private data class NavigationItem(val route: NavigationRoute, val label: AppText, val icon: ImageVector)

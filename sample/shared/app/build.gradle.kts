@@ -12,6 +12,23 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(libs.arch.lumber)
+
+                implementation(libs.di.koin.composeViewModel)
+                implementation(libs.di.koin.compose)
+                implementation(libs.di.koin.core)
+                implementation(libs.jetbrains.datetime)
+                implementation(libs.arch.storage.core)
+
+                implementation(compose.ui)
+                implementation(compose.runtime)
+                implementation(compose.runtimeSaveable)
+                implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
+                implementation(compose.material3AdaptiveNavigationSuite)
+                implementation(compose.foundation)
+                implementation(compose.animation)
+
 
                 // Structure
                 api(project(":sample:shared:structure:core"))

@@ -21,6 +21,8 @@ internal class ToolkitSamplePlugin : Plugin<Project> {
         with(target.multiplatform) {
             androidTarget {}
             jvm {}
+            iosArm64()
+            iosSimulatorArm64()
             //wasmJs { wasm -> wasm.browser() }
             //js(IR) { browser() }
         }
