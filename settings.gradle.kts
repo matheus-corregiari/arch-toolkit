@@ -28,6 +28,8 @@ if (includeSamples) {
     include(":sample:shared:app")
     include(":sample:shared:features:github-sample")
     include(":sample:shared:features:settings")
+    include(":sample:shared:features:toolkit-sample")
+    include(":sample:shared:features:design-sample")
     include(":sample:shared:data:repository")
     include(":sample:shared:structure:design:widget")
     include(":sample:shared:structure:design:core")
