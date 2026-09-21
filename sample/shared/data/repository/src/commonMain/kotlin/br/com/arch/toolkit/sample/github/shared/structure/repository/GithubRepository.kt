@@ -10,4 +10,5 @@ interface GithubRepository {
 
 enum class GithubFailure { CONNECTION, RATE_LIMIT, NOT_FOUND, INVALID_RESPONSE }
 
-class GithubException(val failure: GithubFailure) : Exception(failure.name)
+class GithubException(val failure: GithubFailure, cause: Throwable? = null) :
+    Exception(failure.name, cause)

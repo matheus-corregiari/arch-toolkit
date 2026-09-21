@@ -17,9 +17,9 @@ expect fun createRequestClient(json: Json): HttpClient
 internal fun HttpClientConfig<*>.configureTimeouts() {
     expectSuccess = true
     install(HttpTimeout) {
-        requestTimeoutMillis = 30_000
-        connectTimeoutMillis = 15_000
-        socketTimeoutMillis = 30_000
+        requestTimeoutMillis = REQUEST_TIMEOUT_MILLIS
+        connectTimeoutMillis = CONNECT_TIMEOUT_MILLIS
+        socketTimeoutMillis = REQUEST_TIMEOUT_MILLIS
     }
 }
 
@@ -33,3 +33,6 @@ internal fun HttpClientConfig<*>.configureRequests(parser: Json) {
         }
     }
 }
+
+private const val REQUEST_TIMEOUT_MILLIS = 30_000L
+private const val CONNECT_TIMEOUT_MILLIS = 15_000L

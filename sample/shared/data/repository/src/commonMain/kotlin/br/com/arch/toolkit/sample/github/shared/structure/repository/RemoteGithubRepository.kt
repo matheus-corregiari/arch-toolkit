@@ -4,6 +4,8 @@ import br.com.arch.toolkit.sample.github.shared.structure.data.remote.api.Github
 import br.com.arch.toolkit.sample.github.shared.structure.repository.model.PageRO
 import br.com.arch.toolkit.sample.github.shared.structure.repository.model.RepoRO
 import io.ktor.client.plugins.ResponseException
+import io.ktor.http.HttpStatusCode
+import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 
@@ -16,11 +18,14 @@ class RemoteGithubRepository(private val api: GithubApi) : GithubRepository {
         }
         val response = api.searchRepositories(query = search, page = page, perPage = PAGE_SIZE)
         response.toRepositoryObject().apply {
-            nextPage = if (response.items.size == PAGE_SIZE && page * PAGE_SIZE < minOf(response.totalCount, SEARCH_LIMIT)) {
-                page + 1
-            } else {
-                null
-            }
+            nextPage =
+                if (response.items.size == PAGE_SIZE &&
+                    page * PAGE_SIZE < minOf(response.totalCount, SEARCH_LIMIT)
+                ) {
+                    page + 1
+                } else {
+                    null
+                }
         }
     }
 
@@ -35,16 +40,17 @@ class RemoteGithubRepository(private val api: GithubApi) : GithubRepository {
         throw cancelled
     } catch (failure: ResponseException) {
         throw GithubException(
-            when (failure.response.status.value) {
-                403, 429 -> GithubFailure.RATE_LIMIT
-                404 -> GithubFailure.NOT_FOUND
+            when (failure.response.status) {
+                HttpStatusCode.Forbidden, HttpStatusCode.TooManyRequests -> GithubFailure.RATE_LIMIT
+                HttpStatusCode.NotFound -> GithubFailure.NOT_FOUND
                 else -> GithubFailure.CONNECTION
-            }
+            },
+            failure
         )
     } catch (failure: SerializationException) {
-        throw GithubException(GithubFailure.INVALID_RESPONSE)
-    } catch (failure: Exception) {
-        throw GithubException(GithubFailure.CONNECTION)
+        throw GithubException(GithubFailure.INVALID_RESPONSE, failure)
+    } catch (failure: IOException) {
+        throw GithubException(GithubFailure.CONNECTION, failure)
     }
 
     private companion object {
