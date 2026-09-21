@@ -1,0 +1,64 @@
+package br.com.arch.toolkit.sample.shared
+
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.asSkiaBitmap
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.pressKey
+import androidx.compose.ui.test.runComposeUiTest
+import br.com.arch.toolkit.sample.design.LocalAppLanguage
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitScreen
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitViewModel
+import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
+import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
+import br.com.arch.toolkit.sample.github.shared.structure.repository.ToolkitDemoRepository
+import br.com.arch.toolkit.storage.memory.MemoryStoreProvider
+import org.jetbrains.skia.Image
+import java.io.File
+import kotlin.test.Test
+
+@OptIn(ExperimentalTestApi::class)
+class ToolkitUiTest {
+    @Test
+    fun logClearAndStorageControlsAreUsable() = runComposeUiTest {
+        val repository = ToolkitDemoRepository(MemoryStoreProvider(database = mutableMapOf()))
+        val model = ToolkitViewModel(repository)
+        try {
+            setContent {
+                CompositionLocalProvider(LocalAppLanguage provides AppLanguage.ENGLISH) {
+                    AppTheme {
+                        Surface { ToolkitScreen(model) }
+                    }
+                }
+            }
+            onNodeWithText(
+                "Write log"
+            ).performSemanticsAction(SemanticsActions.RequestFocus) { it() }
+            onNodeWithText("Write log").performKeyInput { pressKey(Key.Enter) }
+            onNodeWithText("Info: Hello from Arch Toolkit").assertIsDisplayed()
+            onNodeWithText("Clear").assertIsDisplayed().performClick()
+            onNodeWithText("Save").performScrollTo().performClick()
+            waitForIdle()
+            onNodeWithText("Saved").performScrollTo().assertIsDisplayed()
+            onNodeWithText("Delete").performScrollTo().performClick()
+            waitForIdle()
+            onNodeWithText("No saved value").performScrollTo().assertIsDisplayed()
+            val output = File("build/reports/showcase/toolkit.png")
+            output.parentFile.mkdirs()
+            val bitmap = onRoot().captureToImage().asSkiaBitmap()
+            output.writeBytes(requireNotNull(Image.makeFromBitmap(bitmap).encodeToData()).bytes)
+        } finally {
+            repository.close()
+        }
+    }
+}

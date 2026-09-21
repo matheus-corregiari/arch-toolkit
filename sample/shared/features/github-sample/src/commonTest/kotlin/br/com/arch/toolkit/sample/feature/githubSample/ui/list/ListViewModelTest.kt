@@ -96,7 +96,10 @@ class ListViewModelTest {
     fun restoresResultsAndFiltersWithoutReloadingOrRestoringLoading() = runTest {
         val saved = SavedStateHandle()
         var requests = 0
-        val repository = fake { _, _, _ -> requests++; page(3) }
+        val repository = fake { _, _, _ ->
+            requests++
+            page(3)
+        }
         val first = ListViewModel(repository, saved)
         first.search("storage", "Kotlin")
         advanceUntilIdle()
@@ -111,7 +114,11 @@ class ListViewModelTest {
     }
 
     private fun fake(search: suspend (String, String, Int) -> PageRO) = object : GithubRepository {
-        override suspend fun search(query: String, language: String, page: Int) = search.invoke(query, language, page)
+        override suspend fun search(
+            query: String,
+            language: String,
+            page: Int
+        ) = search.invoke(query, language, page)
         override suspend fun detail(owner: String, name: String): RepoRO = error("not used")
     }
 

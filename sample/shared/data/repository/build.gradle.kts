@@ -1,8 +1,6 @@
 plugins {
     id("toolkit-multiplatform-sample")
     id("kotlin-parcelize")
-    alias(libs.plugins.jetbrains.compose.compiler)
-    alias(libs.plugins.jetbrains.compose.kotlin)
     alias(libs.plugins.jetbrains.serialization)
 }
 

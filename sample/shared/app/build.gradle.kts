@@ -9,6 +9,12 @@ android.androidResources.enable = false
 android.buildFeatures.buildConfig = false
 
 kotlin {
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+        binaries.framework {
+            baseName = "Showcase"
+            isStatic = true
+        }
+    }
     sourceSets {
         commonMain {
             dependencies {
@@ -29,7 +35,6 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.animation)
 
-
                 // Structure
                 api(project(":sample:shared:structure:core"))
                 api(project(":sample:shared:structure:design:widget"))
@@ -42,25 +47,42 @@ kotlin {
                 implementation(libs.jetbrains.serialization)
 
                 implementation(project(":sample:shared:data:source:local"))
+                implementation(libs.room.runtime)
 
                 implementation(libs.easy.navigation)
                 implementation(libs.androidx.compose.material3.adaptive)
                 implementation("org.jetbrains.androidx.navigation3:navigation3-ui:1.2.0-alpha02")
                 implementation("androidx.navigation3:navigation3-runtime:1.2.0-alpha04")
 
+                implementation(project(":sample:shared:features:toolkit-sample"))
+                implementation(project(":sample:shared:features:design-sample"))
+
                 // Features
                 implementation(project(":sample:shared:features:github-sample"))
                 implementation(project(":sample:shared:features:settings"))
 
                 // Arch Toolkit Dependencies
-                implementation(libs.arch.event.observer.compose)
 
                 // Compose
                 implementation(compose.components.resources)
             }
         }
 
-        androidMain { dependencies { implementation(libs.arch.storage.datastore) } }
+        commonTest.dependencies {
+            implementation(libs.jetbrains.kotlin.test)
+        }
+        androidMain {
+            dependencies {
+                implementation(libs.arch.storage.datastore)
+                implementation(libs.androidx.lifecycle.process)
+                implementation(libs.google.material)
+            }
+        }
+        jvmTest.dependencies {
+            implementation(compose.desktop.uiTestJUnit4)
+            implementation(libs.arch.storage.memory)
+            implementation(compose.desktop.currentOs)
+        }
         jvmMain { dependencies { implementation(libs.arch.storage.datastore) } }
         appleMain { dependencies { implementation(libs.arch.storage.datastore) } }
         wasmJsMain { dependencies { implementation(libs.arch.storage.memory) } }

@@ -2,10 +2,6 @@
 
 package br.com.arch.toolkit.sample.feature.settings.ui
 
-import br.com.arch.toolkit.sample.design.AppText
-import br.com.arch.toolkit.sample.design.LocalAppLanguage
-import br.com.arch.toolkit.sample.design.text
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,16 +19,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
-import arch_toolkit.sample.shared.features.settings.generated.resources.Res
-import arch_toolkit.sample.shared.features.settings.generated.resources.sample_settings_contrast
-import arch_toolkit.sample.shared.features.settings.generated.resources.sample_settings_theme
+import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.LocalAppLanguage
+import br.com.arch.toolkit.sample.design.text
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
+import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
-import org.jetbrains.compose.resources.stringResource
 import kotlin.enums.EnumEntries
 
 @Composable

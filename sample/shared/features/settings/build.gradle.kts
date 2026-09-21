@@ -37,7 +37,6 @@ kotlin {
                 implementation(project(":sample:shared:data:repository"))
 
                 // Arch Toolkit Dependencies
-                implementation(libs.arch.event.observer.compose)
 
                 // Compose
                 implementation(compose.components.resources)

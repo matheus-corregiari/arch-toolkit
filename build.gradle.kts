@@ -32,3 +32,5 @@ subprojects {
         dependsOn(tasks.matching { it.name == "wasmJsTestTestProductionExecutableCompileSync" })
     }
 }
+
+apply(from = "gradle/showcase-boundaries.gradle.kts")

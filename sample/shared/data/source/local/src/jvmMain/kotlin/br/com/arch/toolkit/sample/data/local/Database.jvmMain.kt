@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import br.com.arch.toolkit.sample.github.shared.structure.data.local.defaultKeyValuePath
 import java.io.File
 
-actual fun databaseBuilder(): RoomDatabase.Builder<ShowcaseDatabase> = Room.databaseBuilder<ShowcaseDatabase>(
-    name = File(defaultKeyValuePath()).parentFile.resolve("showcase.db").absolutePath
-)
+fun databaseBuilder(): RoomDatabase.Builder<ShowcaseDatabase> =
+    Room.databaseBuilder<ShowcaseDatabase>(
+        name = File(defaultKeyValuePath()).parentFile.resolve("showcase.db").absolutePath
+    )

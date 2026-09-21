@@ -1,0 +1,58 @@
+import org.gradle.api.artifacts.ProjectDependency
+
+val verifyShowcaseBoundaries by tasks.registering {
+    group = "verification"
+    description = "Checks the showcase project dependency graph and layer boundaries."
+    doLast {
+        val samples = rootProject.subprojects.filter { it.path.startsWith(":sample:") }
+        val graph = samples.associate { project ->
+            project.path to project.configurations.flatMap { configuration ->
+                configuration.dependencies.withType<ProjectDependency>().map { it.path }
+            }.filter { it != project.path }.toSet()
+        }
+        graph.forEach { (from, dependencies) ->
+            dependencies.filter { it.startsWith(":sample:") }.forEach { to ->
+                val allowed = when {
+                    from.startsWith(":sample:target:") -> to == ":sample:shared:app"
+                    from == ":sample:shared:app" -> true
+                    from.startsWith(":sample:shared:features:") ->
+                        to == ":sample:shared:data:repository" || to.startsWith(":sample:shared:structure:design:") ||
+                            to == ":sample:shared:structure:core"
+                    from == ":sample:shared:data:repository" ->
+                        to.startsWith(":sample:shared:data:source:") || to == ":sample:shared:structure:core"
+                    from.endsWith(":design:widget") -> to.endsWith(":design:core") || to == ":sample:shared:structure:core"
+                    from.endsWith(":design:core") -> to == ":sample:shared:structure:core"
+                    else -> false
+                }
+                check(allowed) { "Forbidden showcase dependency: $from -> $to" }
+            }
+        }
+        fun visit(node: String, ancestors: Set<String>) {
+            check(node !in ancestors) { "Showcase dependency cycle: $ancestors -> $node" }
+            graph[node].orEmpty().forEach { visit(it, ancestors + node) }
+        }
+        graph.keys.forEach { visit(it, emptySet()) }
+    }
+}
+tasks.named("ciLint") { dependsOn(verifyShowcaseBoundaries) }
+
+// Easy Navigation 1.0.1 calls the Lumber Oak-returning tag ABI (changed in 1.2).
+// Restrict this compatibility pin to sample configurations; library releases keep their version.
+subprojects {
+    if (path.startsWith(":sample:")) {
+        configurations.configureEach {
+            resolutionStrategy.eachDependency {
+                if (requested.group == "io.github.matheus-corregiari" &&
+                    requested.name.startsWith("arch-lumber")) {
+                    useVersion("1.1.0")
+                    because("Easy Navigation 1.0.1 requires the Lumber tag ABI before 1.2")
+                }
+                if (requested.group == "io.github.matheus-corregiari" &&
+                    requested.name.startsWith("storage-")) {
+                    useVersion("2.0.0-rc16")
+                    because("Storage 1.0.0 requires Lumber 1.4; rc16 shares Navigation's Lumber 1.1 ABI")
+                }
+            }
+        }
+    }
+}

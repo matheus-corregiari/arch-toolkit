@@ -55,14 +55,20 @@ class ListViewModel(
             try {
                 val result = repository.search(snapshot.query, snapshot.language, page)
                 if (generation != currentGeneration) return@launch
-                update(snapshot.copy(
-                    items = (snapshot.items + result.items).distinctBy { it.id },
-                    nextPage = result.nextPage
-                ))
+                update(
+                    snapshot.copy(
+                        items = (snapshot.items + result.items).distinctBy { it.id },
+                        nextPage = result.nextPage
+                    )
+                )
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (failure: GithubException) {
-                if (generation == currentGeneration) update(snapshot.copy(failure = failure.failure))
+                if (generation ==
+                    currentGeneration
+                ) {
+                    update(snapshot.copy(failure = failure.failure))
+                }
             }
         }
     }
@@ -76,10 +82,12 @@ class ListViewModel(
         val snapshot = savedState.get<String>(STATE_KEY) ?: return GithubListState()
         return try {
             Json.decodeFromString<GithubListState>(snapshot).copy(loading = false)
-        } catch (invalid: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             GithubListState()
         }
     }
 
-    private companion object { const val STATE_KEY = "github-search-v3" }
+    private companion object {
+        const val STATE_KEY = "github-search-v3"
+    }
 }

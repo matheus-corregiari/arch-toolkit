@@ -1,6 +1,7 @@
 package br.com.arch.toolkit.sample.feature.githubSample.ui
 
 import androidx.compose.runtime.Composable
+import br.com.arch.toolkit.sample.feature.githubSample.ui.detail.RepositoryDetailScreen
 import br.com.arch.toolkit.sample.feature.githubSample.ui.list.RepositoryListScreen
 import com.pedrobneto.easy.navigation.core.annotation.Deeplink
 import com.pedrobneto.easy.navigation.core.annotation.ParentRoute
@@ -16,7 +17,9 @@ data object GithubRoute : NavigationRoute
 @Scope("github")
 @Deeplink("/github")
 @Composable
-fun GithubDestination() { RepositoryListScreen() }
+fun GithubDestination() {
+    RepositoryListScreen()
+}
 
 @Serializable
 data class GithubDetailRoute(val owner: String, val name: String) : NavigationRoute
@@ -27,5 +30,5 @@ data class GithubDetailRoute(val owner: String, val name: String) : NavigationRo
 @ParentRoute(GithubRoute::class)
 @Composable
 fun GithubDetailDestination(route: GithubDetailRoute) {
-    br.com.arch.toolkit.sample.feature.githubSample.ui.detail.RepositoryDetailScreen(route)
+    RepositoryDetailScreen(route)
 }

@@ -19,13 +19,19 @@ data class ViewedRepositoryEntity(val owner: String, val name: String, val viewe
 
 @Dao
 interface ViewedRepositoryDao {
-    @Query("SELECT * FROM ViewedRepositoryEntity ORDER BY viewedAtMillis DESC, owner, name LIMIT 20")
+    @Query(
+        "SELECT * FROM ViewedRepositoryEntity ORDER BY viewedAtMillis DESC, owner, name LIMIT 20"
+    )
     fun observe(): Flow<List<ViewedRepositoryEntity>>
 
     @Upsert
     suspend fun upsert(item: ViewedRepositoryEntity)
 
-    @Query("DELETE FROM ViewedRepositoryEntity WHERE owner || '/' || name NOT IN (SELECT owner || '/' || name FROM ViewedRepositoryEntity ORDER BY viewedAtMillis DESC, owner, name LIMIT 20)")
+    @Query(
+        "DELETE FROM ViewedRepositoryEntity WHERE owner || '/' || name NOT IN " +
+            "(SELECT owner || '/' || name FROM ViewedRepositoryEntity " +
+            "ORDER BY viewedAtMillis DESC, owner, name LIMIT 20)"
+    )
     suspend fun trim()
 
     @Transaction
@@ -46,9 +52,9 @@ expect object ShowcaseDatabaseConstructor : RoomDatabaseConstructor<ShowcaseData
     override fun initialize(): ShowcaseDatabase
 }
 
-expect fun databaseBuilder(): RoomDatabase.Builder<ShowcaseDatabase>
-
-fun createShowcaseDatabase(): ShowcaseDatabase = databaseBuilder()
+fun createShowcaseDatabase(
+    builder: RoomDatabase.Builder<ShowcaseDatabase>
+): ShowcaseDatabase = builder
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()

@@ -32,18 +32,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
-import arch_toolkit.sample.shared.features.github_sample.generated.resources.Res
-import arch_toolkit.sample.shared.features.github_sample.generated.resources.sample_github_list_last_updated
+import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.LocalAppLanguage
+import br.com.arch.toolkit.sample.design.text
 import br.com.arch.toolkit.sample.feature.githubSample.ui.list.model.RepoVO
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusM
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusXs
-import br.com.arch.toolkit.sample.github.shared.structure.core.extension.abbreviate
-import br.com.arch.toolkit.sample.github.shared.structure.core.extension.formatAsString
+import br.com.arch.toolkit.sample.github.shared.structure.core.extension.localized
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
-import org.jetbrains.compose.resources.stringResource
 
 internal class ManyListState(
     private val list: List<RepoVO>,
@@ -64,7 +63,9 @@ internal class ManyListState(
         ),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
     ) {
-        items(list, key = { it.id }) { item -> Item(Modifier.fillMaxWidth().clickable { onSelect(item) }, item) }
+        items(list, key = {
+            it.id
+        }) { item -> Item(Modifier.fillMaxWidth().clickable { onSelect(item) }, item) }
         item { Spacer(Modifier.size(AppTheme.dimen.spacingG)) }
     }
 
@@ -100,19 +101,19 @@ internal class ManyListState(
         ) {
             Badge(
                 icon = Icons.Outlined.Star,
-                text = item.stargazersCount.abbreviate()
+                text = item.stargazersCount.localized(LocalAppLanguage.current)
             )
             Badge(
                 icon = Icons.Filled.Visibility,
-                text = item.watchersCount.abbreviate()
+                text = item.watchersCount.localized(LocalAppLanguage.current)
             )
             Badge(
                 icon = Icons.Filled.ForkLeft,
-                text = item.forksCount.abbreviate()
+                text = item.forksCount.localized(LocalAppLanguage.current)
             )
             Badge(
                 icon = Icons.Filled.BugReport,
-                text = item.openIssuesCount.abbreviate()
+                text = item.openIssuesCount.localized(LocalAppLanguage.current)
             )
         }
         RepositoryDetails(item)
@@ -130,10 +131,9 @@ internal class ManyListState(
             )
             Spacer(Modifier.size(AppTheme.dimen.spacingXxs))
             Text(
-                text = stringResource(
-                    Res.string.sample_github_list_last_updated,
-                    item.updatedAt.formatAsString()
-                ),
+                text = "${text(
+                    AppText.UPDATED
+                )}: ${item.updatedAt.localized(LocalAppLanguage.current)}",
                 style = AppTheme.textStyle.paragraphCaptionXs
             )
         }

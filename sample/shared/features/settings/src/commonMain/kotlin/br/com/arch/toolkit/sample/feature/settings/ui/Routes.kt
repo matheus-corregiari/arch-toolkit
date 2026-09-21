@@ -14,4 +14,6 @@ data object SettingsRoute : NavigationRoute
 @Scope("settings")
 @Deeplink("/settings")
 @Composable
-fun SettingsDestination() { SettingsScreen() }
+fun SettingsDestination() {
+    SettingsScreen()
+}

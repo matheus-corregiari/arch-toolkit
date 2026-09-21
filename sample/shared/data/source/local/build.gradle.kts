@@ -20,9 +20,12 @@ kotlin {
         }
         androidMain {
             dependencies {
-                implementation(libs.arch.android)
                 implementation(libs.arch.storage.datastore)
             }
+        }
+        jvmTest.dependencies {
+            implementation(libs.jetbrains.kotlin.test)
+            implementation(libs.jetbrains.coroutines.test)
         }
         jvmMain { dependencies { implementation(libs.arch.storage.datastore) } }
         appleMain { dependencies { implementation(libs.arch.storage.datastore) } }

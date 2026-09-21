@@ -5,14 +5,10 @@ package br.com.arch.toolkit.sample.shared.ui.home
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.ui.graphics.vector.ImageVector
-import br.com.arch.toolkit.sample.design.AppText
-import br.com.arch.toolkit.sample.design.text
-import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute
-import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
-import com.pedrobneto.easy.navigation.core.model.NavigationRoute
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationDrawerItemDefaults
@@ -23,60 +19,59 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItemCo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.text
+import br.com.arch.toolkit.sample.feature.design.DesignRoute
+import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute
+import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitRoute
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
+import com.pedrobneto.easy.navigation.core.Navigation
+import com.pedrobneto.easy.navigation.core.model.LaunchStrategy
+import com.pedrobneto.easy.navigation.core.model.NavigationRoute
+import com.pedrobneto.easy.navigation.core.rememberNavigationController
+import com.pedrobneto.easy.navigation.registry.DesignDirectionRegistry
+import com.pedrobneto.easy.navigation.registry.GithubDirectionRegistry
+import com.pedrobneto.easy.navigation.registry.SettingsDirectionRegistry
+import com.pedrobneto.easy.navigation.registry.ToolkitDirectionRegistry
 
 @Composable
-fun AppHome() {
+fun AppHome(deepLink: String? = null, onDeepLinkHandled: () -> Unit = {}) {
     val itemModifier = Modifier.padding(horizontal = AppTheme.dimen.spacingXs)
-    val itemColors = NavigationSuiteItemColors(
-        navigationBarItemColors = NavigationBarItemColors(
-            selectedIconColor = AppTheme.color.iconPrimary,
-            selectedTextColor = AppTheme.color.textTitle,
-            selectedIndicatorColor = AppTheme.color.fillSecondary,
-            unselectedIconColor = AppTheme.color.iconSecondary,
-            unselectedTextColor = AppTheme.color.textParagraph,
-            disabledIconColor = AppTheme.color.iconDisabled,
-            disabledTextColor = AppTheme.color.textDisabled
-        ),
-        navigationRailItemColors = NavigationRailItemColors(
-            selectedIconColor = AppTheme.color.iconPrimary,
-            selectedTextColor = AppTheme.color.textTitle,
-            selectedIndicatorColor = AppTheme.color.backgroundSurfaceTertiary,
-            unselectedIconColor = AppTheme.color.iconSecondary,
-            unselectedTextColor = AppTheme.color.textParagraph,
-            disabledIconColor = AppTheme.color.iconDisabled,
-            disabledTextColor = AppTheme.color.textDisabled
-        ),
-        navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
-            selectedContainerColor = AppTheme.color.backgroundSurfaceTertiary,
-            unselectedContainerColor = Color.Unspecified,
-            selectedIconColor = AppTheme.color.iconPrimary,
-            unselectedIconColor = AppTheme.color.iconSecondary,
-            selectedTextColor = AppTheme.color.textTitle,
-            unselectedTextColor = AppTheme.color.textParagraph,
-            selectedBadgeColor = AppTheme.color.backgroundBrandPrimary,
-            unselectedBadgeColor = AppTheme.color.backgroundSurfaceTertiaryDisabled
-        )
-    )
+    val itemColors = navigationItemColors()
 
-    val registries = androidx.compose.runtime.remember {
+    val registries = remember {
         listOf(
-            com.pedrobneto.easy.navigation.registry.GithubDirectionRegistry,
-            com.pedrobneto.easy.navigation.registry.SettingsDirectionRegistry
+            GithubDirectionRegistry,
+            SettingsDirectionRegistry,
+            ToolkitDirectionRegistry,
+            DesignDirectionRegistry
         )
     }
-    val navigation = com.pedrobneto.easy.navigation.core.rememberNavigationController(
-        initialRoute = br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute,
+    val navigation = rememberNavigationController(
+        initialRoute = GithubRoute,
         directionRegistries = registries
     )
+    LaunchedEffect(deepLink) {
+        deepLink?.let { link ->
+            showcaseLinkPath(link)?.let { navigation.safeNavigateTo(it) }
+            onDeepLinkHandled()
+        }
+    }
     val items = listOf(
         NavigationItem(GithubRoute, AppText.GITHUB, Icons.Default.Code),
+        NavigationItem(ToolkitRoute, AppText.TOOLKIT, Icons.Default.Build),
+        NavigationItem(DesignRoute, AppText.DESIGN, Icons.Default.Palette),
         NavigationItem(SettingsRoute, AppText.SETTINGS, Icons.Default.Settings)
     )
-    val selectedItem = items.firstOrNull { it.route::class == navigation.currentRoute::class } ?: items.first()
+    val selectedItem =
+        items.firstOrNull { it.route::class == navigation.currentRoute::class } ?: items.first()
     NavigationSuiteScaffold(
         layoutType = AppTheme.screen.navigationSuiteType,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
@@ -88,16 +83,19 @@ fun AppHome() {
             navigationDrawerContentColor = AppTheme.color.backgroundSurfaceDefault
         ),
         containerColor = AppTheme.color.backgroundSurfaceDefault,
-        contentColor = AppTheme.color.backgroundSurfaceSecondary,
+        contentColor = AppTheme.color.textParagraph,
         navigationSuiteItems = {
             addItems(itemModifier, selectedItem, items, itemColors) { item ->
-                navigation.navigateTo(item.route, com.pedrobneto.easy.navigation.core.model.LaunchStrategy.NewStack)
+                navigation.navigateTo(
+                    item.route,
+                    LaunchStrategy.NewStack
+                )
             }
         },
         content = {
-            com.pedrobneto.easy.navigation.core.Navigation(
+            Navigation(
                 modifier = Modifier,
-                initialRoute = br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute,
+                initialRoute = GithubRoute,
                 directionRegistries = registries,
                 controller = navigation
             )
@@ -112,7 +110,7 @@ private fun NavigationSuiteScope.addItems(
     items: List<NavigationItem>,
     colors: NavigationSuiteItemColors,
     onMenuSelected: (NavigationItem) -> Unit
-) = items.forEachIndexed { index, option ->
+) = items.forEach { option ->
     item(
         colors = colors,
         modifier = modifier,
@@ -135,4 +133,40 @@ private fun NavigationSuiteScope.addItems(
     )
 }
 
-private data class NavigationItem(val route: NavigationRoute, val label: AppText, val icon: ImageVector)
+private data class NavigationItem(
+    val route: NavigationRoute,
+    val label: AppText,
+    val icon: ImageVector
+)
+
+@Composable
+private fun navigationItemColors() = NavigationSuiteItemColors(
+    navigationBarItemColors = NavigationBarItemColors(
+        selectedIconColor = AppTheme.color.iconPrimary,
+        selectedTextColor = AppTheme.color.textTitle,
+        selectedIndicatorColor = AppTheme.color.fillSecondary,
+        unselectedIconColor = AppTheme.color.iconSecondary,
+        unselectedTextColor = AppTheme.color.textParagraph,
+        disabledIconColor = AppTheme.color.iconDisabled,
+        disabledTextColor = AppTheme.color.textDisabled
+    ),
+    navigationRailItemColors = NavigationRailItemColors(
+        selectedIconColor = AppTheme.color.iconPrimary,
+        selectedTextColor = AppTheme.color.textTitle,
+        selectedIndicatorColor = AppTheme.color.backgroundSurfaceTertiary,
+        unselectedIconColor = AppTheme.color.iconSecondary,
+        unselectedTextColor = AppTheme.color.textParagraph,
+        disabledIconColor = AppTheme.color.iconDisabled,
+        disabledTextColor = AppTheme.color.textDisabled
+    ),
+    navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
+        selectedContainerColor = AppTheme.color.backgroundSurfaceTertiary,
+        unselectedContainerColor = Color.Unspecified,
+        selectedIconColor = AppTheme.color.iconPrimary,
+        unselectedIconColor = AppTheme.color.iconSecondary,
+        selectedTextColor = AppTheme.color.textTitle,
+        unselectedTextColor = AppTheme.color.textParagraph,
+        selectedBadgeColor = AppTheme.color.backgroundBrandPrimary,
+        unselectedBadgeColor = AppTheme.color.backgroundSurfaceTertiaryDisabled
+    )
+)

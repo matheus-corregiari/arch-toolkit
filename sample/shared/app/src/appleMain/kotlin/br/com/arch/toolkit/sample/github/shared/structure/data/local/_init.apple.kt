@@ -2,6 +2,7 @@
 
 package br.com.arch.toolkit.sample.github.shared.structure.data.local
 
+import br.com.arch.toolkit.sample.data.local.databaseBuilder
 import br.com.arch.toolkit.sample.github.shared.structure.core.DEFAULT_DATA_STORE
 import br.com.arch.toolkit.sample.github.shared.structure.core.DEFAULT_KEY_VALUE
 import br.com.arch.toolkit.storage.core.StorageProvider
@@ -12,6 +13,7 @@ import org.koin.dsl.module
 
 actual object LocalSourceModule {
     actual val module: Module = module {
+        single { databaseBuilder() }
         single(named(DEFAULT_KEY_VALUE)) { defaultKeyValueDataStore() }
         single<StorageProvider>(named(DEFAULT_DATA_STORE)) {
             DataStoreProvider(get(named(DEFAULT_KEY_VALUE)))

@@ -19,6 +19,7 @@ kotlin {
                 implementation(libs.di.koin.compose)
                 implementation(libs.di.koin.core)
                 implementation(libs.jetbrains.datetime)
+                implementation(libs.jetbrains.serialization)
                 implementation(libs.arch.storage.core)
 
                 implementation(compose.ui)
@@ -37,7 +38,6 @@ kotlin {
                 implementation(project(":sample:shared:data:repository"))
 
                 // Arch Toolkit Dependencies
-                implementation(libs.arch.event.observer.compose)
 
                 // Compose
                 implementation(compose.components.resources)

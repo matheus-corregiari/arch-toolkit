@@ -1,11 +1,10 @@
 package br.com.arch.toolkit.sample.feature.githubSample.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import br.com.arch.toolkit.sample.design.AppText
 import br.com.arch.toolkit.sample.design.text
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.ErrorState
 import br.com.arch.toolkit.sample.github.shared.structure.repository.GithubFailure
 
 @Composable
@@ -16,8 +15,5 @@ fun GithubError(failure: GithubFailure, retry: () -> Unit) {
         GithubFailure.NOT_FOUND -> AppText.NOT_FOUND_ERROR
         GithubFailure.INVALID_RESPONSE -> AppText.RESPONSE_ERROR
     }
-    Column {
-        Text(text(message))
-        Button(onClick = retry) { Text(text(AppText.RETRY)) }
-    }
+    ErrorState(Modifier, text(message), retryLabel = text(AppText.RETRY), retry = retry)
 }

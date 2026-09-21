@@ -17,8 +17,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import arch_toolkit.sample.shared.features.settings.generated.resources.Res
-import arch_toolkit.sample.shared.features.settings.generated.resources.sample_settings_title
+import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.text
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.ScreenTitle
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusM
@@ -26,7 +26,6 @@ import br.com.arch.toolkit.sample.github.shared.designSystem.component.fillAdjus
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.haze
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -36,7 +35,7 @@ internal fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
         topBar = {
             ScreenTitle(
                 modifier = Modifier.fillMaxWidth().haze(hazeState),
-                text = br.com.arch.toolkit.sample.design.text(br.com.arch.toolkit.sample.design.AppText.SETTINGS)
+                text = text(AppText.SETTINGS)
             )
         }
     ) { padding ->
