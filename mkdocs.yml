@@ -36,6 +36,7 @@ nav:
       - Overview: ecosystem/index.md
       - Branching: ecosystem/gitflow.md
       - CI and Release: ecosystem/ci-release.md
+  - Showcase: showcase.md
   - Project:
       - Changelog: CHANGELOG.md
       - Dependencies: dependencies.md

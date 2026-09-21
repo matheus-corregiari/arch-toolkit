@@ -107,3 +107,13 @@ The patches in sibling repositories can be adopted after their artifacts are pub
 Robolectric 4.17 Android tests require `--add-opens=java.base/jdk.internal.access=ALL-UNNAMED`
 on JDK 21. This option is scoped to test JVMs, following the
 [Robolectric setup guide](https://robolectric.org/getting-started/).
+
+## Showcase compatibility
+
+The showcase requires Easy Navigation 1.0.1. Its binaries call Lumber's pre-1.2
+`tag` API. Sample-only resolution in `gradle/showcase-boundaries.gradle.kts` selects
+Lumber 1.1.0 and Storage 2.0.0-rc16, whose published metadata uses that same ABI.
+Storage stable 1.0.0 uses Lumber 1.4.0 and cannot be combined with the selected
+navigation release. These pins do not change the published Toolkit library's
+dependencies. Remove them only after Android release shrinking, JVM navigation
+and iOS linking/tests pass with an upstream-compatible combination.

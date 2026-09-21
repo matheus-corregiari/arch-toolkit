@@ -55,3 +55,10 @@ and [contribution guide](docs/wiki/contribution-guide.md).
 
 See [release notes](docs/CHANGELOG.md#200-rc19), [dependency versions](docs/dependencies.md) and
 [coverage configuration](docs/ecosystem/ci-release.md#coverage-and-codecov). This release is a candidate until tagged and published.
+
+## Showcase
+
+The [Arch Toolkit Showcase](docs/showcase.md) demonstrates GitHub browsing, Lumber,
+Storage, shared design and persistent language/theme settings. Run Desktop with
+`./gradlew :sample:target:desktop:run -PincludeSamples`. Android and iOS share the
+feature code; web remains pending.

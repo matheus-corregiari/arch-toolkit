@@ -2,7 +2,20 @@
 
 ## 2.0.0-rc19
 
-Maintenance changes based on tag `2.0.0-rc18`.
+Showcase and maintenance changes based on tag `2.0.0-rc18`.
+
+### Showcase
+
+- Expand the sample into GitHub, Toolkit, Design and Settings destinations using
+  Easy Navigation and Navigation3; separate composition, features, data and design.
+- Add cancellable search, filters, pagination retry, direct-link details and Room history.
+- Add persistent English/Portuguese settings and localized dates/counts.
+- Add executable Lumber/Storage demos with source-generated snippets and a design catalogue.
+- Add an iOS SwiftUI host and macOS CI build; keep web pending without JS/Wasm navigation artifacts.
+- Remove trust-all TLS overrides and check module dependency boundaries.
+- Pin Lumber 1.1.0 and Storage 2.0.0-rc16 in sample configurations for Easy Navigation binary compatibility;
+  published Toolkit dependency versions are unchanged by this pin.
+- Document running, extending and using the showcase as an app base.
 
 ### Changes
 
