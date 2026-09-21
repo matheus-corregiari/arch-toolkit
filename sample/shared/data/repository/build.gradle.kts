@@ -14,23 +14,30 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(libs.arch.lumber)
                 implementation(libs.jetbrains.datetime)
                 implementation(libs.arch.storage.core)
 
                 implementation(project(":sample:shared:structure:core"))
 
                 // Arch Toolkit Dependencies
-                api(libs.arch.event.observer)
-                implementation(project(":toolkit:multi:splinter"))
 
                 implementation(libs.jetbrains.serialization)
 
                 implementation(project(":sample:shared:data:source:remote"))
+                implementation(project(":sample:shared:data:source:local"))
+                implementation(libs.room.runtime)
 
                 implementation(libs.ktor.content.negotiation)
 
                 // Http
             }
+        }
+
+        commonTest.dependencies {
+            implementation(libs.jetbrains.kotlin.test)
+            implementation(libs.jetbrains.coroutines.test)
+            implementation(libs.arch.storage.memory)
         }
 
         javaMain {
