@@ -33,6 +33,19 @@ jobs:
         run: python -m unittest discover -s .github/scripts -p 'test_release_notes.py'
       - name: Build, test and lint all configured targets and samples
         run: ./gradlew ciBuild ciTest ciCoverage ciLint ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc19 --continue --no-daemon
+      - name: Build iOS showcase host
+        if: runner.os == 'macOS'
+        run: |
+          brew install xcodegen
+          xcodegen generate --spec sample/target/ios/project.yml
+          xcodebuild -project sample/target/ios/Showcase.xcodeproj -scheme Showcase -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+      - name: Save showcase test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: showcase-tests-${{ matrix.os }}
+          path: sample/shared/**/build/reports/tests/
+          if-no-files-found: warn
       - name: Verify documentation
         run: python -m mkdocs build --strict
       - name: Save merged coverage reports
