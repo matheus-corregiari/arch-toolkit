@@ -251,15 +251,16 @@ private sealed class LightColor : AppColor() {
     override val textTitle: Color = Color(0xFF000000)
 
     override fun colorScheme() = lightColorScheme().copy(
-        primary = backgroundSurfaceDefault,
-        primaryContainer = backgroundSurfaceDefault,
-        onPrimary = textTitle,
+        primary = backgroundBrandPrimary,
+        primaryContainer = backgroundBrandPrimary,
+        onPrimary = componentsFixed,
         secondary = backgroundBrandPrimary,
         secondaryContainer = backgroundBrandPrimary,
-        onSecondary = textTitle,
+        onSecondary = componentsFixed,
+        surface = backgroundSurfaceDefault,
         onSurface = textParagraph,
         background = backgroundSurfaceDefault,
-        onBackground = backgroundSurfaceDefault,
+        onBackground = textParagraph,
         error = textNegative,
         onError = textTitle
     )
@@ -376,15 +377,16 @@ private sealed class DarkColor : AppColor() {
     override val textTitle: Color = Color(0xFFFFFFFF)
 
     override fun colorScheme() = darkColorScheme().copy(
-        primary = backgroundSurfaceDefault,
-        primaryContainer = backgroundSurfaceDefault,
-        onPrimary = textTitle,
+        primary = backgroundBrandPrimary,
+        primaryContainer = backgroundBrandPrimary,
+        onPrimary = componentsFixed,
         secondary = backgroundBrandPrimary,
         secondaryContainer = backgroundBrandPrimary,
-        onSecondary = textTitle,
+        onSecondary = componentsFixed,
+        surface = backgroundSurfaceDefault,
         onSurface = textParagraph,
         background = backgroundSurfaceDefault,
-        onBackground = backgroundSurfaceDefault,
+        onBackground = textParagraph,
         error = textNegative,
         onError = textTitle
     )

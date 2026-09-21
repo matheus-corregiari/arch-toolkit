@@ -20,10 +20,19 @@ enum class AppText(val english: String, val portuguese: String) {
     EMPTY("No repositories found", "Nenhum repositório encontrado"),
     LOADING("Loading", "Carregando"),
     BACK("Back", "Voltar"),
-    CONNECTION_ERROR("Unable to connect. Please try again.", "Não foi possível conectar. Tente novamente."),
-    RATE_LIMIT_ERROR("GitHub request limit reached. Try again later.", "Limite de requisições do GitHub atingido. Tente mais tarde."),
+    CONNECTION_ERROR(
+        "Unable to connect. Please try again.",
+        "Não foi possível conectar. Tente novamente."
+    ),
+    RATE_LIMIT_ERROR(
+        "GitHub request limit reached. Try again later.",
+        "Limite de requisições do GitHub atingido. Tente mais tarde."
+    ),
     NOT_FOUND_ERROR("Repository not found.", "Repositório não encontrado."),
-    RESPONSE_ERROR("GitHub returned an unexpected response.", "O GitHub retornou uma resposta inesperada."),
+    RESPONSE_ERROR(
+        "GitHub returned an unexpected response.",
+        "O GitHub retornou uma resposta inesperada."
+    ),
     OPEN_GITHUB("Open on GitHub", "Abrir no GitHub"),
     DESCRIPTION("Description", "Descrição"),
     NO_DESCRIPTION("No description provided", "Sem descrição"),
@@ -49,8 +58,14 @@ enum class AppText(val english: String, val portuguese: String) {
     RESULT("Result", "Resultado"),
     SNIPPET("Executed code", "Código executado"),
     DOCUMENTATION("Documentation", "Documentação"),
-    LUMBER_DESCRIPTION("Write logs to a dedicated tree. The latest 100 entries stay visible.", "Escreva logs em uma árvore dedicada. As últimas 100 entradas ficam visíveis."),
-    STORAGE_DESCRIPTION("Save, read and remove text. Saved values survive restarting the app.", "Salve, leia e remova texto. Os valores salvos persistem ao reiniciar o app."),
+    LUMBER_DESCRIPTION(
+        "Write logs to a dedicated tree. The latest 100 entries stay visible.",
+        "Escreva logs em uma árvore dedicada. As últimas 100 entradas ficam visíveis."
+    ),
+    STORAGE_DESCRIPTION(
+        "Save, read and remove text. Saved values survive restarting the app.",
+        "Salve, leia e remova texto. Os valores salvos persistem ao reiniciar o app."
+    ),
     MISSING_VALUE("No saved value", "Nenhum valor salvo"),
     SAVED("Saved", "Salvo"),
     DELETED("Deleted", "Excluído"),
@@ -63,6 +78,19 @@ enum class AppText(val english: String, val portuguese: String) {
     ENABLED("Enabled", "Habilitado"),
     DISABLED("Disabled", "Desabilitado"),
     SELECTED("Selected", "Selecionado"),
+    ARCH_ANDROID_DESCRIPTION(
+        "Android lifecycle, context and device helpers.",
+        "Utilitários Android para ciclo de vida, contexto e dispositivos."
+    ),
+    EVENT_OBSERVER_DESCRIPTION(
+        "Observe coroutine results with lifecycle and Compose adapters.",
+        "Observe resultados de corrotinas com adaptadores de ciclo de vida e Compose."
+    ),
+    SPLINTER_DESCRIPTION(
+        "Model asynchronous loading, data and failure states.",
+        "Modele estados assíncronos de carregamento, dados e falhas."
+    ),
+    STORAGE_ERROR("Unable to access saved data.", "Não foi possível acessar os dados salvos."),
     RECENT("Recently viewed", "Vistos recentemente");
 
     fun resolve(language: AppLanguage): String = when (language) {

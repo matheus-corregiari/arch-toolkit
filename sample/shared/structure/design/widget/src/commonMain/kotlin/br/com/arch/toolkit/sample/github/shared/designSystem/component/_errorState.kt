@@ -31,6 +31,7 @@ fun ErrorState(
     descriptionColor: Color = AppTheme.color.textParagraph,
     errorColor: Color = AppTheme.color.textNegative,
     iconColor: Color = AppTheme.color.iconPrimary,
+    retryLabel: String = "Try again",
     retry: (() -> Unit)? = null
 ) = Column(
     modifier = modifier,
@@ -84,7 +85,7 @@ fun ErrorState(
     retry?.let {
         AppButton(
             modifier = Modifier.padding(top = AppTheme.dimen.spacingM),
-            text = "Try Again",
+            text = retryLabel,
             onClick = it,
             style = AppButton.Style.Secondary,
             size = AppButton.Size.Small

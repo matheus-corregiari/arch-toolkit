@@ -8,9 +8,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ScreenInfo
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
 
 @Immutable
 data object AppTheme {
@@ -63,4 +63,3 @@ fun AppTheme(
         }
     )
 }
-
