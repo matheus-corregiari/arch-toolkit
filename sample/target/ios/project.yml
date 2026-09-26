@@ -25,6 +25,7 @@ targets:
         CADisableMinimumFrameDurationOnPhone: true
     settings:
       base:
+        PRODUCT_MODULE_NAME: ShowcaseHost
         PRODUCT_BUNDLE_IDENTIFIER: br.com.arch.toolkit.showcase
         FRAMEWORK_SEARCH_PATHS: "$(inherited) $(SRCROOT)/../../shared/app/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"
         OTHER_LDFLAGS: "$(inherited) -framework Showcase -lsqlite3"
