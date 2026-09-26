@@ -51,3 +51,12 @@ Android Context is injected through Koin rather than an Arch Android singleton.
 
 Focused implementation commits are on the existing release branch. The existing
 PR must remain open. No merge, tag, release or package publication is authorized.
+
+## First remote validation
+
+- Ubuntu validation and CodeQL passed at `5be6fe1` (run 35634000680).
+- macOS completed native compilation and simulator tests; the app's two
+  simulator link tests passed. The overall job failed on the JVM demo test
+  asserting the Storage result before its asynchronous completion.
+- The demo UI test now waits for the operation's explicit completion state
+  before asserting the rendered result. The host build still requires a green run.

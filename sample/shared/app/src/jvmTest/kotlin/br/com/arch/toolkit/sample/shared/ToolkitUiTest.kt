@@ -16,6 +16,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.test.runComposeUiTest
+import br.com.arch.toolkit.sample.design.AppText
 import br.com.arch.toolkit.sample.design.LocalAppLanguage
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitScreen
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitViewModel
@@ -48,10 +49,10 @@ class ToolkitUiTest {
             onNodeWithText("Info: Hello from Arch Toolkit").assertIsDisplayed()
             onNodeWithText("Clear").assertIsDisplayed().performClick()
             onNodeWithText("Save").performScrollTo().performClick()
-            waitForIdle()
+            waitUntil(timeoutMillis = 5_000) { model.storage.value.message == AppText.SAVED }
             onNodeWithText("Saved").performScrollTo().assertIsDisplayed()
             onNodeWithText("Delete").performScrollTo().performClick()
-            waitForIdle()
+            waitUntil(timeoutMillis = 5_000) { model.storage.value.message == AppText.DELETED }
             onNodeWithText("No saved value").performScrollTo().assertIsDisplayed()
             val output = File("build/reports/showcase/toolkit.png")
             output.parentFile.mkdirs()
