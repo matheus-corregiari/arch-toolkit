@@ -19,7 +19,7 @@ Use JDK 21 and the configured Android SDK. Sample projects require `-PincludeSam
 ./gradlew :sample:target:android:installDebug -PincludeSamples
 ```
 
-On macOS, install Xcode and XcodeGen, then:
+On an Apple Silicon Mac, install Xcode and XcodeGen, then:
 
 ```shell
 xcodegen generate --spec sample/target/ios/project.yml

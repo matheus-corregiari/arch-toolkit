@@ -60,3 +60,11 @@ PR must remain open. No merge, tag, release or package publication is authorized
   asserting the Storage result before its asynchronous completion.
 - The demo UI test now waits for the operation's explicit completion state
   before asserting the rendered result. The host build still requires a green run.
+
+## Native validation follow-up (2026-09-27)
+
+At `7016789`, run 36276708437 passed Ubuntu and the complete macOS Gradle
+validation, including the corrected asynchronous UI test. The Xcode host then
+failed because its generic simulator build requested x86_64, while the shared
+framework and Compose resources support iosSimulatorArm64. The host now selects
+ARM64 explicitly; its CI step runs first so integration failures surface earlier.

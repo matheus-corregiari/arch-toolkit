@@ -31,14 +31,14 @@ jobs:
         run: python -m pip install -r .github/requirements-docs.txt
       - name: Test release notes extraction
         run: python -m unittest discover -s .github/scripts -p 'test_release_notes.py'
-      - name: Build, test and lint all configured targets and samples
-        run: ./gradlew ciBuild ciTest ciCoverage ciLint ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc19 --continue --no-daemon
       - name: Build iOS showcase host
         if: runner.os == 'macOS'
         run: |
           brew install xcodegen
           xcodegen generate --spec sample/target/ios/project.yml
           xcodebuild -project sample/target/ios/Showcase.xcodeproj -scheme Showcase -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+      - name: Build, test and lint all configured targets and samples
+        run: ./gradlew ciBuild ciTest ciCoverage ciLint ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc19 --continue --no-daemon
       - name: Save showcase test reports
         if: always()
         uses: actions/upload-artifact@v7

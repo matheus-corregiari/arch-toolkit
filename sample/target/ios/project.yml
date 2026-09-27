@@ -5,6 +5,7 @@ options:
     iOS: "16.0"
 settings:
   base:
+    ARCHS: arm64
     SWIFT_VERSION: "5.0"
     ENABLE_USER_SCRIPT_SANDBOXING: NO
     CODE_SIGNING_ALLOWED: NO
