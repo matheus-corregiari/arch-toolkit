@@ -19,7 +19,7 @@ Preserve pre-existing staged `.codex/` files. Showcase changes only.
 - [x] Display actual shared design tokens and widgets in the design catalogue.
 - [x] Add repository, persistence, locale, navigation and Compose UI tests.
 - [x] Document running, extending and reusing the showcase; update the rc19 changelog.
-- [ ] Confirm remote macOS/iOS validation after pushing the branch.
+- [x] Confirm remote macOS/iOS validation after pushing the branch.
 
 ## Compatibility decisions
 
@@ -68,3 +68,31 @@ validation, including the corrected asynchronous UI test. The Xcode host then
 failed because its generic simulator build requested x86_64, while the shared
 framework and Compose resources support iosSimulatorArm64. The host now selects
 ARM64 explicitly; its CI step runs first so integration failures surface earlier.
+
+## Final requirement audit (2026-09-27)
+
+[CI run 36314017755](https://github.com/matheus-corregiari/arch-toolkit/actions/runs/36314017755)
+passed on Ubuntu and macOS at `c47ff6c`, including the ARM64 iOS host and the full
+Gradle suite. The final audit changes documentation only. No code rebuild is
+needed for this evidence record; strict documentation checks are run separately.
+
+| Requirement | Implementation evidence | Verification and limits |
+| --- | --- | --- |
+| Modules and boundaries | [settings.gradle.kts](settings.gradle.kts), [boundary checks](gradle/showcase-boundaries.gradle.kts) | ciLint checks forbidden project edges and cycles; Android/Desktop builds and native compilation passed. |
+| RO / VO / source models | [RepoRO.kt](sample/shared/data/repository/src/commonMain/kotlin/br/com/arch/toolkit/sample/github/shared/structure/repository/model/RepoRO.kt), [RepoVO.kt](sample/shared/features/github-sample/src/commonMain/kotlin/br/com/arch/toolkit/sample/feature/githubSample/ui/list/model/RepoVO.kt), [RepoResponse.kt](sample/shared/data/source/remote/src/commonMain/kotlin/br/com/arch/toolkit/sample/github/shared/structure/data/remote/model/RepoResponse.kt) | RepositoryTest verifies transport-to-repository mapping; feature presentation uses RepoVO. Room exposes Entity/DAO only below repository composition. |
+| Constructor DI | [ListViewModel.kt](sample/shared/features/github-sample/src/commonMain/kotlin/br/com/arch/toolkit/sample/feature/githubSample/ui/list/ListViewModel.kt), [SettingsRepository.kt](sample/shared/data/repository/src/commonMain/kotlin/br/com/arch/toolkit/sample/github/shared/structure/repository/SettingsRepository.kt), [ToolkitViewModel.kt](sample/shared/features/toolkit-sample/src/commonMain/kotlin/br/com/arch/toolkit/sample/feature/toolkit/ToolkitViewModel.kt) | App initKoin registers constructor dependencies and platform factories; features do not depend on source modules. |
+| HTTP and domain failures | [HttpClients.kt](sample/shared/structure/http/src/commonMain/kotlin/br/com/arch/toolkit/sample/http/HttpClients.kt), [RemoteGithubRepository.kt](sample/shared/data/repository/src/commonMain/kotlin/br/com/arch/toolkit/sample/github/shared/structure/repository/RemoteGithubRepository.kt) | RepositoryTest covers malformed responses, I/O failures and cancellation. JVM/Apple clients retain platform TLS validation and configured timeouts. |
+| Room in application use | [ShowcaseDatabase.kt](sample/shared/data/source/local/src/commonMain/kotlin/br/com/arch/toolkit/sample/data/local/ShowcaseDatabase.kt), [RecentRepository.kt](sample/shared/data/repository/src/commonMain/kotlin/br/com/arch/toolkit/sample/github/shared/structure/repository/RecentRepository.kt), [DetailViewModel.kt](sample/shared/features/github-sample/src/commonMain/kotlin/br/com/arch/toolkit/sample/feature/githubSample/ui/detail/DetailViewModel.kt) | Successful detail loads update the last 20 identities. DatabaseTest closes/reopens a real temporary database and verifies trimming/order. |
+| GitHub interactions | [ListViewModelTest.kt](sample/shared/features/github-sample/src/commonTest/kotlin/br/com/arch/toolkit/sample/feature/githubSample/ui/list/ListViewModelTest.kt), [RepositoryDetailScreen.kt](sample/shared/features/github-sample/src/commonMain/kotlin/br/com/arch/toolkit/sample/feature/githubSample/ui/detail/RepositoryDetailScreen.kt) | Tests cover filter reset, page failure/retry, out-of-order responses and saved query/results. Detail loads by owner/name; error/retry UI is wired to domain failures. |
+| Links / back / restoration | [ShowcaseLinkTest.kt](sample/shared/app/src/commonTest/kotlin/br/com/arch/toolkit/sample/shared/ui/home/ShowcaseLinkTest.kt), [NavigationTest.kt](sample/shared/app/src/jvmTest/kotlin/br/com/arch/toolkit/sample/shared/NavigationTest.kt) | Generated route matching is tested on common targets. JVM tests exercise the real controller, back navigation and save/restore of its stack. Platform launchers forward links. |
+| Lumber / Storage demos | [ToolkitDemoRepository.kt](sample/shared/data/repository/src/commonMain/kotlin/br/com/arch/toolkit/sample/github/shared/structure/repository/ToolkitDemoRepository.kt), [ToolkitUiTest.kt](sample/shared/app/src/jvmTest/kotlin/br/com/arch/toolkit/sample/shared/ToolkitUiTest.kt) | RepositoryTest covers CRUD and the bounded/unregistered Lumber tree. UI tests operate keyboard logging, clear, save and delete. generateDemoSnippets reads marked executable methods. |
+| Shared design catalogue | [DesignScreen.kt](sample/shared/features/design-sample/src/commonMain/kotlin/br/com/arch/toolkit/sample/feature/design/DesignScreen.kt) | Uses actual AppTheme tokens and shared AppButton/EmptyState/ErrorState; interactive selection, disabled/loading states. Compose demo screenshot was inspected; no exhaustive accessibility audit claimed. |
+| PT-BR / English | [SettingsRepository.kt](sample/shared/data/repository/src/commonMain/kotlin/br/com/arch/toolkit/sample/github/shared/structure/repository/SettingsRepository.kt), [ShowcaseApp.kt](sample/shared/app/src/commonMain/kotlin/br/com/arch/toolkit/sample/shared/ShowcaseApp.kt), [LocaleTest.kt](sample/shared/structure/core/src/commonTest/kotlin/br/com/arch/toolkit/sample/LocaleTest.kt) | Persistent language storage is collected at runtime into LocalAppLanguage. RepositoryTest covers restoration using the same provider; LocaleTest covers formatting/fallback. Process-restart/device UI localization is not separately automated. |
+| Shared implementation / tests | [shared modules](sample/shared) | Feature logic is in commonMain; repository/search/locale/link tests run in commonTest. Final iOS Simulator reports: 11 tests, zero failures or skips. |
+| Platform validation | [iOS host](sample/target/ios/project.yml), [CI](.github/workflows/pull-request.yml) | Windows/Ubuntu Android release and JVM checks passed; JVM Compose UI ran. macOS passed native tests and the unsigned ARM64 Swift/Xcode host build. Android device execution remains unavailable because the configured AVD image is absent. |
+| Docs / release record | [showcase guide](docs/showcase.md), [changelog](docs/CHANGELOG.md), [dependencies](docs/dependencies.md) | README and MkDocs navigation link the guide; strict MkDocs passed. Existing PR #157 carries the changes and commit changelog; remains open without merge/tag/publication. |
+
+Web remains deferred by the approved scope decision. iOS validation is CI build
+and simulator tests, not manual device inspection. Performance choices (lazy
+rows and bounded buffers/history) are not benchmark claims. Pre-existing staged
+`.codex/` files remain outside showcase commits.
