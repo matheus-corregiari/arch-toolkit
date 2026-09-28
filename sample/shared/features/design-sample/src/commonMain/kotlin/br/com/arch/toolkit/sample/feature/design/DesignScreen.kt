@@ -1,5 +1,6 @@
 package br.com.arch.toolkit.sample.feature.design
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,9 +42,18 @@ data object DesignRoute : NavigationRoute
 @Composable
 fun DesignDestination() {
     var selected by rememberSaveable { mutableStateOf(false) }
+    DesignContent(selected, onSelect = { selected = !selected })
+}
+
+@Composable
+fun DesignContent(
+    selected: Boolean = false,
+    scrollState: ScrollState = rememberScrollState(),
+    onSelect: () -> Unit = {}
+) {
     Column(
         Modifier.fillMaxSize().verticalScroll(
-            rememberScrollState()
+            scrollState
         ).padding(AppTheme.dimen.spacingM),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
     ) {
@@ -54,7 +64,7 @@ fun DesignDestination() {
         Text(text(AppText.WIDGETS))
         AppButton.Style.entries.forEach { style ->
             AppButton(style.name, {
-                selected = !selected
+                onSelect()
             }, style = style)
         }
         AppButton(text(AppText.DISABLED), {}, enabled = false)
@@ -67,11 +77,10 @@ fun DesignDestination() {
             ),
             retryLabel = text(AppText.RETRY),
             retry = {
-                selected =
-                    !selected
+                onSelect()
             }
         )
-        FilterChip(selected, { selected = !selected }, label = { Text(text(AppText.SELECTED)) })
+        FilterChip(selected, { onSelect() }, label = { Text(text(AppText.SELECTED)) })
     }
 }
 

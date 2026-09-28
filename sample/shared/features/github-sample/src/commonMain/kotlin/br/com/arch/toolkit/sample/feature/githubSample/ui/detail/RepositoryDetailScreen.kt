@@ -36,15 +36,30 @@ fun RepositoryDetailScreen(route: GithubDetailRoute) {
     val navigation = LocalNavigationController.current
     val uriHandler = LocalUriHandler.current
     LaunchedEffect(model) { model.load() }
+    RepositoryDetailContent(
+        state = state,
+        onBack = { navigation.safeNavigateUp() },
+        onRetry = model::load,
+        onOpenRepository = { owner, name -> uriHandler.openUri("https://github.com/$owner/$name") }
+    )
+}
+
+@Composable
+fun RepositoryDetailContent(
+    state: GithubDetailState,
+    onBack: () -> Unit = {},
+    onRetry: () -> Unit = {},
+    onOpenRepository: (String, String) -> Unit = { _, _ -> }
+) {
     Column(
         Modifier.fillMaxSize().verticalScroll(
             rememberScrollState()
         ).padding(AppTheme.dimen.spacingM),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
     ) {
-        Button(onClick = { navigation.safeNavigateUp() }) { Text(text(AppText.BACK)) }
+        Button(onClick = onBack) { Text(text(AppText.BACK)) }
         if (state.loading) CircularProgressIndicator()
-        state.failure?.let { GithubError(it, model::load) }
+        state.failure?.let { GithubError(it, onRetry) }
         state.item?.let { item ->
             Text(item.fullName, style = AppTheme.textStyle.titleXLRegular)
             Text(item.description ?: text(AppText.NO_DESCRIPTION))
@@ -58,9 +73,7 @@ fun RepositoryDetailScreen(route: GithubDetailRoute) {
             Text(item.topics.joinToString(" · "))
             Button(
                 onClick = {
-                    uriHandler.openUri(
-                        "https://github.com/${item.owner.login}/${item.name}"
-                    )
+                    onOpenRepository(item.owner.login, item.name)
                 }
             ) {
                 Text(text(AppText.OPEN_GITHUB))

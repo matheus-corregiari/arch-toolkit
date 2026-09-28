@@ -43,9 +43,6 @@ import com.pedrobneto.easy.navigation.registry.ToolkitDirectionRegistry
 
 @Composable
 fun AppHome(deepLink: String? = null, onDeepLinkHandled: () -> Unit = {}) {
-    val itemModifier = Modifier.padding(horizontal = AppTheme.dimen.spacingXs)
-    val itemColors = navigationItemColors()
-
     val registries = remember {
         listOf(
             GithubDirectionRegistry,
@@ -64,6 +61,27 @@ fun AppHome(deepLink: String? = null, onDeepLinkHandled: () -> Unit = {}) {
             onDeepLinkHandled()
         }
     }
+    AppHomeContent(
+        currentRoute = navigation.currentRoute,
+        onNavigate = { navigation.navigateTo(it, LaunchStrategy.NewStack) }
+    ) {
+        Navigation(
+            modifier = Modifier,
+            initialRoute = GithubRoute,
+            directionRegistries = registries,
+            controller = navigation
+        )
+    }
+}
+
+@Composable
+fun AppHomeContent(
+    currentRoute: NavigationRoute = GithubRoute,
+    onNavigate: (NavigationRoute) -> Unit = {},
+    content: @Composable () -> Unit
+) {
+    val itemModifier = Modifier.padding(horizontal = AppTheme.dimen.spacingXs)
+    val itemColors = navigationItemColors()
     val items = listOf(
         NavigationItem(GithubRoute, AppText.GITHUB, Icons.Default.Code),
         NavigationItem(ToolkitRoute, AppText.TOOLKIT, Icons.Default.Build),
@@ -71,7 +89,7 @@ fun AppHome(deepLink: String? = null, onDeepLinkHandled: () -> Unit = {}) {
         NavigationItem(SettingsRoute, AppText.SETTINGS, Icons.Default.Settings)
     )
     val selectedItem =
-        items.firstOrNull { it.route::class == navigation.currentRoute::class } ?: items.first()
+        items.firstOrNull { it.route::class == currentRoute::class } ?: items.first()
     NavigationSuiteScaffold(
         layoutType = AppTheme.screen.navigationSuiteType,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
@@ -86,20 +104,10 @@ fun AppHome(deepLink: String? = null, onDeepLinkHandled: () -> Unit = {}) {
         contentColor = AppTheme.color.textParagraph,
         navigationSuiteItems = {
             addItems(itemModifier, selectedItem, items, itemColors) { item ->
-                navigation.navigateTo(
-                    item.route,
-                    LaunchStrategy.NewStack
-                )
+                onNavigate(item.route)
             }
         },
-        content = {
-            Navigation(
-                modifier = Modifier,
-                initialRoute = GithubRoute,
-                directionRegistries = registries,
-                controller = navigation
-            )
-        }
+        content = content
     )
 }
 

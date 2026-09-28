@@ -32,6 +32,7 @@ import br.com.arch.toolkit.sample.feature.githubSample.ui.list.state.ManyListSta
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.EmptyState
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.ScreenTitle
+import br.com.arch.toolkit.sample.github.shared.structure.repository.RecentRepositoryRO
 import com.pedrobneto.easy.navigation.core.LocalNavigationController
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -42,12 +43,29 @@ fun RepositoryListScreen(viewModel: ListViewModel = koinViewModel()) {
     val recent: RecentViewModel = koinViewModel()
     val history by recent.items.collectAsState(initial = emptyList())
     LaunchedEffect(viewModel) { viewModel.loadIfNeeded() }
+    RepositoryListContent(
+        state = state,
+        history = history,
+        onSearch = viewModel::search,
+        onLoadMore = viewModel::loadMore,
+        onSelect = { owner, name -> navigation.navigateTo(GithubDetailRoute(owner, name)) }
+    )
+}
+
+@Composable
+fun RepositoryListContent(
+    state: GithubListState,
+    history: List<RecentRepositoryRO> = emptyList(),
+    onSearch: (String, String) -> Unit = { _, _ -> },
+    onLoadMore: () -> Unit = {},
+    onSelect: (String, String) -> Unit = { _, _ -> }
+) {
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingS)
     ) {
         ScreenTitle(Modifier.fillMaxWidth(), text(AppText.GITHUB))
-        SearchControls(state, viewModel::search)
+        SearchControls(state, onSearch)
         if (history.isNotEmpty()) {
             LazyRow {
                 item {
@@ -59,14 +77,14 @@ fun RepositoryListScreen(viewModel: ListViewModel = koinViewModel()) {
                 items(history.size) { index ->
                     val item = history[index]
                     TextButton(onClick = {
-                        navigation.navigateTo(GithubDetailRoute(item.owner, item.name))
+                        onSelect(item.owner, item.name)
                     }) { Text("${item.owner}/${item.name}") }
                 }
             }
         }
         val items = remember(state.items) { state.items.map(::RepoVO) }
         ManyListState(items, PaddingValues(0.dp)) { item ->
-            navigation.navigateTo(GithubDetailRoute(item.owner.login, item.name))
+            onSelect(item.owner.login, item.name)
         }.Draw(Modifier.weight(1f).fillMaxWidth())
         if (!state.loading &&
             state.failure == null &&
@@ -75,9 +93,9 @@ fun RepositoryListScreen(viewModel: ListViewModel = koinViewModel()) {
             EmptyState(Modifier, text(AppText.EMPTY))
         }
         if (state.loading) CircularProgressIndicator()
-        state.failure?.let { GithubError(it, viewModel::loadMore) }
+        state.failure?.let { GithubError(it, onLoadMore) }
         if (!state.loading && state.failure == null && state.nextPage != null) {
-            Button(onClick = viewModel::loadMore) { Text(text(AppText.LOAD_MORE)) }
+            Button(onClick = onLoadMore) { Text(text(AppText.LOAD_MORE)) }
         }
     }
 }

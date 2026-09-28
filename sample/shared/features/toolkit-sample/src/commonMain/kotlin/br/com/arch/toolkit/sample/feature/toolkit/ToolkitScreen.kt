@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,18 +47,47 @@ fun ToolkitDestination() {
 fun ToolkitScreen(model: ToolkitViewModel) {
     val logs by model.logs.collectAsState()
     val state by model.storage.collectAsState()
+    ToolkitContent(
+        logs = logs,
+        state = state,
+        actions = ToolkitActions(
+            model::writeLog,
+            model::clearLogs,
+            model::save,
+            model::read,
+            model::delete
+        )
+    )
+}
+
+data class ToolkitActions(
+    val writeLog: () -> Unit = {},
+    val clearLogs: () -> Unit = {},
+    val save: (String, String) -> Unit = { _, _ -> },
+    val read: (String) -> Unit = {},
+    val delete: (String) -> Unit = {}
+)
+
+@Composable
+fun ToolkitContent(
+    logs: List<String>,
+    state: StorageDemoState,
+    listState: LazyListState = rememberLazyListState(),
+    actions: ToolkitActions = ToolkitActions()
+) {
     var key by rememberSaveable { mutableStateOf("hello") }
     var value by rememberSaveable { mutableStateOf("Arch Toolkit") }
     LazyColumn(
         Modifier.fillMaxSize().padding(AppTheme.dimen.spacingM),
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM),
+        state = listState
     ) {
         item {
             Text("Lumber", style = AppTheme.textStyle.titleXLRegular)
             Text(text(AppText.LUMBER_DESCRIPTION))
             Row {
-                AppButton(text(AppText.LOG), model::writeLog, modifier = Modifier.weight(1f))
-                TextButton(onClick = model::clearLogs) { Text(text(AppText.CLEAR)) }
+                AppButton(text(AppText.LOG), actions.writeLog, modifier = Modifier.weight(1f))
+                TextButton(onClick = actions.clearLogs) { Text(text(AppText.CLEAR)) }
             }
             Text(logs.joinToString("\n"), fontFamily = FontFamily.Monospace)
             Text(DemoSnippets.lumber, fontFamily = FontFamily.Monospace)
@@ -73,15 +104,15 @@ fun ToolkitScreen(model: ToolkitViewModel) {
             OutlinedTextField(value, { value = it }, label = { Text(text(AppText.VALUE)) })
             Row {
                 TextButton(
-                    onClick = { model.save(key, value) },
+                    onClick = { actions.save(key, value) },
                     enabled = !state.busy
                 ) { Text(text(AppText.SAVE)) }
                 TextButton(
-                    onClick = { model.read(key) },
+                    onClick = { actions.read(key) },
                     enabled = !state.busy
                 ) { Text(text(AppText.READ)) }
                 TextButton(
-                    onClick = { model.delete(key) },
+                    onClick = { actions.delete(key) },
                     enabled = !state.busy
                 ) { Text(text(AppText.DELETE)) }
             }
