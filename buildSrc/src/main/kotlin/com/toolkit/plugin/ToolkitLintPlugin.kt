@@ -73,8 +73,12 @@ internal class ToolkitLintPlugin : Plugin<Project> {
         }
 
         // Regular Lint configuration
-        kotlin.runCatching { setForApplication(target, target.androidApplication) }
-        kotlin.runCatching { setForLibrary(target, target.androidLibrary) }
+        target.plugins.withId("com.android.application") {
+            setForApplication(target, target.androidApplication)
+        }
+        target.plugins.withId("com.android.library") {
+            setForLibrary(target, target.androidLibrary)
+        }
     }
 
     private fun setForApplication(target: Project, android: ApplicationExtension) = with(android) {
