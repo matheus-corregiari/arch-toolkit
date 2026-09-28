@@ -1,10 +1,12 @@
 plugins {
     id("toolkit-android-sample")
+    alias(libs.plugins.compose.screenshot)
     alias(libs.plugins.jetbrains.compose.compiler)
     alias(libs.plugins.jetbrains.compose.kotlin)
 }
 
 android {
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
     namespace = "br.com.arch.toolkit.sample.github.android"
     defaultConfig {
         applicationId = "br.com.arch.toolkit.sample.github.android"
@@ -14,6 +16,11 @@ android {
 }
 
 dependencies {
+    "screenshotTestImplementation"(libs.compose.screenshot.validation)
+    "screenshotTestImplementation"(compose.uiTooling)
+    "screenshotTestImplementation"(compose.preview)
+    "screenshotTestImplementation"(compose.foundation)
+
     implementation(libs.arch.lumber)
 
     // Arch Toolkit Dependencies

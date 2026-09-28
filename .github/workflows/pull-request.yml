@@ -55,3 +55,22 @@ jobs:
           name: coverage-${{ matrix.os }}
           path: build/reports/kover/
           if-no-files-found: error
+
+  screenshots:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup-gradle
+      - name: Compare Android Compose screenshots
+        run: ./gradlew.bat :sample:target:android:validateDebugScreenshotTest '-PincludeSamples' '-PreleaseVersion=2.0.0-rc19' --max-workers=4 --no-daemon
+      - name: Save screenshot reports and diffs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: showcase-screenshots
+          path: |
+            sample/target/android/build/reports/screenshotTest/
+            sample/target/android/build/outputs/screenshotTest-results/
+            sample/target/android/src/screenshotTestDebug/reference/
+          if-no-files-found: warn

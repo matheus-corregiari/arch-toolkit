@@ -124,3 +124,38 @@ formatting and generated links. Desktop navigation tests exercise back and saved
 stack restoration. See `SHOWCASE_PLAN.md` for the current validation record.
 Lazy list rows and bounded logs/history are implementation choices, not measured
 performance claims.
+
+## Android screenshot regression tests
+
+The Android target uses Google's experimental Compose Preview Screenshot Testing
+plugin with AndroidX `@Preview`. It renders the real shared design widgets through
+Layoutlib on the host, without an emulator. AGP remains at 9.4; migration to the
+newer AGP test-suite DSL is a separate tooling change.
+
+Four checked-in references cover English/light, Portuguese/dark,
+Portuguese at 1.5x font scale, and a wide dark/high-contrast layout. Previews use
+API 35 and fixed dimensions, no network, clock, animation or persisted app state.
+These are Android rendering checks, not iOS/Desktop pixel baselines.
+
+Run the same Windows/JDK 21 environment as the dedicated CI job:
+
+```shell
+./gradlew :sample:target:android:validateDebugScreenshotTest -PincludeSamples
+```
+
+When a visual change is intentional, regenerate locally, inspect every changed PNG
+and commit the references alongside the UI change:
+
+```shell
+./gradlew :sample:target:android:updateDebugScreenshotTest -PincludeSamples
+```
+
+Tests live in `sample/target/android/src/screenshotTest/kotlin/`; references live
+in `sample/target/android/src/screenshotTestDebug/reference/`. The HTML report is
+`sample/target/android/build/reports/screenshotTest/preview/debug/index.html`.
+CI uploads the report and actual/diff images as `showcase-screenshots`, including
+on failure. CI only validates; it never updates the reference images.
+
+Validation includes a temporary visible text change that made all four comparisons
+fail, followed by restoring the source and rerunning validation. The prior JVM
+`ToolkitUiTest` screenshot remains a diagnostic capture, not a golden comparison.

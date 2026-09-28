@@ -96,3 +96,12 @@ Web remains deferred by the approved scope decision. iOS validation is CI build
 and simulator tests, not manual device inspection. Performance choices (lazy
 rows and bounded buffers/history) are not benchmark claims. Pre-existing staged
 `.codex/` files remain outside showcase commits.
+
+## Screenshot regression follow-up
+
+- Official Compose Preview Screenshot Testing, with AndroidX previews, runs in
+  the Android target. Four reviewed PNG references cover theme, locale, font scale
+  and wide/high-contrast rendering of shared widgets.
+- A deliberate title change failed all four comparisons; the source was restored.
+- A dedicated Windows CI job validates existing references and publishes diffs.
+- See the screenshot section in `docs/showcase.md` for commands and scope.
