@@ -13,7 +13,11 @@ val verifyShowcaseBoundaries by tasks.registering {
         graph.forEach { (from, dependencies) ->
             dependencies.filter { it.startsWith(":sample:") }.forEach { to ->
                 val allowed = when {
-                    from.startsWith(":sample:target:") -> to == ":sample:shared:app"
+                    from.startsWith(":sample:target:") -> to == ":sample:shared:app" ||
+                        rootProject.project(from).configurations.filter { configuration ->
+                            configuration.dependencies.withType<ProjectDependency>().any { it.path == to }
+                        }.all { it.name.contains("screenshotTest", ignoreCase = true) } &&
+                        (to.startsWith(":sample:shared:features:") || to == ":sample:shared:data:repository")
                     from == ":sample:shared:app" -> true
                     from.startsWith(":sample:shared:features:") ->
                         to == ":sample:shared:data:repository" || to.startsWith(":sample:shared:structure:design:") ||

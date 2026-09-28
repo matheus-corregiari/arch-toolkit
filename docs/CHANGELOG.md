@@ -6,7 +6,7 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 
 ### Showcase
 
-- Add four Android Compose screenshot regression tests with reviewed references and CI diff reports.
+- Add 69 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
 
 - Expand the sample into GitHub, Toolkit, Design and Settings destinations using
   Easy Navigation and Navigation3; separate composition, features, data and design.

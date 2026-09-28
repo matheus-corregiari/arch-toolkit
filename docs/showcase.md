@@ -127,35 +127,70 @@ performance claims.
 
 ## Android screenshot regression tests
 
-The Android target uses Google's experimental Compose Preview Screenshot Testing
-plugin with AndroidX `@Preview`. It renders the real shared design widgets through
-Layoutlib on the host, without an emulator. AGP remains at 9.4; migration to the
-newer AGP test-suite DSL is a separate tooling change.
+Google's experimental Compose Preview Screenshot Testing plugin uses AndroidX
+`@Preview` to render the actual shared feature content through Layoutlib, without
+an emulator. AGP remains at 9.4. KMP features own their `src/screenshotTest` sources;
+the Android target supplies the runner and reference storage. Screenshot-only
+project dependencies are checked separately; production targets still depend on
+`shared:app` only.
 
-Four checked-in references cover English/light, Portuguese/dark,
-Portuguese at 1.5x font scale, and a wide dark/high-contrast layout. Previews use
-API 35 and fixed dimensions, no network, clock, animation or persisted app state.
-These are Android rendering checks, not iOS/Desktop pixel baselines.
+### Coverage matrix
 
-Run the same Windows/JDK 21 environment as the dedicated CI job:
+The suite contains 69 references. Following Android's guidance, representative
+configurations are sampled instead of multiplying every state by every device.
+
+| Area | References | Visual contracts |
+| --- | ---: | --- |
+| GitHub list and detail | 27 | Loading, empty search, content/recent history, pagination loading/error/end, all four domain errors, missing metadata, long names/descriptions/topics, localized dates and counts |
+| Settings | 7 | Light/dark/system selections, language selection, high contrast, narrow large text, wide layout |
+| Toolkit | 13 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, ecosystem catalogue, scrolled content |
+| Design | 8 | Real tokens, button styles, disabled/loading/error/empty widgets, selected/unselected chips, scrolled content |
+| App shell | 10 | All selected destinations, compact bottom bar, medium rail, expanded drawer, landscape, localized and large-text navigation |
+| Shared widgets | 4 | Original English/light, Portuguese/dark, large font and wide high-contrast checks |
+
+Representative feature content runs in light English, dark Portuguese, 320dp
+narrow layouts with 1.5x and 2x fonts, and 840dp wide layouts. High contrast has
+focused coverage in Settings, Design and GitHub. Shell breakpoints include 600dp
+and a short landscape window. This is not an exhaustive device matrix or an
+accessibility certification.
+
+Fixtures use API 35 and fixed dates, counts and text. Content composables receive
+state and callbacks; production route adapters retain ViewModels and effects.
+Tests do not start Koin, network or persistence. Repository avatars use an empty
+URI; image downloading is outside this visual contract. Layoutlib captures loading
+indicators at its fixed preview frame. These are Android rendering checks, not
+iOS/Desktop pixel baselines.
+
+### Running and reviewing
+
+Use the same Windows/JDK 21 environment as the dedicated CI job:
 
 ```shell
 ./gradlew :sample:target:android:validateDebugScreenshotTest -PincludeSamples
 ```
 
-When a visual change is intentional, regenerate locally, inspect every changed PNG
-and commit the references alongside the UI change:
+For an intentional visual change, regenerate locally, inspect every changed PNG
+and commit references alongside the UI change:
 
 ```shell
 ./gradlew :sample:target:android:updateDebugScreenshotTest -PincludeSamples
 ```
 
-Tests live in `sample/target/android/src/screenshotTest/kotlin/`; references live
-in `sample/target/android/src/screenshotTestDebug/reference/`. The HTML report is
-`sample/target/android/build/reports/screenshotTest/preview/debug/index.html`.
-CI uploads the report and actual/diff images as `showcase-screenshots`, including
-on failure. CI only validates; it never updates the reference images.
+Feature tests: `sample/shared/features/*/src/screenshotTest/kotlin/`.
+Shell tests: `sample/shared/app/src/screenshotTest/kotlin/`.
+Shared setup/widget tests: `sample/target/android/src/screenshotTest/kotlin/`.
+The host explicitly registers each feature's source directory and test dependency.
 
-Validation includes a temporary visible text change that made all four comparisons
-fail, followed by restoring the source and rerunning validation. The prior JVM
-`ToolkitUiTest` screenshot remains a diagnostic capture, not a golden comparison.
+References: `sample/target/android/src/screenshotTestDebug/reference/`.
+HTML report: `sample/target/android/build/reports/screenshotTest/preview/debug/index.html`.
+CI uploads reports and actual/diff images as `showcase-screenshots`, including on
+failure. CI validates only; it never updates references.
+
+Add a state case for each visually distinct feature state, and a configuration
+case for different wrapping, navigation or theme behavior. Keep fixtures fixed
+and scroll to the section being tested. Generated references require visual review.
+Interaction tests remain responsible for callbacks, navigation and transitions;
+the existing JVM `ToolkitUiTest` capture is diagnostic only.
+
+References: [Android screenshot testing guidance](https://developer.android.com/training/testing/ui-tests/screenshot),
+[Compose Preview Screenshot Testing](https://developer.android.com/studio/preview/compose-screenshot-testing).

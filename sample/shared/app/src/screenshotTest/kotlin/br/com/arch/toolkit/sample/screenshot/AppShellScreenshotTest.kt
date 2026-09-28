@@ -1,0 +1,167 @@
+package br.com.arch.toolkit.sample.screenshot
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.tooling.preview.Preview
+import br.com.arch.toolkit.sample.feature.design.DesignContent
+import br.com.arch.toolkit.sample.feature.design.DesignRoute
+import br.com.arch.toolkit.sample.feature.githubSample.ui.list.GithubListState
+import br.com.arch.toolkit.sample.feature.githubSample.ui.list.RepositoryListContent
+import br.com.arch.toolkit.sample.feature.settings.ui.SettingsContent
+import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
+import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitRoute
+import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
+import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
+import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
+import br.com.arch.toolkit.sample.screenshot.ScreenshotEnvironment
+import br.com.arch.toolkit.sample.shared.ui.home.AppHomeContent
+import com.android.tools.screenshot.PreviewTest
+
+@PreviewTest
+@Preview(
+    name = "AppShellCompact",
+    widthDp = 360,
+    heightDp = 800,
+    fontScale = 1.0f,
+    locale = "en",
+    apiLevel = 35
+)
+@Composable
+fun AppShellCompact() {
+    ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
+        AppHomeContent { RepositoryListContent(GithubListState(nextPage = null)) }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellMedium",
+    widthDp = 600,
+    heightDp = 800,
+    fontScale = 1.0f,
+    locale = "en",
+    apiLevel = 35
+)
+@Composable
+fun AppShellMedium() {
+    ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
+        AppHomeContent { RepositoryListContent(GithubListState(nextPage = null)) }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellExpanded",
+    widthDp = 840,
+    heightDp = 800,
+    fontScale = 1.0f,
+    locale = "en",
+    apiLevel = 35
+)
+@Composable
+fun AppShellExpanded() {
+    ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
+        AppHomeContent { RepositoryListContent(GithubListState(nextPage = null)) }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellDarkPortuguese",
+    widthDp = 360,
+    heightDp = 800,
+    fontScale = 1.0f,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellDarkPortuguese() {
+    ScreenshotEnvironment(dark = true, portuguese = true, highContrast = false) {
+        AppHomeContent { RepositoryListContent(GithubListState(nextPage = null)) }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellLargeFont",
+    widthDp = 320,
+    heightDp = 800,
+    fontScale = 1.5f,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellLargeFont() {
+    ScreenshotEnvironment(dark = false, portuguese = true, highContrast = false) {
+        AppHomeContent { RepositoryListContent(GithubListState(nextPage = null)) }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellMaximumFont",
+    widthDp = 320,
+    heightDp = 800,
+    fontScale = 2.0f,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellMaximumFont() {
+    ScreenshotEnvironment(dark = false, portuguese = true, highContrast = false) {
+        AppHomeContent { RepositoryListContent(GithubListState(nextPage = null)) }
+    }
+}
+
+@PreviewTest
+@Preview(name = "AppShellLandscape", widthDp = 800, heightDp = 360, locale = "en", apiLevel = 35)
+@Composable
+fun AppShellLandscape() {
+    ScreenshotEnvironment {
+        AppHomeContent {
+            RepositoryListContent(
+                GithubListState(nextPage = null)
+            )
+        }
+    }
+}
+
+@PreviewTest
+@Preview(name = "AppShellDesign", widthDp = 360, heightDp = 800, locale = "en", apiLevel = 35)
+@Composable
+fun AppShellDesign() {
+    ScreenshotEnvironment { AppHomeContent(currentRoute = DesignRoute) { DesignContent() } }
+}
+
+@PreviewTest
+@Preview(name = "AppShellToolkit", widthDp = 360, heightDp = 800, locale = "en", apiLevel = 35)
+@Composable
+fun AppShellToolkit() {
+    ScreenshotEnvironment {
+        AppHomeContent(
+            currentRoute = ToolkitRoute
+        ) { ToolkitContent(emptyList(), StorageDemoState()) }
+    }
+}
+
+@PreviewTest
+@Preview(name = "AppShellSettings", widthDp = 360, heightDp = 800, locale = "en", apiLevel = 35)
+@Composable
+fun AppShellSettings() {
+    ScreenshotEnvironment {
+        AppHomeContent(currentRoute = SettingsRoute) {
+            SettingsContent(
+                remember {
+                    mutableStateOf(AppLanguage.ENGLISH)
+                },
+                remember {
+                    mutableStateOf(ThemeMode.LIGHT)
+                },
+                remember { mutableStateOf(ContrastMode.STANDARD) }
+            )
+        }
+    }
+}

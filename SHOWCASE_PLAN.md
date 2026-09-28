@@ -105,3 +105,17 @@ rows and bounded buffers/history) are not benchmark claims. Pre-existing staged
 - A deliberate title change failed all four comparisons; the source was restored.
 - A dedicated Windows CI job validates existing references and publishes diffs.
 - See the screenshot section in `docs/showcase.md` for commands and scope.
+
+## Feature screenshot coverage follow-up
+
+- Expanded four widget previews to 69 references across all features and the
+  adaptive shell. The coverage matrix and source locations are in `docs/showcase.md`.
+- Feature-owned screenshot sources run through the existing Android Layoutlib host.
+  Production routes delegate to the same content rendered in tests.
+- Covers loading, errors, empty/success, pagination, preferences, Storage outcomes,
+  missing/long data, scrolled sections, themes, locales, narrow/wide/landscape
+  layouts and 1.5x/2x fonts; not an exhaustive device matrix.
+- Validation on 2026-09-28: 69 screenshot comparisons passed (zero failures/skips),
+  8 JVM app/GitHub tests passed, full `ciLint` and strict MkDocs passed. A temporary
+  GitHub query mutation failed exactly 9 comparisons; restoring the fixture returned
+  the suite to green without updating references. All reference images were reviewed.
