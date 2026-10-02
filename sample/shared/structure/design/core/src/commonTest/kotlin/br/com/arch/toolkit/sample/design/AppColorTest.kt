@@ -94,6 +94,17 @@ class AppColorTest {
             MIN_TEXT_CONTRAST,
             "Material action"
         )
+        val fixedRoles = listOf(
+            material.onPrimaryFixed to material.primaryFixedDim,
+            material.onPrimaryFixedVariant to material.primaryFixedDim,
+            material.onSecondaryFixed to material.secondaryFixedDim,
+            material.onSecondaryFixedVariant to material.secondaryFixedDim,
+            material.onTertiaryFixed to material.tertiaryFixedDim,
+            material.onTertiaryFixedVariant to material.tertiaryFixedDim
+        )
+        fixedRoles.forEach { (text, surface) ->
+            assertContrast(text, surface, MIN_TEXT_CONTRAST, "Material fixed role")
+        }
     }
 
     private fun assertContrast(

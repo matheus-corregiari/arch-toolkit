@@ -225,7 +225,7 @@ surface opacity. All base surfaces are opaque to keep their contrast independent
 of the content underneath. Standard provides a calm hierarchy; medium deepens
 body text and outlines; high makes control and surface edges explicit while
 retaining the brand accent. Material color roles are mapped completely to the DS,
-including container levels, outlines, error and inverse colors.
+including container levels, fixed roles, outlines, error and inverse colors.
 
 | Palette | Canvas | Card | Inset | Body text | Minimum body contrast | Minimum control outline contrast |
 | --- | --- | --- | --- | --- | --- | --- |
