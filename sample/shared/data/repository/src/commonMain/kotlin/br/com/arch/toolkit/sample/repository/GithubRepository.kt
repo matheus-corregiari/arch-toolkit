@@ -1,0 +1,14 @@
+package br.com.arch.toolkit.sample.repository
+
+import br.com.arch.toolkit.sample.repository.model.PageRO
+import br.com.arch.toolkit.sample.repository.model.RepoRO
+
+interface GithubRepository {
+    suspend fun search(query: String, language: String, page: Int): PageRO
+    suspend fun detail(owner: String, name: String): RepoRO
+}
+
+enum class GithubFailure { CONNECTION, RATE_LIMIT, NOT_FOUND, INVALID_RESPONSE }
+
+class GithubException(val failure: GithubFailure, cause: Throwable? = null) :
+    Exception(failure.name, cause)

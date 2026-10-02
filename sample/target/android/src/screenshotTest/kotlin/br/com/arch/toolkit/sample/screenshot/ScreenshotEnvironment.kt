@@ -5,11 +5,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import br.com.arch.toolkit.sample.core.model.AppLanguage
+import br.com.arch.toolkit.sample.core.model.ContrastMode
+import br.com.arch.toolkit.sample.core.model.ThemeMode
+import br.com.arch.toolkit.sample.design.AppTheme
 import br.com.arch.toolkit.sample.design.LocalAppLanguage
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
 
 @Composable
 fun ScreenshotEnvironment(

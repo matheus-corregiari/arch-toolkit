@@ -4,18 +4,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
+import br.com.arch.toolkit.sample.core.model.AppLanguage
+import br.com.arch.toolkit.sample.core.model.ContrastMode
+import br.com.arch.toolkit.sample.core.model.ThemeMode
 import br.com.arch.toolkit.sample.feature.design.DesignContent
 import br.com.arch.toolkit.sample.feature.design.DesignRoute
-import br.com.arch.toolkit.sample.feature.githubSample.ui.list.GithubListState
-import br.com.arch.toolkit.sample.feature.githubSample.ui.list.RepositoryListContent
+import br.com.arch.toolkit.sample.feature.github.ui.list.GithubListState
+import br.com.arch.toolkit.sample.feature.github.ui.list.RepositoryListContent
 import br.com.arch.toolkit.sample.feature.settings.ui.SettingsContent
 import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitRoute
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
 import br.com.arch.toolkit.sample.screenshot.ScreenshotEnvironment
 import br.com.arch.toolkit.sample.shared.ui.home.AppHomeContent
 import com.android.tools.screenshot.PreviewTest
@@ -33,9 +33,9 @@ fun AppShellSettingsLargeWindow() {
     ScreenshotEnvironment(portuguese = true) {
         AppHomeContent(currentRoute = SettingsRoute) {
             SettingsContent(
-                remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) },
-                remember { mutableStateOf(ThemeMode.LIGHT) },
-                remember { mutableStateOf(ContrastMode.STANDARD) }
+                (remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) }).value,
+                (remember { mutableStateOf(ThemeMode.LIGHT) }).value,
+                (remember { mutableStateOf(ContrastMode.STANDARD) }).value
             )
         }
     }
@@ -175,13 +175,17 @@ fun AppShellSettings() {
     ScreenshotEnvironment {
         AppHomeContent(currentRoute = SettingsRoute) {
             SettingsContent(
-                remember {
-                    mutableStateOf(AppLanguage.ENGLISH)
-                },
-                remember {
-                    mutableStateOf(ThemeMode.LIGHT)
-                },
-                remember { mutableStateOf(ContrastMode.STANDARD) }
+                (
+                    remember {
+                        mutableStateOf(AppLanguage.ENGLISH)
+                    }
+                    ).value,
+                (
+                    remember {
+                        mutableStateOf(ThemeMode.LIGHT)
+                    }
+                    ).value,
+                (remember { mutableStateOf(ContrastMode.STANDARD) }).value
             )
         }
     }
@@ -251,9 +255,9 @@ fun AppShellSettingsTabletLandscape() {
     ScreenshotEnvironment(portuguese = true) {
         AppHomeContent(currentRoute = SettingsRoute) {
             SettingsContent(
-                remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) },
-                remember { mutableStateOf(ThemeMode.LIGHT) },
-                remember { mutableStateOf(ContrastMode.STANDARD) }
+                (remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) }).value,
+                (remember { mutableStateOf(ThemeMode.LIGHT) }).value,
+                (remember { mutableStateOf(ContrastMode.STANDARD) }).value
             )
         }
     }
@@ -323,9 +327,9 @@ fun AppShellSettingsPhoneLandscape() {
     ScreenshotEnvironment(portuguese = true) {
         AppHomeContent(currentRoute = SettingsRoute) {
             SettingsContent(
-                remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) },
-                remember { mutableStateOf(ThemeMode.LIGHT) },
-                remember { mutableStateOf(ContrastMode.STANDARD) }
+                (remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) }).value,
+                (remember { mutableStateOf(ThemeMode.LIGHT) }).value,
+                (remember { mutableStateOf(ContrastMode.STANDARD) }).value
             )
         }
     }
@@ -345,9 +349,9 @@ fun AppShellSettingsTabletPortrait() {
     ScreenshotEnvironment(portuguese = true) {
         AppHomeContent(currentRoute = SettingsRoute) {
             SettingsContent(
-                remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) },
-                remember { mutableStateOf(ThemeMode.LIGHT) },
-                remember { mutableStateOf(ContrastMode.STANDARD) }
+                (remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) }).value,
+                (remember { mutableStateOf(ThemeMode.LIGHT) }).value,
+                (remember { mutableStateOf(ContrastMode.STANDARD) }).value
             )
         }
     }

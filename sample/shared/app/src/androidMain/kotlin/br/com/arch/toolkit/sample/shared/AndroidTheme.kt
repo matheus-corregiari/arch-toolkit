@@ -3,8 +3,8 @@ package br.com.arch.toolkit.sample.shared
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
-import br.com.arch.toolkit.sample.github.shared.structure.repository.SettingsRepository
+import br.com.arch.toolkit.sample.core.model.ThemeMode
+import br.com.arch.toolkit.sample.repository.SettingsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest

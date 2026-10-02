@@ -16,13 +16,13 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.test.runComposeUiTest
+import br.com.arch.toolkit.sample.core.model.AppLanguage
 import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.AppTheme
 import br.com.arch.toolkit.sample.design.LocalAppLanguage
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitScreen
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitViewModel
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
-import br.com.arch.toolkit.sample.github.shared.structure.repository.ToolkitDemoRepository
+import br.com.arch.toolkit.sample.repository.ToolkitDemoRepository
 import br.com.arch.toolkit.storage.memory.MemoryStoreProvider
 import org.jetbrains.skia.Image
 import java.io.File

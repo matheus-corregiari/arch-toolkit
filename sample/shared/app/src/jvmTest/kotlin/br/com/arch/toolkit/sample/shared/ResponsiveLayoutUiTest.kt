@@ -21,15 +21,15 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import br.com.arch.toolkit.sample.core.model.AppLanguage
+import br.com.arch.toolkit.sample.design.AppTheme
 import br.com.arch.toolkit.sample.design.LocalAppLanguage
-import br.com.arch.toolkit.sample.feature.githubSample.ui.list.GithubListState
-import br.com.arch.toolkit.sample.feature.githubSample.ui.list.RepositoryListContent
+import br.com.arch.toolkit.sample.design.component.AppPage
+import br.com.arch.toolkit.sample.design.component.AppSection
+import br.com.arch.toolkit.sample.feature.github.ui.list.GithubListState
+import br.com.arch.toolkit.sample.feature.github.ui.list.RepositoryListContent
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -100,12 +100,32 @@ class ResponsiveLayoutUiTest {
         onNodeWithText("Java").performScrollTo().assertIsDisplayed()
     }
 
+    @Test
+    fun shortLandscapeShowsTheWholeSearchAction() = runComposeUiTest {
+        setContent {
+            CompositionLocalProvider(
+                LocalAppLanguage provides AppLanguage.ENGLISH,
+                LocalDensity provides Density(1f, 1f)
+            ) {
+                AppTheme {
+                    Box(Modifier.requiredSize(LANDSCAPE_WIDTH.dp, LANDSCAPE_HEIGHT.dp)) {
+                        RepositoryListContent(GithubListState(nextPage = null))
+                    }
+                }
+            }
+        }
+        val action = onNodeWithText("Search").fetchSemanticsNode().boundsInRoot
+        assertTrue(action.height >= SEARCH_ACTION_HEIGHT)
+        onNodeWithText("Search").assertIsDisplayed()
+    }
+
     private companion object {
         const val WIDE_WIDTH = 900
         const val COMPACT_WIDTH = 360
         const val CONTENT_HEIGHT = 700
         const val LANDSCAPE_WIDTH = 800
         const val LANDSCAPE_HEIGHT = 360
+        const val SEARCH_ACTION_HEIGHT = 48f
         const val CENTER_TOLERANCE = 1f
         const val HEADING_TOLERANCE = 32f
     }

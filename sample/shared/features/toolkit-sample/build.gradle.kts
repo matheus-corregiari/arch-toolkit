@@ -40,7 +40,7 @@ kotlin {
 }
 
 val snippetSource = rootProject.layout.projectDirectory.file(
-    "sample/shared/data/repository/src/commonMain/kotlin/br/com/arch/toolkit/sample/github/shared/structure/repository/ToolkitDemoRepository.kt"
+    "sample/shared/data/repository/src/commonMain/kotlin/br/com/arch/toolkit/sample/repository/ToolkitDemoRepository.kt"
 )
 val snippetsDirectory = layout.buildDirectory.dir("generated/demoSnippets")
 val generateDemoSnippets by tasks.registering {

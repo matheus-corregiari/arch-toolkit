@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.sample.shared.ui.home
 
-import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubDetailRoute
+import br.com.arch.toolkit.sample.feature.github.ui.GithubDetailRoute
 import com.pedrobneto.easy.navigation.core.model.NavigationDeeplink
 import com.pedrobneto.easy.navigation.registry.GithubDirectionRegistry
 import kotlinx.serialization.json.Json

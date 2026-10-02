@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
+import br.com.arch.toolkit.sample.core.model.AppLanguage
+import br.com.arch.toolkit.sample.core.model.ContrastMode
+import br.com.arch.toolkit.sample.core.model.ThemeMode
 import br.com.arch.toolkit.sample.feature.settings.ui.SettingsContent
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
 import br.com.arch.toolkit.sample.screenshot.ScreenshotEnvironment
 import com.android.tools.screenshot.PreviewTest
 
@@ -24,15 +24,19 @@ import com.android.tools.screenshot.PreviewTest
 fun SettingsLight() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
         SettingsContent(
-            remember {
-                mutableStateOf(AppLanguage.ENGLISH)
-            },
-            remember {
-                mutableStateOf(
-                    ThemeMode.LIGHT
-                )
-            },
-            remember { mutableStateOf(ContrastMode.STANDARD) }
+            (
+                remember {
+                    mutableStateOf(AppLanguage.ENGLISH)
+                }
+                ).value,
+            (
+                remember {
+                    mutableStateOf(
+                        ThemeMode.LIGHT
+                    )
+                }
+                ).value,
+            (remember { mutableStateOf(ContrastMode.STANDARD) }).value
         )
     }
 }
@@ -50,15 +54,19 @@ fun SettingsLight() {
 fun SettingsDarkPortuguese() {
     ScreenshotEnvironment(dark = true, portuguese = true, highContrast = false) {
         SettingsContent(
-            remember {
-                mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL)
-            },
-            remember {
-                mutableStateOf(
-                    ThemeMode.DARK
-                )
-            },
-            remember { mutableStateOf(ContrastMode.STANDARD) }
+            (
+                remember {
+                    mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL)
+                }
+                ).value,
+            (
+                remember {
+                    mutableStateOf(
+                        ThemeMode.DARK
+                    )
+                }
+                ).value,
+            (remember { mutableStateOf(ContrastMode.STANDARD) }).value
         )
     }
 }
@@ -76,13 +84,17 @@ fun SettingsDarkPortuguese() {
 fun SettingsSystem() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
         SettingsContent(
-            remember {
-                mutableStateOf(AppLanguage.ENGLISH)
-            },
-            remember {
-                mutableStateOf(ThemeMode.SYSTEM)
-            },
-            remember { mutableStateOf(ContrastMode.STANDARD) }
+            (
+                remember {
+                    mutableStateOf(AppLanguage.ENGLISH)
+                }
+                ).value,
+            (
+                remember {
+                    mutableStateOf(ThemeMode.SYSTEM)
+                }
+                ).value,
+            (remember { mutableStateOf(ContrastMode.STANDARD) }).value
         )
     }
 }
@@ -100,15 +112,19 @@ fun SettingsSystem() {
 fun SettingsHighContrast() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = true) {
         SettingsContent(
-            remember {
-                mutableStateOf(AppLanguage.ENGLISH)
-            },
-            remember {
-                mutableStateOf(
-                    ThemeMode.LIGHT
-                )
-            },
-            remember { mutableStateOf(ContrastMode.HIGH) }
+            (
+                remember {
+                    mutableStateOf(AppLanguage.ENGLISH)
+                }
+                ).value,
+            (
+                remember {
+                    mutableStateOf(
+                        ThemeMode.LIGHT
+                    )
+                }
+                ).value,
+            (remember { mutableStateOf(ContrastMode.HIGH) }).value
         )
     }
 }
@@ -126,15 +142,19 @@ fun SettingsHighContrast() {
 fun SettingsLargeFont() {
     ScreenshotEnvironment(dark = false, portuguese = true, highContrast = false) {
         SettingsContent(
-            remember {
-                mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL)
-            },
-            remember {
-                mutableStateOf(
-                    ThemeMode.LIGHT
-                )
-            },
-            remember { mutableStateOf(ContrastMode.STANDARD) }
+            (
+                remember {
+                    mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL)
+                }
+                ).value,
+            (
+                remember {
+                    mutableStateOf(
+                        ThemeMode.LIGHT
+                    )
+                }
+                ).value,
+            (remember { mutableStateOf(ContrastMode.STANDARD) }).value
         )
     }
 }
@@ -152,15 +172,19 @@ fun SettingsLargeFont() {
 fun SettingsWide() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
         SettingsContent(
-            remember {
-                mutableStateOf(AppLanguage.ENGLISH)
-            },
-            remember {
-                mutableStateOf(
-                    ThemeMode.LIGHT
-                )
-            },
-            remember { mutableStateOf(ContrastMode.STANDARD) }
+            (
+                remember {
+                    mutableStateOf(AppLanguage.ENGLISH)
+                }
+                ).value,
+            (
+                remember {
+                    mutableStateOf(
+                        ThemeMode.LIGHT
+                    )
+                }
+                ).value,
+            (remember { mutableStateOf(ContrastMode.STANDARD) }).value
         )
     }
 }
@@ -178,15 +202,19 @@ fun SettingsWide() {
 fun SettingsMaximumFont() {
     ScreenshotEnvironment(dark = false, portuguese = true, highContrast = false) {
         SettingsContent(
-            remember {
-                mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL)
-            },
-            remember {
-                mutableStateOf(
-                    ThemeMode.LIGHT
-                )
-            },
-            remember { mutableStateOf(ContrastMode.STANDARD) }
+            (
+                remember {
+                    mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL)
+                }
+                ).value,
+            (
+                remember {
+                    mutableStateOf(
+                        ThemeMode.LIGHT
+                    )
+                }
+                ).value,
+            (remember { mutableStateOf(ContrastMode.STANDARD) }).value
         )
     }
 }
@@ -210,9 +238,9 @@ fun SettingsDarkHigh() = SettingsPalette(ThemeMode.DARK, ContrastMode.HIGH)
 private fun SettingsPalette(theme: ThemeMode, contrast: ContrastMode) {
     ScreenshotEnvironment(dark = theme == ThemeMode.DARK, contrast = contrast) {
         SettingsContent(
-            remember { mutableStateOf(AppLanguage.ENGLISH) },
-            remember { mutableStateOf(theme) },
-            remember { mutableStateOf(contrast) }
+            (remember { mutableStateOf(AppLanguage.ENGLISH) }).value,
+            (remember { mutableStateOf(theme) }).value,
+            (remember { mutableStateOf(contrast) }).value
         )
     }
 }

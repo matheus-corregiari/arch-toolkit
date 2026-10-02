@@ -3,7 +3,7 @@ package br.com.arch.toolkit.sample.feature.toolkit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.arch.toolkit.sample.design.AppText
-import br.com.arch.toolkit.sample.github.shared.structure.repository.ToolkitDemoRepository
+import br.com.arch.toolkit.sample.repository.ToolkitDemoRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

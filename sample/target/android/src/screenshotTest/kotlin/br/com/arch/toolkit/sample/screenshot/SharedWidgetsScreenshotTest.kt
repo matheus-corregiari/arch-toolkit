@@ -10,16 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import br.com.arch.toolkit.sample.core.model.AppLanguage
+import br.com.arch.toolkit.sample.core.model.ContrastMode
+import br.com.arch.toolkit.sample.core.model.ThemeMode
 import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.AppTheme
 import br.com.arch.toolkit.sample.design.LocalAppLanguage
+import br.com.arch.toolkit.sample.design.component.AppButton
+import br.com.arch.toolkit.sample.design.component.EmptyState
+import br.com.arch.toolkit.sample.design.component.ErrorState
 import br.com.arch.toolkit.sample.design.text
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppButton
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.EmptyState
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.ErrorState
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
 import com.android.tools.screenshot.PreviewTest
 
 @PreviewTest

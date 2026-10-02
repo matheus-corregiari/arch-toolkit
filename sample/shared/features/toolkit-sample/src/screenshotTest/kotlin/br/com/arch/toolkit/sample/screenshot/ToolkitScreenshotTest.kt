@@ -4,6 +4,10 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.component.AppPage
+import br.com.arch.toolkit.sample.design.component.AppSection
+import br.com.arch.toolkit.sample.feature.toolkit.DemoCode
+import br.com.arch.toolkit.sample.feature.toolkit.DemoSource
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
 import br.com.arch.toolkit.sample.screenshot.ScreenshotEnvironment
@@ -265,5 +269,24 @@ fun ToolkitMaximumFont() {
             StorageDemoState(value = "Arch Toolkit", message = AppText.SAVED),
             gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
         )
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "ToolkitExpandedSource",
+    widthDp = 800,
+    heightDp = 800,
+    locale = "en",
+    apiLevel = 35
+)
+@Composable
+fun ToolkitExpandedSource() {
+    ScreenshotEnvironment {
+        AppPage("Toolkit") {
+            AppSection("Lumber") {
+                DemoCode(DemoSource.Lumber, initiallyExpanded = true)
+            }
+        }
     }
 }

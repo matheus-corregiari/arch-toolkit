@@ -8,8 +8,8 @@ import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.runComposeUiTest
-import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubDetailRoute
-import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute
+import br.com.arch.toolkit.sample.feature.github.ui.GithubDetailRoute
+import br.com.arch.toolkit.sample.feature.github.ui.GithubRoute
 import com.pedrobneto.easy.navigation.core.NavigationController
 import com.pedrobneto.easy.navigation.core.rememberNavigationController
 import com.pedrobneto.easy.navigation.registry.GithubDirectionRegistry

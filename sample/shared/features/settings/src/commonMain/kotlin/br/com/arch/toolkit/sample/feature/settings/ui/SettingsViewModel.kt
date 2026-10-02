@@ -2,7 +2,7 @@ package br.com.arch.toolkit.sample.feature.settings.ui
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
-import br.com.arch.toolkit.sample.github.shared.structure.repository.SettingsRepository
+import br.com.arch.toolkit.sample.repository.SettingsRepository
 
 class SettingsViewModel(
     private val repository: SettingsRepository

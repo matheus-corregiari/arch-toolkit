@@ -33,15 +33,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import br.com.arch.toolkit.sample.core.model.WindowSize
 import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.AppTheme
+import br.com.arch.toolkit.sample.design.component.AppNavigationMenu
 import br.com.arch.toolkit.sample.design.text
 import br.com.arch.toolkit.sample.feature.design.DesignRoute
-import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute
+import br.com.arch.toolkit.sample.feature.github.ui.GithubRoute
 import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitRoute
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppNavigationMenu
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.WindowSize
 import com.pedrobneto.easy.navigation.core.Navigation
 import com.pedrobneto.easy.navigation.core.model.LaunchStrategy
 import com.pedrobneto.easy.navigation.core.model.NavigationRoute
@@ -92,12 +92,7 @@ fun AppHomeContent(
 ) {
     val itemModifier = Modifier.padding(horizontal = AppTheme.dimen.spacingXs)
     val itemColors = navigationItemColors()
-    val items = listOf(
-        NavigationItem(GithubRoute, AppText.GITHUB, Icons.Default.Code),
-        NavigationItem(ToolkitRoute, AppText.TOOLKIT, Icons.Default.Build),
-        NavigationItem(DesignRoute, AppText.DESIGN, Icons.Default.Palette),
-        NavigationItem(SettingsRoute, AppText.SETTINGS_TAB, Icons.Default.Settings)
-    )
+    val items = navigationItems
     val selectedItem =
         items.firstOrNull { it.route::class == currentRoute::class } ?: items.first()
     if (AppTheme.screen.windowSize == WindowSize.SMALL &&
@@ -207,4 +202,11 @@ private fun navigationItemColors() = NavigationSuiteItemColors(
         selectedBadgeColor = AppTheme.color.backgroundBrandPrimary,
         unselectedBadgeColor = AppTheme.color.backgroundSurfaceTertiaryDisabled
     )
+)
+
+private val navigationItems = listOf(
+    NavigationItem(GithubRoute, AppText.GITHUB, Icons.Default.Code),
+    NavigationItem(ToolkitRoute, AppText.TOOLKIT, Icons.Default.Build),
+    NavigationItem(DesignRoute, AppText.DESIGN, Icons.Default.Palette),
+    NavigationItem(SettingsRoute, AppText.SETTINGS_TAB, Icons.Default.Settings)
 )

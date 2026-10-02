@@ -1,7 +1,7 @@
 package br.com.arch.toolkit.sample
 
-import br.com.arch.toolkit.sample.github.shared.structure.core.extension.localized
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
+import br.com.arch.toolkit.sample.core.extension.localized
+import br.com.arch.toolkit.sample.core.model.AppLanguage
 import kotlinx.datetime.LocalDateTime
 import kotlin.test.Test
 import kotlin.test.assertEquals

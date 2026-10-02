@@ -16,8 +16,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppNavigationMenu
+import br.com.arch.toolkit.sample.design.AppTheme
+import br.com.arch.toolkit.sample.design.component.AppNavigationMenu
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

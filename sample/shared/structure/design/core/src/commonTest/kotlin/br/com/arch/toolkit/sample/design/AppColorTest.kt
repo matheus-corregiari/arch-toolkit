@@ -2,9 +2,9 @@ package br.com.arch.toolkit.sample.design
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppColor
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ContrastMode
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.ThemeMode
+import br.com.arch.toolkit.sample.core.model.ContrastMode
+import br.com.arch.toolkit.sample.core.model.ThemeMode
+import br.com.arch.toolkit.sample.design.AppColor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

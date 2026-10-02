@@ -19,15 +19,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.AppTheme
+import br.com.arch.toolkit.sample.design.component.AppButton
+import br.com.arch.toolkit.sample.design.component.AppChoiceGroup
+import br.com.arch.toolkit.sample.design.component.AppPage
+import br.com.arch.toolkit.sample.design.component.AppSection
+import br.com.arch.toolkit.sample.design.component.AppSectionGrid
+import br.com.arch.toolkit.sample.design.component.EmptyState
+import br.com.arch.toolkit.sample.design.component.ErrorState
 import br.com.arch.toolkit.sample.design.text
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppButton
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppChoiceGroup
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSectionGrid
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.EmptyState
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.ErrorState
 import com.pedrobneto.easy.navigation.core.annotation.Deeplink
 import com.pedrobneto.easy.navigation.core.annotation.Route
 import com.pedrobneto.easy.navigation.core.annotation.Scope
@@ -52,12 +52,12 @@ fun DesignContent(
     gridState: LazyGridState = rememberLazyGridState(),
     onSelect: () -> Unit = {}
 ) {
-    AppPage(text(AppText.DESIGN)) {
+    AppPage(text(AppText.DESIGN), description = text(AppText.DESIGN_INTRO)) {
         AppSectionGrid(state = gridState) {
             item(key = "typography") {
                 AppSection(text(AppText.TYPOGRAPHY)) {
-                    Text("Arch Toolkit", style = AppTheme.textStyle.titleXLMedium)
-                    Text(text(AppText.TOKENS), style = AppTheme.textStyle.paragraphM)
+                    Text("Arch Toolkit", style = AppTheme.textStyle.pageHeading)
+                    Text(text(AppText.TOKENS), style = AppTheme.textStyle.body)
                     Text(text(AppText.DESCRIPTION), style = AppTheme.textStyle.paragraphCaptionS)
                 }
             }

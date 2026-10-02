@@ -19,14 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontFamily
 import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.AppTheme
+import br.com.arch.toolkit.sample.design.component.AppButton
+import br.com.arch.toolkit.sample.design.component.AppDisclosure
+import br.com.arch.toolkit.sample.design.component.AppPage
+import br.com.arch.toolkit.sample.design.component.AppSection
+import br.com.arch.toolkit.sample.design.component.AppSectionGrid
+import br.com.arch.toolkit.sample.design.component.AppTextField
+import br.com.arch.toolkit.sample.design.component.containerRadiusXs
 import br.com.arch.toolkit.sample.design.text
-import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppButton
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSectionGrid
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppTextField
-import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusXs
 import com.pedrobneto.easy.navigation.core.annotation.Deeplink
 import com.pedrobneto.easy.navigation.core.annotation.Route
 import com.pedrobneto.easy.navigation.core.annotation.Scope
@@ -78,7 +79,7 @@ fun ToolkitContent(
     gridState: LazyGridState = rememberLazyGridState(),
     actions: ToolkitActions = ToolkitActions()
 ) {
-    AppPage(text(AppText.TOOLKIT)) {
+    AppPage(text(AppText.TOOLKIT), description = text(AppText.TOOLKIT_INTRO)) {
         AppSectionGrid(state = gridState) {
             item(key = "lumber") { LumberDemo(logs, actions) }
             item(key = "storage") { StorageDemo(state, actions) }
@@ -109,7 +110,7 @@ private fun LumberDemo(logs: List<String>, actions: ToolkitActions) {
             text(AppText.RESULT),
             logs.joinToString("\n").ifEmpty { text(AppText.EMPTY_LOGS) }
         )
-        CodeBlock(text(AppText.SNIPPET), DemoSnippets.lumber)
+        DemoCode(DemoSource.Lumber)
     }
 }
 
@@ -147,7 +148,18 @@ private fun StorageDemo(state: StorageDemoState, actions: ToolkitActions) {
         )
         state.message?.let { Text(text(it), color = AppTheme.color.textSubtitle) }
         CodeBlock(text(AppText.RESULT), state.value ?: text(AppText.MISSING_VALUE))
-        CodeBlock(text(AppText.SNIPPET), DemoSnippets.storage)
+        DemoCode(DemoSource.Storage)
+    }
+}
+
+@Composable
+fun DemoCode(source: DemoSource, initiallyExpanded: Boolean = false) {
+    val code = when (source) {
+        DemoSource.Lumber -> DemoSnippets.lumber
+        DemoSource.Storage -> DemoSnippets.storage
+    }
+    AppDisclosure(text(AppText.SHOW_CODE), text(AppText.HIDE_CODE), initiallyExpanded) {
+        CodeBlock(text(AppText.SNIPPET), code)
     }
 }
 
@@ -158,7 +170,7 @@ private fun CodeBlock(title: String, code: String) {
         code,
         modifier = Modifier.fillMaxWidth().containerRadiusXs().padding(AppTheme.dimen.spacingS),
         fontFamily = FontFamily.Monospace,
-        style = AppTheme.textStyle.paragraphCaptionS
+        style = AppTheme.textStyle.code
     )
 }
 
@@ -167,22 +179,10 @@ private fun EcosystemCatalogue() {
     val uriHandler = LocalUriHandler.current
     Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)) {
         Text(text(AppText.ECOSYSTEM), style = AppTheme.textStyle.subtitleXBold)
-        listOf(
-            Triple("Arch Android / Android", "arch-android", AppText.ARCH_ANDROID_DESCRIPTION),
-            Triple(
-                "Event Observer / Android, iOS, JVM, JS, Wasm",
-                "arch-event-observer",
-                AppText.EVENT_OBSERVER_DESCRIPTION
-            ),
-            Triple(
-                "Splinter / Android, iOS, JVM, JS, Wasm",
-                "arch-toolkit",
-                AppText.SPLINTER_DESCRIPTION
-            )
-        ).forEach { (title, repo, description) ->
-            AppSection(title.substringBefore(" / "), description = text(description)) {
+        ecosystemItems.forEach { item ->
+            AppSection(item.title, description = text(item.description)) {
                 Text(
-                    title.substringAfter(" / "),
+                    item.platforms,
                     style = AppTheme.textStyle.paragraphCaptionS,
                     color = AppTheme.color.textSubtitle
                 )
@@ -190,7 +190,7 @@ private fun EcosystemCatalogue() {
                     text(AppText.DOCUMENTATION),
                     onClick = {
                         uriHandler.openUri(
-                            "https://github.com/matheus-corregiari/$repo"
+                            "https://github.com/matheus-corregiari/${item.repository}"
                         )
                     },
                     style = AppButton.Style.Link,
@@ -200,3 +200,28 @@ private fun EcosystemCatalogue() {
         }
     }
 }
+
+private data class EcosystemItem(
+    val title: String,
+    val repository: String,
+    val platforms: String,
+    val description: AppText
+)
+
+private val ecosystemItems = listOf(
+    EcosystemItem("Arch Android", "arch-android", "Android", AppText.ARCH_ANDROID_DESCRIPTION),
+    EcosystemItem(
+        "Event Observer",
+        "arch-event-observer",
+        "Android, iOS, JVM, JS, Wasm",
+        AppText.EVENT_OBSERVER_DESCRIPTION
+    ),
+    EcosystemItem(
+        "Splinter",
+        "arch-toolkit",
+        "Android, iOS, JVM, JS, Wasm",
+        AppText.SPLINTER_DESCRIPTION
+    )
+)
+
+enum class DemoSource { Lumber, Storage }

@@ -1,0 +1,99 @@
+package br.com.arch.toolkit.sample.feature.github.ui.detail
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import br.com.arch.toolkit.sample.core.extension.localized
+import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.AppTheme
+import br.com.arch.toolkit.sample.design.LocalAppLanguage
+import br.com.arch.toolkit.sample.design.component.AppButton
+import br.com.arch.toolkit.sample.design.component.AppPage
+import br.com.arch.toolkit.sample.design.component.AppSection
+import br.com.arch.toolkit.sample.design.text
+import br.com.arch.toolkit.sample.feature.github.ui.GithubDetailRoute
+import br.com.arch.toolkit.sample.feature.github.ui.GithubError
+import com.pedrobneto.easy.navigation.core.LocalNavigationController
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
+
+@Composable
+fun RepositoryDetailScreen(route: GithubDetailRoute) {
+    val model: DetailViewModel =
+        koinViewModel(
+            key = "${route.owner}/${route.name}"
+        ) { parametersOf(route.owner, route.name) }
+    val state by model.state.collectAsState()
+    val navigation = LocalNavigationController.current
+    val uriHandler = LocalUriHandler.current
+    LaunchedEffect(model) { model.load() }
+    RepositoryDetailContent(
+        state = state,
+        onBack = { navigation.safeNavigateUp() },
+        onRetry = model::load,
+        onOpenRepository = { owner, name -> uriHandler.openUri("https://github.com/$owner/$name") }
+    )
+}
+
+@Composable
+fun RepositoryDetailContent(
+    state: GithubDetailState,
+    onBack: () -> Unit = {},
+    onRetry: () -> Unit = {},
+    onOpenRepository: (String, String) -> Unit = { _, _ -> }
+) {
+    AppPage(text(AppText.REPOSITORIES), maxWidth = AppTheme.dimen.readingMaxWidth) {
+        Column(
+            Modifier.fillMaxWidth().verticalScroll(
+                rememberScrollState()
+            ).padding(AppTheme.dimen.spacingM),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
+        ) {
+            AppButton(
+                text(AppText.BACK),
+                onBack,
+                style = AppButton.Style.Link,
+                size = AppButton.Size.Small
+            )
+            if (state.loading) CircularProgressIndicator()
+            state.failure?.let { GithubError(it, onRetry) }
+            state.item?.let { item ->
+                AppSection(
+                    item.fullName,
+                    description = item.description ?: text(AppText.NO_DESCRIPTION)
+                ) {
+                    Text(
+                        "${text(
+                            AppText.STARS
+                        )}: ${item.stargazersCount.localized(LocalAppLanguage.current)}"
+                    )
+                    Text(
+                        "${text(
+                            AppText.FORKS
+                        )}: ${item.forksCount.localized(LocalAppLanguage.current)}"
+                    )
+                    Text(item.language.orEmpty())
+                    Text(item.topics.joinToString(" · "))
+                    AppButton(
+                        text(AppText.OPEN_GITHUB),
+                        onClick = {
+                            onOpenRepository(item.owner.login, item.name)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+    }
+}

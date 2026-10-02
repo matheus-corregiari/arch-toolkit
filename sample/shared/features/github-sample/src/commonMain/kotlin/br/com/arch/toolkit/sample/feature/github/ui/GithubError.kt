@@ -1,0 +1,27 @@
+package br.com.arch.toolkit.sample.feature.github.ui
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import br.com.arch.toolkit.sample.design.AppText
+import br.com.arch.toolkit.sample.design.AppTheme
+import br.com.arch.toolkit.sample.design.component.ErrorState
+import br.com.arch.toolkit.sample.design.text
+import br.com.arch.toolkit.sample.repository.GithubFailure
+
+@Composable
+fun GithubError(failure: GithubFailure, retry: () -> Unit) {
+    val message = when (failure) {
+        GithubFailure.CONNECTION -> AppText.CONNECTION_ERROR
+        GithubFailure.RATE_LIMIT -> AppText.RATE_LIMIT_ERROR
+        GithubFailure.NOT_FOUND -> AppText.NOT_FOUND_ERROR
+        GithubFailure.INVALID_RESPONSE -> AppText.RESPONSE_ERROR
+    }
+    ErrorState(
+        Modifier.fillMaxWidth().padding(AppTheme.dimen.spacingM),
+        text(message),
+        retryLabel = text(AppText.RETRY),
+        retry = retry
+    )
+}

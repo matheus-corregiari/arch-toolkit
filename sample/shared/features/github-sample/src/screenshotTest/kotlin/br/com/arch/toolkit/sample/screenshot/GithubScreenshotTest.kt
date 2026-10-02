@@ -2,14 +2,15 @@ package br.com.arch.toolkit.sample.screenshot
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import br.com.arch.toolkit.sample.feature.githubSample.ui.detail.GithubDetailState
-import br.com.arch.toolkit.sample.feature.githubSample.ui.detail.RepositoryDetailContent
-import br.com.arch.toolkit.sample.feature.githubSample.ui.list.GithubListState
-import br.com.arch.toolkit.sample.feature.githubSample.ui.list.RepositoryListContent
-import br.com.arch.toolkit.sample.github.shared.structure.repository.GithubFailure
-import br.com.arch.toolkit.sample.github.shared.structure.repository.RecentRepositoryRO
-import br.com.arch.toolkit.sample.github.shared.structure.repository.model.RepoRO
-import br.com.arch.toolkit.sample.github.shared.structure.repository.model.UserRO
+import br.com.arch.toolkit.sample.feature.github.ui.detail.GithubDetailState
+import br.com.arch.toolkit.sample.feature.github.ui.detail.RepositoryDetailContent
+import br.com.arch.toolkit.sample.feature.github.ui.list.GithubListState
+import br.com.arch.toolkit.sample.feature.github.ui.list.LoadStatus
+import br.com.arch.toolkit.sample.feature.github.ui.list.RepositoryListContent
+import br.com.arch.toolkit.sample.repository.GithubFailure
+import br.com.arch.toolkit.sample.repository.RecentRepositoryRO
+import br.com.arch.toolkit.sample.repository.model.RepoRO
+import br.com.arch.toolkit.sample.repository.model.UserRO
 import br.com.arch.toolkit.sample.screenshot.ScreenshotEnvironment
 import com.android.tools.screenshot.PreviewTest
 import kotlinx.datetime.LocalDateTime
@@ -26,7 +27,7 @@ import kotlinx.datetime.LocalDateTime
 @Composable
 fun GithubListLoading() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        RepositoryListContent(GithubListState(loading = true))
+        RepositoryListContent(GithubListState(loadStatus = LoadStatus.Loading))
     }
 }
 
@@ -77,7 +78,7 @@ fun GithubListContent() {
 @Composable
 fun GithubListPaginationLoading() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        RepositoryListContent(listFixture().copy(loading = true))
+        RepositoryListContent(listFixture().copy(loadStatus = LoadStatus.Loading))
     }
 }
 
@@ -93,7 +94,9 @@ fun GithubListPaginationLoading() {
 @Composable
 fun GithubListPaginationError() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        RepositoryListContent(listFixture().copy(failure = GithubFailure.CONNECTION))
+        RepositoryListContent(
+            listFixture().copy(loadStatus = LoadStatus.Failed(GithubFailure.CONNECTION))
+        )
     }
 }
 
@@ -173,7 +176,9 @@ fun GithubDetailMissingMetadata() {
 @Composable
 fun GithubListConnection() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        RepositoryListContent(GithubListState(failure = GithubFailure.CONNECTION))
+        RepositoryListContent(
+            GithubListState(loadStatus = LoadStatus.Failed(GithubFailure.CONNECTION))
+        )
     }
 }
 
@@ -205,7 +210,9 @@ fun GithubDetailConnection() {
 @Composable
 fun GithubListRateLimit() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        RepositoryListContent(GithubListState(failure = GithubFailure.RATE_LIMIT))
+        RepositoryListContent(
+            GithubListState(loadStatus = LoadStatus.Failed(GithubFailure.RATE_LIMIT))
+        )
     }
 }
 
@@ -237,7 +244,9 @@ fun GithubDetailRateLimit() {
 @Composable
 fun GithubListNotFound() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        RepositoryListContent(GithubListState(failure = GithubFailure.NOT_FOUND))
+        RepositoryListContent(
+            GithubListState(loadStatus = LoadStatus.Failed(GithubFailure.NOT_FOUND))
+        )
     }
 }
 
@@ -269,7 +278,9 @@ fun GithubDetailNotFound() {
 @Composable
 fun GithubListInvalidResponse() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        RepositoryListContent(GithubListState(failure = GithubFailure.INVALID_RESPONSE))
+        RepositoryListContent(
+            GithubListState(loadStatus = LoadStatus.Failed(GithubFailure.INVALID_RESPONSE))
+        )
     }
 }
 

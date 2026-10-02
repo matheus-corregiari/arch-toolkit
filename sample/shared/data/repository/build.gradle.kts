@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.jetbrains.serialization)
 }
 
-android.namespace = "br.com.arch.toolkit.sample.github.shared.structure.repository"
+android.namespace = "br.com.arch.toolkit.sample.repository"
 android.androidResources.enable = false
 android.buildFeatures.buildConfig = false
 

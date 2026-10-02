@@ -1,0 +1,16 @@
+package br.com.arch.toolkit.sample.data.local
+
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import okio.Path.Companion.toPath
+
+internal const val DATASTORE_FILENAME = "batata.preferences_pb"
+typealias PrefsDataStore = DataStore<Preferences>
+
+internal fun createDataStore(producePath: () -> String): PrefsDataStore =
+    PreferenceDataStoreFactory.createWithPath(produceFile = { producePath().toPath() })
+
+fun defaultKeyValueDataStore(context: Context): PrefsDataStore =
+    createDataStore { context.filesDir.resolve(DATASTORE_FILENAME).absolutePath }

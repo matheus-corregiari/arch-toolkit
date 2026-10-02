@@ -2,12 +2,34 @@ package br.com.arch.toolkit.sample.design
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
+import br.com.arch.toolkit.sample.core.model.AppLanguage
 
 val LocalAppLanguage = staticCompositionLocalOf { AppLanguage.ENGLISH }
 
 enum class AppText(val english: String, val portuguese: String) {
     GITHUB("GitHub", "GitHub"),
+    REPOSITORIES("Repositories", "Repositórios"),
+    GITHUB_INTRO(
+        "Explore projects and see the Toolkit in action.",
+        "Explore projetos e veja o Toolkit em ação."
+    ),
+    TOOLKIT_INTRO(
+        "Run an operation, inspect its result and explore the code.",
+        "Execute uma operação, veja o resultado e explore o código."
+    ),
+    DESIGN_INTRO(
+        "One visual language shared by every screen.",
+        "Uma linguagem visual compartilhada entre todas as telas."
+    ),
+    SETTINGS_INTRO(
+        "Make your workspace comfortable to read.",
+        "Ajuste o ambiente para uma leitura confortável."
+    ),
+    APPEARANCE("Appearance", "Aparência"),
+    SHOW_CODE("View executed code", "Ver código executado"),
+    HIDE_CODE("Hide executed code", "Ocultar código executado"),
+    SHOW_HISTORY("View recent repositories", "Ver repositórios recentes"),
+    HIDE_HISTORY("Hide recent repositories", "Ocultar repositórios recentes"),
     TOOLKIT("Toolkit", "Toolkit"),
     DESIGN("Design", "Design"),
     SETTINGS("Settings", "Configurações"),
