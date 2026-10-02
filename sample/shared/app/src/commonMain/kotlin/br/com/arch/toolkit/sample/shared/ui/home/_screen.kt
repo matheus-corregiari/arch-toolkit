@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Code
@@ -102,7 +103,10 @@ fun AppHomeContent(
     if (AppTheme.screen.windowSize == WindowSize.SMALL &&
         LocalDensity.current.fontScale > NAVIGATION_MENU_FONT_SCALE
     ) {
-        Column(Modifier.fillMaxSize().background(AppTheme.color.backgroundSurfaceDefault)) {
+        Column(
+            Modifier.fillMaxSize().background(AppTheme.color.backgroundSurfaceDefault)
+                .safeDrawingPadding()
+        ) {
             AppNavigationMenu(
                 labels = items.map { text(it.label) },
                 selected = text(selectedItem.label),
