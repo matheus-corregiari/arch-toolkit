@@ -26,9 +26,9 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
   results when both panes fit and keep controls scrollable in short windows.
 - Reserve the navigation drawer for windows from 1200 dp, retain a tablet rail,
   cap repository detail reading width, and verify edited inputs survive resizing.
-- Center short landscape/tablet pages within a proportional reading frame, cap
+- Horizontally center landscape/tablet pages within a proportional reading frame, cap
   content width at 960 dp and keep longer pages scrollable. Align search/results
-  around the same visual center and apply modest width-based typography scales
+  at the top and apply modest width-based typography scales
   with proportional line heights, respecting system font enlargement.
 - Preserve brand yellow with readable dark ink; define six complete light/dark
   contrast palettes with opaque surfaces and consistent Material roles. Add KMP

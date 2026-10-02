@@ -252,12 +252,10 @@ the navigation shell as well as populated GitHub landscape results.
 In landscape or medium/expanded windows, the shared page targets 92% of the available width,
 capped at 960 dp (720 dp for repository detail). The frame retains enough width
 for two readable columns when they fit and follows the user's font setting.
-Short pages wrap their content and center both horizontally and vertically;
-scrollable pages remain bounded by the available height, with a 900 dp maximum.
-Compact portrait pages retain their top alignment.
+Pages fill the available height and start at the top, with horizontal centering
+and adaptive width. Long content scrolls within the available height.
 
-Search and results align around the same vertical center when displayed side by
-side. A short result list wraps rather than stretching its pagination action to
+Search and results align at the top when displayed side by side. A short result list wraps rather than stretching its pagination action to
 the bottom edge; long lists continue to scroll within the frame.
 
 Typography increases gently with the window width class. Values remain in `sp`,
@@ -270,7 +268,7 @@ so system font scaling is applied normally; density/font scaling is never overri
 | Body | 14 sp / 20 sp leading | 15 sp / 22 sp leading | 16 sp / 24 sp leading |
 | Metadata / code | 12 sp / 16 sp leading | 13 sp / 18 sp leading | 14 sp / 20 sp leading |
 
-JVM coverage also checks that a short page stays inset and centered within a wide
+JVM coverage also checks that a short page stays horizontally centered and top-aligned within a wide
 viewport. Existing resizing and 2x landscape interaction checks remain active.
 
 ![Centered reading area and typography](assets/showcase-reading.png)

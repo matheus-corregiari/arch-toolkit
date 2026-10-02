@@ -30,7 +30,6 @@ import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
-import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -38,7 +37,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class ResponsiveLayoutUiTest {
     @Test
-    fun shortContentIsCenteredInsideAWideViewport() = runComposeUiTest {
+    fun shortContentIsHorizontallyCenteredAndTopAlignedInsideAWideViewport() = runComposeUiTest {
         setContent {
             AppTheme {
                 Box(Modifier.requiredSize(WIDE_WIDTH.dp, CONTENT_HEIGHT.dp).testTag("viewport")) {
@@ -55,8 +54,8 @@ class ResponsiveLayoutUiTest {
         val title = onNodeWithText("Reading").fetchSemanticsNode().boundsInRoot
         assertTrue(section.width < viewport.width)
         assertEquals(viewport.center.x, section.center.x, CENTER_TOLERANCE)
-        val contentCenter = (title.top + section.bottom) / 2
-        assertTrue(abs(viewport.center.y - contentCenter) < HEADING_TOLERANCE)
+        assertTrue(title.top - viewport.top < HEADING_TOLERANCE)
+        assertTrue(section.bottom < viewport.center.y)
     }
 
     @Test

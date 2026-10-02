@@ -59,7 +59,7 @@ fun AppSearchLayout(
         val controlMaxHeight = maxHeight * CONTROL_HEIGHT_FRACTION
         val paneMaxHeight = maxHeight
         if (maxWidth >= AppTheme.dimen.splitPaneMinWidth * fontScale) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
                 Column(
                     Modifier.width(AppTheme.dimen.searchPaneWidth * fontScale)
                         .heightIn(max = paneMaxHeight).verticalScroll(controlScroll),

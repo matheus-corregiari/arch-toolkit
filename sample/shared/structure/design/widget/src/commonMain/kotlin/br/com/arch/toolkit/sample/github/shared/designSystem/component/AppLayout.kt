@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.WindowSize
 
@@ -44,15 +43,9 @@ fun AppPage(
         } else {
             this.maxWidth.coerceAtMost(maximumPageWidth)
         }
-        val pageHeight = if (roomy) {
-            (maxHeight - AppTheme.dimen.spacingM).coerceAtLeast(0.dp)
-                .coerceAtMost(AppTheme.dimen.contentMaxHeight)
-        } else {
-            maxHeight
-        }
         Column(
-            Modifier.align(if (roomy) Alignment.Center else Alignment.TopCenter)
-                .width(pageWidth).heightIn(max = pageHeight)
+            Modifier.align(Alignment.TopCenter)
+                .width(pageWidth).fillMaxHeight()
         ) {
             ScreenTitle(Modifier.fillMaxWidth(), title)
             content()

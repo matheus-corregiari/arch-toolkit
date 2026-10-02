@@ -18,8 +18,6 @@ sealed class AppDimen {
 
     val contentMaxWidth: Dp = 960.dp
 
-    val contentMaxHeight: Dp = 900.dp
-
     val readingMaxWidth: Dp = 720.dp
 
     val sectionMinWidth: Dp = 320.dp
