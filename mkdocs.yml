@@ -36,7 +36,10 @@ nav:
       - Overview: ecosystem/index.md
       - Branching: ecosystem/gitflow.md
       - CI and Release: ecosystem/ci-release.md
-  - Showcase: showcase.md
+  - Showcase:
+      - App atual: showcase.md
+      - Novo estudo visual: showcase-visual-study.md
+      - Plano de refactor: showcase-refactor.md
   - Project:
       - Changelog: CHANGELOG.md
       - Dependencies: dependencies.md
