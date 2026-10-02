@@ -26,7 +26,11 @@ runs:
       run: |
         compile_sdk=$(sed -n 's/^build-sdk-compile = "\(.*\)"/\1/p' gradle/libs.versions.toml)
         build_tools=$(sed -n 's/^build-tools = "\(.*\)"/\1/p' gradle/libs.versions.toml)
-        sdkmanager "platforms;android-$compile_sdk" "build-tools;$build_tools"
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          sdkmanager.bat "platforms;android-$compile_sdk" "build-tools;$build_tools"
+        else
+          sdkmanager "platforms;android-$compile_sdk" "build-tools;$build_tools"
+        fi
 
     # Cache Konan (Kotlin/Native)
     - name: Cache Konan
