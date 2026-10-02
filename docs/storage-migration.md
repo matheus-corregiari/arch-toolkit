@@ -16,10 +16,10 @@ implementation("io.github.matheus-corregiari:storage-datastore") {
 Apply the same constraint to core and memory when used. Resolve conflicting callers together.
 
 ```sh
-./gradlew :sample:shared:data:repository:dependencyInsight --dependency storage-core --configuration jvmRuntimeClasspath -Pandroid.injected.invoked.from.ide=true
+./gradlew :sample:shared:data:source:local:dependencyInsight --dependency storage-core --configuration jvmRuntimeClasspath -PincludeSamples
 ```
 
-The enabled sample targets are Android and desktop, using DataStore. Web provider sources use memory;
+The enabled sample targets are Android, desktop and iOS ARM64, using DataStore. Web provider sources use memory;
 DataStore is unavailable on web. Storage supports iOS ARM64 and Simulator ARM64, without iosX64.
 See [upstream behavioral changes](https://github.com/matheus-corregiari/arch-storage/blob/master/docs/migration-1.0.0.md)
 for cancellation, caching, Compose state and asynchronous persistence corrections.

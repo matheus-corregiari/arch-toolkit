@@ -23,14 +23,15 @@ commonMain.dependencies {
 ```
 
 Apply Kotlin serialization in each module declaring serializable models.
-Remove `SavableObject` inheritance. The sample retains serialization on `RepoVO` and `PageDTO`,
-and imports `br.com.arch.toolkit.eventObserver.state.saveResponseState` in its ViewModel.
+Remove `SavableObject` inheritance. Use the holder APIs from
+`br.com.arch.toolkit.eventObserver.state` in applications adopting State Handle.
+The current showcase owns its GitHub UI state independently in its ViewModel.
 
 ## Saved state and loading
 
-Old native/shadow snapshots are not decoded by the new library. The sample uses the new key
-`github-repositories-v2`, starting fresh instead of interpreting the old `lastPageState`
-snapshot as JSON. Applications requiring continuity must convert old values before
+Old native/shadow snapshots are not decoded by the new library. Choose a new key when
+starting fresh instead of interpreting an old native snapshot as JSON.
+Applications requiring continuity must convert old values before
 initializing the new holder.
 
 `flow()` exposes a stable state flow; `load` starts a new operation and returns a job.
