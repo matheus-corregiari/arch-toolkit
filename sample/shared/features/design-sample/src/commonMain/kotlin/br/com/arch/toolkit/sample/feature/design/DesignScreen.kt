@@ -1,18 +1,15 @@
 package br.com.arch.toolkit.sample.feature.design
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +25,7 @@ import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppButton
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppChoiceGroup
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSectionGrid
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.EmptyState
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.ErrorState
 import com.pedrobneto.easy.navigation.core.annotation.Deeplink
@@ -51,52 +49,59 @@ fun DesignDestination() {
 @Composable
 fun DesignContent(
     selected: Boolean = false,
-    scrollState: ScrollState = rememberScrollState(),
+    gridState: LazyGridState = rememberLazyGridState(),
     onSelect: () -> Unit = {}
 ) {
     AppPage(text(AppText.DESIGN)) {
-        Column(
-            Modifier.fillMaxSize().verticalScroll(scrollState).padding(AppTheme.dimen.spacingM),
-            verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
-        ) {
-            AppSection(text(AppText.TYPOGRAPHY)) {
-                Text("Arch Toolkit", style = AppTheme.textStyle.titleXLMedium)
-                Text(text(AppText.TOKENS), style = AppTheme.textStyle.paragraphM)
-                Text(text(AppText.DESCRIPTION), style = AppTheme.textStyle.paragraphCaptionS)
+        AppSectionGrid(state = gridState) {
+            item(key = "typography") {
+                AppSection(text(AppText.TYPOGRAPHY)) {
+                    Text("Arch Toolkit", style = AppTheme.textStyle.titleXLMedium)
+                    Text(text(AppText.TOKENS), style = AppTheme.textStyle.paragraphM)
+                    Text(text(AppText.DESCRIPTION), style = AppTheme.textStyle.paragraphCaptionS)
+                }
             }
-            AppSection(text(AppText.COLORS)) { DesignTokens() }
-            AppSection(text(AppText.SPACING)) { SpacingTokens() }
-            AppSection(text(AppText.FEEDBACK)) {
-                CircularProgressIndicator()
-                EmptyState(Modifier.fillMaxWidth(), text(AppText.EMPTY))
-                ErrorState(
-                    Modifier.fillMaxWidth(),
-                    text(AppText.CONNECTION_ERROR),
-                    retryLabel = text(AppText.RETRY),
-                    retry = onSelect
-                )
+            item(key = "colors") {
+                AppSection(text(AppText.COLORS)) { DesignTokens() }
             }
-            AppSection(text(AppText.WIDGETS)) {
-                AppButton.Style.entries.forEach { style ->
-                    AppButton(
-                        buttonLabel(style),
-                        onSelect,
-                        modifier = Modifier.fillMaxWidth(),
-                        style = style
+            item(key = "spacing") {
+                AppSection(text(AppText.SPACING)) { SpacingTokens() }
+            }
+            item(key = "feedback") {
+                AppSection(text(AppText.FEEDBACK)) {
+                    CircularProgressIndicator()
+                    EmptyState(Modifier.fillMaxWidth(), text(AppText.EMPTY))
+                    ErrorState(
+                        Modifier.fillMaxWidth(),
+                        text(AppText.CONNECTION_ERROR),
+                        retryLabel = text(AppText.RETRY),
+                        retry = onSelect
                     )
                 }
-                AppButton(
-                    text(AppText.DISABLED),
-                    {},
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = false
-                )
-                AppChoiceGroup(
-                    listOf(false, true),
-                    selected,
-                    { if (it != selected) onSelect() },
-                    label = { text(if (it) AppText.SELECTED else AppText.ENABLED) }
-                )
+            }
+            item(key = "widgets") {
+                AppSection(text(AppText.WIDGETS)) {
+                    AppButton.Style.entries.forEach { style ->
+                        AppButton(
+                            buttonLabel(style),
+                            onSelect,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = style
+                        )
+                    }
+                    AppButton(
+                        text(AppText.DISABLED),
+                        {},
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = false
+                    )
+                    AppChoiceGroup(
+                        listOf(false, true),
+                        selected,
+                        { if (it != selected) onSelect() },
+                        label = { text(if (it) AppText.SELECTED else AppText.ENABLED) }
+                    )
+                }
             }
         }
     }

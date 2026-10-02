@@ -1,6 +1,6 @@
 package br.com.arch.toolkit.sample.screenshot
 
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import br.com.arch.toolkit.sample.feature.design.DesignContent
@@ -99,7 +99,10 @@ fun DesignHighContrast() {
 @Composable
 fun DesignWidgetsSelected() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        DesignContent(selected = true, scrollState = rememberScrollState(initial = Int.MAX_VALUE))
+        DesignContent(
+            selected = true,
+            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 4)
+        )
     }
 }
 
@@ -115,7 +118,7 @@ fun DesignWidgetsSelected() {
 @Composable
 fun DesignWidgetsUnselected() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        DesignContent(scrollState = rememberScrollState(initial = Int.MAX_VALUE))
+        DesignContent(gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 4))
     }
 }
 

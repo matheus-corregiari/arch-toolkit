@@ -47,13 +47,14 @@ internal fun getCurrentScreenInfo(theme: ThemeMode, contrast: ContrastMode): Sta
     // Computed Info
     val widthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
     val size = remember(widthSizeClass) { widthSizeClass.screenSize() }
-    val navigationSuiteType = remember(widthSizeClass, orientation) {
-        widthSizeClass.navigationSuiteType(orientation)
+    val windowDpSize = currentWindowDpSize()
+    val navigationSuiteType = remember(widthSizeClass, orientation, windowDpSize) {
+        widthSizeClass.navigationSuiteType(orientation, windowDpSize.width)
     }
 
     // Creating Screen Info
     val info = ScreenInfo(
-        size = currentWindowDpSize(),
+        size = windowDpSize,
         windowSize = size,
         type = deviceType(),
         theme = theme,
@@ -73,7 +74,7 @@ private fun WindowWidthSizeClass.screenSize() = when (this) {
     else -> WindowSize.SMALL
 }
 
-private fun WindowWidthSizeClass.navigationSuiteType(orientation: Orientation) =
+private fun WindowWidthSizeClass.navigationSuiteType(orientation: Orientation, width: Dp) =
     when (this) {
         WindowWidthSizeClass.COMPACT -> if (orientation == LANDSCAPE) {
             NavigationSuiteType.NavigationRail
@@ -82,6 +83,12 @@ private fun WindowWidthSizeClass.navigationSuiteType(orientation: Orientation) =
         }
 
         WindowWidthSizeClass.MEDIUM -> NavigationSuiteType.NavigationRail
-        WindowWidthSizeClass.EXPANDED -> NavigationSuiteType.NavigationDrawer
+        WindowWidthSizeClass.EXPANDED -> if (width.value >= DRAWER_MIN_WIDTH) {
+            NavigationSuiteType.NavigationDrawer
+        } else {
+            NavigationSuiteType.NavigationRail
+        }
         else -> NavigationSuiteType.None
     }
+
+private const val DRAWER_MIN_WIDTH = 1200

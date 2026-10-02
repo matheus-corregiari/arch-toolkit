@@ -482,3 +482,21 @@ fun GithubDetailMaximumFont() {
         RepositoryDetailContent(GithubDetailState(item = repoFixture()))
     }
 }
+
+@PreviewTest
+@Preview(name = "GithubListTabletLandscape", widthDp = 1280, heightDp = 800, apiLevel = 35)
+@Composable
+fun GithubListTabletLandscape() {
+    ScreenshotEnvironment {
+        RepositoryListContent(listFixture())
+    }
+}
+
+@PreviewTest
+@Preview(name = "GithubListPhoneLandscape", widthDp = 800, heightDp = 360, apiLevel = 35)
+@Composable
+fun GithubListPhoneLandscape() {
+    ScreenshotEnvironment {
+        RepositoryListContent(listFixture())
+    }
+}

@@ -2,14 +2,12 @@ package br.com.arch.toolkit.sample.feature.toolkit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,6 +24,7 @@ import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppButton
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSectionGrid
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppTextField
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusXs
 import com.pedrobneto.easy.navigation.core.annotation.Deeplink
@@ -76,19 +75,16 @@ data class ToolkitActions(
 fun ToolkitContent(
     logs: List<String>,
     state: StorageDemoState,
-    listState: LazyListState = rememberLazyListState(),
+    gridState: LazyGridState = rememberLazyGridState(),
     actions: ToolkitActions = ToolkitActions()
 ) {
     AppPage(text(AppText.TOOLKIT)) {
-        LazyColumn(
-            Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(AppTheme.dimen.spacingM),
-            verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM),
-            state = listState
-        ) {
-            item { LumberDemo(logs, actions) }
-            item { StorageDemo(state, actions) }
-            item { EcosystemCatalogue() }
+        AppSectionGrid(state = gridState) {
+            item(key = "lumber") { LumberDemo(logs, actions) }
+            item(key = "storage") { StorageDemo(state, actions) }
+            item(key = "ecosystem", span = { GridItemSpan(maxLineSpan) }) {
+                EcosystemCatalogue()
+            }
         }
     }
 }

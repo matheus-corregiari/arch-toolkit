@@ -54,7 +54,7 @@ fun RepositoryDetailContent(
     onRetry: () -> Unit = {},
     onOpenRepository: (String, String) -> Unit = { _, _ -> }
 ) {
-    AppPage(text(AppText.GITHUB)) {
+    AppPage(text(AppText.GITHUB), maxWidth = AppTheme.dimen.readingMaxWidth) {
         Column(
             Modifier.fillMaxSize().verticalScroll(
                 rememberScrollState()

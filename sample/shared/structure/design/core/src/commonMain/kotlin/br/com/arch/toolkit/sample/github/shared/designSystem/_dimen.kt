@@ -16,7 +16,15 @@ internal val LocalAppDimen = compositionLocalOf<AppDimen> { SmallScreenDimen }
 
 sealed class AppDimen {
 
-    val contentMaxWidth: Dp = 960.dp
+    val contentMaxWidth: Dp = 1200.dp
+
+    val readingMaxWidth: Dp = 720.dp
+
+    val sectionMinWidth: Dp = 320.dp
+
+    val searchPaneWidth: Dp = 280.dp
+
+    val splitPaneMinWidth: Dp = 640.dp
 
     // Border
     open val borderWidthS: Dp = 1.dp

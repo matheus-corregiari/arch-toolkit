@@ -18,17 +18,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 
-/** Centered reading column shared by every destination, with a stable title hierarchy. */
+/** Centered adaptive content shared by every destination, with a stable title hierarchy. */
 @Composable
-fun AppPage(title: String, content: @Composable ColumnScope.() -> Unit) {
+fun AppPage(
+    title: String,
+    maxWidth: Dp = AppTheme.dimen.contentMaxWidth,
+    content: @Composable ColumnScope.() -> Unit
+) {
     Box(
         Modifier.fillMaxSize().background(AppTheme.color.backgroundSurfaceDefault),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
-            Modifier.fillMaxHeight().widthIn(max = AppTheme.dimen.contentMaxWidth).fillMaxWidth()
+            Modifier.fillMaxHeight().widthIn(max = maxWidth).fillMaxWidth()
         ) {
             ScreenTitle(Modifier.fillMaxWidth(), title)
             content()

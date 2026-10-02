@@ -136,22 +136,24 @@ project dependencies are checked separately; production targets still depend on
 
 ### Coverage matrix
 
-The suite contains 72 references. Following Android's guidance, representative
+The suite contains 84 references. Following Android's guidance, representative
 configurations are sampled instead of multiplying every state by every device.
 
 | Area | References | Visual contracts |
 | --- | ---: | --- |
-| GitHub list and detail | 27 | Loading, empty search, content/recent history, pagination loading/error/end, all four domain errors, missing metadata, long names/descriptions/topics, localized dates and counts |
+| GitHub list and detail | 29 | Loading, empty search, content/recent history, pagination loading/error/end, all four domain errors, missing metadata, long names/descriptions/topics, localized dates and counts |
 | Settings | 10 | All six light/dark contrast palettes, system/language selections, narrow large text, wide layout |
 | Toolkit | 13 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, ecosystem catalogue, scrolled content |
 | Design | 8 | Real tokens, button styles, disabled/loading/error/empty widgets, selected/unselected chips, scrolled content |
-| App shell | 10 | All selected destinations, compact bottom bar, medium rail, expanded drawer, landscape, localized and large-text navigation |
+| App shell | 20 | All selected destinations, compact bottom bar, tablet rail, large-window drawer, phone/tablet landscape, tablet portrait, localized and large-text navigation |
 | Shared widgets | 4 | Original English/light, Portuguese/dark, large font and wide high-contrast checks |
 
 Representative feature content runs in light English, dark Portuguese, 320dp
 narrow layouts with 1.5x and 2x fonts, and 840dp wide layouts. High contrast has
 focused coverage in Settings, Design and GitHub. Shell breakpoints include 600dp
-and a short landscape window. This is not an exhaustive device matrix or an
+and short 800 × 360 landscape windows. All four destinations also run inside the
+1280 × 800 tablet shell; Settings includes 800 × 1280 portrait and Toolkit includes
+2x tablet text. This is not an exhaustive device matrix or an
 accessibility certification.
 
 Fixtures use API 35 and fixed dates, counts and text. Content composables receive
@@ -206,7 +208,7 @@ corners and the existing sans-serif typography. Yellow uses dark ink `#242424`
 in both themes (10.44:1), rather than white text. Blue links and semantic red/green
 remain reserved for links and feedback.
 
-Each destination uses `AppPage`: a centered reading column capped at 960 dp with
+Each destination uses `AppPage`: a centered content area capped at 1200 dp with
 a stable heading size. `AppSection` groups related content using the same surface,
 border, corner radius and 16 dp inset. GitHub search and filters form one group;
 empty/loading/error content occupies the results area. Toolkit separates demos,
@@ -219,6 +221,31 @@ height. Compact windows with font scales above 1.3 use a labeled sections menu
 instead of forcing four enlarged labels into a bottom bar. Selected controls and
 navigation use the same yellow-derived surface and
 foreground roles. Selection semantics, labels and heading semantics remain native.
+
+
+### Responsive composition
+
+Layouts use the space actually available after navigation and insets, following
+[Android adaptive layout guidance](https://developer.android.com/develop/adaptive-apps/guides/support-different-display-sizes).
+They react to resizing and font scale rather than a device-name or orientation flag.
+
+| Area | Compact or enlarged text | Landscape and tablet |
+| --- | --- | --- |
+| Settings, Toolkit and Design | One scrollable card column | Two columns when each can retain at least 320 dp scaled by the font setting, plus 16 dp gutters |
+| GitHub search | Controls above results; controls can scroll within half the content height in short windows | Search/history beside results at 640 dp of available width scaled by the font setting; 280 dp sidebar scales with text |
+| Repository detail | One scrollable information card | Reading width capped at 720 dp to keep descriptions readable |
+| Navigation | Bottom bar in compact portrait, rail in landscape | Rail on medium/tablet widths; drawer from 1200 dp window width |
+
+The section grid is limited to two columns, including very wide windows. Cards keep
+their stable keys when the column count changes, preserving edited demo inputs.
+The Toolkit ecosystem spans the grid. At 2x text the grid falls back to one column,
+even on a tablet, so controls and snippets retain room to wrap.
+
+JVM interaction tests resize a filled Storage form from two columns to one and back,
+and exercise search/results at 800 × 360 with 2x text. The screenshot matrix covers
+the navigation shell as well as populated GitHub landscape results.
+
+![Responsive phone and tablet layouts](assets/showcase-responsive.png)
 
 Contrast changes text, control outlines and surface separation, rather than only
 surface opacity. All base surfaces are opaque to keep their contrast independent

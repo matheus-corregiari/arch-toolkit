@@ -165,3 +165,187 @@ fun AppShellSettings() {
         }
     }
 }
+
+@PreviewTest
+@Preview(
+    name = "AppShellGithubTabletLandscape",
+    widthDp = 1280,
+    heightDp = 800,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellGithubTabletLandscape() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent {
+            RepositoryListContent(GithubListState(nextPage = null))
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellToolkitTabletLandscape",
+    widthDp = 1280,
+    heightDp = 800,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellToolkitTabletLandscape() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent(currentRoute = ToolkitRoute) {
+            ToolkitContent(emptyList(), StorageDemoState())
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellDesignTabletLandscape",
+    widthDp = 1280,
+    heightDp = 800,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellDesignTabletLandscape() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent(currentRoute = DesignRoute) {
+            DesignContent()
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellSettingsTabletLandscape",
+    widthDp = 1280,
+    heightDp = 800,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellSettingsTabletLandscape() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent(currentRoute = SettingsRoute) {
+            SettingsContent(
+                remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) },
+                remember { mutableStateOf(ThemeMode.LIGHT) },
+                remember { mutableStateOf(ContrastMode.STANDARD) }
+            )
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellGithubPhoneLandscape",
+    widthDp = 800,
+    heightDp = 360,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellGithubPhoneLandscape() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent {
+            RepositoryListContent(GithubListState(nextPage = null))
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellToolkitPhoneLandscape",
+    widthDp = 800,
+    heightDp = 360,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellToolkitPhoneLandscape() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent(currentRoute = ToolkitRoute) {
+            ToolkitContent(emptyList(), StorageDemoState())
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellDesignPhoneLandscape",
+    widthDp = 800,
+    heightDp = 360,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellDesignPhoneLandscape() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent(currentRoute = DesignRoute) {
+            DesignContent()
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellSettingsPhoneLandscape",
+    widthDp = 800,
+    heightDp = 360,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellSettingsPhoneLandscape() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent(currentRoute = SettingsRoute) {
+            SettingsContent(
+                remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) },
+                remember { mutableStateOf(ThemeMode.LIGHT) },
+                remember { mutableStateOf(ContrastMode.STANDARD) }
+            )
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellSettingsTabletPortrait",
+    widthDp = 800,
+    heightDp = 1280,
+    fontScale = 1.0f,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellSettingsTabletPortrait() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent(currentRoute = SettingsRoute) {
+            SettingsContent(
+                remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) },
+                remember { mutableStateOf(ThemeMode.LIGHT) },
+                remember { mutableStateOf(ContrastMode.STANDARD) }
+            )
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "AppShellToolkitTabletMaximumFont",
+    widthDp = 1280,
+    heightDp = 800,
+    fontScale = 2.0f,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellToolkitTabletMaximumFont() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent(currentRoute = ToolkitRoute) {
+            ToolkitContent(emptyList(), StorageDemoState())
+        }
+    }
+}

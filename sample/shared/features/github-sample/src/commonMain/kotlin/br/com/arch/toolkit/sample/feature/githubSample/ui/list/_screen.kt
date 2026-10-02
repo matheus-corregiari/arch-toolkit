@@ -3,6 +3,7 @@
 package br.com.arch.toolkit.sample.feature.githubSample.ui.list
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,7 @@ import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppButton
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppChoiceGroup
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSearchLayout
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppTextField
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.EmptyState
@@ -60,61 +62,75 @@ fun RepositoryListContent(
     onSelect: (String, String) -> Unit = { _, _ -> }
 ) {
     AppPage(text(AppText.GITHUB)) {
-        SearchControls(state, onSearch)
-        if (history.isNotEmpty()) {
-            LazyRow {
-                item {
-                    Text(
-                        text(AppText.RECENT),
-                        modifier = Modifier.padding(AppTheme.dimen.spacingS)
-                    )
-                }
-                items(history.size) { index ->
-                    val item = history[index]
-                    TextButton(onClick = {
-                        onSelect(item.owner, item.name)
-                    }) { Text("${item.owner}/${item.name}") }
+        AppSearchLayout(
+            controls = {
+                SearchControls(state, onSearch)
+                if (history.isNotEmpty()) {
+                    LazyRow {
+                        item {
+                            Text(
+                                text(AppText.RECENT),
+                                modifier = Modifier.padding(AppTheme.dimen.spacingS)
+                            )
+                        }
+                        items(history.size) { index ->
+                            val item = history[index]
+                            TextButton(onClick = {
+                                onSelect(item.owner, item.name)
+                            }) { Text("${item.owner}/${item.name}") }
+                        }
+                    }
                 }
             }
+        ) {
+            RepositoryResults(state, onLoadMore, onSelect)
         }
-        val items = remember(state.items) { state.items.map(::RepoVO) }
-        Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-            if (items.isNotEmpty()) {
-                ManyListState(
-                    items,
-                    PaddingValues(AppTheme.dimen.spacingM, AppTheme.dimen.spacingXs)
-                ) { item ->
-                    onSelect(item.owner.login, item.name)
-                }.Draw(Modifier.fillMaxSize())
-            }
-            if (items.isEmpty()) {
-                when {
-                    state.loading -> CircularProgressIndicator()
-                    state.failure != null -> GithubError(state.failure, onLoadMore)
-                    else -> EmptyState(
-                        Modifier.fillMaxWidth().padding(AppTheme.dimen.spacingXl),
-                        text(AppText.EMPTY),
-                        text(AppText.SEARCH_HINT)
-                    )
-                }
-            }
-        }
+    }
+}
+
+@Composable
+private fun ColumnScope.RepositoryResults(
+    state: GithubListState,
+    onLoadMore: () -> Unit,
+    onSelect: (String, String) -> Unit
+) {
+    val items = remember(state.items) { state.items.map(::RepoVO) }
+    Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
         if (items.isNotEmpty()) {
-            if (state.loading) {
-                CircularProgressIndicator(
-                    Modifier.align(Alignment.CenterHorizontally)
+            ManyListState(
+                items,
+                PaddingValues(AppTheme.dimen.spacingM, AppTheme.dimen.spacingXs)
+            ) { item ->
+                onSelect(item.owner.login, item.name)
+            }.Draw(Modifier.fillMaxSize())
+        }
+        if (items.isEmpty()) {
+            when {
+                state.loading -> CircularProgressIndicator()
+                state.failure != null -> GithubError(state.failure, onLoadMore)
+                else -> EmptyState(
+                    Modifier.fillMaxWidth().padding(AppTheme.dimen.spacingXl),
+                    text(AppText.EMPTY),
+                    text(AppText.SEARCH_HINT)
                 )
             }
-            state.failure?.let { GithubError(it, onLoadMore) }
         }
-        if (!state.loading && state.failure == null && state.nextPage != null) {
-            AppButton(
-                text(AppText.LOAD_MORE),
-                onLoadMore,
-                modifier = Modifier.fillMaxWidth().padding(AppTheme.dimen.spacingM),
-                style = AppButton.Style.Secondary
+    }
+    if (items.isNotEmpty()) {
+        if (state.loading) {
+            CircularProgressIndicator(
+                Modifier.align(Alignment.CenterHorizontally)
             )
         }
+        state.failure?.let { GithubError(it, onLoadMore) }
+    }
+    if (!state.loading && state.failure == null && state.nextPage != null) {
+        AppButton(
+            text(AppText.LOAD_MORE),
+            onLoadMore,
+            modifier = Modifier.fillMaxWidth().padding(AppTheme.dimen.spacingM),
+            style = AppButton.Style.Secondary
+        )
     }
 }
 

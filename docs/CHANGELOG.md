@@ -6,7 +6,7 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 
 ### Showcase
 
-- Add 72 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
+- Add 84 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
 
 - Expand the sample into GitHub, Toolkit, Design and Settings destinations using
   Easy Navigation and Navigation3; separate composition, features, data and design.
@@ -21,6 +21,11 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 - Organize destinations around shared DS pages, section cards, fields, choices and
   buttons; center reading content and results states, and separate demo inputs,
   results and source snippets. Use a sections menu for enlarged text in compact windows.
+- Adapt Settings, Toolkit and Design to two readable card columns on landscape/tablet
+  windows, scaling the required width with text size. Place GitHub search beside
+  results when both panes fit and keep controls scrollable in short windows.
+- Reserve the navigation drawer for windows from 1200 dp, retain a tablet rail,
+  cap repository detail reading width, and verify edited inputs survive resizing.
 - Preserve brand yellow with readable dark ink; define six complete light/dark
   contrast palettes with opaque surfaces and consistent Material roles. Add KMP
   contrast checks and document measured text/control contrast ratios.
