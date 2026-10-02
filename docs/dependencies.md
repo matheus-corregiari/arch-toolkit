@@ -1,17 +1,26 @@
 # Dependencies
 
-Audited against Maven Central, Google Maven and the Gradle Plugin Portal on 2026-09-18 for `2.0.0-rc19`.
-Runtime dependencies and AGP use stable releases. Detekt retains its existing alpha line.
-Gradle **9.7.1**, JDK **21**, Kover **0.9.9**, MkDocs Material **9.7.7**.
+Audited against Maven Central, Google Maven and the Gradle Plugin Portal on 2026-10-01 for `2.0.0-rc19`.
+Updated runtime dependencies and AGP use stable releases. Detekt retains its existing alpha line.
+The showcase retains Navigation3 UI 1.2.0-alpha02 and upstream adaptive-navigation3 1.3.0-beta02
+for Easy Navigation's existing binary contract; Navigation3 runtime now uses stable 1.2.0.
+Gradle **9.8.0**, JDK **21**, Kover **0.9.11**, MkDocs Material **9.7.7**.
 
-A Git tag does not guarantee Maven availability: Arch Lumber currently resolves to **1.4.0** in Maven Central.
-The patches in sibling repositories can be adopted after their artifacts are published.
+Android compiles against stable API **37.2**, using Build Tools **37.0.0** and the existing minimum API **28**.
+Kotlin **2.4.20** and KSP **2.3.12** already match their latest published stable versions.
 
 | Alias | Version | Source |
 | --- | --- | --- |
-| `arch-storage-core` | `1.0.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/storage-core/maven-metadata.xml) |
-| `arch-storage-memory` | `1.0.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/storage-memory/maven-metadata.xml) |
-| `arch-storage-datastore` | `1.0.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/storage-datastore/maven-metadata.xml) |
+| `compose-screenshot-validation` | `0.0.1-alpha16` | [Metadata](https://dl.google.com/dl/android/maven2/com/android/tools/screenshot/screenshot-validation-api/maven-metadata.xml) |
+| `room-runtime` | `2.8.5` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/room/room-runtime/maven-metadata.xml) |
+| `room-compiler` | `2.8.5` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/room/room-compiler/maven-metadata.xml) |
+| `sqlite-bundled` | `2.7.1` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-bundled/maven-metadata.xml) |
+| `easy-navigation` | `1.1.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/pedro-bachiega/easy-navigation-core/maven-metadata.xml) |
+| `navigation3-runtime` | `1.2.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/navigation3/navigation3-runtime/maven-metadata.xml) |
+| `navigation3-ui` | `1.2.0-alpha02` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/androidx/navigation3/navigation3-ui/maven-metadata.xml) |
+| `arch-storage-core` | `1.0.1` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/storage-core/maven-metadata.xml) |
+| `arch-storage-memory` | `1.0.1` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/storage-memory/maven-metadata.xml) |
+| `arch-storage-datastore` | `1.0.1` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/storage-datastore/maven-metadata.xml) |
 | `jetbrains-stdlib` | `2.4.20` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/maven-metadata.xml) |
 | `jetbrains-reflect` | `2.4.20` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/maven-metadata.xml) |
 | `jetbrains-serialization` | `1.11.0` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-serialization-json/maven-metadata.xml) |
@@ -23,11 +32,23 @@ The patches in sibling repositories can be adopted after their artifacts are pub
 | `jetbrains-plugin` | `2.4.20` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-gradle-plugin/maven-metadata.xml) |
 | `jetbrains-datetime` | `0.8.0` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-datetime/maven-metadata.xml) |
 | `jetbrains-kotlin-test` | `2.4.20` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-test/maven-metadata.xml) |
-| `jetbrains-compose-runtime` | `1.12.0` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/runtime/runtime/maven-metadata.xml) |
-| `androidx-plugin` | `9.4.0` | [Metadata](https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml) |
-| `androidx-annotation` | `1.10.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/maven-metadata.xml) |
+| `jetbrains-compose-runtime` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/runtime/runtime/maven-metadata.xml) |
+| `jetbrains-compose-runtime-saveable` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/runtime/runtime-saveable/maven-metadata.xml) |
+| `jetbrains-compose-ui` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/ui/ui/maven-metadata.xml) |
+| `jetbrains-compose-ui-tooling` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/ui/ui-tooling/maven-metadata.xml) |
+| `jetbrains-compose-ui-tooling-preview` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/ui/ui-tooling-preview/maven-metadata.xml) |
+| `jetbrains-compose-ui-test-junit4` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/ui/ui-test-junit4/maven-metadata.xml) |
+| `jetbrains-compose-foundation` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/foundation/foundation/maven-metadata.xml) |
+| `jetbrains-compose-animation` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/animation/animation/maven-metadata.xml) |
+| `jetbrains-compose-resources` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/components/components-resources/maven-metadata.xml) |
+| `jetbrains-compose-desktop` | `1.12.1` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/desktop/desktop/maven-metadata.xml) |
+| `jetbrains-compose-material3` | `1.9.0` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/material3/material3/maven-metadata.xml) |
+| `jetbrains-compose-material3-navigation-suite` | `1.9.0` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/material3/material3-adaptive-navigation-suite/maven-metadata.xml) |
+| `jetbrains-compose-material-icons` | `1.7.3` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/compose/material/material-icons-extended/maven-metadata.xml) |
+| `androidx-plugin` | `9.4.1` | [Metadata](https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml) |
+| `androidx-annotation` | `1.11.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/maven-metadata.xml) |
 | `androidx-appcompat` | `1.8.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/appcompat/appcompat/maven-metadata.xml) |
-| `androidx-fragment` | `1.9.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/fragment/fragment/maven-metadata.xml) |
+| `androidx-fragment` | `1.9.1` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/fragment/fragment/maven-metadata.xml) |
 | `androidx-constraint` | `2.2.2` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/constraintlayout/constraintlayout/maven-metadata.xml) |
 | `androidx-recycler` | `1.4.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview/maven-metadata.xml) |
 | `androidx-lifecycle-livedata` | `2.11.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-livedata/maven-metadata.xml) |
@@ -49,11 +70,11 @@ The patches in sibling repositories can be adopted after their artifacts are pub
 | `androidx-compose-lifecycle` | `2.11.0` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/androidx/lifecycle/lifecycle-runtime-compose/maven-metadata.xml) |
 | `androidx-compose-testManifest` | `1.12.1` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/compose/ui/ui-test-manifest/maven-metadata.xml) |
 | `square-retrofit-main` | `3.0.0` | [Metadata](https://repo.maven.apache.org/maven2/com/squareup/retrofit2/retrofit/maven-metadata.xml) |
-| `arch-lumber` | `1.4.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/arch-lumber/maven-metadata.xml) |
-| `arch-android` | `1.3.1` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/arch-android/maven-metadata.xml) |
-| `arch-event-observer` | `2.3.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/event-observer/maven-metadata.xml) |
-| `arch-event-observer-state` | `2.3.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/event-observer-state/maven-metadata.xml) |
-| `arch-event-observer-compose` | `2.3.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/event-observer-compose/maven-metadata.xml) |
+| `arch-lumber` | `1.4.4` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/arch-lumber/maven-metadata.xml) |
+| `arch-android` | `1.3.2` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/arch-android/maven-metadata.xml) |
+| `arch-event-observer` | `3.0.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/event-observer/maven-metadata.xml) |
+| `arch-event-observer-state` | `3.0.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/event-observer-state/maven-metadata.xml) |
+| `arch-event-observer-compose` | `3.0.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/event-observer-compose/maven-metadata.xml) |
 | `google-material` | `1.14.0` | [Metadata](https://dl.google.com/dl/android/maven2/com/google/android/material/material/maven-metadata.xml) |
 | `di-koin-core` | `4.2.2` | [Metadata](https://repo.maven.apache.org/maven2/io/insert-koin/koin-core/maven-metadata.xml) |
 | `di-koin-compose` | `4.2.2` | [Metadata](https://repo.maven.apache.org/maven2/io/insert-koin/koin-compose/maven-metadata.xml) |
@@ -74,15 +95,15 @@ The patches in sibling repositories can be adopted after their artifacts are pub
 | `ktor-logging` | `3.6.0` | [Metadata](https://repo.maven.apache.org/maven2/io/ktor/ktor-client-logging/maven-metadata.xml) |
 | `coil-core` | `3.6.3` | [Metadata](https://repo.maven.apache.org/maven2/io/coil-kt/coil3/coil-compose/maven-metadata.xml) |
 | `coil-network` | `3.6.3` | [Metadata](https://repo.maven.apache.org/maven2/io/coil-kt/coil3/coil-network-ktor3/maven-metadata.xml) |
-| `haze-core` | `1.7.3` | [Metadata](https://repo.maven.apache.org/maven2/dev/chrisbanes/haze/haze/maven-metadata.xml) |
-| `haze-materials` | `1.7.3` | [Metadata](https://repo.maven.apache.org/maven2/dev/chrisbanes/haze/haze-materials/maven-metadata.xml) |
+| `haze-core` | `2.0.1` | [Metadata](https://repo.maven.apache.org/maven2/dev/chrisbanes/haze/haze/maven-metadata.xml) |
+| `haze-blur` | `2.0.1` | [Metadata](https://repo.maven.apache.org/maven2/dev/chrisbanes/haze/haze-blur/maven-metadata.xml) |
 | `x-normalize-x001` | `1.13.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/activity/activity/maven-metadata.xml) |
 | `x-normalize-x002` | `1.6.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/annotation/annotation-experimental/maven-metadata.xml) |
 | `x-normalize-x003` | `2.2.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/maven-metadata.xml) |
 | `x-normalize-x004` | `2.2.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/arch/core/core-runtime/maven-metadata.xml) |
 | `x-normalize-x005` | `1.6.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/collection/collection/maven-metadata.xml) |
-| `x-normalize-x006` | `1.19.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/core/core/maven-metadata.xml) |
-| `x-normalize-x007` | `1.19.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/core/core-ktx/maven-metadata.xml) |
+| `x-normalize-x006` | `1.19.1` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/core/core/maven-metadata.xml) |
+| `x-normalize-x007` | `1.19.1` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/core/core-ktx/maven-metadata.xml) |
 | `x-normalize-x008` | `1.2.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/customview/customview/maven-metadata.xml) |
 | `x-normalize-x009` | `1.2.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/drawerlayout/drawerlayout/maven-metadata.xml) |
 | `x-normalize-x010` | `2.11.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml) |
@@ -110,10 +131,29 @@ on JDK 21. This option is scoped to test JVMs, following the
 
 ## Showcase compatibility
 
-The showcase requires Easy Navigation 1.0.1. Its binaries call Lumber's pre-1.2
+The showcase requires Easy Navigation 1.1.0. Its binaries call Lumber's pre-1.2
 `tag` API. Sample-only resolution in `gradle/showcase-boundaries.gradle.kts` selects
 Lumber 1.1.0 and Storage 2.0.0-rc16, whose published metadata uses that same ABI.
-Storage stable 1.0.0 uses Lumber 1.4.0 and cannot be combined with the selected
+Storage stable 1.0.1 uses Lumber 1.4.4 and cannot be combined with the selected
 navigation release. These pins do not change the published Toolkit library's
 dependencies. Remove them only after Android release shrinking, JVM navigation
 and iOS linking/tests pass with an upstream-compatible combination.
+
+## Build conventions
+
+Gradle 9.8 uses the regenerated wrapper and official distribution checksum. Shared build logic uses
+explicit extra-property access, the compiler-independent `js {}` DSL, and the current `SourcesJar`
+publication option. Unconfigured sample JS/Wasm source sets are no longer created.
+
+CI uses `gradle/actions/setup-gradle` 6.4.0 as the single Gradle cache owner;
+`android-actions/setup-android` 4.0.4 installs the SDK and Build Tools selected by the catalog.
+Apple framework linking and simulator tests run on macOS; Windows compares all 69 Android screenshots.
+
+The legacy Android KMP target still requires `android.builtInKotlin=false` and `android.newDsl=false`.
+Migrating to `com.android.kotlin.multiplatform.library` requires coordinating convention plugins,
+Android tests, KSP, publication and screenshot tooling before AGP 10 removes that compatibility path.
+See the [official Android KMP migration guide](https://developer.android.com/kotlin/multiplatform/plugin).
+
+Haze 2.0.1 uses `haze-blur`, immutable `HazeBlurStyle` and explicit captured-source input.
+The sample retains its tint, gradient fallback and mobile/window policy; no experimental Glass or
+native-backdrop features are enabled. See the [upstream migration guide](https://chrisbanes.github.io/haze/2.0.0/migrating-2.0/).

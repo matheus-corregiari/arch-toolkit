@@ -2,10 +2,10 @@
 
 An executable reference application for Android, iOS and Desktop, with shared
 features in `commonMain`. Web is pending by explicit project decision: Easy
-Navigation 1.0.1 has no JS/Wasm artifact. No alternative web navigator is provided.
+Navigation 1.1.0 has no JS/Wasm artifact. No alternative web navigator is provided.
 
-Easy Navigation 1.0.1 uses Lumber's pre-1.2 binary signature. Sample configurations
-select Lumber 1.1.0 and Storage 2.0.0-rc16 for compatibility; Storage stable 1.0.0
+Easy Navigation 1.1.0 uses Lumber's pre-1.2 binary signature. Sample configurations
+select Lumber 1.1.0 and Storage 2.0.0-rc16 for compatibility; Storage stable 1.0.1
 requires the incompatible Lumber 1.4 ABI. The published Toolkit library keeps its own
 existing dependency version. Remove the sample pin only after Android, JVM and iOS
 navigation tests pass with an upstream-compatible release.

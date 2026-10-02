@@ -41,7 +41,7 @@ jobs:
         run: ./gradlew ciBuild ciTest ciCoverage ciLint ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc19 --continue --no-daemon
       - name: Save showcase test reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: showcase-tests-${{ matrix.os }}
           path: sample/shared/**/build/reports/tests/
@@ -50,7 +50,7 @@ jobs:
         run: python -m mkdocs build --strict
       - name: Save merged coverage reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: coverage-${{ matrix.os }}
           path: build/reports/kover/
@@ -66,7 +66,7 @@ jobs:
         run: ./gradlew.bat :sample:target:android:validateDebugScreenshotTest '-PincludeSamples' '-PreleaseVersion=2.0.0-rc19' --max-workers=4 --no-daemon
       - name: Save screenshot reports and diffs
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: showcase-screenshots
           path: |

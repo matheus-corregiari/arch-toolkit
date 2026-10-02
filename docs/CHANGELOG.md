@@ -21,6 +21,25 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 
 ### Changes
 
+- Refresh Gradle to 9.8.0 (regenerated wrapper and official checksum), AGP to 9.4.1,
+  Compose to 1.12.1 and Kover to 0.9.11. Compile Android against stable API 37.2;
+  retain Build Tools 37.0.0, minimum API 28 and existing supported targets.
+- Update Easy Navigation to 1.1.0, Event Observer to 3.0.0, Android to 1.3.2,
+  and catalog selections for Lumber to 1.4.4 and Storage to 1.0.1. Navigation 1.1.0
+  still uses the old Lumber ABI, so the scoped sample Lumber/Storage overrides remain.
+- Migrate the sample blur to Haze 2.0.1's typed `hazeBlur` API and separate blur artifact,
+  preserving explicit captured-source input, tint, progressive gradient and fallback.
+- Remove obsolete Gradle extra-property delegates, Kotlin/JS compiler selection,
+  publication sources boolean and inactive sample JS/Wasm source-set configuration.
+- Replace deprecated Compose dependency accessors with explicit catalog aliases;
+  retain the final Material Icons Extended 1.7.3 artifact.
+- Configure toolchain resolution for buildSrc and remove unsupported Kotlin/Compose flags.
+- Update Navigation3 runtime to stable 1.2.0 and centralize navigation coordinates.
+- Read publication properties through Gradle providers and fix environment lookup to use
+  the requested variable name instead of the literal `name`.
+- Update Gradle CI setup to 6.4.0, Android SDK setup to 4.0.4, artifact upload to 7.0.1
+  and Codecov to 7.1.1. Install catalog-selected SDK packages and consolidate Gradle caches.
+
 - Update sample image loading and Ktor integration from Coil 3.6.2 to 3.6.3, including the upstream AGP 9.4/R8 Kotlin module metadata fix.
 
 - Update the sample HTTP clients and serialization integration from Ktor 3.5.2 to 3.6.0.
@@ -31,12 +50,26 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 - Update the pinned Java setup action to 6.0.1.
 - Extract this version section from the changelog when creating the GitHub Release, without a duplicate root notes file.
 - Document coverage scope, local commands and the audited dependency versions.
-- Verify the existing Gradle 9.7.1 distribution with its official SHA-256 checksum.
+- Verify the Gradle distribution with its official SHA-256 checksum.
 
 ### Dependencies
 
 | Dependency | Before | After |
 | --- | --- | --- |
+| Gradle | `9.7.1` | `9.8.0` |
+| AGP | `9.4.0` | `9.4.1` |
+| Android compile API | `37` | `37.2` |
+| Compose Multiplatform | `1.12.0` | `1.12.1` |
+| Kover | `0.9.9` | `0.9.11` |
+| Easy Navigation | `1.0.1` | `1.1.0` |
+| Haze | `1.7.3` | `2.0.1` |
+| Event Observer | `2.3.0` | `3.0.0` |
+| Arch Android | `1.3.1` | `1.3.2` |
+| Lumber (catalog) | `1.4.0` | `1.4.4` |
+| Storage (catalog) | `1.0.0` | `1.0.1` |
+| AndroidX Annotation | `1.10.0` | `1.11.0` |
+| AndroidX Fragment | `1.9.0` | `1.9.1` |
+| AndroidX Core | `1.19.0` | `1.19.1` |
 | `androidx-compose-core` | `1.12.0` | `1.12.1` |
 | `google-ksp` | `2.3.11` | `2.3.12` |
 | `robolectric` | `4.16.1` | `4.17` |

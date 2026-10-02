@@ -25,7 +25,7 @@ Use Maven Central. This branch prepares the following Splinter candidate:
 ```kotlin
 commonMain.dependencies {
     implementation("io.github.matheus-corregiari:splinter:2.0.0-rc19")
-    implementation("io.github.matheus-corregiari:event-observer-state:2.3.0")
+    implementation("io.github.matheus-corregiari:event-observer-state:3.0.0")
 }
 ```
 
