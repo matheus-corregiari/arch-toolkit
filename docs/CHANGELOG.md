@@ -29,6 +29,8 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
   still uses the old Lumber ABI, so the scoped sample Lumber/Storage overrides remain.
 - Migrate the sample blur to Haze 2.0.1's typed `hazeBlur` API and separate blur artifact,
   preserving explicit captured-source input, tint, progressive gradient and fallback.
+- Refresh seven visually inspected Settings screenshot references for the Haze 2 header
+  texture. Differences are limited to the top 168 pixels; layout and content stay unchanged.
 - Remove obsolete Gradle extra-property delegates, Kotlin/JS compiler selection,
   publication sources boolean and inactive sample JS/Wasm source-set configuration.
 - Replace deprecated Compose dependency accessors with explicit catalog aliases;
