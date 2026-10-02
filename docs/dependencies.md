@@ -157,3 +157,18 @@ See the [official Android KMP migration guide](https://developer.android.com/kot
 Haze 2.0.1 uses `haze-blur`, immutable `HazeBlurStyle` and explicit captured-source input.
 The sample retains its tint, gradient fallback and mobile/window policy; no experimental Glass or
 native-backdrop features are enabled. See the [upstream migration guide](https://chrisbanes.github.io/haze/2.0.0/migrating-2.0/).
+
+
+## Arch ecosystem recheck — 2026-10-02
+
+Maven Central metadata was checked again for all Arch modules used here. The
+catalog already selects the latest stable releases: Lumber **1.4.4**, Storage
+core/memory/DataStore **1.0.1**, Event Observer core/state/Compose **3.0.0** and
+Arch Android **1.3.2**. Easy Navigation's latest stable release remains **1.1.0**.
+Storage metadata's `release` field points to `2.0.0-rc16`; select the highest
+stable version rather than treating that field as a stable-version guarantee.
+
+The sample's scoped Lumber/Storage ABI overrides described above remain required
+with the current navigation artifact. The catalogue version and the version
+actually resolved by the Showcase must not be confused. No snapshot/nightly or
+Maven Local dependency was introduced.

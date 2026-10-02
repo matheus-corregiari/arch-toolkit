@@ -6,7 +6,7 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 
 ### Showcase
 
-- Add 86 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
+- Add 90 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
 
 - Expand the sample into GitHub, Toolkit, Design and Settings destinations using
   Easy Navigation and Navigation3; separate composition, features, data and design.
@@ -32,6 +32,12 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 - Configure Coil at bootstrap and preserve edited demo inputs through resizing.
 - Update real screenshots, including expanded executable code, and document
   reproducible snapshot work measurements without claiming unmeasured frame gains.
+
+- Explain all five Arch repositories in the Toolkit catalogue, with simple
+  bilingual descriptions/use cases and GitHub-mark links. Add a link interaction
+  test and four catalogue previews, retaining responsive grids and accessible labels.
+- Recheck all Arch dependency metadata against the latest stable releases;
+  preserve documented sample-only ABI overrides while Easy Navigation requires them.
 
 ### Changes
 

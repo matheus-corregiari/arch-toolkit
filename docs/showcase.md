@@ -40,6 +40,11 @@ is not manual simulator or accessibility inspection.
 - **Toolkit:** Lumber writes with a dedicated tree and a clearable 100-entry buffer;
   Storage create/read/update/delete with persistence across restarts. Snippets are
   generated from marked regions of the actual `ToolkitDemoRepository.kt` source.
+  The Arch ecosystem catalogue explains Arch Toolkit/Splinter, Arch Android,
+  Event Observer, Lumber and Storage in plain English/Portuguese, with use cases
+  and a GitHub-mark button opening the corresponding repository. Cards use the
+  existing width/font-aware grid. GitHub marks are local vectors, so links do not
+  depend on downloading icons.
 - **Design:** the app's real theme tokens, typography, spacing, buttons, empty and
   error widgets. Change theme and contrast in Settings to inspect all states.
 - **Settings:** persistent English/Portuguese (Brazil), theme and contrast. Changes
@@ -136,14 +141,14 @@ project dependencies are checked separately; production targets still depend on
 
 ### Coverage matrix
 
-The suite contains 86 references. Following Android's guidance, representative
+The suite contains 90 references. Following Android's guidance, representative
 configurations are sampled instead of multiplying every state by every device.
 
 | Area | References | Visual contracts |
 | --- | ---: | --- |
 | GitHub list and detail | 29 | Loading, empty search, content/recent history, pagination loading/error/end, all four domain errors, missing metadata, long names/descriptions/topics, localized dates and counts |
 | Settings | 10 | All six light/dark contrast palettes, system/language selections, narrow large text, wide layout |
-| Toolkit | 14 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, ecosystem catalogue, expanded executable source, scrolled content |
+| Toolkit | 18 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, ecosystem catalogue, expanded executable source, five-repository catalogue with GitHub marks, scrolled content |
 | Design | 8 | Real tokens, button styles, disabled/loading/error/empty widgets, selected/unselected chips, scrolled content |
 | App shell | 21 | All selected destinations, compact bottom bar, tablet rail, large-window drawer, phone/tablet landscape, tablet portrait, localized and large-text navigation |
 | Shared widgets | 4 | Original English/light, Portuguese/dark, large font and wide high-contrast checks |
@@ -301,3 +306,11 @@ and [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-con
 The Android screenshot suite covers all six settings palettes, both languages,
 compact/wide layouts, and font scales through 2.0. Review the rendered references
 before accepting a deliberate visual change; do not relax comparison thresholds.
+
+
+![Arch ecosystem repository guide](assets/showcase-ecosystem.png)
+
+The repository link interaction test checks all five destination URLs. Four
+dedicated previews cover English/light, Portuguese/dark, tablet and 2x fonts.
+The GitHub mark comes from Primer Octicons; attribution is in the repository's
+`THIRD_PARTY_NOTICES.md`.

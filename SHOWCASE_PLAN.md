@@ -142,3 +142,15 @@ Current implementation/evidence: [refactor record](docs/showcase-refactor.md),
 [visual study](docs/showcase-visual-study.md), [screenshots](docs/showcase.md).
 Earlier audits above describe their original revisions; they are not fresh Apple
 execution results for this change.
+
+
+## Ecosystem catalogue — 2026-10-02
+
+- Toolkit now explains all five Arch repositories with purpose, use case and
+  GitHub-mark links, in English and Portuguese. Each card is an independent lazy
+  grid item with a stable repository key.
+- A JVM interaction test checks the five GitHub URLs. Four new visual cases cover
+  phone/light, phone/dark/PT, tablet and 2x text; reference total is now 90.
+- Arch dependency metadata was rechecked; current stable catalogue selections
+  remain latest. Sample Lumber/Storage overrides are a navigation ABI limitation,
+  not an available upgrade accidentally missed.
