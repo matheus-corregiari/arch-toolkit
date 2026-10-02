@@ -16,7 +16,9 @@ internal val LocalAppDimen = compositionLocalOf<AppDimen> { SmallScreenDimen }
 
 sealed class AppDimen {
 
-    val contentMaxWidth: Dp = 1200.dp
+    val contentMaxWidth: Dp = 960.dp
+
+    val contentMaxHeight: Dp = 900.dp
 
     val readingMaxWidth: Dp = 720.dp
 
@@ -117,7 +119,23 @@ sealed class AppDimen {
 private data object SmallScreenDimen : AppDimen()
 
 @Immutable
-private data object MediumScreenDimen : AppDimen()
+private data object MediumScreenDimen : AppDimen() {
+    override val fontSizeS = 13.sp
+    override val fontSizeM = 15.sp
+    override val fontSizeL = 17.sp
+    override val fontSizeXl = 20.sp
+    override val fontLineHeightL = 18.sp
+    override val fontLineHeightM = 22.sp
+    override val fontLineHeightXxl = 22.sp
+}
 
 @Immutable
-private data object LargeScreenDimen : AppDimen()
+private data object LargeScreenDimen : AppDimen() {
+    override val fontSizeS = 14.sp
+    override val fontSizeM = 16.sp
+    override val fontSizeL = 18.sp
+    override val fontSizeXl = 22.sp
+    override val fontLineHeightL = 20.sp
+    override val fontLineHeightM = 24.sp
+    override val fontLineHeightXxl = 24.sp
+}

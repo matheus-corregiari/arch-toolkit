@@ -47,6 +47,7 @@ import coil3.request.ImageRequest
 internal class ManyListState(
     private val list: List<RepoVO>,
     private val padding: PaddingValues,
+    private val reserveNavigationSpace: Boolean = true,
     private val onSelect: (RepoVO) -> Unit = {}
 ) : ListState() {
     @Composable
@@ -71,7 +72,7 @@ internal class ManyListState(
                 item
             )
         }
-        item { Spacer(Modifier.size(AppTheme.dimen.spacingG)) }
+        if (reserveNavigationSpace) item { Spacer(Modifier.size(AppTheme.dimen.spacingG)) }
     }
 
     @Composable

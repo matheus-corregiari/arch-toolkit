@@ -2,16 +2,19 @@ package br.com.arch.toolkit.sample.shared
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
@@ -24,12 +27,38 @@ import br.com.arch.toolkit.sample.feature.githubSample.ui.list.RepositoryListCon
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
 import br.com.arch.toolkit.sample.github.shared.structure.core.model.AppLanguage
+import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class ResponsiveLayoutUiTest {
+    @Test
+    fun shortContentIsCenteredInsideAWideViewport() = runComposeUiTest {
+        setContent {
+            AppTheme {
+                Box(Modifier.requiredSize(WIDE_WIDTH.dp, CONTENT_HEIGHT.dp).testTag("viewport")) {
+                    AppPage("Reading") {
+                        AppSection("Controls", Modifier.testTag("section")) {
+                            Text("A readable group of controls")
+                        }
+                    }
+                }
+            }
+        }
+        val viewport = onNodeWithTag("viewport").fetchSemanticsNode().boundsInRoot
+        val section = onNodeWithTag("section").fetchSemanticsNode().boundsInRoot
+        val title = onNodeWithText("Reading").fetchSemanticsNode().boundsInRoot
+        assertTrue(section.width < viewport.width)
+        assertEquals(viewport.center.x, section.center.x, CENTER_TOLERANCE)
+        val contentCenter = (title.top + section.bottom) / 2
+        assertTrue(abs(viewport.center.y - contentCenter) < HEADING_TOLERANCE)
+    }
+
     @Test
     fun resizingKeepsEditedStorageInputs() = runComposeUiTest {
         var width by mutableStateOf(WIDE_WIDTH.dp)
@@ -78,5 +107,7 @@ class ResponsiveLayoutUiTest {
         const val CONTENT_HEIGHT = 700
         const val LANDSCAPE_WIDTH = 800
         const val LANDSCAPE_HEIGHT = 360
+        const val CENTER_TOLERANCE = 1f
+        const val HEADING_TOLERANCE = 32f
     }
 }

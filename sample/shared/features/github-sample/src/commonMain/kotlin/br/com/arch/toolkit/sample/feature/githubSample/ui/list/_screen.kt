@@ -82,8 +82,8 @@ fun RepositoryListContent(
                     }
                 }
             }
-        ) {
-            RepositoryResults(state, onLoadMore, onSelect)
+        ) { sideBySide ->
+            RepositoryResults(state, sideBySide, onLoadMore, onSelect)
         }
     }
 }
@@ -91,18 +91,23 @@ fun RepositoryListContent(
 @Composable
 private fun ColumnScope.RepositoryResults(
     state: GithubListState,
+    sideBySide: Boolean,
     onLoadMore: () -> Unit,
     onSelect: (String, String) -> Unit
 ) {
     val items = remember(state.items) { state.items.map(::RepoVO) }
-    Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+    Box(
+        Modifier.weight(1f, fill = !sideBySide).fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
         if (items.isNotEmpty()) {
             ManyListState(
                 items,
-                PaddingValues(AppTheme.dimen.spacingM, AppTheme.dimen.spacingXs)
+                PaddingValues(AppTheme.dimen.spacingM, AppTheme.dimen.spacingXs),
+                reserveNavigationSpace = !sideBySide
             ) { item ->
                 onSelect(item.owner.login, item.name)
-            }.Draw(Modifier.fillMaxSize())
+            }.Draw(if (sideBySide) Modifier.fillMaxWidth() else Modifier.fillMaxSize())
         }
         if (items.isEmpty()) {
             when {

@@ -136,7 +136,7 @@ project dependencies are checked separately; production targets still depend on
 
 ### Coverage matrix
 
-The suite contains 84 references. Following Android's guidance, representative
+The suite contains 85 references. Following Android's guidance, representative
 configurations are sampled instead of multiplying every state by every device.
 
 | Area | References | Visual contracts |
@@ -145,7 +145,7 @@ configurations are sampled instead of multiplying every state by every device.
 | Settings | 10 | All six light/dark contrast palettes, system/language selections, narrow large text, wide layout |
 | Toolkit | 13 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, ecosystem catalogue, scrolled content |
 | Design | 8 | Real tokens, button styles, disabled/loading/error/empty widgets, selected/unselected chips, scrolled content |
-| App shell | 20 | All selected destinations, compact bottom bar, tablet rail, large-window drawer, phone/tablet landscape, tablet portrait, localized and large-text navigation |
+| App shell | 21 | All selected destinations, compact bottom bar, tablet rail, large-window drawer, phone/tablet landscape, tablet portrait, localized and large-text navigation |
 | Shared widgets | 4 | Original English/light, Portuguese/dark, large font and wide high-contrast checks |
 
 Representative feature content runs in light English, dark Portuguese, 320dp
@@ -153,7 +153,8 @@ narrow layouts with 1.5x and 2x fonts, and 840dp wide layouts. High contrast has
 focused coverage in Settings, Design and GitHub. Shell breakpoints include 600dp
 and short 800 × 360 landscape windows. All four destinations also run inside the
 1280 × 800 tablet shell; Settings includes 800 × 1280 portrait and Toolkit includes
-2x tablet text. This is not an exhaustive device matrix or an
+2x tablet text. A 1600 × 1000 shell checks the centered content limit.
+This is not an exhaustive device matrix or an
 accessibility certification.
 
 Fixtures use API 35 and fixed dates, counts and text. Content composables receive
@@ -208,8 +209,8 @@ corners and the existing sans-serif typography. Yellow uses dark ink `#242424`
 in both themes (10.44:1), rather than white text. Blue links and semantic red/green
 remain reserved for links and feedback.
 
-Each destination uses `AppPage`: a centered content area capped at 1200 dp with
-a stable heading size. `AppSection` groups related content using the same surface,
+Each destination uses `AppPage`: a centered content area capped at 960 dp with
+a modestly responsive heading size. `AppSection` groups related content using the same surface,
 border, corner radius and 16 dp inset. GitHub search and filters form one group;
 empty/loading/error content occupies the results area. Toolkit separates demos,
 results, source snippets and ecosystem links. Settings separates appearance,
@@ -227,7 +228,7 @@ foreground roles. Selection semantics, labels and heading semantics remain nativ
 
 Layouts use the space actually available after navigation and insets, following
 [Android adaptive layout guidance](https://developer.android.com/develop/adaptive-apps/guides/support-different-display-sizes).
-They react to resizing and font scale rather than a device-name or orientation flag.
+Column and pane counts react to available width and font scale, without device-name checks.
 
 | Area | Compact or enlarged text | Landscape and tablet |
 | --- | --- | --- |
@@ -244,6 +245,35 @@ even on a tablet, so controls and snippets retain room to wrap.
 JVM interaction tests resize a filled Storage form from two columns to one and back,
 and exercise search/results at 800 × 360 with 2x text. The screenshot matrix covers
 the navigation shell as well as populated GitHub landscape results.
+
+
+#### Comfortable reading area
+
+In landscape or medium/expanded windows, the shared page targets 92% of the available width,
+capped at 960 dp (720 dp for repository detail). The frame retains enough width
+for two readable columns when they fit and follows the user's font setting.
+Short pages wrap their content and center both horizontally and vertically;
+scrollable pages remain bounded by the available height, with a 900 dp maximum.
+Compact portrait pages retain their top alignment.
+
+Search and results align around the same vertical center when displayed side by
+side. A short result list wraps rather than stretching its pagination action to
+the bottom edge; long lists continue to scroll within the frame.
+
+Typography increases gently with the window width class. Values remain in `sp`,
+so system font scaling is applied normally; density/font scaling is never overridden.
+
+| Text role | Compact | Medium | Expanded |
+| --- | ---: | ---: | ---: |
+| Page heading | 18 sp | 20 sp | 22 sp |
+| Section heading / regular action | 16 sp | 17 sp | 18 sp |
+| Body | 14 sp / 20 sp leading | 15 sp / 22 sp leading | 16 sp / 24 sp leading |
+| Metadata / code | 12 sp / 16 sp leading | 13 sp / 18 sp leading | 14 sp / 20 sp leading |
+
+JVM coverage also checks that a short page stays inset and centered within a wide
+viewport. Existing resizing and 2x landscape interaction checks remain active.
+
+![Centered reading area and typography](assets/showcase-reading.png)
 
 ![Responsive phone and tablet layouts](assets/showcase-responsive.png)
 

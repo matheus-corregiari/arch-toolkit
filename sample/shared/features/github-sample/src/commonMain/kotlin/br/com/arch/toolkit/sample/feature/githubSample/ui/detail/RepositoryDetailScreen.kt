@@ -2,7 +2,6 @@ package br.com.arch.toolkit.sample.feature.githubSample.ui.detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -56,7 +55,7 @@ fun RepositoryDetailContent(
 ) {
     AppPage(text(AppText.GITHUB), maxWidth = AppTheme.dimen.readingMaxWidth) {
         Column(
-            Modifier.fillMaxSize().verticalScroll(
+            Modifier.fillMaxWidth().verticalScroll(
                 rememberScrollState()
             ).padding(AppTheme.dimen.spacingM),
             verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)

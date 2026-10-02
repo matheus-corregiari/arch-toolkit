@@ -22,6 +22,27 @@ import com.android.tools.screenshot.PreviewTest
 
 @PreviewTest
 @Preview(
+    name = "AppShellSettingsLargeWindow",
+    widthDp = 1600,
+    heightDp = 1000,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun AppShellSettingsLargeWindow() {
+    ScreenshotEnvironment(portuguese = true) {
+        AppHomeContent(currentRoute = SettingsRoute) {
+            SettingsContent(
+                remember { mutableStateOf(AppLanguage.PORTUGUESE_BRAZIL) },
+                remember { mutableStateOf(ThemeMode.LIGHT) },
+                remember { mutableStateOf(ContrastMode.STANDARD) }
+            )
+        }
+    }
+}
+
+@PreviewTest
+@Preview(
     name = "AppShellCompact",
     widthDp = 360,
     heightDp = 800,
