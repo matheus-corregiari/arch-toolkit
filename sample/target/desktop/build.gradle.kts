@@ -14,11 +14,11 @@ dependencies {
     implementation(libs.arch.lumber)
 
     // Jetbrains Compose Tools
-    implementation(compose.runtime)
+    implementation(libs.jetbrains.compose.runtime)
     implementation(compose.desktop.currentOs)
-    implementation(compose.desktop.common)
-    implementation(compose.components.resources)
-    implementation(compose.materialIconsExtended)
+    implementation(libs.jetbrains.compose.desktop)
+    implementation(libs.jetbrains.compose.resources)
+    implementation(libs.jetbrains.compose.material.icons)
 
     // Other Dependencies
     implementation(libs.di.koin.core)

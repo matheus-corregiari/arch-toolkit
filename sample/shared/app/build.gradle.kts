@@ -26,14 +26,14 @@ kotlin {
                 implementation(libs.jetbrains.datetime)
                 implementation(libs.arch.storage.core)
 
-                implementation(compose.ui)
-                implementation(compose.runtime)
-                implementation(compose.runtimeSaveable)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
-                implementation(compose.material3AdaptiveNavigationSuite)
-                implementation(compose.foundation)
-                implementation(compose.animation)
+                implementation(libs.jetbrains.compose.ui)
+                implementation(libs.jetbrains.compose.runtime)
+                implementation(libs.jetbrains.compose.runtime.saveable)
+                implementation(libs.jetbrains.compose.material3)
+                implementation(libs.jetbrains.compose.material.icons)
+                implementation(libs.jetbrains.compose.material3.navigation.suite)
+                implementation(libs.jetbrains.compose.foundation)
+                implementation(libs.jetbrains.compose.animation)
 
                 // Structure
                 api(project(":sample:shared:structure:core"))
@@ -51,8 +51,8 @@ kotlin {
 
                 implementation(libs.easy.navigation)
                 implementation(libs.androidx.compose.material3.adaptive)
-                implementation("org.jetbrains.androidx.navigation3:navigation3-ui:1.2.0-alpha02")
-                implementation("androidx.navigation3:navigation3-runtime:1.2.0-alpha04")
+                implementation(libs.navigation3.ui)
+                implementation(libs.navigation3.runtime)
 
                 implementation(project(":sample:shared:features:toolkit-sample"))
                 implementation(project(":sample:shared:features:design-sample"))
@@ -64,7 +64,7 @@ kotlin {
                 // Arch Toolkit Dependencies
 
                 // Compose
-                implementation(compose.components.resources)
+                implementation(libs.jetbrains.compose.resources)
             }
         }
 
@@ -79,13 +79,11 @@ kotlin {
             }
         }
         jvmTest.dependencies {
-            implementation(compose.desktop.uiTestJUnit4)
+            implementation(libs.jetbrains.compose.ui.test.junit4)
             implementation(libs.arch.storage.memory)
             implementation(compose.desktop.currentOs)
         }
         jvmMain { dependencies { implementation(libs.arch.storage.datastore) } }
         appleMain { dependencies { implementation(libs.arch.storage.datastore) } }
-        wasmJsMain { dependencies { implementation(libs.arch.storage.memory) } }
-        jsMain { dependencies { implementation(libs.arch.storage.memory) } }
     }
 }

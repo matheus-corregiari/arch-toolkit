@@ -2,13 +2,13 @@
 
 pluginManagement {
     apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
-    val repositoryList: RepositoryHandler.() -> Unit by extra
+    val repositoryList = extra["repositoryList"] as RepositoryHandler.() -> Unit
     repositories(repositoryList)
 }
 
 dependencyResolutionManagement {
     apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
-    val repositoryList: RepositoryHandler.() -> Unit by extra
+    val repositoryList = extra["repositoryList"] as RepositoryHandler.() -> Unit
     repositories(repositoryList)
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
 }

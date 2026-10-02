@@ -25,9 +25,9 @@ android {
 
 dependencies {
     "screenshotTestImplementation"(libs.compose.screenshot.validation)
-    "screenshotTestImplementation"(compose.uiTooling)
-    "screenshotTestImplementation"(compose.preview)
-    "screenshotTestImplementation"(compose.foundation)
+    "screenshotTestImplementation"(libs.jetbrains.compose.ui.tooling)
+    "screenshotTestImplementation"(libs.jetbrains.compose.ui.tooling.preview)
+    "screenshotTestImplementation"(libs.jetbrains.compose.foundation)
     "screenshotTestImplementation"(libs.jetbrains.datetime)
     "screenshotTestImplementation"(libs.easy.navigation)
     "screenshotTestImplementation"(project(":sample:shared:data:repository"))
@@ -41,8 +41,8 @@ dependencies {
     implementation(project(":sample:shared:app"))
 
     // Jetbrains Compose Tools
-    implementation(compose.runtime)
-    implementation(compose.material3)
+    implementation(libs.jetbrains.compose.runtime)
+    implementation(libs.jetbrains.compose.material3)
 
     // Other Dependencies
     implementation(libs.google.material)

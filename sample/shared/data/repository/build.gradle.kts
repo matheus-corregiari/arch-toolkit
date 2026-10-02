@@ -57,13 +57,5 @@ kotlin {
             }
         }
 
-        wasmJsMain {
-            dependencies {
-            }
-        }
-        jsMain {
-            dependencies {
-            }
-        }
     }
 }

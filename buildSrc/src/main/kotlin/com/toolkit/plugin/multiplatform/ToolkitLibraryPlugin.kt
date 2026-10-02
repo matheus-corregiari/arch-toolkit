@@ -1,6 +1,5 @@
 package com.toolkit.plugin.multiplatform
 
-import com.android.build.api.variant.impl.capitalizeFirstChar
 import com.toolkit.plugin.android.setupAndroidLibraryModule
 import com.toolkit.plugin.util.android
 import com.toolkit.plugin.util.applyPlugins
@@ -35,7 +34,7 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
                 wasm.browser { testTask { it.useKarma { useChromeHeadless() } } }
                 wasm.binaries.library()
             }
-            js(IR) {
+            js {
                 browser { testTask { it.useKarma { useChromeHeadless() } } }
                 binaries.library()
             }
@@ -43,7 +42,7 @@ internal class ToolkitLibraryPlugin : Plugin<Project> {
             // iOS Targets
             val exportName = target.name.split("-").joinToString(
                 separator = "",
-                transform = String::capitalizeFirstChar
+                transform = { it.replaceFirstChar(Char::uppercaseChar) }
             )
             val exportId = (target.android.namespace ?: "").trim()
             listOf(

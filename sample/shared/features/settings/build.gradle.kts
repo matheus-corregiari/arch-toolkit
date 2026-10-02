@@ -21,14 +21,14 @@ kotlin {
                 implementation(libs.jetbrains.datetime)
                 implementation(libs.arch.storage.core)
 
-                implementation(compose.ui)
-                implementation(compose.runtime)
-                implementation(compose.runtimeSaveable)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
-                implementation(compose.material3AdaptiveNavigationSuite)
-                implementation(compose.foundation)
-                implementation(compose.animation)
+                implementation(libs.jetbrains.compose.ui)
+                implementation(libs.jetbrains.compose.runtime)
+                implementation(libs.jetbrains.compose.runtime.saveable)
+                implementation(libs.jetbrains.compose.material3)
+                implementation(libs.jetbrains.compose.material.icons)
+                implementation(libs.jetbrains.compose.material3.navigation.suite)
+                implementation(libs.jetbrains.compose.foundation)
+                implementation(libs.jetbrains.compose.animation)
 
                 implementation(libs.easy.navigation)
                 implementation("androidx.navigation3:navigation3-runtime:1.2.0-alpha04")
@@ -39,13 +39,11 @@ kotlin {
                 // Arch Toolkit Dependencies
 
                 // Compose
-                implementation(compose.components.resources)
+                implementation(libs.jetbrains.compose.resources)
             }
         }
 
         androidMain {}
         jvmMain {}
-        wasmJsMain {}
-        jsMain {}
     }
 }

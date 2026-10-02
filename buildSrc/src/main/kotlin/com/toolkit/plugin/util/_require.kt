@@ -8,7 +8,7 @@ internal fun Project.missing(vararg name: String) =
     name.map(::containsEnv).any { it.not() }
 
 internal fun Project.containsEnv(name: String): Boolean {
-    val env = System.getenv("name") ?: (properties[name] as? String)
+    val env = providers.environmentVariable(name).orElse(providers.gradleProperty(name)).orNull
     if (env.isNullOrBlank()) {
         println("Missing Variable: $name")
     }

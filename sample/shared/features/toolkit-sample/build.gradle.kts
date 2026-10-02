@@ -23,11 +23,11 @@ kotlin {
                 implementation("androidx.navigation3:navigation3-runtime:1.2.0-alpha04")
                 implementation(libs.jetbrains.serialization)
                 implementation(libs.di.koin.composeViewModel)
-                implementation(compose.runtime)
-                implementation(compose.runtimeSaveable)
-                implementation(compose.ui)
-                implementation(compose.foundation)
-                implementation(compose.material3)
+                implementation(libs.jetbrains.compose.runtime)
+                implementation(libs.jetbrains.compose.runtime.saveable)
+                implementation(libs.jetbrains.compose.ui)
+                implementation(libs.jetbrains.compose.foundation)
+                implementation(libs.jetbrains.compose.material3)
             }
         }
         commonTest {

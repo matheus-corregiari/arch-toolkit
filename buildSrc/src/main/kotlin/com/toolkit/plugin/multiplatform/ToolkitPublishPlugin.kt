@@ -11,6 +11,7 @@ import com.toolkit.plugin.util.vanniktechPublish
 import com.toolkit.plugin.util.versionName
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SourcesJar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
@@ -57,7 +58,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
 
             publications { container ->
                 container.withType(MavenPublication::class.java) { pub ->
-                    pub.groupId = target.properties["GROUP"] as String
+                    pub.groupId = target.providers.gradleProperty("GROUP").get()
                     pub.version = target.versionName
                     pub.pom { target.configurePom(it, false) }
                 }
@@ -76,7 +77,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
             configure(
                 KotlinMultiplatform(
                     javadocJar = JavadocJar.Dokka("dokkaGenerate"),
-                    sourcesJar = true,
+                    sourcesJar = SourcesJar.Sources(),
                     androidVariantsToPublish = listOf("release"),
                 )
             )

@@ -1,6 +1,6 @@
 import org.gradle.api.artifacts.ProjectDependency
 
-val verifyShowcaseBoundaries by tasks.registering {
+val verifyShowcaseBoundaries = tasks.register("verifyShowcaseBoundaries") {
     group = "verification"
     description = "Checks the showcase project dependency graph and layer boundaries."
     doLast {
@@ -40,7 +40,7 @@ val verifyShowcaseBoundaries by tasks.registering {
 }
 tasks.named("ciLint") { dependsOn(verifyShowcaseBoundaries) }
 
-// Easy Navigation 1.0.1 calls the Lumber Oak-returning tag ABI (changed in 1.2).
+// Easy Navigation 1.1.0 still calls the Lumber Oak-returning tag ABI (changed in 1.2).
 // Restrict this compatibility pin to sample configurations; library releases keep their version.
 subprojects {
     if (path.startsWith(":sample:")) {
@@ -49,12 +49,12 @@ subprojects {
                 if (requested.group == "io.github.matheus-corregiari" &&
                     requested.name.startsWith("arch-lumber")) {
                     useVersion("1.1.0")
-                    because("Easy Navigation 1.0.1 requires the Lumber tag ABI before 1.2")
+                    because("Easy Navigation 1.1.0 requires the Lumber tag ABI before 1.2")
                 }
                 if (requested.group == "io.github.matheus-corregiari" &&
                     requested.name.startsWith("storage-")) {
                     useVersion("2.0.0-rc16")
-                    because("Storage 1.0.0 requires Lumber 1.4; rc16 shares Navigation's Lumber 1.1 ABI")
+                    because("Storage 1.0.1 requires Lumber 1.4; rc16 shares Navigation's Lumber 1.1 ABI")
                 }
             }
         }
