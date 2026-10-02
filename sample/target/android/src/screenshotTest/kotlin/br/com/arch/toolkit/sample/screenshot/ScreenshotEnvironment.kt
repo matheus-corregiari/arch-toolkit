@@ -16,6 +16,7 @@ fun ScreenshotEnvironment(
     dark: Boolean = false,
     portuguese: Boolean = false,
     highContrast: Boolean = false,
+    contrast: ContrastMode = if (highContrast) ContrastMode.HIGH else ContrastMode.STANDARD,
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
@@ -24,7 +25,7 @@ fun ScreenshotEnvironment(
     ) {
         AppTheme(
             if (dark) ThemeMode.DARK else ThemeMode.LIGHT,
-            if (highContrast) ContrastMode.HIGH else ContrastMode.STANDARD
+            contrast
         ) {
             Surface(Modifier.fillMaxSize(), content = content)
         }

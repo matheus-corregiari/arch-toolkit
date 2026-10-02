@@ -58,7 +58,7 @@ private fun DrawScope.layerSize(strokeGravity: StrokeGravity, radiusPx: Float) =
 @Composable
 fun Modifier.containerRadiusM() = layeredBackground(
     radius = AppTheme.dimen.radiusM,
-    accentColor = AppTheme.color.stroke8,
+    accentColor = AppTheme.color.surfaceOutline,
     layeredColors = listOf(AppTheme.color.backgroundSurfaceSecondary),
     strokeGravity = StrokeGravity.ALL
 )
@@ -70,7 +70,7 @@ fun Modifier.containerRadiusXs() = background(
 ).border(
     border = BorderStroke(
         width = AppTheme.dimen.borderWidthS,
-        color = AppTheme.color.stroke8
+        color = AppTheme.color.surfaceOutline
     ),
     shape = RoundedCornerShape(AppTheme.dimen.radiusXs)
 )

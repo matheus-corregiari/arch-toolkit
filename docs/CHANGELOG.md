@@ -6,7 +6,7 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 
 ### Showcase
 
-- Add 69 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
+- Add 72 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
 
 - Expand the sample into GitHub, Toolkit, Design and Settings destinations using
   Easy Navigation and Navigation3; separate composition, features, data and design.
@@ -18,6 +18,12 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 - Pin Lumber 1.1.0 and Storage 2.0.0-rc16 in sample configurations for Easy Navigation binary compatibility;
   published Toolkit dependency versions are unchanged by this pin.
 - Document running, extending and using the showcase as an app base.
+- Organize destinations around shared DS pages, section cards, fields, choices and
+  buttons; center reading content and results states, and separate demo inputs,
+  results and source snippets. Use a sections menu for enlarged text in compact windows.
+- Preserve brand yellow with readable dark ink; define six complete light/dark
+  contrast palettes with opaque surfaces and consistent Material roles. Add KMP
+  contrast checks and document measured text/control contrast ratios.
 
 ### Changes
 
@@ -29,8 +35,8 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
   still uses the old Lumber ABI, so the scoped sample Lumber/Storage overrides remain.
 - Migrate the sample blur to Haze 2.0.1's typed `hazeBlur` API and separate blur artifact,
   preserving explicit captured-source input, tint, progressive gradient and fallback.
-- Refresh seven visually inspected Settings screenshot references for the Haze 2 header
-  texture. Differences are limited to the top 168 pixels; layout and content stay unchanged.
+- Refresh visually reviewed screenshot references for the shared UI and color system,
+  including all six Settings palettes and layouts with font scaling up to 2.0.
 - Remove obsolete Gradle extra-property delegates, Kotlin/JS compiler selection,
   publication sources boolean and inactive sample JS/Wasm source-set configuration.
 - Replace deprecated Compose dependency accessors with explicit catalog aliases;

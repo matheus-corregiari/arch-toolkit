@@ -3,10 +3,10 @@ package br.com.arch.toolkit.sample.feature.githubSample.ui.detail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +21,9 @@ import br.com.arch.toolkit.sample.design.text
 import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubDetailRoute
 import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubError
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppButton
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
 import br.com.arch.toolkit.sample.github.shared.structure.core.extension.localized
 import com.pedrobneto.easy.navigation.core.LocalNavigationController
 import org.koin.compose.viewmodel.koinViewModel
@@ -51,32 +54,46 @@ fun RepositoryDetailContent(
     onRetry: () -> Unit = {},
     onOpenRepository: (String, String) -> Unit = { _, _ -> }
 ) {
-    Column(
-        Modifier.fillMaxSize().verticalScroll(
-            rememberScrollState()
-        ).padding(AppTheme.dimen.spacingM),
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
-    ) {
-        Button(onClick = onBack) { Text(text(AppText.BACK)) }
-        if (state.loading) CircularProgressIndicator()
-        state.failure?.let { GithubError(it, onRetry) }
-        state.item?.let { item ->
-            Text(item.fullName, style = AppTheme.textStyle.titleXLRegular)
-            Text(item.description ?: text(AppText.NO_DESCRIPTION))
-            Text(
-                "${text(
-                    AppText.STARS
-                )}: ${item.stargazersCount.localized(LocalAppLanguage.current)}"
+    AppPage(text(AppText.GITHUB)) {
+        Column(
+            Modifier.fillMaxSize().verticalScroll(
+                rememberScrollState()
+            ).padding(AppTheme.dimen.spacingM),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
+        ) {
+            AppButton(
+                text(AppText.BACK),
+                onBack,
+                style = AppButton.Style.Link,
+                size = AppButton.Size.Small
             )
-            Text("${text(AppText.FORKS)}: ${item.forksCount.localized(LocalAppLanguage.current)}")
-            Text(item.language.orEmpty())
-            Text(item.topics.joinToString(" · "))
-            Button(
-                onClick = {
-                    onOpenRepository(item.owner.login, item.name)
+            if (state.loading) CircularProgressIndicator()
+            state.failure?.let { GithubError(it, onRetry) }
+            state.item?.let { item ->
+                AppSection(
+                    item.fullName,
+                    description = item.description ?: text(AppText.NO_DESCRIPTION)
+                ) {
+                    Text(
+                        "${text(
+                            AppText.STARS
+                        )}: ${item.stargazersCount.localized(LocalAppLanguage.current)}"
+                    )
+                    Text(
+                        "${text(
+                            AppText.FORKS
+                        )}: ${item.forksCount.localized(LocalAppLanguage.current)}"
+                    )
+                    Text(item.language.orEmpty())
+                    Text(item.topics.joinToString(" · "))
+                    AppButton(
+                        text(AppText.OPEN_GITHUB),
+                        onClick = {
+                            onOpenRepository(item.owner.login, item.name)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
-            ) {
-                Text(text(AppText.OPEN_GITHUB))
             }
         }
     }

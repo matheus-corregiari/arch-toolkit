@@ -16,6 +16,8 @@ internal val LocalAppDimen = compositionLocalOf<AppDimen> { SmallScreenDimen }
 
 sealed class AppDimen {
 
+    val contentMaxWidth: Dp = 960.dp
+
     // Border
     open val borderWidthS: Dp = 1.dp
     open val borderWidthM: Dp = 2.dp
@@ -34,6 +36,7 @@ sealed class AppDimen {
     open val fontLineHeightM: TextUnit = 14.0.sp
     open val fontLineHeightL: TextUnit = 16.0.sp
     open val fontLineHeightXl: TextUnit = 18.0.sp
+    open val fontLineHeightXxl: TextUnit = 20.sp
 
     // Font Size
     open val fontSizeXs: TextUnit = 10.sp

@@ -2,15 +2,15 @@ package br.com.arch.toolkit.sample.feature.toolkit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,6 +24,10 @@ import br.com.arch.toolkit.sample.design.AppText
 import br.com.arch.toolkit.sample.design.text
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppButton
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppPage
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppSection
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppTextField
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.containerRadiusXs
 import com.pedrobneto.easy.navigation.core.annotation.Deeplink
 import com.pedrobneto.easy.navigation.core.annotation.Route
 import com.pedrobneto.easy.navigation.core.annotation.Scope
@@ -75,82 +79,127 @@ fun ToolkitContent(
     listState: LazyListState = rememberLazyListState(),
     actions: ToolkitActions = ToolkitActions()
 ) {
+    AppPage(text(AppText.TOOLKIT)) {
+        LazyColumn(
+            Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(AppTheme.dimen.spacingM),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM),
+            state = listState
+        ) {
+            item { LumberDemo(logs, actions) }
+            item { StorageDemo(state, actions) }
+            item { EcosystemCatalogue() }
+        }
+    }
+}
+
+@Composable
+private fun LumberDemo(logs: List<String>, actions: ToolkitActions) {
+    AppSection("Lumber", description = text(AppText.LUMBER_DESCRIPTION)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingXs)) {
+            AppButton(
+                text(AppText.LOG),
+                actions.writeLog,
+                modifier = Modifier.weight(1f)
+            )
+            AppButton(
+                text(AppText.CLEAR),
+                actions.clearLogs,
+                modifier = Modifier.weight(1f),
+                style = AppButton.Style.Secondary
+            )
+        }
+        CodeBlock(
+            text(AppText.RESULT),
+            logs.joinToString("\n").ifEmpty { text(AppText.EMPTY_LOGS) }
+        )
+        CodeBlock(text(AppText.SNIPPET), DemoSnippets.lumber)
+    }
+}
+
+@Composable
+private fun StorageDemo(state: StorageDemoState, actions: ToolkitActions) {
     var key by rememberSaveable { mutableStateOf("hello") }
     var value by rememberSaveable { mutableStateOf("Arch Toolkit") }
-    LazyColumn(
-        Modifier.fillMaxSize().padding(AppTheme.dimen.spacingM),
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM),
-        state = listState
-    ) {
-        item {
-            Text("Lumber", style = AppTheme.textStyle.titleXLRegular)
-            Text(text(AppText.LUMBER_DESCRIPTION))
-            Row {
-                AppButton(text(AppText.LOG), actions.writeLog, modifier = Modifier.weight(1f))
-                TextButton(onClick = actions.clearLogs) { Text(text(AppText.CLEAR)) }
-            }
-            Text(logs.joinToString("\n"), fontFamily = FontFamily.Monospace)
-            Text(DemoSnippets.lumber, fontFamily = FontFamily.Monospace)
-        }
-        item {
-            Text("Storage", style = AppTheme.textStyle.titleXLRegular)
-            Text(text(AppText.STORAGE_DESCRIPTION))
-            OutlinedTextField(
-                key,
-                { key = it },
-                label = { Text(text(AppText.KEY)) },
-                singleLine = true
+    AppSection("Storage", description = text(AppText.STORAGE_DESCRIPTION)) {
+        AppTextField(key, { key = it }, text(AppText.KEY), singleLine = true)
+        AppTextField(value, { value = it }, text(AppText.VALUE))
+        Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingXs)) {
+            AppButton(
+                text(AppText.SAVE),
+                { actions.save(key, value) },
+                modifier = Modifier.weight(1f),
+                size = AppButton.Size.Small,
+                enabled = !state.busy
             )
-            OutlinedTextField(value, { value = it }, label = { Text(text(AppText.VALUE)) })
-            Row {
-                TextButton(
-                    onClick = { actions.save(key, value) },
-                    enabled = !state.busy
-                ) { Text(text(AppText.SAVE)) }
-                TextButton(
-                    onClick = { actions.read(key) },
-                    enabled = !state.busy
-                ) { Text(text(AppText.READ)) }
-                TextButton(
-                    onClick = { actions.delete(key) },
-                    enabled = !state.busy
-                ) { Text(text(AppText.DELETE)) }
-            }
-            state.message?.let { Text(text(it)) }
-            Text(state.value ?: text(AppText.MISSING_VALUE))
-            Text(DemoSnippets.storage, fontFamily = FontFamily.Monospace)
+            AppButton(
+                text(AppText.READ),
+                { actions.read(key) },
+                modifier = Modifier.weight(1f),
+                style = AppButton.Style.Secondary,
+                size = AppButton.Size.Small,
+                enabled = !state.busy
+            )
         }
-        item { EcosystemCatalogue() }
+        AppButton(
+            text(AppText.DELETE),
+            { actions.delete(key) },
+            modifier = Modifier.fillMaxWidth(),
+            style = AppButton.Style.Destructive,
+            size = AppButton.Size.Small,
+            enabled = !state.busy
+        )
+        state.message?.let { Text(text(it), color = AppTheme.color.textSubtitle) }
+        CodeBlock(text(AppText.RESULT), state.value ?: text(AppText.MISSING_VALUE))
+        CodeBlock(text(AppText.SNIPPET), DemoSnippets.storage)
     }
+}
+
+@Composable
+private fun CodeBlock(title: String, code: String) {
+    Text(title, style = AppTheme.textStyle.paragraphCaptionS, color = AppTheme.color.textSubtitle)
+    Text(
+        code,
+        modifier = Modifier.fillMaxWidth().containerRadiusXs().padding(AppTheme.dimen.spacingS),
+        fontFamily = FontFamily.Monospace,
+        style = AppTheme.textStyle.paragraphCaptionS
+    )
 }
 
 @Composable
 private fun EcosystemCatalogue() {
     val uriHandler = LocalUriHandler.current
-    listOf(
-        Triple("Arch Android / Android", "arch-android", AppText.ARCH_ANDROID_DESCRIPTION),
-        Triple(
-            "Event Observer / Android, iOS, JVM, JS, Wasm",
-            "arch-event-observer",
-            AppText.EVENT_OBSERVER_DESCRIPTION
-        ),
-        Triple(
-            "Splinter / Android, iOS, JVM, JS, Wasm",
-            "arch-toolkit",
-            AppText.SPLINTER_DESCRIPTION
-        )
-    ).forEach { (title, repo, description) ->
-        Column {
-            Text(title)
-            Text(text(description))
-            TextButton(
-                onClick = {
-                    uriHandler.openUri(
-                        "https://github.com/matheus-corregiari/$repo"
-                    )
-                }
-            ) {
-                Text(text(AppText.DOCUMENTATION))
+    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)) {
+        Text(text(AppText.ECOSYSTEM), style = AppTheme.textStyle.subtitleXBold)
+        listOf(
+            Triple("Arch Android / Android", "arch-android", AppText.ARCH_ANDROID_DESCRIPTION),
+            Triple(
+                "Event Observer / Android, iOS, JVM, JS, Wasm",
+                "arch-event-observer",
+                AppText.EVENT_OBSERVER_DESCRIPTION
+            ),
+            Triple(
+                "Splinter / Android, iOS, JVM, JS, Wasm",
+                "arch-toolkit",
+                AppText.SPLINTER_DESCRIPTION
+            )
+        ).forEach { (title, repo, description) ->
+            AppSection(title.substringBefore(" / "), description = text(description)) {
+                Text(
+                    title.substringAfter(" / "),
+                    style = AppTheme.textStyle.paragraphCaptionS,
+                    color = AppTheme.color.textSubtitle
+                )
+                AppButton(
+                    text(AppText.DOCUMENTATION),
+                    onClick = {
+                        uriHandler.openUri(
+                            "https://github.com/matheus-corregiari/$repo"
+                        )
+                    },
+                    style = AppButton.Style.Link,
+                    size = AppButton.Size.Small
+                )
             }
         }
     }

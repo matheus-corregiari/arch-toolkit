@@ -57,21 +57,26 @@ internal class ManyListState(
             bottom = padding.calculateBottomPadding(),
             start =
             padding.calculateStartPadding(LocalLayoutDirection.current) +
-                AppTheme.dimen.spacingM,
+                AppTheme.dimen.spacingXs,
             end =
-            padding.calculateEndPadding(LocalLayoutDirection.current) + AppTheme.dimen.spacingM
+            padding.calculateEndPadding(LocalLayoutDirection.current) + AppTheme.dimen.spacingXs
         ),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
     ) {
         items(list, key = {
             it.id
-        }) { item -> Item(Modifier.fillMaxWidth().clickable { onSelect(item) }, item) }
+        }) { item ->
+            Item(
+                Modifier.fillMaxWidth().containerRadiusM().clickable { onSelect(item) },
+                item
+            )
+        }
         item { Spacer(Modifier.size(AppTheme.dimen.spacingG)) }
     }
 
     @Composable
     private fun Item(modifier: Modifier, item: RepoVO) = Column(
-        modifier = modifier.containerRadiusM().padding(AppTheme.dimen.spacingM),
+        modifier = modifier.padding(AppTheme.dimen.spacingM),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingM)
     ) {
         Column(
@@ -121,9 +126,10 @@ internal class ManyListState(
 
     @Composable
     private fun RepositoryDetails(item: RepoVO) {
-        Row(
+        FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingS),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingXxs)
         ) {
             Text(
                 text = item.language,

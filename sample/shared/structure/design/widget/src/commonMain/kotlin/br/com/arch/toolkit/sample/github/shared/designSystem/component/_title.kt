@@ -9,8 +9,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
-import br.com.arch.toolkit.sample.github.shared.structure.core.model.WindowSize
 
 @Composable
 fun ScreenTitle(modifier: Modifier, text: String) {
@@ -18,19 +19,15 @@ fun ScreenTitle(modifier: Modifier, text: String) {
         containerColor = Color.Transparent,
         scrolledContainerColor = Color.Transparent
     )
-    val style = when (AppTheme.screen.windowSize) {
-        WindowSize.SMALL -> AppTheme.textStyle.titleXLMedium
-        WindowSize.MEDIUM -> AppTheme.textStyle.titleXXXLMedium
-        WindowSize.LARGE -> AppTheme.textStyle.titleHMedium
-    }
     TopAppBar(
         modifier = modifier,
         colors = colors,
         title = {
             Text(
                 text = text,
-                style = style,
-                color = AppTheme.color.textSubtitle
+                modifier = Modifier.semantics { heading() },
+                style = AppTheme.textStyle.titleXLMedium,
+                color = AppTheme.color.textTitle
             )
         }
     )

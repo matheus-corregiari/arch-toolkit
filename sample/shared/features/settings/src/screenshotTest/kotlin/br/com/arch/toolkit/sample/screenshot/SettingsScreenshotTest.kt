@@ -190,3 +190,29 @@ fun SettingsMaximumFont() {
         )
     }
 }
+
+@PreviewTest
+@Preview(name = "SettingsLightMedium", widthDp = 360, heightDp = 800, apiLevel = 35)
+@Composable
+fun SettingsLightMedium() = SettingsPalette(ThemeMode.LIGHT, ContrastMode.MEDIUM)
+
+@PreviewTest
+@Preview(name = "SettingsDarkMedium", widthDp = 360, heightDp = 800, apiLevel = 35)
+@Composable
+fun SettingsDarkMedium() = SettingsPalette(ThemeMode.DARK, ContrastMode.MEDIUM)
+
+@PreviewTest
+@Preview(name = "SettingsDarkHigh", widthDp = 360, heightDp = 800, apiLevel = 35)
+@Composable
+fun SettingsDarkHigh() = SettingsPalette(ThemeMode.DARK, ContrastMode.HIGH)
+
+@Composable
+private fun SettingsPalette(theme: ThemeMode, contrast: ContrastMode) {
+    ScreenshotEnvironment(dark = theme == ThemeMode.DARK, contrast = contrast) {
+        SettingsContent(
+            remember { mutableStateOf(AppLanguage.ENGLISH) },
+            remember { mutableStateOf(theme) },
+            remember { mutableStateOf(contrast) }
+        )
+    }
+}

@@ -212,8 +212,8 @@ sealed class AppTextStyle {
     val paragraphCaptionXs: TextStyle
         @Composable get() = TextStyle(
             color = AppTheme.color.textParagraph,
-            fontSize = AppTheme.dimen.fontSizeXs,
-            lineHeight = AppTheme.dimen.fontLineHeightXs,
+            fontSize = AppTheme.dimen.fontSizeS,
+            lineHeight = AppTheme.dimen.fontLineHeightL,
             fontWeight = FontWeight.Normal,
             fontFamily = FontFamily.SansSerif
         )
@@ -222,6 +222,7 @@ sealed class AppTextStyle {
         @Composable get() = TextStyle(
             color = AppTheme.color.textParagraph,
             fontSize = AppTheme.dimen.fontSizeS,
+            lineHeight = AppTheme.dimen.fontLineHeightL,
             fontFamily = FontFamily.SansSerif
         )
 
@@ -238,7 +239,7 @@ sealed class AppTextStyle {
             color = AppTheme.color.textParagraph,
             fontSize = AppTheme.dimen.fontSizeM,
             fontFamily = FontFamily.SansSerif,
-            lineHeight = AppTheme.dimen.fontLineHeightM
+            lineHeight = AppTheme.dimen.fontLineHeightXxl
         )
 
     val paragraphMBold: TextStyle

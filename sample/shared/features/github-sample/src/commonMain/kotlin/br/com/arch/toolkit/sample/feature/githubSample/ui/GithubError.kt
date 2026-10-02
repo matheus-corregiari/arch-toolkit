@@ -1,9 +1,12 @@
 package br.com.arch.toolkit.sample.feature.githubSample.ui
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import br.com.arch.toolkit.sample.design.AppText
 import br.com.arch.toolkit.sample.design.text
+import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
 import br.com.arch.toolkit.sample.github.shared.designSystem.component.ErrorState
 import br.com.arch.toolkit.sample.github.shared.structure.repository.GithubFailure
 
@@ -15,5 +18,10 @@ fun GithubError(failure: GithubFailure, retry: () -> Unit) {
         GithubFailure.NOT_FOUND -> AppText.NOT_FOUND_ERROR
         GithubFailure.INVALID_RESPONSE -> AppText.RESPONSE_ERROR
     }
-    ErrorState(Modifier, text(message), retryLabel = text(AppText.RETRY), retry = retry)
+    ErrorState(
+        Modifier.fillMaxWidth().padding(AppTheme.dimen.spacingM),
+        text(message),
+        retryLabel = text(AppText.RETRY),
+        retry = retry
+    )
 }

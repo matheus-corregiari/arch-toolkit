@@ -136,13 +136,13 @@ project dependencies are checked separately; production targets still depend on
 
 ### Coverage matrix
 
-The suite contains 69 references. Following Android's guidance, representative
+The suite contains 72 references. Following Android's guidance, representative
 configurations are sampled instead of multiplying every state by every device.
 
 | Area | References | Visual contracts |
 | --- | ---: | --- |
 | GitHub list and detail | 27 | Loading, empty search, content/recent history, pagination loading/error/end, all four domain errors, missing metadata, long names/descriptions/topics, localized dates and counts |
-| Settings | 7 | Light/dark/system selections, language selection, high contrast, narrow large text, wide layout |
+| Settings | 10 | All six light/dark contrast palettes, system/language selections, narrow large text, wide layout |
 | Toolkit | 13 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, ecosystem catalogue, scrolled content |
 | Design | 8 | Real tokens, button styles, disabled/loading/error/empty widgets, selected/unselected chips, scrolled content |
 | App shell | 10 | All selected destinations, compact bottom bar, medium rail, expanded drawer, landscape, localized and large-text navigation |
@@ -194,3 +194,58 @@ the existing JVM `ToolkitUiTest` capture is diagnostic only.
 
 References: [Android screenshot testing guidance](https://developer.android.com/training/testing/ui-tests/screenshot),
 [Compose Preview Screenshot Testing](https://developer.android.com/studio/preview/compose-screenshot-testing).
+
+## Visual system and color study
+
+![Shared page hierarchy and DS controls across the four showcase destinations](assets/showcase-layout.png)
+
+![Six light and dark contrast palettes rendered by the real Settings screen](assets/showcase-palettes.png)
+
+The visual identity keeps brand yellow `#FFCE2E`, warm neutral surfaces, rounded
+corners and the existing sans-serif typography. Yellow uses dark ink `#242424`
+in both themes (10.44:1), rather than white text. Blue links and semantic red/green
+remain reserved for links and feedback.
+
+Each destination uses `AppPage`: a centered reading column capped at 960 dp with
+a stable heading size. `AppSection` groups related content using the same surface,
+border, corner radius and 16 dp inset. GitHub search and filters form one group;
+empty/loading/error content occupies the results area. Toolkit separates demos,
+results, source snippets and ecosystem links. Settings separates appearance,
+contrast and language. Repository metadata wraps instead of competing in one row.
+
+`AppButton`, `AppTextField` and `AppChoiceGroup` are the shared controls. Choices
+wrap with translations and font scaling; small buttons retain a 48 dp minimum
+height. Compact windows with font scales above 1.3 use a labeled sections menu
+instead of forcing four enlarged labels into a bottom bar. Selected controls and
+navigation use the same yellow-derived surface and
+foreground roles. Selection semantics, labels and heading semantics remain native.
+
+Contrast changes text, control outlines and surface separation, rather than only
+surface opacity. All base surfaces are opaque to keep their contrast independent
+of the content underneath. Standard provides a calm hierarchy; medium deepens
+body text and outlines; high makes control and surface edges explicit while
+retaining the brand accent. Material color roles are mapped completely to the DS,
+including container levels, outlines, error and inverse colors.
+
+| Palette | Canvas | Card | Inset | Body text | Minimum body contrast | Minimum control outline contrast |
+| --- | --- | --- | --- | --- | --- | --- |
+| Light standard | `#F5F5F2` | `#FFFFFF` | `#EBEBE6` | `#53534F` | 6.46:1 | 3.24:1 |
+| Light medium | `#F1F1EC` | `#FFFFFF` | `#E2E2DA` | `#3F3F3A` | 8.13:1 | 4.58:1 |
+| Light high | `#FFFFFF` | `#FFFFFF` | `#E7E7DE` | `#242420` | 12.52:1 | 7.42:1 |
+| Dark standard | `#141413` | `#20201D` | `#2D2D28` | `#BCBCB1` | 7.23:1 | 4.06:1 |
+| Dark medium | `#10100F` | `#22221D` | `#31312A` | `#D0D0C3` | 8.42:1 | 5.18:1 |
+| Dark high | `#090908` | `#1C1C17` | `#303027` | `#EEEEDE` | 11.36:1 | 7.49:1 |
+
+Ratios above use the WCAG relative-luminance formula and report the worst pair
+across canvas, card and inset surfaces. They are measurements of these tokens,
+not a claim that every accessibility requirement has been audited. Automated KMP
+tests require at least 4.5:1 for normal text, links and semantic text on each
+surface, 3:1 for control outlines, and 7:1 for body text in medium/high modes.
+Brand ink, selected controls, Material actions and system-theme resolution are
+also checked. Decorative card borders and disabled controls are separate roles.
+
+References: [WCAG text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
+and [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).
+The Android screenshot suite covers all six settings palettes, both languages,
+compact/wide layouts, and font scales through 2.0. Review the rendered references
+before accepting a deliberate visual change; do not relax comparison thresholds.

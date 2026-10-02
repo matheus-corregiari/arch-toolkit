@@ -109,7 +109,54 @@ sealed class AppColor {
 
     val backgroundBrandPrimary: Color = Color(0xFFFFCE2E)
 
-    abstract fun colorScheme(): ColorScheme
+    // Brand yellow always carries dark ink, including the light theme.
+    val onBrand: Color = Color(0xFF242424)
+    abstract val selectedSurface: Color
+    abstract val selectedContent: Color
+    abstract val controlOutline: Color
+    abstract val surfaceOutline: Color
+
+    fun colorScheme(): ColorScheme {
+        val base = if (this is DarkColor) darkColorScheme() else lightColorScheme()
+        return base.copy(
+            primary = if (this is DarkColor) backgroundBrandPrimary else selectedContent,
+            onPrimary = if (this is DarkColor) onBrand else componentsFixed,
+            primaryContainer = backgroundBrandPrimary,
+            onPrimaryContainer = onBrand,
+            inversePrimary = backgroundBrandPrimary,
+            secondary = textSubtitle,
+            onSecondary = backgroundSurfaceDefault,
+            secondaryContainer = selectedSurface,
+            onSecondaryContainer = selectedContent,
+            tertiary = textPositive,
+            onTertiary = backgroundSurfaceDefault,
+            tertiaryContainer = backgroundPositiveSecondary,
+            onTertiaryContainer = textPositive,
+            background = backgroundSurfaceDefault,
+            onBackground = textTitle,
+            surface = backgroundSurfaceSecondary,
+            onSurface = textTitle,
+            surfaceVariant = backgroundSurfaceTertiary,
+            onSurfaceVariant = textParagraph,
+            surfaceTint = Color.Transparent,
+            surfaceDim = backgroundSurfaceDefault,
+            surfaceBright = backgroundSurfaceSecondary,
+            surfaceContainerLowest = backgroundSurfaceSecondary,
+            surfaceContainerLow = backgroundSurfaceSecondary,
+            surfaceContainer = backgroundSurfaceTertiary,
+            surfaceContainerHigh = backgroundSurfaceTertiary,
+            surfaceContainerHighest = fillSecondary,
+            outline = controlOutline,
+            outlineVariant = surfaceOutline,
+            inverseSurface = backgroundSurfaceInverse,
+            inverseOnSurface = textLabelInverse,
+            error = textNegative,
+            onError = backgroundSurfaceDefault,
+            errorContainer = backgroundNegativeSecondary,
+            onErrorContainer = textNegative,
+            scrim = backgroundOverlay
+        )
+    }
 
     companion object {
         @Suppress("CyclomaticComplexMethod")
@@ -119,13 +166,13 @@ sealed class AppColor {
             isSystemInDarkTheme: Boolean
         ): AppColor = when (theme) {
             ThemeMode.DARK -> when (contrast) {
-                ContrastMode.STANDARD -> DarkColor.LowContrast
+                ContrastMode.STANDARD -> DarkColor.StandardContrast
                 ContrastMode.MEDIUM -> DarkColor.MediumContrast
                 ContrastMode.HIGH -> DarkColor.HighContrast
             }
 
             ThemeMode.SYSTEM if isSystemInDarkTheme -> when (contrast) {
-                ContrastMode.STANDARD -> DarkColor.LowContrast
+                ContrastMode.STANDARD -> DarkColor.StandardContrast
                 ContrastMode.MEDIUM -> DarkColor.MediumContrast
                 ContrastMode.HIGH -> DarkColor.HighContrast
             }
@@ -143,20 +190,47 @@ private sealed class LightColor : AppColor() {
 
     @Immutable
     data object StandardContrast : LightColor() {
-        override val backgroundSurfaceSecondary: Color = Color(0x66F2F2F2)
-        override val backgroundSurfaceTertiary: Color = Color(0x99FBFBFB)
+        override val backgroundSurfaceDefault: Color = Color(0xFFF5F5F2)
+        override val backgroundSurfaceSecondary: Color = Color(0xFFFFFFFF)
+        override val backgroundSurfaceTertiary: Color = Color(0xFFEBEBE6)
+        override val textTitle: Color = Color(0xFF242424)
+        override val textParagraph: Color = Color(0xFF53534F)
+        override val textSubtitle: Color = Color(0xFF454541)
+        override val controlOutline: Color = Color(0xFF82827A)
+        override val surfaceOutline: Color = Color(0xFFD6D6CE)
+        override val selectedSurface: Color = Color(0xFFFFF0B3)
+        override val selectedContent: Color = Color(0xFF695000)
+        override val fillSecondary: Color = Color(0xFFDCDCD5)
     }
 
     @Immutable
     data object MediumContrast : LightColor() {
-        override val backgroundSurfaceSecondary: Color = Color(0x99F2F2F2)
-        override val backgroundSurfaceTertiary: Color = Color(0xCCFBFBFB)
+        override val backgroundSurfaceDefault: Color = Color(0xFFF1F1EC)
+        override val backgroundSurfaceSecondary: Color = Color(0xFFFFFFFF)
+        override val backgroundSurfaceTertiary: Color = Color(0xFFE2E2DA)
+        override val textTitle: Color = Color(0xFF181816)
+        override val textParagraph: Color = Color(0xFF3F3F3A)
+        override val textSubtitle: Color = Color(0xFF34342F)
+        override val controlOutline: Color = Color(0xFF64645C)
+        override val surfaceOutline: Color = Color(0xFFB3B3A8)
+        override val selectedSurface: Color = Color(0xFFFFE482)
+        override val selectedContent: Color = Color(0xFF594200)
+        override val fillSecondary: Color = Color(0xFFD0D0C5)
     }
 
     @Immutable
     data object HighContrast : LightColor() {
-        override val backgroundSurfaceSecondary: Color = Color(0xCCF2F2F2)
-        override val backgroundSurfaceTertiary: Color = Color(0xFFFBFBFB)
+        override val backgroundSurfaceDefault: Color = Color(0xFFFFFFFF)
+        override val backgroundSurfaceSecondary: Color = Color(0xFFFFFFFF)
+        override val backgroundSurfaceTertiary: Color = Color(0xFFE7E7DE)
+        override val textTitle: Color = Color(0xFF121210)
+        override val textParagraph: Color = Color(0xFF242420)
+        override val textSubtitle: Color = Color(0xFF1E1E1A)
+        override val controlOutline: Color = Color(0xFF48483F)
+        override val surfaceOutline: Color = Color(0xFF707066)
+        override val selectedSurface: Color = Color(0xFFFFCE2E)
+        override val selectedContent: Color = Color(0xFF242424)
+        override val fillSecondary: Color = Color(0xFFD6D6CC)
     }
 
     override val backgroundBrand: Color = Color(0xFF242424)
@@ -166,7 +240,6 @@ private sealed class LightColor : AppColor() {
     override val backgroundOverlay: Color = Color(0x85121212)
     override val backgroundPositivePrimary: Color = Color(0xFF00796C)
     override val backgroundPositiveSecondary: Color = Color(0xFFE9F6F3)
-    override val backgroundSurfaceDefault: Color = Color(0xFFE0E0E0)
     override val backgroundSurfaceHover: Color = Color(0x14242424)
     override val backgroundSurfaceInverse: Color = Color(0xFF303030)
     override val backgroundSurfaceTertiaryDisabled: Color = Color(0x66FBFBFB)
@@ -180,7 +253,7 @@ private sealed class LightColor : AppColor() {
     override val buttonSecondaryBackgroundHover: Color = Color(0x29000000)
     override val buttonSecondaryBackgroundPressed: Color = Color(0x52121212)
     override val buttonSecondaryStrokeDisable: Color = Color(0x05000000)
-    override val buttonSecondaryStrokeEnable: Color = Color(0x5C000000)
+    override val buttonSecondaryStrokeEnable: Color get() = controlOutline
     override val buttonPrimaryLinkBackgroundPressed: Color = Color(0x52121212)
     override val buttonSecondaryLinkBackground: Color = Color(0xFFE0E0E0)
     override val buttonSecondarylinkBackgroundHover: Color = Color(0x05000000)
@@ -200,24 +273,23 @@ private sealed class LightColor : AppColor() {
     override val fillNeutral24: Color = Color(0x3D000000)
     override val fillNeutral8: Color = Color(0x14000000)
     override val fillPrimary: Color = Color(0xFFC6C6C6)
-    override val fillSecondary: Color = Color(0xFFD1D1D1)
     override val iconDisabled: Color = Color(0x73000000)
-    override val iconNegative: Color = Color(0xFFB6140C)
-    override val iconPositive: Color = Color(0xFF2B7551)
-    override val iconPrimary: Color = Color(0xCC000000)
-    override val iconSecondary: Color = Color(0xFF000000)
+    override val iconNegative: Color = Color(0xFF9F2018)
+    override val iconPositive: Color = Color(0xFF246044)
+    override val iconPrimary: Color get() = textTitle
+    override val iconSecondary: Color get() = textParagraph
     override val iconTertiary: Color = Color(0xFFFFFFFF)
-    override val statusActivePositive: Color = Color(0xFF2B7551)
+    override val statusActivePositive: Color = Color(0xFF246044)
     override val statusActivePositive16: Color = Color(0x292B7551)
     override val statusActivePositive24: Color = Color(0x3D2B7551)
     override val statusActivePositive8: Color = Color(0x142B7551)
     override val statusActivePositiveOpacity: Color = Color(0x1F00A167)
-    override val statusAttention: Color = Color(0xFF926C1D)
+    override val statusAttention: Color = Color(0xFF71500E)
     override val statusAttention16: Color = Color(0x29926C1D)
     override val statusAttention24: Color = Color(0x3D926C1D)
     override val statusAttention8: Color = Color(0x14926C1D)
     override val statusAttentionOpacity: Color = Color(0x1FFF8946)
-    override val statusErrorInactive: Color = Color(0xFFB6140C)
+    override val statusErrorInactive: Color = Color(0xFF9F2018)
     override val statusErrorInactive16: Color = Color(0x29B6140C)
     override val statusErrorInactive24: Color = Color(0x3DB6140C)
     override val statusErrorInactive8: Color = Color(0x14B6140C)
@@ -234,7 +306,7 @@ private sealed class LightColor : AppColor() {
     override val stroke72: Color = Color(0xB8242424)
     override val stroke8: Color = Color(0x14242424)
     override val supportBlue: Color = Color(0xFF25738A)
-    override val supportGreen: Color = Color(0xFF2B7551)
+    override val supportGreen: Color = Color(0xFF246044)
     override val supportGrey: Color = Color(0xFF242424)
     override val supportOrange: Color = Color(0xFFFF8946)
     override val supportPink: Color = Color(0xFFD30F45)
@@ -242,48 +314,57 @@ private sealed class LightColor : AppColor() {
 
     override val textDisabled: Color = Color(0x73000000)
     override val textLabelInverse: Color = Color(0xFFFFFFFF)
-    override val textLink: Color = Color(0xFF0065D4)
+    override val textLink: Color = Color(0xFF0055B0)
     override val textLinkHighlight: Color = Color(0xFFF4BF00)
-    override val textNegative: Color = Color(0xFFB6140C)
-    override val textPositive: Color = Color(0xFF2B7551)
-    override val textParagraph: Color = Color(0x99000000)
-    override val textSubtitle: Color = Color(0xB3000000)
-    override val textTitle: Color = Color(0xFF000000)
-
-    override fun colorScheme() = lightColorScheme().copy(
-        primary = backgroundBrandPrimary,
-        primaryContainer = backgroundBrandPrimary,
-        onPrimary = componentsFixed,
-        secondary = backgroundBrandPrimary,
-        secondaryContainer = backgroundBrandPrimary,
-        onSecondary = componentsFixed,
-        surface = backgroundSurfaceDefault,
-        onSurface = textParagraph,
-        background = backgroundSurfaceDefault,
-        onBackground = textParagraph,
-        error = textNegative,
-        onError = textTitle
-    )
+    override val textNegative: Color = Color(0xFF9F2018)
+    override val textPositive: Color = Color(0xFF246044)
 }
 
 private sealed class DarkColor : AppColor() {
 
     @Immutable
-    data object LowContrast : DarkColor() {
-        override val backgroundSurfaceSecondary: Color = Color(0x662c2c2c)
-        override val backgroundSurfaceTertiary: Color = Color(0x99393939)
+    data object StandardContrast : DarkColor() {
+        override val backgroundSurfaceDefault: Color = Color(0xFF141413)
+        override val backgroundSurfaceSecondary: Color = Color(0xFF20201D)
+        override val backgroundSurfaceTertiary: Color = Color(0xFF2D2D28)
+        override val textTitle: Color = Color(0xFFF7F7F0)
+        override val textParagraph: Color = Color(0xFFBCBCB1)
+        override val textSubtitle: Color = Color(0xFFD4D4C9)
+        override val controlOutline: Color = Color(0xFF8C8C7E)
+        override val surfaceOutline: Color = Color(0xFF49493F)
+        override val selectedSurface: Color = Color(0xFF403616)
+        override val selectedContent: Color = Color(0xFFFFDA66)
+        override val fillSecondary: Color = Color(0xFF39392F)
     }
 
     @Immutable
     data object MediumContrast : DarkColor() {
-        override val backgroundSurfaceSecondary: Color = Color(0x992c2c2c)
-        override val backgroundSurfaceTertiary: Color = Color(0xCC393939)
+        override val backgroundSurfaceDefault: Color = Color(0xFF10100F)
+        override val backgroundSurfaceSecondary: Color = Color(0xFF22221D)
+        override val backgroundSurfaceTertiary: Color = Color(0xFF31312A)
+        override val textTitle: Color = Color(0xFFFAFAF3)
+        override val textParagraph: Color = Color(0xFFD0D0C3)
+        override val textSubtitle: Color = Color(0xFFE2E2D5)
+        override val controlOutline: Color = Color(0xFFA4A493)
+        override val surfaceOutline: Color = Color(0xFF71715E)
+        override val selectedSurface: Color = Color(0xFF4A3B0D)
+        override val selectedContent: Color = Color(0xFFFFE38B)
+        override val fillSecondary: Color = Color(0xFF3D3D31)
     }
 
     @Immutable
     data object HighContrast : DarkColor() {
-        override val backgroundSurfaceSecondary: Color = Color(0xCC2c2c2c)
-        override val backgroundSurfaceTertiary: Color = Color(0xe6393939)
+        override val backgroundSurfaceDefault: Color = Color(0xFF090908)
+        override val backgroundSurfaceSecondary: Color = Color(0xFF1C1C17)
+        override val backgroundSurfaceTertiary: Color = Color(0xFF303027)
+        override val textTitle: Color = Color(0xFFFFFFFF)
+        override val textParagraph: Color = Color(0xFFEEEEDE)
+        override val textSubtitle: Color = Color(0xFFF4F4E5)
+        override val controlOutline: Color = Color(0xFFC4C4AA)
+        override val surfaceOutline: Color = Color(0xFFA5A58A)
+        override val selectedSurface: Color = Color(0xFFFFCE2E)
+        override val selectedContent: Color = Color(0xFF242424)
+        override val fillSecondary: Color = Color(0xFF424234)
     }
 
     override val backgroundBrand: Color = Color(0xFFFBFBFB)
@@ -293,7 +374,6 @@ private sealed class DarkColor : AppColor() {
     override val backgroundOverlay: Color = Color(0xE0000000)
     override val backgroundPositivePrimary: Color = Color(0xFF00A090)
     override val backgroundPositiveSecondary: Color = Color(0xFF20352F)
-    override val backgroundSurfaceDefault: Color = Color(0xFF121212)
     override val backgroundSurfaceHover: Color = Color(0x14FFFFFF)
     override val backgroundSurfaceInverse: Color = Color(0xFFFBFBFB)
     override val backgroundSurfaceTertiaryDisabled: Color = Color(0x66303030)
@@ -307,7 +387,7 @@ private sealed class DarkColor : AppColor() {
     override val buttonSecondaryBackgroundHover: Color = Color(0x29FFFFFF)
     override val buttonSecondaryBackgroundPressed: Color = Color(0x3DFFFFFF)
     override val buttonSecondaryStrokeDisable: Color = Color(0x05FFFFFF)
-    override val buttonSecondaryStrokeEnable: Color = Color(0xB8FFFFFF)
+    override val buttonSecondaryStrokeEnable: Color get() = controlOutline
     override val buttonPrimaryLinkBackgroundPressed: Color = Color(0x52F8F8F8)
     override val buttonSecondaryLinkBackground: Color = Color(0xFF121212)
     override val buttonSecondarylinkBackgroundHover: Color = Color(0x05FFFFFF)
@@ -327,12 +407,11 @@ private sealed class DarkColor : AppColor() {
     override val fillNeutral24: Color = Color(0x3DFFFFFF)
     override val fillNeutral8: Color = Color(0x14FFFFFF)
     override val fillPrimary: Color = Color(0xFF494949)
-    override val fillSecondary: Color = Color(0xFF3F3F3F)
     override val iconDisabled: Color = Color(0x73FFFFFF)
     override val iconNegative: Color = Color(0xFFFF6961)
     override val iconPositive: Color = Color(0xFF4DCE6E)
-    override val iconPrimary: Color = Color(0xCCFFFFFF)
-    override val iconSecondary: Color = Color(0xFFFFFFFF)
+    override val iconPrimary: Color get() = textTitle
+    override val iconSecondary: Color get() = textParagraph
     override val iconTertiary: Color = Color(0xFF3A3A3A)
     override val statusActivePositive: Color = Color(0xFF4DCE6E)
     override val statusActivePositive16: Color = Color(0x294DCE6E)
@@ -372,22 +451,4 @@ private sealed class DarkColor : AppColor() {
     override val textLinkHighlight: Color = Color(0xFFFFCE2E)
     override val textNegative: Color = Color(0xFFFF6961)
     override val textPositive: Color = Color(0xFF30DB5B)
-    override val textParagraph: Color = Color(0x80ffffff)
-    override val textSubtitle: Color = Color(0xB3FFFFFF)
-    override val textTitle: Color = Color(0xFFFFFFFF)
-
-    override fun colorScheme() = darkColorScheme().copy(
-        primary = backgroundBrandPrimary,
-        primaryContainer = backgroundBrandPrimary,
-        onPrimary = componentsFixed,
-        secondary = backgroundBrandPrimary,
-        secondaryContainer = backgroundBrandPrimary,
-        onSecondary = componentsFixed,
-        surface = backgroundSurfaceDefault,
-        onSurface = textParagraph,
-        background = backgroundSurfaceDefault,
-        onBackground = textParagraph,
-        error = textNegative,
-        onError = textTitle
-    )
 }

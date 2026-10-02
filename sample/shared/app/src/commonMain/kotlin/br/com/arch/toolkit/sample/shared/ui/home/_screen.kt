@@ -3,6 +3,11 @@
 
 package br.com.arch.toolkit.sample.shared.ui.home
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
@@ -10,6 +15,7 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.NavigationRailItemColors
@@ -24,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import br.com.arch.toolkit.sample.design.AppText
 import br.com.arch.toolkit.sample.design.text
@@ -32,6 +39,8 @@ import br.com.arch.toolkit.sample.feature.githubSample.ui.GithubRoute
 import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitRoute
 import br.com.arch.toolkit.sample.github.shared.designSystem.AppTheme
+import br.com.arch.toolkit.sample.github.shared.designSystem.component.AppNavigationMenu
+import br.com.arch.toolkit.sample.github.shared.structure.core.model.WindowSize
 import com.pedrobneto.easy.navigation.core.Navigation
 import com.pedrobneto.easy.navigation.core.model.LaunchStrategy
 import com.pedrobneto.easy.navigation.core.model.NavigationRoute
@@ -86,19 +95,33 @@ fun AppHomeContent(
         NavigationItem(GithubRoute, AppText.GITHUB, Icons.Default.Code),
         NavigationItem(ToolkitRoute, AppText.TOOLKIT, Icons.Default.Build),
         NavigationItem(DesignRoute, AppText.DESIGN, Icons.Default.Palette),
-        NavigationItem(SettingsRoute, AppText.SETTINGS, Icons.Default.Settings)
+        NavigationItem(SettingsRoute, AppText.SETTINGS_TAB, Icons.Default.Settings)
     )
     val selectedItem =
         items.firstOrNull { it.route::class == currentRoute::class } ?: items.first()
+    if (AppTheme.screen.windowSize == WindowSize.SMALL &&
+        LocalDensity.current.fontScale > NAVIGATION_MENU_FONT_SCALE
+    ) {
+        Column(Modifier.fillMaxSize().background(AppTheme.color.backgroundSurfaceDefault)) {
+            AppNavigationMenu(
+                labels = items.map { text(it.label) },
+                selected = text(selectedItem.label),
+                menuLabel = text(AppText.NAVIGATION),
+                onSelect = { onNavigate(items[it].route) }
+            )
+            Box(Modifier.weight(1f).fillMaxWidth()) { content() }
+        }
+        return
+    }
     NavigationSuiteScaffold(
         layoutType = AppTheme.screen.navigationSuiteType,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
             navigationBarContainerColor = AppTheme.color.backgroundSurfaceTertiary,
-            navigationBarContentColor = AppTheme.color.backgroundSurfaceDefault,
+            navigationBarContentColor = AppTheme.color.textParagraph,
             navigationRailContainerColor = AppTheme.color.backgroundSurfaceSecondary,
-            navigationRailContentColor = AppTheme.color.backgroundSurfaceDefault,
+            navigationRailContentColor = AppTheme.color.textParagraph,
             navigationDrawerContainerColor = AppTheme.color.backgroundSurfaceSecondary,
-            navigationDrawerContentColor = AppTheme.color.backgroundSurfaceDefault
+            navigationDrawerContentColor = AppTheme.color.textParagraph
         ),
         containerColor = AppTheme.color.backgroundSurfaceDefault,
         contentColor = AppTheme.color.textParagraph,
@@ -127,6 +150,7 @@ private fun NavigationSuiteScope.addItems(
         label = {
             Text(
                 text = text(option.label),
+                color = LocalContentColor.current,
                 textAlign = TextAlign.Center,
                 style = AppTheme.textStyle.paragraphCaptionS
             )
@@ -147,32 +171,34 @@ private data class NavigationItem(
     val icon: ImageVector
 )
 
+private const val NAVIGATION_MENU_FONT_SCALE = 1.3f
+
 @Composable
 private fun navigationItemColors() = NavigationSuiteItemColors(
     navigationBarItemColors = NavigationBarItemColors(
-        selectedIconColor = AppTheme.color.iconPrimary,
+        selectedIconColor = AppTheme.color.selectedContent,
         selectedTextColor = AppTheme.color.textTitle,
-        selectedIndicatorColor = AppTheme.color.fillSecondary,
+        selectedIndicatorColor = AppTheme.color.selectedSurface,
         unselectedIconColor = AppTheme.color.iconSecondary,
         unselectedTextColor = AppTheme.color.textParagraph,
         disabledIconColor = AppTheme.color.iconDisabled,
         disabledTextColor = AppTheme.color.textDisabled
     ),
     navigationRailItemColors = NavigationRailItemColors(
-        selectedIconColor = AppTheme.color.iconPrimary,
+        selectedIconColor = AppTheme.color.selectedContent,
         selectedTextColor = AppTheme.color.textTitle,
-        selectedIndicatorColor = AppTheme.color.backgroundSurfaceTertiary,
+        selectedIndicatorColor = AppTheme.color.selectedSurface,
         unselectedIconColor = AppTheme.color.iconSecondary,
         unselectedTextColor = AppTheme.color.textParagraph,
         disabledIconColor = AppTheme.color.iconDisabled,
         disabledTextColor = AppTheme.color.textDisabled
     ),
     navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
-        selectedContainerColor = AppTheme.color.backgroundSurfaceTertiary,
+        selectedContainerColor = AppTheme.color.selectedSurface,
         unselectedContainerColor = Color.Unspecified,
-        selectedIconColor = AppTheme.color.iconPrimary,
+        selectedIconColor = AppTheme.color.selectedContent,
         unselectedIconColor = AppTheme.color.iconSecondary,
-        selectedTextColor = AppTheme.color.textTitle,
+        selectedTextColor = AppTheme.color.selectedContent,
         unselectedTextColor = AppTheme.color.textParagraph,
         selectedBadgeColor = AppTheme.color.backgroundBrandPrimary,
         unselectedBadgeColor = AppTheme.color.backgroundSurfaceTertiaryDisabled

@@ -30,7 +30,7 @@ fun ErrorState(
     titleColor: Color = AppTheme.color.textTitle,
     descriptionColor: Color = AppTheme.color.textParagraph,
     errorColor: Color = AppTheme.color.textNegative,
-    iconColor: Color = AppTheme.color.iconPrimary,
+    iconColor: Color = AppTheme.color.iconNegative,
     retryLabel: String = "Try again",
     retry: (() -> Unit)? = null
 ) = Column(

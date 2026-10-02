@@ -91,7 +91,27 @@ enum class AppText(val english: String, val portuguese: String) {
         "Modele estados assíncronos de carregamento, dados e falhas."
     ),
     STORAGE_ERROR("Unable to access saved data.", "Não foi possível acessar os dados salvos."),
-    RECENT("Recently viewed", "Vistos recentemente");
+    RECENT("Recently viewed", "Vistos recentemente"),
+    THEME_DESCRIPTION(
+        "Choose a light, dark or system appearance.",
+        "Escolha a aparência clara, escura ou do sistema."
+    ),
+    CONTRAST_DESCRIPTION(
+        "Standard balances reading comfort. Medium strengthens definition. High emphasizes text and controls.",
+        "Padrão equilibra o conforto de leitura. Médio reforça a definição. Alto destaca textos e controles."
+    ),
+    SEARCH_HINT(
+        "Try another name or programming language.",
+        "Tente outro nome ou linguagem de programação."
+    ),
+    ECOSYSTEM("Ecosystem", "Ecossistema"),
+    BRAND("Brand", "Marca"),
+    SURFACE("Surface", "Superfície"),
+    TEXT("Text", "Texto"),
+    FEEDBACK("Feedback", "Feedback"),
+    NAVIGATION("Sections", "Seções"),
+    EMPTY_LOGS("No logs yet", "Nenhum log gerado"),
+    SETTINGS_TAB("Settings", "Ajustes");
 
     fun resolve(language: AppLanguage): String = when (language) {
         AppLanguage.ENGLISH -> english

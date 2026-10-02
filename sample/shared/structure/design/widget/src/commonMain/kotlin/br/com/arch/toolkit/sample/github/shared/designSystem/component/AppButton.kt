@@ -39,7 +39,7 @@ object AppButton {
         @Composable
         internal fun minHeight() = when (this) {
             Regular -> 56.dp
-            Small -> 34.dp
+            Small -> 48.dp
         }
 
         @Composable
@@ -69,7 +69,7 @@ object AppButton {
 
         @Composable
         internal fun textColor() = when (this) {
-            Primary -> AppTheme.color.componentsFixed
+            Primary -> AppTheme.color.onBrand
             Secondary -> AppTheme.color.textTitle
             Link -> AppTheme.color.textLink
             Destructive -> AppTheme.color.textNegative

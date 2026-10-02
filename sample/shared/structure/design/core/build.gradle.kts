@@ -10,6 +10,7 @@ android.buildFeatures.buildConfig = false
 
 kotlin {
     sourceSets {
+        commonTest { dependencies { implementation(libs.jetbrains.kotlin.test) } }
         commonMain {
             dependencies {
                 implementation(libs.jetbrains.compose.ui)
