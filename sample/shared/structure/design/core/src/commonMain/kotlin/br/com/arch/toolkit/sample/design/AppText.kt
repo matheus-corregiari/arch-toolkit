@@ -126,7 +126,51 @@ enum class AppText(val english: String, val portuguese: String) {
         "Try another name or programming language.",
         "Tente outro nome ou linguagem de programação."
     ),
-    ECOSYSTEM("Ecosystem", "Ecossistema"),
+    ECOSYSTEM("Arch ecosystem", "Ecossistema Arch"),
+    ECOSYSTEM_INTRO(
+        "Find the library for your task. Each repository can be used independently.",
+        "Encontre a biblioteca para sua tarefa. Cada repositório pode ser usado de forma independente."
+    ),
+    TOOLKIT_REPOSITORY_DESCRIPTION(
+        "The ecosystem hub: examples, shared guides and Splinter for asynchronous operations.",
+        "O ponto de encontro do ecossistema: exemplos, guias compartilhados e Splinter para operações assíncronas."
+    ),
+    TOOLKIT_REPOSITORY_USAGE(
+        "Use Splinter for requests with polling, cache or execution policies.",
+        "Use Splinter em requisições com polling, cache ou políticas de execução."
+    ),
+    ANDROID_REPOSITORY_DESCRIPTION(
+        "Android helpers for lifecycle, context, views and lists.",
+        "Utilitários Android para ciclo de vida, contexto, views e listas."
+    ),
+    ANDROID_REPOSITORY_USAGE(
+        "Use it for Android-specific integration in your app.",
+        "Use nas integrações específicas de Android do seu app."
+    ),
+    OBSERVER_REPOSITORY_DESCRIPTION(
+        "Represents loading, data and errors, with Flow and Compose observation.",
+        "Representa carregamento, dados e erros, com observação em Flow e Compose."
+    ),
+    OBSERVER_REPOSITORY_USAGE(
+        "Use it to observe operation results and restore UI state.",
+        "Use para observar resultados de operações e restaurar o estado da UI."
+    ),
+    LUMBER_REPOSITORY_DESCRIPTION(
+        "Logging with tags and custom output destinations across platforms.",
+        "Logs com tags e destinos de saída personalizados entre plataformas."
+    ),
+    LUMBER_REPOSITORY_USAGE(
+        "Use it for diagnostics; add an Oak to send logs to your own destination.",
+        "Use no diagnóstico; adicione um Oak para enviar logs ao seu próprio destino."
+    ),
+    STORAGE_REPOSITORY_DESCRIPTION(
+        "Typed preferences with observable values, in memory or persisted with DataStore.",
+        "Preferências tipadas com valores observáveis, em memória ou persistidos com DataStore."
+    ),
+    STORAGE_REPOSITORY_USAGE(
+        "Use it for settings and small values. Web supports the memory provider.",
+        "Use para configurações e pequenos valores. Na web, use o provider de memória."
+    ),
     BRAND("Brand", "Marca"),
     SURFACE("Surface", "Superfície"),
     TEXT("Text", "Texto"),

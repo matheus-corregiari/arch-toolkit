@@ -1,16 +1,24 @@
 package br.com.arch.toolkit.sample.design.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -108,7 +116,8 @@ object AppButton {
         style: Style = Style.Primary,
         size: Size = Size.Regular,
         enabled: Boolean = true,
-        contentPadding: PaddingValues? = null
+        contentPadding: PaddingValues? = null,
+        leadingIcon: ImageVector? = null
     ) {
         val padding = contentPadding ?: size.padding()
         val minHeight = padding.calculateTopPadding().takeIf { it == 0.dp } ?: size.minHeight()
@@ -127,13 +136,36 @@ object AppButton {
             border = if (enabled) style.border() else null,
             contentPadding = padding
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = text.toString(),
-                color = if (enabled) style.textColor() else AppTheme.color.textDisabled,
-                style = size.textStyle(),
-                textAlign = TextAlign.Center
-            )
+            val textColor = if (enabled) style.textColor() else AppTheme.color.textDisabled
+            if (leadingIcon == null) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = text.toString(),
+                    color = textColor,
+                    style = size.textStyle(),
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        leadingIcon,
+                        contentDescription = null,
+                        tint = textColor,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(AppTheme.dimen.spacingXs))
+                    Text(
+                        text.toString(),
+                        color = textColor,
+                        style = size.textStyle(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }

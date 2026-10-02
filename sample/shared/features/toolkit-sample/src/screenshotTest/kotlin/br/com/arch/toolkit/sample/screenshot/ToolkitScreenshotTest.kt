@@ -8,6 +8,7 @@ import br.com.arch.toolkit.sample.design.component.AppPage
 import br.com.arch.toolkit.sample.design.component.AppSection
 import br.com.arch.toolkit.sample.feature.toolkit.DemoCode
 import br.com.arch.toolkit.sample.feature.toolkit.DemoSource
+import br.com.arch.toolkit.sample.feature.toolkit.EcosystemContent
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
 import br.com.arch.toolkit.sample.screenshot.ScreenshotEnvironment
@@ -288,5 +289,69 @@ fun ToolkitExpandedSource() {
                 DemoCode(DemoSource.Lumber, initiallyExpanded = true)
             }
         }
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "EcosystemPhone",
+    widthDp = 360,
+    heightDp = 800,
+    fontScale = 1.0f,
+    locale = "en",
+    apiLevel = 35
+)
+@Composable
+fun EcosystemPhone() {
+    ScreenshotEnvironment(dark = false, portuguese = false) {
+        EcosystemContent()
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "EcosystemDarkPortuguese",
+    widthDp = 360,
+    heightDp = 800,
+    fontScale = 1.0f,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun EcosystemDarkPortuguese() {
+    ScreenshotEnvironment(dark = true, portuguese = true) {
+        EcosystemContent()
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "EcosystemTablet",
+    widthDp = 1280,
+    heightDp = 1000,
+    fontScale = 1.0f,
+    locale = "en",
+    apiLevel = 35
+)
+@Composable
+fun EcosystemTablet() {
+    ScreenshotEnvironment(dark = false, portuguese = false) {
+        EcosystemContent()
+    }
+}
+
+@PreviewTest
+@Preview(
+    name = "EcosystemMaximumFont",
+    widthDp = 320,
+    heightDp = 800,
+    fontScale = 2.0f,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun EcosystemMaximumFont() {
+    ScreenshotEnvironment(dark = false, portuguese = true) {
+        EcosystemContent()
     }
 }
