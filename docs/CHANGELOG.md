@@ -6,7 +6,7 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 
 ### Showcase
 
-- Add 85 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
+- Add 86 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
 
 - Expand the sample into GitHub, Toolkit, Design and Settings destinations using
   Easy Navigation and Navigation3; separate composition, features, data and design.
@@ -18,21 +18,20 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 - Pin Lumber 1.1.0 and Storage 2.0.0-rc16 in sample configurations for Easy Navigation binary compatibility;
   published Toolkit dependency versions are unchanged by this pin.
 - Document running, extending and using the showcase as an app base.
-- Organize destinations around shared DS pages, section cards, fields, choices and
-  buttons; center reading content and results states, and separate demo inputs,
-  results and source snippets. Use a sections menu for enlarged text in compact windows.
-- Adapt Settings, Toolkit and Design to two readable card columns on landscape/tablet
-  windows, scaling the required width with text size. Place GitHub search beside
-  results when both panes fit and keep controls scrollable in short windows.
-- Reserve the navigation drawer for windows from 1200 dp, retain a tablet rail,
-  cap repository detail reading width, and verify edited inputs survive resizing.
-- Horizontally center landscape/tablet pages within a proportional reading frame, cap
-  content width at 960 dp and keep longer pages scrollable. Align search/results
-  at the top and apply modest width-based typography scales
-  with proportional line heights, respecting system font enlargement.
-- Preserve brand yellow with readable dark ink; define six complete light/dark
-  contrast palettes with opaque surfaces and consistent Material roles. Add KMP
-  contrast checks and document measured text/control contrast ratios.
+- Apply the new visual study: task headers, semantic typography, shared DS controls,
+  six light/dark palettes and horizontally centered, top-aligned adaptive fill widths.
+- Cap workspaces at 1120 dp and reading/settings at 760 dp. Use width/font-aware
+  one/two-column Toolkit/Design grids; keep Settings in a continuous preference panel.
+- Move GitHub search above results, keep its action visible in landscape, add keyboard
+  submit and expandable history; show demo source only on request.
+- Simplify Kotlin with immutable page mapping, sealed load status, pure Settings
+  callbacks, direct repository composables and neutral shared package names.
+- Add 300 ms search debounce while preserving immediate submit/filter, cancellation,
+  late-response rejection and pagination. Separate draft/active query and persist
+  only changed restorable snapshots, with legacy/corrupt-state tests.
+- Configure Coil at bootstrap and preserve edited demo inputs through resizing.
+- Update real screenshots, including expanded executable code, and document
+  reproducible snapshot work measurements without claiming unmeasured frame gains.
 
 ### Changes
 

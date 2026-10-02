@@ -136,14 +136,14 @@ project dependencies are checked separately; production targets still depend on
 
 ### Coverage matrix
 
-The suite contains 85 references. Following Android's guidance, representative
+The suite contains 86 references. Following Android's guidance, representative
 configurations are sampled instead of multiplying every state by every device.
 
 | Area | References | Visual contracts |
 | --- | ---: | --- |
 | GitHub list and detail | 29 | Loading, empty search, content/recent history, pagination loading/error/end, all four domain errors, missing metadata, long names/descriptions/topics, localized dates and counts |
 | Settings | 10 | All six light/dark contrast palettes, system/language selections, narrow large text, wide layout |
-| Toolkit | 13 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, ecosystem catalogue, scrolled content |
+| Toolkit | 14 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, ecosystem catalogue, expanded executable source, scrolled content |
 | Design | 8 | Real tokens, button styles, disabled/loading/error/empty widgets, selected/unselected chips, scrolled content |
 | App shell | 21 | All selected destinations, compact bottom bar, tablet rail, large-window drawer, phone/tablet landscape, tablet portrait, localized and large-text navigation |
 | Shared widgets | 4 | Original English/light, Portuguese/dark, large font and wide high-contrast checks |
@@ -209,12 +209,14 @@ corners and the existing sans-serif typography. Yellow uses dark ink `#242424`
 in both themes (10.44:1), rather than white text. Blue links and semantic red/green
 remain reserved for links and feedback.
 
-Each destination uses `AppPage`: a centered content area capped at 960 dp with
-a modestly responsive heading size. `AppSection` groups related content using the same surface,
-border, corner radius and 16 dp inset. GitHub search and filters form one group;
-empty/loading/error content occupies the results area. Toolkit separates demos,
-results, source snippets and ecosystem links. Settings separates appearance,
-contrast and language. Repository metadata wraps instead of competing in one row.
+Each destination uses a top-aligned `AppPage` with horizontal centering and
+adaptive fill width. GitHub/Toolkit/Design cap their workspace at 1120 dp;
+Settings and details cap reading width at 760 dp. Gutters are 16/24/32 dp by
+window size. Page headers expose a title and task description; short windows
+omit the description to leave more room for controls and results. Sections use
+24 dp padding. GitHub places search above results and keeps history expandable.
+Toolkit orders controls, results and expandable executable source. Settings
+uses one continuous preference panel with dividers.
 
 `AppButton`, `AppTextField` and `AppChoiceGroup` are the shared controls. Choices
 wrap with translations and font scaling; small buttons retain a 48 dp minimum
@@ -232,9 +234,10 @@ Column and pane counts react to available width and font scale, without device-n
 
 | Area | Compact or enlarged text | Landscape and tablet |
 | --- | --- | --- |
-| Settings, Toolkit and Design | One scrollable card column | Two columns when each can retain at least 320 dp scaled by the font setting, plus 16 dp gutters |
-| GitHub search | Controls above results; controls can scroll within half the content height in short windows | Search/history beside results at 640 dp of available width scaled by the font setting; 280 dp sidebar scales with text |
-| Repository detail | One scrollable information card | Reading width capped at 720 dp to keep descriptions readable |
+| Toolkit and Design | One scrollable column | Two columns when each retains 360 dp scaled by font size, plus a 24 dp gap |
+| Settings | One continuous scrollable preference panel | Same panel, centered horizontally with a 760 dp cap |
+| GitHub search | Search above results; stacked field/action when text needs room | Field and Search action share a row when width permits; filters follow below; controls scroll within half the remaining height |
+| Repository detail | One scrollable information card | Reading width capped at 760 dp |
 | Navigation | Bottom bar in compact portrait, rail in landscape | Rail on medium/tablet widths; drawer from 1200 dp window width |
 
 The section grid is limited to two columns, including very wide windows. Cards keep
@@ -249,27 +252,24 @@ the navigation shell as well as populated GitHub landscape results.
 
 #### Comfortable reading area
 
-In landscape or medium/expanded windows, the shared page targets 92% of the available width,
-capped at 960 dp (720 dp for repository detail). The frame retains enough width
-for two readable columns when they fit and follows the user's font setting.
-Pages fill the available height and start at the top, with horizontal centering
-and adaptive width. Long content scrolls within the available height.
+Pages fill available width within their role-specific cap, fill the available
+height and remain top-aligned. Long content scrolls. Pagination belongs to the
+lazy results list, so short results do not stretch the footer to the bottom.
 
-Search and results align at the top when displayed side by side. A short result list wraps rather than stretching its pagination action to
-the bottom edge; long lists continue to scroll within the frame.
+Typography uses semantic roles and normal system font scaling:
 
-Typography increases gently with the window width class. Values remain in `sp`,
-so system font scaling is applied normally; density/font scaling is never overridden.
+| Text role | Compact | Medium / expanded |
+| --- | ---: | ---: |
+| Page heading | 24 / 30 sp | 28 / 34 sp |
+| Section heading | 18 / 24 sp | 20 / 26 sp |
+| Body | 16 / 24 sp | 16 / 24 sp |
+| Metadata | 13 / 18 sp | 14 / 20 sp |
+| Code | 13 / 22 sp monospace | 14 / 22 sp monospace |
 
-| Text role | Compact | Medium | Expanded |
-| --- | ---: | ---: | ---: |
-| Page heading | 18 sp | 20 sp | 22 sp |
-| Section heading / regular action | 16 sp | 17 sp | 18 sp |
-| Body | 14 sp / 20 sp leading | 15 sp / 22 sp leading | 16 sp / 24 sp leading |
-| Metadata / code | 12 sp / 16 sp leading | 13 sp / 18 sp leading | 14 sp / 20 sp leading |
-
-JVM coverage also checks that a short page stays horizontally centered and top-aligned within a wide
-viewport. Existing resizing and 2x landscape interaction checks remain active.
+JVM tests verify horizontal centering/top alignment, preserving edited forms
+across resizing, keyboard search, and access to controls/results in short windows
+with 2x text. A separate regression ensures the complete Search action is visible
+in normal-font landscape.
 
 ![Centered reading area and typography](assets/showcase-reading.png)
 
@@ -282,22 +282,19 @@ body text and outlines; high makes control and surface edges explicit while
 retaining the brand accent. Material color roles are mapped completely to the DS,
 including container levels, fixed roles, outlines, error and inverse colors.
 
-| Palette | Canvas | Card | Inset | Body text | Minimum body contrast | Minimum control outline contrast |
-| --- | --- | --- | --- | --- | --- | --- |
-| Light standard | `#F5F5F2` | `#FFFFFF` | `#EBEBE6` | `#53534F` | 6.46:1 | 3.24:1 |
-| Light medium | `#F1F1EC` | `#FFFFFF` | `#E2E2DA` | `#3F3F3A` | 8.13:1 | 4.58:1 |
-| Light high | `#FFFFFF` | `#FFFFFF` | `#E7E7DE` | `#242420` | 12.52:1 | 7.42:1 |
-| Dark standard | `#141413` | `#20201D` | `#2D2D28` | `#BCBCB1` | 7.23:1 | 4.06:1 |
-| Dark medium | `#10100F` | `#22221D` | `#31312A` | `#D0D0C3` | 8.42:1 | 5.18:1 |
-| Dark high | `#090908` | `#1C1C17` | `#303027` | `#EEEEDE` | 11.36:1 | 7.49:1 |
+The exact palette values and canvas/card contrast ratios are recorded in the
+[implemented visual study](showcase-visual-study.md#lightdark-e-tres-niveis-de-contraste).
+Automated KMP tests additionally check normal text, links and semantic text against
+canvas, card and inset surfaces (4.5:1), control outlines (3:1), medium/high body
+text (7:1), brand ink, selected controls and Material roles. Decorative borders
+and disabled controls have separate roles. These checks are not an accessibility
+certification.
 
-Ratios above use the WCAG relative-luminance formula and report the worst pair
-across canvas, card and inset surfaces. They are measurements of these tokens,
-not a claim that every accessibility requirement has been audited. Automated KMP
-tests require at least 4.5:1 for normal text, links and semantic text on each
-surface, 3:1 for control outlines, and 7:1 for body text in medium/high modes.
-Brand ink, selected controls, Material actions and system-theme resolution are
-also checked. Decorative card borders and disabled controls are separate roles.
+![Before and after, rendered from the real app](assets/showcase-before-after.png)
+
+The [refactor record](showcase-refactor.md#implementacao-e-evidencias) covers the
+300 ms debounce, separate draft/active query, transient-state-free snapshots,
+bootstrap image loader, immutable page mapping and neutral Kotlin packages.
 
 References: [WCAG text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
 and [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).

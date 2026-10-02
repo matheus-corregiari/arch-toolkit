@@ -1,8 +1,8 @@
 # Novo estudo visual do Showcase
 
-Proposta de 02/10/2026, baseada no app em `ad6d408`. Este documento substitui a
-direção de projeto visual para a próxima implementação; o app atual permanece
-como referência de comportamento. A proposta ainda não foi aplicada ao Kotlin.
+Proposta de 02/10/2026, baseada no app em `ad6d408`. A direção visual foi aplicada ao Kotlin nesta PR; comportamento, navegação e
+identidade foram preservados. As imagens em [Showcase](showcase.md) são renderizações
+do app implementado. O HTML continua como estudo conceitual.
 
 [Abrir o protótipo interativo](assets/showcase-next.html) · [Plano de refactor](showcase-refactor.md)
 
@@ -18,9 +18,9 @@ de leitura previsível; controles Material/DS consistentes; feedback junto à a�
 Centralização **apenas horizontal**. Todas as páginas começam no topo e usam a
 altura disponível. Não criar hero, carrossel ou tela inicial adicional.
 
-## Leitura do visual atual
+## Leitura do baseline anterior
 
-Inspeção de `assets/showcase-responsive.png` e dos componentes reais:
+Inspeção dos componentes e screenshots anteriores em `ad6d408`:
 
 | Evidência | Consequência visual | Nova decisão |
 | --- | --- | --- |
@@ -59,11 +59,11 @@ de swatches. Mudança de idioma preserva foco, destino e formulário.
 
 ## Layout adaptável
 
-As medidas abaixo são metas da proposta, não os valores já implementados.
+As medidas abaixo foram aplicadas aos componentes compartilhados.
 A área disponível é medida **depois** de navegação e safe insets. A orientação
 não determina sozinha o modo. Fonte ampliada participa do cálculo das colunas.
 
-| Papel | Regra proposta |
+| Papel | Regra implementada |
 | --- | --- |
 | Página | `fillMaxWidth` dentro de teto por conteúdo; `fillMaxHeight`; alinhamento TopCenter |
 | Margem lateral | 16 dp compacta, 24 dp média, 32 dp ampla; margens externas simétricas |
@@ -99,7 +99,7 @@ Preservar a família atual. Mapear papéis semânticos antes de alterar nomes an
 | Título de seção | 18/24 sp | 20/26 sp |
 | Corpo/entrada | 16/24 sp | 16/24 sp |
 | Metadados | 13/18 sp | 14/20 sp |
-| Código | 13/20 sp, monoespaçado | 14/22 sp, monoespaçado |
+| Código | 13/22 sp, monoespaçado | 14/22 sp, monoespaçado |
 
 Estes valores são ponto de partida para previews de fonte 1×/1,3×/2×. Evitar
 escalar todos os textos pelo tamanho da tela: corpo estável, títulos com ajuste
@@ -153,7 +153,7 @@ simuladas; não chama GitHub nem persiste dados. “Buscar”, “Carregar mais�
 e disclosure servem para estudar a hierarquia. Não substitui testes do app nativo,
 suas fontes, navegação, teclado, performance ou acessibilidade da plataforma.
 
-## Aceitação da implementação futura
+## Critérios de aceitação
 
 - Todas as páginas alinhadas ao topo; centro horizontal na área útil.
 - 360×800, 800×360, 800×1280, 1280×800 e 1600×1000; resize contínuo sem perda de campos.

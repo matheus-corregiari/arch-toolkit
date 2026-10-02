@@ -2,8 +2,48 @@
 
 Estudo em `ad6d408`, 02/10/2026. Escopo: app e sua infraestrutura compartilhada.
 Bibliotecas publicadas e build conventions são fronteiras de compatibilidade;
-não serão reescritas como efeito colateral. Nenhum refactor de produção foi
-executado nesta entrega. [Estudo visual](showcase-visual-study.md).
+não foram reescritas como efeito colateral. O plano funcional foi implementado;
+profiling de dispositivos permanece pendente. [Estudo visual](showcase-visual-study.md).
+
+## Implementação e evidências
+
+O refactor funcional e visual está aplicado. A tabela abaixo registra o resultado;
+as seções seguintes preservam a análise e a sequência originalmente propostas.
+
+| Área | Implementação |
+| --- | --- |
+| Bootstrap / dados | Coil configurado no bootstrap Koin; PageRO, RepoRO e UserRO como data classes; paginação montada com val/copy |
+| UI / DS | Tokens semânticos, seis paletas, 1120/760 dp, gutters adaptáveis, alinhamento horizontal e início no topo |
+| Configurações | Conteúdo puro com valores/callbacks; painel contínuo; testes de tema, contraste e idioma |
+| GitHub | Debounce 300 ms; draft separado da busca ativa; submit/filtro imediato; cancelamento e generation preservados; composables diretos com keys |
+| Restauração | Snapshot v4 sem loading/error; fallback v3; snapshot corrompido tratado; rascunho salvo separadamente |
+| Toolkit / Design | Controles → resultado → código expansível; catálogo nomeado; snippets da fonte executável; campos preservados no resize |
+| Packages | DS, core, repository e data com nomes neutros; GitHub isolado na feature; módulos Gradle e APIs publicadas preservados |
+
+Os nove testes de ListViewModel incluem tempo virtual, resposta atrasada após
+editar o draft, submit imediato, retry, snapshot antigo/corrompido e payload grande.
+O teste reproduzível registra o JSON abaixo e confirma **zero escritas transitórias**
+ao iniciar loading e ao falhar uma paginação com a mesma lista. O código anterior
+serializava novamente nessas transições. Isso comprova trabalho evitado, não ganho
+de FPS nem latência no dispositivo.
+
+| Itens da fixture | Bytes de JSON | Escritas durante loading/erro |
+| ---: | ---: | ---: |
+| 20 | 5544 | 0 |
+| 200 | 55604 | 0 |
+| 1000 | 278804 | 0 |
+
+86 referências Android incluem fonte expandida, seis paletas, landscape/tablet,
+EN/PT e fonte até 2x. Testes JVM cobrem keyboard submit, preferências/disclosure,
+resize, CRUD/log, navegação e alinhamento. Os gates locais incluem build Android/R8,
+tests, coverage, lint, docs e manifest das sete coordenadas RC19.
+
+Limitações: não há dispositivo Android conectado para Perfetto/frame timing nem
+Mac local para executar host/simulador iOS. CI macOS continua responsável pelo
+host Apple; inspeção manual de acessibilidade e comparação de frame timing nos
+hosts continuam pendentes. Não se afirma o orçamento de 5% como medido.
+
+![Antes e depois](assets/showcase-before-after.png)
 
 ## Padrões anteriores que continuam
 
@@ -97,7 +137,8 @@ novas dependências precisam justificar seu custo. Nome legível supera express�
 
 ## Desempenho: medir antes, comparar depois
 
-Não foi executado benchmark nesta etapa. Usar build release/R8, mesmo dispositivo,
+Não foi executado benchmark de frames nesta etapa; as medidas de snapshot e
+requests estão registradas acima. Usar build release/R8, mesmo dispositivo,
 mesma massa de dados, aquecimento e múltiplas rodadas; guardar mediana e p95,
 trace e configuração. Debug e contagem de recomposições isolada não provam ganho.
 
@@ -161,10 +202,9 @@ de acessibilidade Android/iOS/Desktop. Comparar manifest das sete coordenadas
 Splinter; nenhum novo artefato publicado pelo refactor do app. Manter thresholds
 visuais, lint real e minSdk; não introduzir baseline de erros.
 
-As 85 referências são baseline atual, não obrigação de manter o mesmo número:
+As 85 referências eram o baseline do estudo, não obrigação de manter o mesmo número:
 novos estados/layouts podem exigir novos casos. Encerrar com métricas, cenários
-validados e limitações explícitas. Implementação futura segue este plano; esta
-entrega contém apenas estudo/protótipo/documentação.
+validados e limitações explícitas. A implementação e seus limites estão registrados no início deste documento.
 
 ## Referências
 
