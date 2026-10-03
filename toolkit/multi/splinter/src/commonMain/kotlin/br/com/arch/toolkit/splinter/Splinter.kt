@@ -38,6 +38,9 @@ import kotlin.concurrent.atomics.plusAssign
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+private const val DEFAULT_HISTORY_CAPACITY = 500
+private const val DEFAULT_EXTRA_BUFFER_CAPACITY = 50
+
 @Suppress("MemberVisibilityCanBePrivate")
 @OptIn(ExperimentalAtomicApi::class)
 class Splinter<RETURN> internal constructor(
@@ -74,13 +77,13 @@ class Splinter<RETURN> internal constructor(
         onBufferOverflow = BufferOverflow.SUSPEND
     )
     internal val dataFlow = MutableSharedFlow<DataResult<RETURN>>(
-        replay = 500,
-        extraBufferCapacity = 50,
+        replay = config.dataHistory,
+        extraBufferCapacity = config.extraBufferCapacity,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
     internal val logFlow = MutableSharedFlow<Message>(
-        replay = 500,
-        extraBufferCapacity = 50,
+        replay = config.logHistory,
+        extraBufferCapacity = config.extraBufferCapacity,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
     //endregion
@@ -91,7 +94,7 @@ class Splinter<RETURN> internal constructor(
     //region Auxiliary Fields
     private val mutex = Mutex()
     private val lock: Any = this
-    private val logger: Lumber.Oak get() = Lumber.tag(id).quiet(config.quiet)
+    private val logger: Lumber.Oak? get() = if (config.quiet) null else Lumber.tag(id).quiet(false)
     private val observer = object : DefaultLifecycleObserver {
         init {
             config.lifecycleOwner?.lifecycle?.addObserver(this)
@@ -99,10 +102,10 @@ class Splinter<RETURN> internal constructor(
 
         override fun onDestroy(owner: LifecycleOwner) {
             if (config.stopPolicy == OnLifecycle) {
-                logger.warn("[Splinter] Killed due lifecycle")
+                logger?.warn("[Splinter] Killed due lifecycle")
                 kill()
             } else {
-                logger.warn("[Splinter] Canceled due lifecycle")
+                logger?.warn("[Splinter] Canceled due lifecycle")
                 cancel()
             }
         }
@@ -118,7 +121,7 @@ class Splinter<RETURN> internal constructor(
      */
     //region Jobs
     private val masterJob = SupervisorJob().apply {
-        invokeOnCompletion { logger.warn("[Splinter] Master job stopped") }
+        invokeOnCompletion { logger?.warn("[Splinter] Master job stopped") }
     }
     private val logJob by createJob(tag = "Log", scope = CoroutineScope(Unconfined)) {
         val eventCountJob = launch { dataFlow.collect { eventCount.plusAssign(1) } }
@@ -126,7 +129,7 @@ class Splinter<RETURN> internal constructor(
         if (config.quiet) {
             listOf(eventCountJob, logCountJob).joinAll()
         } else {
-            logFlow.collect { logger.log(it.level, it.error, it.indentedMessage) }
+            logFlow.collect { logger?.log(it.level, it.error, it.indentedMessage) }
         }
     }
 
@@ -137,7 +140,7 @@ class Splinter<RETURN> internal constructor(
             operationStartedCount.plusAssign(1)
             val log = launch { logFlow.emitAll(apprentice.logChannel) }
             val data = launch { dataFlow.emitAll(apprentice.dataChannel) }
-            runCatching { listOf(log, data).joinAll() }
+            listOf(log, data).joinAll()
             apprentice.stop()
             operationCompletedCount.plusAssign(1)
             logFlow.info("[Splinter] - Apprentice ${apprentice.id} - Finished!")
@@ -168,8 +171,8 @@ class Splinter<RETURN> internal constructor(
 
     fun execute() = mutex.synchronized(lock) {
         if (shouldProceedToExecute().not()) return@synchronized
-        if (logJob.start()) logger.warn("[Splinter] - Log - Started")
-        if (collectJob.start()) logger.warn("[Splinter] - Collect - Started")
+        if (logJob.start()) logger?.warn("[Splinter] - Log - Started")
+        if (collectJob.start()) logger?.warn("[Splinter] - Collect - Started")
         apprenticeFlow.tryEmit(
             value = Apprentice(
                 id = operationCount.incrementAsId(),
@@ -205,7 +208,7 @@ class Splinter<RETURN> internal constructor(
             if (isRunning) cancel()
             for (apprentice in apprenticeFlow.replayCache) apprentice.stop()
             masterJob.cancel()
-            logger.warn("[Splinter] Game over!")
+            logger?.warn("[Splinter] Game over!")
         }.getOrDefault(Unit)
         return@synchronized resultHolder
     }
@@ -214,7 +217,7 @@ class Splinter<RETURN> internal constructor(
         if (isRunning.not()) return resultHolder.get()
         for (apprentice in apprenticeFlow.replayCache) apprentice.await()
         masterJob.children.dropWhile { it == collectJob || it == logJob }
-            .forEach { runCatching { it.join() } }
+            .forEach { it.join() }
         return resultHolder.get()
     }
 
@@ -264,12 +267,12 @@ class Splinter<RETURN> internal constructor(
         val shouldProceed = AtomicBoolean(true)
         when {
             isKilled -> {
-                logger.warn("[Splinter] Already dead - skipping")
+                logger?.warn("[Splinter] Already dead - skipping")
                 shouldProceed.store(false)
             }
 
             operationCount.load() > 0 && config.stopPolicy == StopPolicy.AfterFirstExecution -> {
-                logger.warn("[Splinter] Should die after first execution - skipping")
+                logger?.warn("[Splinter] Should die after first execution - skipping")
                 shouldProceed.store(false)
             }
 
@@ -306,10 +309,10 @@ class Splinter<RETURN> internal constructor(
     ) = (scope + masterJob + exceptionHandler).lazyJob(
         onCreate = { println("[Splinter] - $tag - Created") },
         job = {
-            logger.warn("[Splinter] - $tag - Initialized")
+            logger?.warn("[Splinter] - $tag - Initialized")
             func()
         },
-        onComplete = { logger.warn("[Splinter] - $tag - Completed") }
+        onComplete = { logger?.warn("[Splinter] - $tag - Completed") }
     )
     //endregion
 
@@ -324,7 +327,10 @@ class Splinter<RETURN> internal constructor(
         val policy: ExecutionPolicy,
         val stopPolicy: StopPolicy,
         val lifecycleOwner: LifecycleOwner?,
-        val onCancel: (() -> Unit)?
+        val onCancel: (() -> Unit)?,
+        val dataHistory: Int = DEFAULT_HISTORY_CAPACITY,
+        val logHistory: Int = DEFAULT_HISTORY_CAPACITY,
+        val extraBufferCapacity: Int = DEFAULT_EXTRA_BUFFER_CAPACITY
     ) {
         companion object Creator {
             operator fun <T> invoke(config: Builder<T>.() -> Unit = {}) =
@@ -339,6 +345,26 @@ class Splinter<RETURN> internal constructor(
             private var stopPolicy: StopPolicy = SplinterDefaults.stopPolicy
             private var lifecycleOwner: LifecycleOwner? = null
             private var onCancel: (() -> Unit)? = null
+            private var dataHistory = DEFAULT_HISTORY_CAPACITY
+            private var logHistory = DEFAULT_HISTORY_CAPACITY
+            private var extraBufferCapacity = DEFAULT_EXTRA_BUFFER_CAPACITY
+
+            /** Bounded history; data keeps at least one entry for resultHolder.get(). */
+            fun history(
+                data: Int = DEFAULT_HISTORY_CAPACITY,
+                logs: Int = DEFAULT_HISTORY_CAPACITY,
+                extraBufferCapacity: Int = DEFAULT_EXTRA_BUFFER_CAPACITY
+            ) = apply {
+                require(data > 0) { "Data history must keep the current result" }
+                require(logs >= 0) { "Log history must be >= 0" }
+                require(extraBufferCapacity >= 0) { "Extra buffer capacity must be >= 0" }
+                require(
+                    logs > 0 || extraBufferCapacity > 0
+                ) { "Logs require a buffer for DROP_OLDEST" }
+                dataHistory = data
+                logHistory = logs
+                this.extraBufferCapacity = extraBufferCapacity
+            }
 
             fun scope(scope: CoroutineScope) = apply { this.scope = scope }
 
@@ -358,7 +384,10 @@ class Splinter<RETURN> internal constructor(
                 policy = policy,
                 stopPolicy = stopPolicy,
                 lifecycleOwner = lifecycleOwner,
-                onCancel = onCancel
+                onCancel = onCancel,
+                dataHistory = dataHistory,
+                logHistory = logHistory,
+                extraBufferCapacity = extraBufferCapacity
             )
         }
     }
