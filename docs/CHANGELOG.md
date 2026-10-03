@@ -29,7 +29,7 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 - Add executable Lumber/Storage demos with source-generated snippets and a design catalogue.
 - Add an iOS SwiftUI host and macOS CI build; keep web pending without JS/Wasm navigation artifacts.
 - Remove trust-all TLS overrides and check module dependency boundaries.
-- Pin Lumber 1.1.0 and Storage 2.0.0-rc16 in sample configurations for Easy Navigation binary compatibility;
+- Retain Lumber 1.1.0 and Storage 2.0.0-rc16 in sample configurations for Easy Navigation 1.2.0 binary compatibility;
   published Toolkit dependency versions are unchanged by this pin.
 - Document running, extending and using the showcase as an app base.
 - Apply the new visual study: task headers, semantic typography, shared DS controls,
@@ -58,9 +58,14 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 - Refresh Gradle to 9.8.0 (regenerated wrapper and official checksum), AGP to 9.4.1,
   Compose to 1.12.1 and Kover to 0.9.11. Compile Android against stable API 37.2;
   retain Build Tools 37.0.0, minimum API 28 and existing supported targets.
-- Update Easy Navigation to 1.1.0, Event Observer to 3.0.0, Android to 1.3.2,
-  and catalog selections for Lumber to 1.4.4 and Storage to 1.0.1. Navigation 1.1.0
+- Update Easy Navigation runtime/plugin to 1.2.0, Event Observer to 3.0.0, Android to 1.3.2,
+  and catalog selections for Lumber to 1.4.4 and Storage to 1.0.1. Navigation 1.2.0
   still uses the old Lumber ABI, so the scoped sample Lumber/Storage overrides remain.
+- Migrate navigation features from KSP to the Kotlin compiler generator, retaining KSP
+  for Room/Ktorfit. Select Android class artifacts explicitly for generation and
+  replace four hardcoded Navigation3 prerelease runtime declarations with the stable catalog alias.
+- Track Compose-generated source inputs and enforce Kotlin LF line endings so
+  Navigation's syntax scanner discovers destinations consistently on Windows.
 - Migrate the sample blur to Haze 2.0.1's typed `hazeBlur` API and separate blur artifact,
   preserving explicit captured-source input, tint, progressive gradient and fallback.
 - Refresh visually reviewed screenshot references for the shared UI and color system,
@@ -97,7 +102,7 @@ Showcase and maintenance changes based on tag `2.0.0-rc18`.
 | Android compile API | `37` | `37.2` |
 | Compose Multiplatform | `1.12.0` | `1.12.1` |
 | Kover | `0.9.9` | `0.9.11` |
-| Easy Navigation | `1.0.1` | `1.1.0` |
+| Easy Navigation | `1.0.1` | `1.2.0` |
 | Haze | `1.7.3` | `2.0.1` |
 | Event Observer | `2.3.0` | `3.0.0` |
 | Arch Android | `1.3.1` | `1.3.2` |

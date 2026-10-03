@@ -1,7 +1,6 @@
 plugins {
     id("toolkit-multiplatform-sample")
     alias(libs.plugins.jetbrains.serialization)
-    alias(libs.plugins.google.ksp)
     alias(libs.plugins.easy.navigation)
     alias(libs.plugins.jetbrains.compose.compiler)
     alias(libs.plugins.jetbrains.compose.kotlin)
@@ -31,7 +30,7 @@ kotlin {
                 implementation(libs.jetbrains.compose.animation)
 
                 implementation(libs.easy.navigation)
-                implementation("androidx.navigation3:navigation3-runtime:1.2.0-alpha04")
+                implementation(libs.navigation3.runtime)
                 implementation(project(":sample:shared:structure:core"))
                 implementation(project(":sample:shared:structure:design:widget"))
                 implementation(project(":sample:shared:data:repository"))

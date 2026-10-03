@@ -15,7 +15,7 @@ Kotlin **2.4.20** and KSP **2.3.12** already match their latest published stable
 | `room-runtime` | `2.8.5` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/room/room-runtime/maven-metadata.xml) |
 | `room-compiler` | `2.8.5` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/room/room-compiler/maven-metadata.xml) |
 | `sqlite-bundled` | `2.7.1` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-bundled/maven-metadata.xml) |
-| `easy-navigation` | `1.1.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/pedro-bachiega/easy-navigation-core/maven-metadata.xml) |
+| `easy-navigation` | `1.2.0` | [Metadata](https://repo.maven.apache.org/maven2/io/github/pedro-bachiega/easy-navigation-core/maven-metadata.xml) |
 | `navigation3-runtime` | `1.2.0` | [Metadata](https://dl.google.com/dl/android/maven2/androidx/navigation3/navigation3-runtime/maven-metadata.xml) |
 | `navigation3-ui` | `1.2.0-alpha02` | [Metadata](https://repo.maven.apache.org/maven2/org/jetbrains/androidx/navigation3/navigation3-ui/maven-metadata.xml) |
 | `arch-storage-core` | `1.0.1` | [Metadata](https://repo.maven.apache.org/maven2/io/github/matheus-corregiari/storage-core/maven-metadata.xml) |
@@ -131,7 +131,7 @@ on JDK 21. This option is scoped to test JVMs, following the
 
 ## Showcase compatibility
 
-The showcase requires Easy Navigation 1.1.0. Its binaries call Lumber's pre-1.2
+The showcase uses Easy Navigation 1.2.0. Its published JVM binaries still call Lumber's pre-1.2
 `tag` API. Sample-only resolution in `gradle/showcase-boundaries.gradle.kts` selects
 Lumber 1.1.0 and Storage 2.0.0-rc16, whose published metadata uses that same ABI.
 Storage stable 1.0.1 uses Lumber 1.4.4 and cannot be combined with the selected
@@ -147,7 +147,7 @@ publication option. Unconfigured sample JS/Wasm source sets are no longer create
 
 CI uses `gradle/actions/setup-gradle` 6.4.0 as the single Gradle cache owner;
 `android-actions/setup-android` 4.0.4 installs the SDK and Build Tools selected by the catalog.
-Apple framework linking and simulator tests run on macOS; Windows compares all 69 Android screenshots.
+Apple framework linking and simulator tests run on macOS; Windows compares all 101 Android screenshots.
 
 The legacy Android KMP target still requires `android.builtInKotlin=false` and `android.newDsl=false`.
 Migrating to `com.android.kotlin.multiplatform.library` requires coordinating convention plugins,
@@ -164,7 +164,7 @@ native-backdrop features are enabled. See the [upstream migration guide](https:/
 Maven Central metadata was checked again for all Arch modules used here. The
 catalog already selects the latest stable releases: Lumber **1.4.4**, Storage
 core/memory/DataStore **1.0.1**, Event Observer core/state/Compose **3.0.0** and
-Arch Android **1.3.2**. Easy Navigation's latest stable release remains **1.1.0**.
+Arch Android **1.3.2**. Easy Navigation's latest stable release at that check was **1.1.0**.
 Storage metadata's `release` field points to `2.0.0-rc16`; select the highest
 stable version rather than treating that field as a stable-version guarantee.
 
@@ -172,3 +172,34 @@ The sample's scoped Lumber/Storage ABI overrides described above remain required
 with the current navigation artifact. The catalogue version and the version
 actually resolved by the Showcase must not be confused. No snapshot/nightly or
 Maven Local dependency was introduced.
+
+## Navigation update — 2026-10-03
+
+Update Easy Navigation runtime and Gradle plugin together to **1.2.0**, the latest
+published stable release. Navigation now generates directions and platform
+registries through its Kotlin compiler plugin, compatible with Kotlin **2.4.20**.
+Remove KSP from the four navigation features; retain it for Room and Ktorfit.
+Use the shared stable Navigation3 runtime **1.2.0** catalog alias in every feature.
+See the [upstream migration guide](https://github.com/Pedro-Bachiega/easy-navigation#migrating-from-ksp).
+
+The new generator resolves feature Android compile classpaths directly. Select
+`android-classes-jar` explicitly for debug/release classpaths to avoid ambiguity
+between AGP's classes, lint and manifest artifacts from project dependencies.
+Wire Compose resource generation before navigation scanning, and order source
+lint after navigation generation when both run, so Gradle tracks generated inputs.
+Enforce LF for Kotlin files in Git and EditorConfig: the 1.2.0 syntax scanner
+produced no GitHub destinations from CRLF input on Windows, then generated both
+directions and platform registries after normalizing that input to LF.
+
+The published Navigation 1.2.0 JVM bytecode still calls
+`Lumber.OakWood.tag(String): Lumber.Oak`. It does not remove the Lumber/Storage
+ABI constraint above; retain those overrides and the Splinter source compilation
+adaptation. Maven metadata was rechecked for the complete catalog: the other
+stable dependency selections remain current. Navigation3 UI remains on the
+version required by Easy Navigation's published metadata.
+
+Validation on Windows: Android release/R8 and all 14 app JVM tests passed,
+including deeplinks, back navigation and stack restoration. The complete
+build/test/coverage/lint/docs/publication gates, 101 unchanged screenshot
+comparisons, strict MkDocs and three release-note extraction tests passed.
+iOS framework linking and host execution remain in the macOS CI job.

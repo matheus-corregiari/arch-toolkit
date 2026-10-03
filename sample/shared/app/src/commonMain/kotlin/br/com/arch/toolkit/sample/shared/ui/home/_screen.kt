@@ -77,8 +77,6 @@ fun AppHome(deepLink: String? = null, onDeepLinkHandled: () -> Unit = {}) {
     ) {
         Navigation(
             modifier = Modifier,
-            initialRoute = GithubRoute,
-            directionRegistries = registries,
             controller = navigation
         )
     }

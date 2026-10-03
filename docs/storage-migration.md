@@ -25,4 +25,4 @@ See [upstream behavioral changes](https://github.com/matheus-corregiari/arch-sto
 for cancellation, caching, Compose state and asynchronous persistence corrections.
 
 The showcase currently overrides this catalog selection with Storage 2.0.0-rc16,
-because Easy Navigation 1.1.0 still calls the pre-1.2 Lumber ABI. See [compatibility details](dependencies.md#showcase-compatibility).
+because Easy Navigation 1.2.0 still calls the pre-1.2 Lumber ABI. See [compatibility details](dependencies.md#showcase-compatibility).

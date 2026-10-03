@@ -1,4 +1,5 @@
 import org.gradle.api.artifacts.ProjectDependency
+import org.gradle.api.artifacts.type.ArtifactTypeDefinition
 
 val verifyShowcaseBoundaries = tasks.register("verifyShowcaseBoundaries") {
     group = "verification"
@@ -40,16 +41,36 @@ val verifyShowcaseBoundaries = tasks.register("verifyShowcaseBoundaries") {
 }
 tasks.named("ciLint") { dependsOn(verifyShowcaseBoundaries) }
 
-// Easy Navigation 1.1.0 still calls the Lumber Oak-returning tag ABI (changed in 1.2).
-// Restrict this compatibility pin to sample configurations; library releases keep their version.
 subprojects {
+    if (path.startsWith(":sample:shared:features:")) {
+        configurations.matching {
+            it.name == "debugCompileClasspath" || it.name == "releaseCompileClasspath"
+        }.configureEach {
+            // Navigation's generator reads this classpath directly; select classes, not AGP lint/manifests.
+            attributes.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, "android-classes-jar")
+        }
+        val navigationGeneration = tasks.matching { it.name == "generateEasyNavigation" }
+        navigationGeneration.configureEach {
+            // These generated Kotlin roots are inputs to Navigation's source scanner.
+            dependsOn(tasks.matching {
+                it.name == "generateComposeResClass" || it.name.startsWith("generateResourceAccessors") ||
+                    it.name.startsWith("generateExpectResourceCollectors") ||
+                    it.name.startsWith("generateActualResourceCollectors")
+            })
+        }
+        tasks.matching { it.name.startsWith("runKtlint") }.configureEach {
+            mustRunAfter(navigationGeneration)
+        }
+    }
+    // Navigation 1.2.0 still calls Lumber's Oak-returning tag ABI (changed in Lumber 1.2).
+    // Scope the overrides to samples; published library dependencies retain their catalog versions.
     if (path.startsWith(":sample:")) {
         configurations.configureEach {
             resolutionStrategy.eachDependency {
                 if (requested.group == "io.github.matheus-corregiari" &&
                     requested.name.startsWith("arch-lumber")) {
                     useVersion("1.1.0")
-                    because("Easy Navigation 1.1.0 requires the Lumber tag ABI before 1.2")
+                    because("Easy Navigation 1.2.0 requires the Lumber tag ABI before 1.2")
                 }
                 if (requested.group == "io.github.matheus-corregiari" &&
                     requested.name.startsWith("storage-")) {

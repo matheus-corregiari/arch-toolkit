@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.jetbrains.compose.compiler)
     alias(libs.plugins.jetbrains.compose.kotlin)
     alias(libs.plugins.jetbrains.serialization)
-    alias(libs.plugins.google.ksp)
     alias(libs.plugins.easy.navigation)
 }
 
@@ -23,7 +22,7 @@ kotlin {
                 implementation(libs.arch.lumber)
                 implementation(libs.androidx.lifecycle.runtime)
                 implementation(libs.easy.navigation)
-                implementation("androidx.navigation3:navigation3-runtime:1.2.0-alpha04")
+                implementation(libs.navigation3.runtime)
                 implementation(libs.jetbrains.serialization)
                 implementation(libs.di.koin.composeViewModel)
                 implementation(libs.jetbrains.compose.runtime)
@@ -97,7 +96,7 @@ val generateDemoSnippets by tasks.registering {
 kotlin.sourceSets.named("commonMain") { kotlin.srcDir(snippetsDirectory) }
 tasks.configureEach {
     if (name.startsWith("compile") ||
-        name.startsWith("ksp") ||
+        name == "generateEasyNavigation" ||
         name.contains("ktlint", ignoreCase = true) ||
         name.startsWith("detekt")
     ) {
