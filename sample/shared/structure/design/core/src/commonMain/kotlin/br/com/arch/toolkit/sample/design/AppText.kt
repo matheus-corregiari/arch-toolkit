@@ -112,6 +112,21 @@ enum class AppText(val english: String, val portuguese: String) {
         "Model asynchronous loading, data and failure states.",
         "Modele estados assíncronos de carregamento, dados e falhas."
     ),
+    SPLINTER_ONESHOT(
+        "OneShot emits loading snapshots, then success or failure. Run again to retry. Cancel returns to Ready.",
+        "OneShot emite snapshots de carregamento e termina com sucesso ou falha. Execute de novo para tentar novamente. Cancelar volta a Pronto."
+    ),
+    SPLINTER_POLLING(
+        "Polling repeats a local task until step 3. Cancel stops the loop; run again to restart.",
+        "Polling repete uma tarefa local até a etapa 3. Cancelar interrompe o loop; execute de novo para reiniciar."
+    ),
+    RUN_TASK("Run task", "Executar tarefa"),
+    SIMULATE_FAILURE("Simulate failure", "Simular falha"),
+    START_POLLING("Start polling", "Iniciar polling"),
+    CANCEL_TASK("Cancel", "Cancelar"),
+    READY("Ready", "Pronto"),
+    SUCCEEDED("Success", "Sucesso"),
+    FAILED("Failure", "Falha"),
     STORAGE_ERROR("Unable to access saved data.", "Não foi possível acessar os dados salvos."),
     RECENT("Recently viewed", "Vistos recentemente"),
     THEME_DESCRIPTION(

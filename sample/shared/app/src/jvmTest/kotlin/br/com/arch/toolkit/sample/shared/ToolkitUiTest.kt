@@ -8,11 +8,14 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.test.runComposeUiTest
@@ -30,6 +33,33 @@ import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class ToolkitUiTest {
+    @Test
+    fun splinterControlsRunTheLocalTasks() = runComposeUiTest {
+        val repository = ToolkitDemoRepository(MemoryStoreProvider(database = mutableMapOf()))
+        val model = ToolkitViewModel(repository)
+        try {
+            setContent {
+                CompositionLocalProvider(LocalAppLanguage provides AppLanguage.ENGLISH) {
+                    AppTheme { Surface { ToolkitScreen(model) } }
+                }
+            }
+            onNode(hasScrollAction()).performScrollToNode(hasText("Run task"))
+            onNodeWithText("Run task").performClick()
+            waitUntil(timeoutMillis = 5_000) { model.splinter.request.value.isSuccess }
+            onNodeWithText("Success\nArch Toolkit").performScrollTo().assertIsDisplayed()
+            onNodeWithText("Simulate failure").performScrollTo().performClick()
+            waitUntil(timeoutMillis = 5_000) { model.splinter.request.value.isError }
+            onNodeWithText("Failure").performScrollTo().assertIsDisplayed()
+            onNode(hasScrollAction()).performScrollToNode(hasText("Start polling"))
+            onNodeWithText("Start polling").performClick()
+            waitUntil(timeoutMillis = 5_000) { model.splinter.polling.value.isSuccess }
+            onNodeWithText("Success\n3 / 3").performScrollTo().assertIsDisplayed()
+        } finally {
+            model.splinter.close()
+            repository.close()
+        }
+    }
+
     @Test
     fun logClearAndStorageControlsAreUsable() = runComposeUiTest {
         val repository = ToolkitDemoRepository(MemoryStoreProvider(database = mutableMapOf()))
@@ -59,6 +89,7 @@ class ToolkitUiTest {
             val bitmap = onRoot().captureToImage().asSkiaBitmap()
             output.writeBytes(requireNotNull(Image.makeFromBitmap(bitmap).encodeToData()).bytes)
         } finally {
+            model.splinter.close()
             repository.close()
         }
     }

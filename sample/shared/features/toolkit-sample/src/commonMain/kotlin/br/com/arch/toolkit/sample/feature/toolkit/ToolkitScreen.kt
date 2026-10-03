@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
+import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.sample.design.AppText
 import br.com.arch.toolkit.sample.design.AppTheme
 import br.com.arch.toolkit.sample.design.component.AppButton
@@ -33,6 +34,7 @@ import br.com.arch.toolkit.sample.design.component.AppTextField
 import br.com.arch.toolkit.sample.design.component.GithubMark
 import br.com.arch.toolkit.sample.design.component.containerRadiusXs
 import br.com.arch.toolkit.sample.design.text
+import br.com.arch.toolkit.util.dataResultNone
 import com.pedrobneto.easy.navigation.core.annotation.Deeplink
 import com.pedrobneto.easy.navigation.core.annotation.Route
 import com.pedrobneto.easy.navigation.core.annotation.Scope
@@ -56,15 +58,23 @@ fun ToolkitDestination() {
 fun ToolkitScreen(model: ToolkitViewModel) {
     val logs by model.logs.collectAsState()
     val state by model.storage.collectAsState()
+    val request by model.splinter.request.collectAsState()
+    val polling by model.splinter.polling.collectAsState()
     ToolkitContent(
         logs = logs,
         state = state,
+        request = request,
+        polling = polling,
         actions = ToolkitActions(
             model::writeLog,
             model::clearLogs,
             model::save,
             model::read,
-            model::delete
+            model::delete,
+            model.splinter::load,
+            model.splinter::poll,
+            model.splinter::cancelRequest,
+            model.splinter::cancelPolling
         )
     )
 }
@@ -74,7 +84,11 @@ data class ToolkitActions(
     val clearLogs: () -> Unit = {},
     val save: (String, String) -> Unit = { _, _ -> },
     val read: (String) -> Unit = {},
-    val delete: (String) -> Unit = {}
+    val delete: (String) -> Unit = {},
+    val load: (Boolean) -> Unit = {},
+    val poll: () -> Unit = {},
+    val cancelRequest: () -> Unit = {},
+    val cancelPolling: () -> Unit = {}
 )
 
 @Composable
@@ -83,12 +97,16 @@ fun ToolkitContent(
     state: StorageDemoState,
     gridState: LazyGridState = rememberLazyGridState(),
     actions: ToolkitActions = ToolkitActions(),
-    onOpenRepository: (String) -> Unit = LocalUriHandler.current::openUri
+    onOpenRepository: (String) -> Unit = LocalUriHandler.current::openUri,
+    request: DataResult<String> = dataResultNone(),
+    polling: DataResult<String> = dataResultNone()
 ) {
     AppPage(text(AppText.TOOLKIT), description = text(AppText.TOOLKIT_INTRO)) {
         AppSectionGrid(state = gridState) {
             item(key = "lumber") { LumberDemo(logs, actions) }
             item(key = "storage") { StorageDemo(state, actions) }
+            item(key = "splinter-request") { SplinterRequestDemo(request, actions) }
+            item(key = "splinter-polling") { SplinterPollingDemo(polling, actions) }
             ecosystemCatalogue(onOpenRepository)
         }
     }
@@ -161,6 +179,8 @@ fun DemoCode(source: DemoSource, initiallyExpanded: Boolean = false) {
     val code = when (source) {
         DemoSource.Lumber -> DemoSnippets.lumber
         DemoSource.Storage -> DemoSnippets.storage
+        DemoSource.OneShot -> DemoSnippets.oneShot
+        DemoSource.Polling -> DemoSnippets.polling
     }
     AppDisclosure(text(AppText.SHOW_CODE), text(AppText.HIDE_CODE), initiallyExpanded) {
         CodeBlock(text(AppText.SNIPPET), code)
@@ -168,7 +188,7 @@ fun DemoCode(source: DemoSource, initiallyExpanded: Boolean = false) {
 }
 
 @Composable
-private fun CodeBlock(title: String, code: String) {
+internal fun CodeBlock(title: String, code: String) {
     Text(title, style = AppTheme.textStyle.paragraphCaptionS, color = AppTheme.color.textSubtitle)
     Text(
         code,
@@ -269,4 +289,4 @@ private val ecosystemItems = listOf(
     )
 )
 
-enum class DemoSource { Lumber, Storage }
+enum class DemoSource { Lumber, Storage, OneShot, Polling }

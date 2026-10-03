@@ -16,6 +16,7 @@ data class StorageDemoState(
 )
 
 class ToolkitViewModel(private val repository: ToolkitDemoRepository) : ViewModel() {
+    val splinter = SplinterDemo(viewModelScope)
     val logs = repository.logs
     private val mutableStorage = MutableStateFlow(StorageDemoState())
     val storage = mutableStorage.asStateFlow()
@@ -24,6 +25,7 @@ class ToolkitViewModel(private val repository: ToolkitDemoRepository) : ViewMode
         repository.start()
     }
     override fun onCleared() {
+        splinter.close()
         repository.close()
     }
     fun writeLog() = repository.writeLog()

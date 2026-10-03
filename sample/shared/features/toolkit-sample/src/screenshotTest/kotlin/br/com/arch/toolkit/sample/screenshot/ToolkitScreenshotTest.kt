@@ -248,7 +248,7 @@ fun ToolkitCatalogue() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 2)
+            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 4)
         )
     }
 }
