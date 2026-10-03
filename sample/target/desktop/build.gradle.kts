@@ -12,16 +12,13 @@ dependencies {
 
     // Arch Toolkit Dependencies
     implementation(libs.arch.lumber)
-    implementation(project(":toolkit:multi:splinter"))
-    implementation(libs.arch.event.observer)
-    implementation(libs.arch.event.observer.compose)
 
     // Jetbrains Compose Tools
-    implementation(compose.runtime)
+    implementation(libs.jetbrains.compose.runtime)
     implementation(compose.desktop.currentOs)
-    implementation(compose.desktop.common)
-    implementation(compose.components.resources)
-    implementation(compose.materialIconsExtended)
+    implementation(libs.jetbrains.compose.desktop)
+    implementation(libs.jetbrains.compose.resources)
+    implementation(libs.jetbrains.compose.material.icons)
 
     // Other Dependencies
     implementation(libs.di.koin.core)
@@ -35,7 +32,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Exe)
-            packageName = "Github Sample"
+            packageName = "Arch Toolkit Showcase"
             packageVersion = "1.0.0"
         }
     }

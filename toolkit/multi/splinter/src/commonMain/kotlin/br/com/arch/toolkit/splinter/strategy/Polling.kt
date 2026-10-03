@@ -50,10 +50,7 @@ class Polling<T> private constructor(
         /**
          * Start the request loop!
          */
-        while (shouldStop.not() &&
-            currentCoroutineContext().isActive &&
-            holder.get().isSuccess.not()
-        ) {
+        while (shouldStop.not() && currentCoroutineContext().isActive) {
             /**
              * Verify loop limit before start loop!
              */
@@ -73,7 +70,8 @@ class Polling<T> private constructor(
 
             val result = measureTimeResult(
                 max = config.maxExecutionTime,
-                min = { config.minExecutionTime },
+                minSuccess = config.minExecutionTime,
+                minError = config.minExecutionTime,
                 log = { logChannel.info("[Polling] $it") }
             ) {
                 loopCounter++
@@ -156,7 +154,7 @@ class Polling<T> private constructor(
                 shouldStop = true
             }
 
-            holder.get().isSuccess.not() -> {
+            else -> {
                 val data =
                     holder.data ?: config.fallback?.invokeCatching(error)?.getOrNull()
                 val formattedError = config.mapError?.invoke(error) ?: error
@@ -167,11 +165,6 @@ class Polling<T> private constructor(
                     logChannel.info("Emit still loading!")
                     dataChannel.send(dataResultLoading(data, formattedError))
                 }
-            }
-
-            else -> {
-                logChannel.info("Something really awkward is going on, prey!")
-                shouldStop = true
             }
         }
         return shouldStop

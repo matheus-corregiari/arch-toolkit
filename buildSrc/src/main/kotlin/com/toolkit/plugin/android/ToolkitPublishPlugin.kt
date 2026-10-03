@@ -39,7 +39,7 @@ internal class ToolkitPublishPlugin : Plugin<Project> {
 
             publications { container ->
                 container.withType(MavenPublication::class.java) { pub ->
-                    pub.groupId = target.properties["GROUP"] as String
+                    pub.groupId = target.providers.gradleProperty("GROUP").get()
                     pub.artifactId = "${target.name}"
                     pub.version = target.versionName
                     pub.pom { target.configurePom(it, false) }

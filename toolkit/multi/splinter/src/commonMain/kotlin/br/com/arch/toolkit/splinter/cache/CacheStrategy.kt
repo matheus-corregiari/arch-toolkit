@@ -1,5 +1,6 @@
 package br.com.arch.toolkit.splinter.cache
 
+import br.com.arch.toolkit.splinter.extension.catchingCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -38,7 +39,10 @@ abstract class CacheStrategy<T>(val id: String) {
         _flow.emit(data)
     }
 
-    internal suspend fun howToProceed(remoteVersion: DataVersion?, local: T?) = runCatching {
+    internal suspend fun howToProceed(
+        remoteVersion: DataVersion?,
+        local: T?
+    ) = catchingCancellable {
         when {
             //
             remoteVersion == null -> {

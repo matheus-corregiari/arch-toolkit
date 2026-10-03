@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       release_branch:
-        description: Release branch name, such as release/2.0.0-rc18
+        description: Release branch name, such as release/2.0.0-rc19
         required: true
         type: string
       commit_sha:
@@ -69,8 +69,16 @@ jobs:
           sign_password: ${{ secrets.SIGN_PASSWORD }}
           sign_filename: ${{ secrets.SIGN_FILENAME }}
 
-      - name: Build publishable modules
-        run: ./gradlew ciBuild
+      - name: Build publishable modules and generate coverage
+        run: ./gradlew ciBuild ciCoverage
+
+      - name: Report coverage to Codecov
+        uses: codecov/codecov-action@v7.1.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/kover/report.xml
+          disable_search: true
+          fail_ci_if_error: false
 
       - name: Publish modules
         run: ./gradlew ciPublishMavenCentral
@@ -84,10 +92,25 @@ jobs:
           fi
           git push origin "${{ steps.version.outputs.version }}"
 
+      - name: Select curated release notes
+        id: notes
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          notes="$RUNNER_TEMP/release-notes.md"
+          : > "$notes"
+          if [ -f .github/scripts/extract-release-notes.py ]; then
+            python3 .github/scripts/extract-release-notes.py "$RELEASE_VERSION" docs/CHANGELOG.md "$notes"
+          fi
+          if [ -s "$notes" ]; then
+            echo "path=$notes" >> "$GITHUB_OUTPUT"
+          fi
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3.0.3
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: Arch Toolkit ${{ steps.version.outputs.version }}
           prerelease: ${{ steps.version.outputs.prerelease }}
+          body_path: ${{ steps.notes.outputs.path }}
           generate_release_notes: true

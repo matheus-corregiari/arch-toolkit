@@ -2,13 +2,13 @@
 
 pluginManagement {
     apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
-    val repositoryList: RepositoryHandler.() -> Unit by extra
+    val repositoryList = extra["repositoryList"] as RepositoryHandler.() -> Unit
     repositories(repositoryList)
 }
 
 dependencyResolutionManagement {
     apply(from = "$rootDir/buildSrc/repositories.gradle.kts")
-    val repositoryList: RepositoryHandler.() -> Unit by extra
+    val repositoryList = extra["repositoryList"] as RepositoryHandler.() -> Unit
     repositories(repositoryList)
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
 }
@@ -26,11 +26,18 @@ val includeSamples: Boolean = isIdeBuild || providers.gradleProperty("includeSam
 if (includeSamples) {
     // Shared Modules with KMP Code to use in Targets
     include(":sample:shared:app")
-    include(":sample:shared:feature:github-list")
-    include(":sample:shared:feature:settings")
-    include(":sample:shared:structure:repository")
-    include(":sample:shared:structure:designSystem")
+    include(":sample:shared:features:github-sample")
+    include(":sample:shared:features:settings")
+    include(":sample:shared:features:toolkit-sample")
+    include(":sample:shared:features:design-sample")
+    include(":sample:shared:data:repository")
+    include(":sample:shared:structure:design:widget")
+    include(":sample:shared:structure:design:core")
     include(":sample:shared:structure:core")
+
+    include(":sample:shared:data:source:remote")
+    include(":sample:shared:data:source:local")
+    include(":sample:shared:structure:http")
 
     // Targets
     include(":sample:target:android")
@@ -39,8 +46,5 @@ if (includeSamples) {
 }
 
 plugins {
-    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.9"
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-
-kover { enableCoverage() }

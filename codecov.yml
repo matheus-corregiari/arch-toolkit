@@ -1,0 +1,7 @@
+# Exclusions live in Gradle and are already applied to the sole uploaded XML.
+# Keep Gradle verification as the coverage gate; do not duplicate its thresholds here.
+coverage:
+  status:
+    project: false
+    patch: false
+comment: false

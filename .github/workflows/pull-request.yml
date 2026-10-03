@@ -29,7 +29,48 @@ jobs:
           python-version: '3.12'
       - name: Install documentation dependencies
         run: python -m pip install -r .github/requirements-docs.txt
+      - name: Test release notes extraction
+        run: python -m unittest discover -s .github/scripts -p 'test_release_notes.py'
+      - name: Build iOS showcase host
+        if: runner.os == 'macOS'
+        run: |
+          brew install xcodegen
+          xcodegen generate --spec sample/target/ios/project.yml
+          xcodebuild -project sample/target/ios/Showcase.xcodeproj -scheme Showcase -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
       - name: Build, test and lint all configured targets and samples
-        run: ./gradlew ciBuild ciTest ciCoverage ciLint ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc18 --continue --no-daemon
+        run: ./gradlew ciBuild ciTest ciCoverage ciLint ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc19 --continue --no-daemon
+      - name: Save showcase test reports
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: showcase-tests-${{ matrix.os }}
+          path: sample/shared/**/build/reports/tests/
+          if-no-files-found: warn
       - name: Verify documentation
         run: python -m mkdocs build --strict
+      - name: Save merged coverage reports
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: coverage-${{ matrix.os }}
+          path: build/reports/kover/
+          if-no-files-found: error
+
+  screenshots:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup-gradle
+      - name: Compare Android Compose screenshots
+        run: ./gradlew.bat :sample:target:android:validateDebugScreenshotTest '-PincludeSamples' '-PreleaseVersion=2.0.0-rc19' --max-workers=4 --no-daemon
+      - name: Save screenshot reports and diffs
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: showcase-screenshots
+          path: |
+            sample/target/android/build/reports/screenshotTest/
+            sample/target/android/build/outputs/screenshotTest-results/
+            sample/target/android/src/screenshotTestDebug/reference/
+          if-no-files-found: warn

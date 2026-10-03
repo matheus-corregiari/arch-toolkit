@@ -16,18 +16,18 @@ internal fun RepositoryHandler.createLocalPathRepository(project: Project) = mav
 internal fun Project.configurePom(pom: MavenPom, addDependencies: Boolean) {
     // Main Configuration
     if (pom.name.orNull.isNullOrBlank() && hasProperty("NAME")) {
-        pom.name.set(properties["NAME"] as String)
+        pom.name.set(providers.gradleProperty("NAME"))
     }
     if (pom.description.orNull.isNullOrBlank() && hasProperty("DESCRIPTION")) {
-        pom.description.set(properties["DESCRIPTION"] as String)
+        pom.description.set(providers.gradleProperty("DESCRIPTION"))
     }
     if (pom.url.orNull.isNullOrBlank() && hasProperty("REPO_URL")) {
-        pom.url.set(properties["REPO_URL"] as String)
+        pom.url.set(providers.gradleProperty("REPO_URL"))
     }
 
     // SCM
     pom.scm {
-        it.url.set(properties["REPO_GIT_URL"] as String)
+        it.url.set(providers.gradleProperty("REPO_GIT_URL"))
     }
 
     // Developer Configuration
@@ -37,16 +37,16 @@ internal fun Project.configurePom(pom: MavenPom, addDependencies: Boolean) {
             dev.name.set("Melete")
             dev.email.set("melete@notValidEmail.com")
             dev.organization.set("Wonderland")
-            dev.url.set(properties["DEV_URL"] as String)
+            dev.url.set(providers.gradleProperty("DEV_URL"))
         }
     }
 
     // License Configuration
     pom.licenses { licenses ->
         licenses.license { license ->
-            license.name.set(properties["LICENCE_NAME"] as String)
-            license.url.set(properties["LICENCE_URL"] as String)
-            license.distribution.set(properties["LICENCE_DIST"] as String)
+            license.name.set(providers.gradleProperty("LICENCE_NAME"))
+            license.url.set(providers.gradleProperty("LICENCE_URL"))
+            license.distribution.set(providers.gradleProperty("LICENCE_DIST"))
         }
     }
 

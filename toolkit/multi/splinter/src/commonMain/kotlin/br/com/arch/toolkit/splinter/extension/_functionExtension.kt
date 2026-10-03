@@ -1,5 +1,7 @@
 package br.com.arch.toolkit.splinter.extension
 
+import kotlinx.coroutines.CancellationException
+
 /**
  * Calls invoke method inside a runCatching block
  *
@@ -19,14 +21,15 @@ fun <A1, R> ((A1) -> R).invokeCatching(data: A1) = runCatching { invoke(data) }
  *
  * @return kotlin.Result
  */
-suspend fun <R> (suspend () -> R).invokeCatching() = runCatching { invoke() }
+suspend fun <R> (suspend () -> R).invokeCatching() = catchingCancellable { invoke() }
 
 /**
  * Calls invoke method inside a runCatching block
  *
  * @return kotlin.Result
  */
-suspend fun <A1, R> (suspend (A1) -> R).invokeCatching(data: A1) = runCatching { invoke(data) }
+suspend fun <A1, R> (suspend (A1) -> R).invokeCatching(data: A1) =
+    catchingCancellable { invoke(data) }
 
 /**
  * Calls invoke method inside a runCatching block
@@ -36,7 +39,7 @@ suspend fun <A1, R> (suspend (A1) -> R).invokeCatching(data: A1) = runCatching {
 suspend fun <A1, A2, R> (suspend (A1, A2) -> R).invokeCatching(
     data1: A1,
     data2: A2
-) = runCatching { invoke(data1, data2) }
+) = catchingCancellable { invoke(data1, data2) }
 
 /**
  * Calls invoke method inside a runCatching block
@@ -47,7 +50,7 @@ suspend fun <A1, A2, A3, R> (suspend (A1, A2, A3) -> R).invokeCatching(
     data1: A1,
     data2: A2,
     data3: A3
-) = runCatching { invoke(data1, data2, data3) }
+) = catchingCancellable { invoke(data1, data2, data3) }
 
 /**
  * Calls invoke method inside a runCatching block
@@ -59,4 +62,8 @@ suspend fun <A1, A2, A3, A4, R> (suspend (A1, A2, A3, A4) -> R).invokeCatching(
     data2: A2,
     data3: A3,
     data4: A4
-) = runCatching { invoke(data1, data2, data3, data4) }
+) = catchingCancellable { invoke(data1, data2, data3, data4) }
+
+/** Captures request failures while preserving structured coroutine cancellation. */
+internal inline fun <T> catchingCancellable(block: () -> T): Result<T> =
+    runCatching(block).onFailure { if (it is CancellationException) throw it }

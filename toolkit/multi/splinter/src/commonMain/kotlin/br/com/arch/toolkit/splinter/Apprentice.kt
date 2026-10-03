@@ -3,12 +3,14 @@
 package br.com.arch.toolkit.splinter
 
 import br.com.arch.toolkit.result.DataResult
+import br.com.arch.toolkit.splinter.extension.catchingCancellable
 import br.com.arch.toolkit.splinter.extension.error
 import br.com.arch.toolkit.splinter.extension.info
 import br.com.arch.toolkit.splinter.extension.lazyJob
 import br.com.arch.toolkit.splinter.extension.synchronized
 import br.com.arch.toolkit.splinter.strategy.Strategy
 import br.com.arch.toolkit.util.dataResultError
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -34,7 +36,7 @@ internal class Apprentice<T>(
         onCreate = { logChannel.info("[Apprentice $id] Created") },
         job = {
             logChannel.info("[Apprentice $id] Started")
-            runCatching {
+            catchingCancellable {
                 strategy.execute(holder, dataChannel, logChannel)
             }.onSuccess {
                 logChannel.info("[Apprentice $id] Success")
@@ -45,8 +47,8 @@ internal class Apprentice<T>(
         },
         onComplete = { error ->
             logChannel.info("[Apprentice $id] Closed")
-            dataChannel.close(error)
-            logChannel.close(error)
+            dataChannel.close(error.takeUnless { it is CancellationException })
+            logChannel.close(error.takeUnless { it is CancellationException })
         }
     )
 
@@ -69,8 +71,8 @@ internal class Apprentice<T>(
 
     suspend fun await() {
         if (isRunning.not()) return
-        runCatching { completableDeferred.join() }
-        runCatching { job.join() }
+        completableDeferred.join()
+        job.join()
     }
 
     override fun toString() = "[Apprentice $id] Running: $isRunning | Closing: $isClosing"

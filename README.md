@@ -10,7 +10,7 @@ Kotlin Multiplatform utilities for asynchronous loading with Splinter.
 
 | Module | Artifact | Status |
 | --- | --- | --- |
-| Splinter | `io.github.matheus-corregiari:splinter` | `2.0.0-rc18` candidate |
+| Splinter | `io.github.matheus-corregiari:splinter` | `2.0.0-rc19` candidate |
 | Test helpers | Internal module | Not published |
 
 State management moved to [Arch Event Observer](https://github.com/matheus-corregiari/arch-event-observer)
@@ -24,8 +24,8 @@ Use Maven Central. This branch prepares the following Splinter candidate:
 
 ```kotlin
 commonMain.dependencies {
-    implementation("io.github.matheus-corregiari:splinter:2.0.0-rc18")
-    implementation("io.github.matheus-corregiari:event-observer-state:2.3.0")
+    implementation("io.github.matheus-corregiari:splinter:2.0.0-rc19")
+    implementation("io.github.matheus-corregiari:event-observer-state:3.0.0")
 }
 ```
 
@@ -43,10 +43,22 @@ Use JDK 21 and the Gradle wrapper. See the [dependency inventory](docs/dependenc
 
 ```shell
 ./gradlew ciLint ciBuild ciTest ciCoverage -PincludeSamples
-./gradlew ciSample ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc18
+./gradlew ciSample ciDocs ciPublicationManifest -PincludeSamples -PreleaseVersion=2.0.0-rc19
 python -m pip install -r .github/requirements-docs.txt
 python -m mkdocs build --strict
 ```
 
 See the [Splinter guide](toolkit/multi/splinter/README.md), [changelog](docs/CHANGELOG.md),
 and [contribution guide](docs/wiki/contribution-guide.md).
+
+## Next release: 2.0.0-rc19
+
+See [release notes](docs/CHANGELOG.md#200-rc19), [dependency versions](docs/dependencies.md) and
+[coverage configuration](docs/ecosystem/ci-release.md#coverage-and-codecov). This release is a candidate until tagged and published.
+
+## Showcase
+
+The [Arch Toolkit Showcase](docs/showcase.md) demonstrates GitHub browsing, Lumber,
+Storage, shared design and persistent language/theme settings. Run Desktop with
+`./gradlew :sample:target:desktop:run -PincludeSamples`. Android and iOS share the
+feature code; web remains pending.

@@ -23,7 +23,7 @@ internal class ToolkitTestPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.plugins.apply("jacoco")
 
-        // Kover configuration
+        // JaCoCo tool version
         with(target.jacoco) { toolVersion = target.libs.version("jacoco") }
 
         // Regular Test configuration
@@ -68,6 +68,8 @@ internal class ToolkitTestPlugin : Plugin<Project> {
         }
 
         testOptions {
+            // Robolectric 4.17 bootstraps Android through JDK internals on Java 17+.
+            unitTests.all { it.jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED") }
             unitTests.isIncludeAndroidResources = true
             unitTests.isReturnDefaultValues = true
             animationsDisabled = true

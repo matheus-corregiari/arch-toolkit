@@ -6,6 +6,7 @@ import br.com.arch.toolkit.result.DataResult
 import br.com.arch.toolkit.splinter.ResponseDataHolder
 import br.com.arch.toolkit.splinter.Splinter
 import br.com.arch.toolkit.splinter.cache.CacheStrategy
+import br.com.arch.toolkit.splinter.extension.catchingCancellable
 import br.com.arch.toolkit.splinter.extension.error
 import br.com.arch.toolkit.splinter.extension.info
 import br.com.arch.toolkit.splinter.extension.invokeCatching
@@ -42,7 +43,8 @@ class OneShot<T> private constructor(
 
         measureTimeResult(
             max = config.maxDuration,
-            min = { if (it.isSuccess) config.minDurationOnSuccess else config.minDurationOnError },
+            minSuccess = config.minDurationOnSuccess,
+            minError = config.minDurationOnError,
             log = { logChannel.info("[OneShot] $it") }
         ) {
             // Setup Cache config
@@ -81,7 +83,11 @@ class OneShot<T> private constructor(
                 ?.onFailure { logChannel.error("[OneShot] After - Error!", it) }
 
             // Save Cache
-            remoteVersion?.runCatching { config.cacheStrategy?.update(this, data) }
+            remoteVersion?.let { version ->
+                catchingCancellable {
+                    config.cacheStrategy?.update(version, data)
+                }
+            }
                 ?.onSuccess { logChannel.info("[OneShot] Save - Success!") }
                 ?.onFailure { logChannel.error("[OneShot] Save - Error!", it) }
 
@@ -186,6 +192,9 @@ class OneShot<T> private constructor(
 
             fun afterRequest(func: suspend (T) -> Unit) = apply { this.afterRequest = func }
 
+            /** Minimum visible execution time, useful to avoid flickering loading indicators.
+             * Defaults: 200ms on success and zero on failure. Waiting remains cancellable.
+             */
             fun minDuration(duration: Duration) = minDuration(duration, duration)
 
             fun minDuration(onSuccess: Duration, onError: Duration) = apply {

@@ -1,10 +1,20 @@
 plugins {
     id("toolkit-android-sample")
+    alias(libs.plugins.compose.screenshot)
     alias(libs.plugins.jetbrains.compose.compiler)
     alias(libs.plugins.jetbrains.compose.kotlin)
 }
 
 android {
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+    // KMP features own the preview tests; this Android host supplies Layoutlib.
+    sourceSets.configureEach {
+        if (name != "screenshotTest") return@configureEach
+        listOf("github-sample", "settings", "toolkit-sample", "design-sample").forEach { feature ->
+            java.srcDir("../../shared/features/$feature/src/screenshotTest/kotlin")
+        }
+        java.srcDir("../../shared/app/src/screenshotTest/kotlin")
+    }
     namespace = "br.com.arch.toolkit.sample.github.android"
     defaultConfig {
         applicationId = "br.com.arch.toolkit.sample.github.android"
@@ -14,13 +24,25 @@ android {
 }
 
 dependencies {
+    "screenshotTestImplementation"(libs.compose.screenshot.validation)
+    "screenshotTestImplementation"(libs.jetbrains.compose.ui.tooling)
+    "screenshotTestImplementation"(libs.jetbrains.compose.ui.tooling.preview)
+    "screenshotTestImplementation"(libs.jetbrains.compose.foundation)
+    "screenshotTestImplementation"(libs.jetbrains.datetime)
+    "screenshotTestImplementation"(libs.easy.navigation)
+    "screenshotTestImplementation"(project(":sample:shared:data:repository"))
+    listOf("github-sample", "settings", "toolkit-sample", "design-sample").forEach { feature ->
+        "screenshotTestImplementation"(project(":sample:shared:features:$feature"))
+    }
+
+    implementation(libs.arch.lumber)
+
     // Arch Toolkit Dependencies
     implementation(project(":sample:shared:app"))
-    implementation(project(":sample:shared:structure:repository"))
 
     // Jetbrains Compose Tools
-    implementation(compose.runtime)
-    implementation(compose.material3)
+    implementation(libs.jetbrains.compose.runtime)
+    implementation(libs.jetbrains.compose.material3)
 
     // Other Dependencies
     implementation(libs.google.material)

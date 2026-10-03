@@ -1,6 +1,7 @@
 root = true
 
 [*.{kt,kts}]
+end_of_line = lf
 ij_kotlin_name_count_to_use_star_import = 999
 ij_kotlin_name_count_to_use_star_import_for_members = 999
 insert_final_newline = true

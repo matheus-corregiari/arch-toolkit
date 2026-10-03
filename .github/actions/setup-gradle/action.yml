@@ -4,33 +4,33 @@ runs:
   using: "composite"
   steps:
 
-    # Setup JDK 17 to build properly
     - name: set up JDK 21
-      uses: actions/setup-java@v6.0.0
+      uses: actions/setup-java@v6.0.1
       with:
         java-version: 21
         distribution: temurin
-        cache: gradle
 
     # Setup Gradle because without it, nothing happens
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6.3.0
-
-    # Build cache (incremental outputs)
-    - name: Cache Gradle build-cache
-      uses: actions/cache@v6.1.0
+      uses: gradle/actions/setup-gradle@v6.4.0
       with:
-        path: ~/.gradle/build-cache-1
-        key: ${{ runner.os }}-gradle-buildcache-${{ github.sha }}
-        restore-keys: ${{ runner.os }}-gradle-buildcache-
+        cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
 
-    # Kotlin compiler
-    - name: Cache Kotlin compiler
-      uses: actions/cache@v6.1.0
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v4.0.4
       with:
-        path: ~/.gradle/kotlin
-        key: ${{ runner.os }}-gradle-kotlin-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle-kotlin-
+        packages: platform-tools
+
+    - name: Install configured Android platform and Build Tools
+      shell: bash
+      run: |
+        compile_sdk=$(sed -n 's/^build-sdk-compile = "\(.*\)"/\1/p' gradle/libs.versions.toml)
+        build_tools=$(sed -n 's/^build-tools = "\(.*\)"/\1/p' gradle/libs.versions.toml)
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          sdkmanager.bat "platforms;android-$compile_sdk" "build-tools;$build_tools"
+        else
+          sdkmanager "platforms;android-$compile_sdk" "build-tools;$build_tools"
+        fi
 
     # Cache Konan (Kotlin/Native)
     - name: Cache Konan

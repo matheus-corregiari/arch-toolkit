@@ -30,7 +30,12 @@ internal fun Project.setupAndroidApplicationModule() = with(androidApplication) 
 }
 
 private fun ApplicationExtension.setupVersion(libraries: VersionCatalog) {
-    compileSdk = libraries.version("build-sdk-compile").toInt()
+    val sdk = libraries.version("build-sdk-compile").split('.')
+    compileSdk {
+        version = release(sdk[0].toInt()) {
+            minorApiLevel = sdk.getOrElse(1) { "0" }.toInt()
+        }
+    }
     buildToolsVersion = libraries.version("build-tools")
 
     defaultConfig {
