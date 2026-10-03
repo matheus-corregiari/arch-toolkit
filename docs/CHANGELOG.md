@@ -4,9 +4,23 @@
 
 Showcase and maintenance changes based on tag `2.0.0-rc18`.
 
+### Splinter
+
+- Reactivate the two OneShot tests with semantic state assertions and virtual time;
+  remove stale log-format expectations and global test logger/dispatcher mutation.
+- Propagate cancellation from suspend callbacks, cache validation/update, requests and
+  await; preserve request timeout failures and ordinary best-effort callback errors.
+- Use cancellable coroutine deadlines for minimum execution duration; retain the
+  200 ms success default and avoid extra waiting after a longer virtual-time request.
+- Allow polling to execute again after an earlier success, with overlap-policy regressions.
+- Add optional bounded data/log history configuration, preserving 500/500/50 defaults
+  and the current result; skip creating a Lumber logger when external logging is disabled.
+- Add executable OneShot and polling Showcase demos with snapshots, simulated failure,
+  cancellation/retry, EN/PT text, source-generated examples and visual regression checks.
+
 ### Showcase
 
-- Add 90 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
+- Add 101 Android Compose screenshot regression references covering GitHub, Settings, Toolkit, Design, adaptive navigation and shared widgets, with feature-owned tests and CI diff reports.
 
 - Expand the sample into GitHub, Toolkit, Design and Settings destinations using
   Easy Navigation and Navigation3; separate composition, features, data and design.

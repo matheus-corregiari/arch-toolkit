@@ -12,6 +12,8 @@ navigation tests pass with an upstream-compatible release.
 
 ## Run
 
+![Executable Splinter demos](assets/showcase-splinter.png)
+
 Use JDK 21 and the configured Android SDK. Sample projects require `-PincludeSamples`.
 
 ```shell
@@ -40,6 +42,11 @@ is not manual simulator or accessibility inspection.
 - **Toolkit:** Lumber writes with a dedicated tree and a clearable 100-entry buffer;
   Storage create/read/update/delete with persistence across restarts. Snippets are
   generated from marked regions of the actual `ToolkitDemoRepository.kt` source.
+  Splinter adds local OneShot snapshots with success/failure/retry and a three-step
+  polling task. Both can be cancelled and repeated. Their snippets come from the
+  executed `SplinterDemo.kt`; tests use virtual time. The feature compiles the exact
+  Splinter library sources and regression tests against the existing sample Lumber
+  compatibility pin. Published library dependencies remain unchanged.
   The Arch ecosystem catalogue explains Arch Toolkit/Splinter, Arch Android,
   Event Observer, Lumber and Storage in plain English/Portuguese, with use cases
   and a GitHub-mark button opening the corresponding repository. Cards use the
@@ -141,7 +148,7 @@ project dependencies are checked separately; production targets still depend on
 
 ### Coverage matrix
 
-The suite contains 90 references. Following Android's guidance, representative
+The suite contains 101 references. Following Android's guidance, representative
 configurations are sampled instead of multiplying every state by every device.
 
 | Area | References | Visual contracts |
