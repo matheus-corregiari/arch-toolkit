@@ -3,7 +3,7 @@
 package br.com.arch.toolkit.sample.design
 
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.currentWindowDpSize
 import androidx.compose.material3.adaptive.currentWindowSize
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -43,7 +43,7 @@ internal fun getCurrentScreenInfo(theme: ThemeMode, contrast: ContrastMode): Scr
     val orientation = if (height < width) LANDSCAPE else PORTRAIT
 
     // Computed Info
-    val widthSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val widthSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
     val size = widthSizeClass.screenSize()
     val windowDpSize = currentWindowDpSize()
     val navigationSuiteType = remember(widthSizeClass, orientation, windowDpSize) {
