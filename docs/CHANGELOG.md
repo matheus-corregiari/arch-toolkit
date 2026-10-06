@@ -4,6 +4,8 @@
 
 ### Showcase
 
+- Initialize Android's ContextProvider during application startup so its sample can read the active application/activity context.
+
 - Open the app on the Toolkit catalogue, with sample and GitHub links for all five libraries.
 - Give each library its own destination and a fixed toolbar returning to the catalogue, including direct links and intermediate sample screens.
 - Keep adaptive navigation outside destination transitions with a stable full-size container.

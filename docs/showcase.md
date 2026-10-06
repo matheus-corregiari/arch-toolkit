@@ -77,7 +77,9 @@ is not manual simulator or accessibility inspection.
   Splinter library sources and regression tests against the existing sample Lumber
   compatibility pin. Published library dependencies remain unchanged.
   Event Observer demonstrates DataResult loading, success and error states.
-  Arch Android reads the active ContextProvider on Android; other targets display
+  Android's application initializes ContextProvider before Koin and observers,
+  registering its activity lifecycle updates. Arch Android reads the active
+  ContextProvider on Android; other targets display
   the Android requirement and source example.
   The Arch ecosystem catalogue explains Arch Toolkit/Splinter, Arch Android,
   Event Observer, Lumber and Storage in plain English/Portuguese, with use cases
