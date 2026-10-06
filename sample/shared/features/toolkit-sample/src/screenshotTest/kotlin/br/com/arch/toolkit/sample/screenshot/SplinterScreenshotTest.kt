@@ -1,6 +1,5 @@
 package br.com.arch.toolkit.sample.screenshot
 
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import br.com.arch.toolkit.sample.core.model.ContrastMode
@@ -10,6 +9,7 @@ import br.com.arch.toolkit.sample.feature.toolkit.DemoCode
 import br.com.arch.toolkit.sample.feature.toolkit.DemoSource
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitLibrary
 import br.com.arch.toolkit.util.dataResultError
 import br.com.arch.toolkit.util.dataResultLoading
 import br.com.arch.toolkit.util.dataResultSuccess
@@ -76,7 +76,7 @@ fun SplinterFailure() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 2),
+            library = ToolkitLibrary.SPLINTER,
             request = dataResultError(IllegalStateException("Demo request failed"))
         )
     }
@@ -90,7 +90,7 @@ fun SplinterPolling() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 3),
+            library = ToolkitLibrary.SPLINTER,
             polling = dataResultLoading("2 / 3")
         )
     }
@@ -107,7 +107,7 @@ fun SplinterPolling() {
 @Composable
 fun SplinterExpandedSource() {
     ScreenshotEnvironment {
-        AppPage("Splinter") {
+        AppPage("Splinter", scrollable = true) {
             AppSection("OneShot") { DemoCode(DemoSource.OneShot, initiallyExpanded = true) }
         }
     }
@@ -119,7 +119,7 @@ private fun SplinterPreview(dark: Boolean, portuguese: Boolean, contrast: Contra
         ToolkitContent(
             emptyList(),
             StorageDemoState(),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 2),
+            library = ToolkitLibrary.SPLINTER,
             request = dataResultLoading("1 / 2"),
             polling = dataResultSuccess("3 / 3")
         )

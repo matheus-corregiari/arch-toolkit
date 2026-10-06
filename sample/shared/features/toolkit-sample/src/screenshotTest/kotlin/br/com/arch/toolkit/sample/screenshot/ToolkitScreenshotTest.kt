@@ -1,6 +1,5 @@
 package br.com.arch.toolkit.sample.screenshot
 
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import br.com.arch.toolkit.sample.design.AppText
@@ -11,6 +10,7 @@ import br.com.arch.toolkit.sample.feature.toolkit.DemoSource
 import br.com.arch.toolkit.sample.feature.toolkit.EcosystemContent
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitLibrary
 import br.com.arch.toolkit.sample.screenshot.ScreenshotEnvironment
 import com.android.tools.screenshot.PreviewTest
 
@@ -48,7 +48,7 @@ fun ToolkitStorageEmpty() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -68,7 +68,7 @@ fun ToolkitStorageSaved() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(value = "Arch Toolkit", message = AppText.SAVED),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -88,7 +88,7 @@ fun ToolkitStorageRead() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(value = "Arch Toolkit", message = AppText.RESULT),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -108,7 +108,7 @@ fun ToolkitStorageDeleted() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(message = AppText.DELETED),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -128,7 +128,7 @@ fun ToolkitStorageInvalidKey() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(message = AppText.VALID_KEY),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -148,7 +148,7 @@ fun ToolkitStorageError() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(message = AppText.STORAGE_ERROR),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -168,7 +168,7 @@ fun ToolkitStorageBusy() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(busy = true),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -188,7 +188,7 @@ fun ToolkitDarkPortuguese() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(value = "Arch Toolkit", message = AppText.SAVED),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -208,7 +208,7 @@ fun ToolkitLargeFont() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(value = "Arch Toolkit", message = AppText.SAVED),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -228,7 +228,7 @@ fun ToolkitWide() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(value = "Arch Toolkit", message = AppText.SAVED),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -245,11 +245,7 @@ fun ToolkitWide() {
 @Composable
 fun ToolkitCatalogue() {
     ScreenshotEnvironment(dark = false, portuguese = false, highContrast = false) {
-        ToolkitContent(
-            emptyList(),
-            StorageDemoState(),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 4)
-        )
+        EcosystemContent()
     }
 }
 
@@ -268,7 +264,7 @@ fun ToolkitMaximumFont() {
         ToolkitContent(
             emptyList(),
             StorageDemoState(value = "Arch Toolkit", message = AppText.SAVED),
-            gridState = rememberLazyGridState(initialFirstVisibleItemIndex = 1)
+            library = ToolkitLibrary.STORAGE
         )
     }
 }
@@ -284,7 +280,7 @@ fun ToolkitMaximumFont() {
 @Composable
 fun ToolkitExpandedSource() {
     ScreenshotEnvironment {
-        AppPage("Toolkit") {
+        AppPage("Toolkit", scrollable = true) {
             AppSection("Lumber") {
                 DemoCode(DemoSource.Lumber, initiallyExpanded = true)
             }
@@ -354,4 +350,29 @@ fun EcosystemMaximumFont() {
     ScreenshotEnvironment(dark = false, portuguese = true) {
         EcosystemContent()
     }
+}
+
+@PreviewTest
+@Preview(name = "EventObserverSample", widthDp = 360, heightDp = 800, locale = "en", apiLevel = 35)
+@Composable
+fun EventObserverSample() {
+    ScreenshotEnvironment {
+        ToolkitContent(emptyList(), StorageDemoState(), library = ToolkitLibrary.OBSERVER)
+    }
+}
+
+@PreviewTest
+@Preview(name = "AndroidSample", widthDp = 360, heightDp = 800, locale = "en", apiLevel = 35)
+@Composable
+fun AndroidSample() {
+    ScreenshotEnvironment {
+        ToolkitContent(emptyList(), StorageDemoState(), library = ToolkitLibrary.ANDROID)
+    }
+}
+
+@PreviewTest
+@Preview(name = "ToolkitLandscape", widthDp = 800, heightDp = 360, locale = "en", apiLevel = 35)
+@Composable
+fun ToolkitLandscape() {
+    ScreenshotEnvironment { EcosystemContent() }
 }

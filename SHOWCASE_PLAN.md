@@ -2,8 +2,28 @@
 
 ## Scope
 
-Continue `release/2.0.0-rc19`, PR #157, without merging, tagging or publishing.
-Preserve pre-existing staged `.codex/` files. Showcase changes only.
+The RC19 work recorded below was merged in PR #157. The catalogue follow-up uses
+`feature/codex-showcase-library-screens`, targeting `master`, with its PR left open.
+Preserve pre-existing staged `.codex/` files and local dependency edits. Showcase changes only.
+
+## Library catalogue follow-up (2026-10-05)
+
+- [x] Open on the adaptive Toolkit catalogue with sample and GitHub links for all five libraries.
+- [x] Add typed library destinations, a return action and persistent Toolkit tab selection.
+- [x] Keep navigation chrome outside a full-size destination transition container.
+- [x] Scroll each complete library page, including heading, results and expanded source.
+- [x] Add DataResult and Android ContextProvider examples with platform-specific availability.
+- [x] Validate Android release assembly, including R8.
+- [x] Validate new navigation/scroll tests, all CI gates and refreshed visual references.
+
+Follow-up validation: `ciBuild ciTest ciCoverage ciLint ciDocs ciPublicationManifest`
+and `validateDebugScreenshotTest` passed with the dependency versions committed in
+the PR: 1797 actionable tasks, 319 executed, 1478 up-to-date, 12m 56s.
+All 18 app JVM tests and 105 Android screenshot checks passed; strict MkDocs passed.
+Apple shared Klibs compiled on Windows; native tests/linking and the iOS host require macOS CI.
+
+The compatibility and validation sections below describe the original RC19 work.
+See `docs/showcase.md` for current runtime versions and navigation behavior.
 
 ## Completed implementation
 

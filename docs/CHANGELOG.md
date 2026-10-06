@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Showcase
+
+- Open the app on the Toolkit catalogue, with sample and GitHub links for all five libraries.
+- Give each library its own destination and a return action to the catalogue.
+- Keep adaptive navigation outside destination transitions with a stable full-size container.
+- Align sample Material Adaptive peers and use V2 window classification to fix the actual Navigation3 host's missing-method failure.
+- Scroll the complete library page, including its heading, controls, results and expanded source.
+- Add executable DataResult and Android ContextProvider examples; explain Android availability on other targets.
+
 ## 2.0.0-rc19
 
 Showcase and maintenance changes based on tag `2.0.0-rc18`.
