@@ -70,7 +70,7 @@ fun EcosystemContent(
 ) {
     AppPage(text(AppText.TOOLKIT), description = text(AppText.ECOSYSTEM_INTRO), scrollable = true) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
-            val gap = AppTheme.dimen.spacingXl
+            val gap = AppTheme.dimen.spacingM
             val minimum = AppTheme.dimen.sectionMinWidth * max(1f, LocalDensity.current.fontScale)
             val columns = if (maxWidth >= minimum * 2 + gap) 2 else 1
             FlowRow(

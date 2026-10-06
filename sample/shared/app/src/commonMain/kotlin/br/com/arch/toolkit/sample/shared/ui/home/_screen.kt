@@ -43,7 +43,6 @@ import br.com.arch.toolkit.sample.feature.github.ui.GithubRoute
 import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitRoute
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitSampleRoute
-import com.pedrobneto.easy.navigation.core.Navigation
 import com.pedrobneto.easy.navigation.core.model.LaunchStrategy
 import com.pedrobneto.easy.navigation.core.model.NavigationRoute
 import com.pedrobneto.easy.navigation.core.rememberNavigationController
@@ -76,7 +75,7 @@ fun AppHome(deepLink: String? = null, onDeepLinkHandled: () -> Unit = {}) {
         currentRoute = navigation.currentRoute,
         onNavigate = { navigation.navigateTo(it, LaunchStrategy.NewStack) }
     ) {
-        Navigation(
+        ShowcaseNavigation(
             modifier = Modifier.fillMaxSize(),
             controller = navigation
         )

@@ -32,6 +32,8 @@ fun AppPage(
     maxWidth: Dp = AppTheme.dimen.contentMaxWidth,
     description: String? = null,
     scrollable: Boolean = false,
+    onBack: (() -> Unit)? = null,
+    backLabel: String = "",
     content: @Composable ColumnScope.() -> Unit
 ) {
     val limit = maxWidth
@@ -45,22 +47,42 @@ fun AppPage(
         Column(
             Modifier.align(Alignment.TopCenter).padding(horizontal = gutter)
                 .widthIn(max = limit).fillMaxWidth().fillMaxHeight()
-                .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier)
-                .padding(bottom = if (scrollable) AppTheme.dimen.spacingXl else 0.dp),
-            verticalArrangement = if (scrollable) {
-                Arrangement.spacedBy(
-                    AppTheme.dimen.spacingXl
-                )
-            } else {
-                Arrangement.Top
-            }
         ) {
-            ScreenTitle(
-                Modifier.fillMaxWidth(),
-                title,
-                pageDescription
-            )
-            content()
+            if (onBack != null) {
+                AppToolbar(title, backLabel, onBack)
+            }
+            Column(
+                Modifier.weight(1f).fillMaxWidth()
+                    .then(
+                        if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier
+                    )
+                    .padding(
+                        top = if (onBack != null) AppTheme.dimen.spacingM else 0.dp,
+                        bottom = if (scrollable) AppTheme.dimen.spacingXl else 0.dp
+                    ),
+                verticalArrangement = if (scrollable) {
+                    Arrangement.spacedBy(AppTheme.dimen.spacingM)
+                } else {
+                    Arrangement.Top
+                }
+            ) {
+                if (onBack == null) {
+                    ScreenTitle(
+                        Modifier.fillMaxWidth(),
+                        title,
+                        pageDescription
+                    )
+                } else {
+                    pageDescription?.let {
+                        Text(
+                            it,
+                            style = AppTheme.textStyle.body,
+                            color = AppTheme.color.textSubtitle
+                        )
+                    }
+                }
+                content()
+            }
         }
     }
 }
@@ -83,7 +105,13 @@ fun AppSection(
         border = BorderStroke(AppTheme.dimen.borderWidthS, AppTheme.color.surfaceOutline)
     ) {
         Column(
-            Modifier.padding(AppTheme.dimen.spacingXl),
+            Modifier.padding(
+                if (AppTheme.screen.windowSize == WindowSize.SMALL) {
+                    AppTheme.dimen.spacingM
+                } else {
+                    AppTheme.dimen.spacingXl
+                }
+            ),
             verticalArrangement = Arrangement.spacedBy(AppTheme.dimen.spacingS)
         ) {
             Text(

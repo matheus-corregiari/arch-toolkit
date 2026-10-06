@@ -17,6 +17,7 @@ import com.pedrobneto.easy.navigation.core.annotation.Deeplink
 import com.pedrobneto.easy.navigation.core.annotation.ParentRoute
 import com.pedrobneto.easy.navigation.core.annotation.Route
 import com.pedrobneto.easy.navigation.core.annotation.Scope
+import com.pedrobneto.easy.navigation.core.model.LaunchStrategy
 import com.pedrobneto.easy.navigation.core.model.NavigationRoute
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -44,7 +45,9 @@ fun ToolkitDestination() {
 fun ToolkitSampleDestination(route: ToolkitSampleRoute) {
     val navigation = LocalNavigationController.current
     val back = {
-        navigation.navigateUp()
+        if (!navigation.safePopUpTo(ToolkitRoute)) {
+            navigation.navigateTo(ToolkitRoute, LaunchStrategy.NewStack)
+        }
         Unit
     }
     if (route.library == ToolkitLibrary.ANDROID || route.library == ToolkitLibrary.OBSERVER) {
@@ -79,7 +82,7 @@ fun ToolkitScreen(
     )
 }
 
-/** One scroll owner contains the heading, actions, result and expanded source. */
+/** A fixed toolbar above one scroll owner for the actions, result and expanded source. */
 @Composable
 fun ToolkitContent(
     logs: List<String>,
@@ -95,9 +98,10 @@ fun ToolkitContent(
         library.title,
         maxWidth = AppTheme.dimen.readingMaxWidth,
         description = text(library.description),
-        scrollable = true
+        scrollable = true,
+        onBack = onBack,
+        backLabel = text(AppText.BACK_TO_TOOLKIT)
     ) {
-        AppButton(text(AppText.BACK_TO_TOOLKIT), onBack, style = AppButton.Style.Secondary)
         when (library) {
             ToolkitLibrary.LUMBER -> LumberDemo(logs, actions)
             ToolkitLibrary.STORAGE -> StorageDemo(state, actions)
