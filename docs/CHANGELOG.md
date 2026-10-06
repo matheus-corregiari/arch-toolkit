@@ -5,10 +5,12 @@
 ### Showcase
 
 - Open the app on the Toolkit catalogue, with sample and GitHub links for all five libraries.
-- Give each library its own destination and a return action to the catalogue.
+- Give each library its own destination and a fixed toolbar returning to the catalogue, including direct links and intermediate sample screens.
 - Keep adaptive navigation outside destination transitions with a stable full-size container.
 - Align sample Material Adaptive peers and use V2 window classification to fix the actual Navigation3 host's missing-method failure.
-- Scroll the complete library page, including its heading, controls, results and expanded source.
+- Scroll all library content below the toolbar, including controls, results and expanded source.
+- Use compact 16 dp page/card gaps, responsive card padding and a single toolbar title per sample.
+- Crossfade top-level tabs and use short, bounded directional transitions inside each tab; keep predictive back driven by the platform gesture.
 - Add executable DataResult and Android ContextProvider examples; explain Android availability on other targets.
 
 ## 2.0.0-rc19

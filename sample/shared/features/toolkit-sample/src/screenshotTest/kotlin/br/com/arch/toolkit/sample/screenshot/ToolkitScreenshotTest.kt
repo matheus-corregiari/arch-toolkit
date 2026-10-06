@@ -280,7 +280,7 @@ fun ToolkitMaximumFont() {
 @Composable
 fun ToolkitExpandedSource() {
     ScreenshotEnvironment {
-        AppPage("Toolkit", scrollable = true) {
+        AppPage("Lumber", scrollable = true, onBack = {}, backLabel = "Back to catalogue") {
             AppSection("Lumber") {
                 DemoCode(DemoSource.Lumber, initiallyExpanded = true)
             }
@@ -375,4 +375,29 @@ fun AndroidSample() {
 @Composable
 fun ToolkitLandscape() {
     ScreenshotEnvironment { EcosystemContent() }
+}
+
+@PreviewTest
+@Preview(
+    name = "ObserverMaximumFont",
+    widthDp = 320,
+    heightDp = 800,
+    fontScale = 2.0f,
+    locale = "pt-rBR",
+    apiLevel = 35
+)
+@Composable
+fun ObserverMaximumFont() {
+    ScreenshotEnvironment(portuguese = true) {
+        ToolkitContent(emptyList(), StorageDemoState(), library = ToolkitLibrary.OBSERVER)
+    }
+}
+
+@PreviewTest
+@Preview(name = "StorageLandscape", widthDp = 800, heightDp = 360, locale = "en", apiLevel = 35)
+@Composable
+fun StorageLandscape() {
+    ScreenshotEnvironment {
+        ToolkitContent(emptyList(), StorageDemoState(), library = ToolkitLibrary.STORAGE)
+    }
 }

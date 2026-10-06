@@ -6,6 +6,22 @@ The RC19 work recorded below was merged in PR #157. The catalogue follow-up uses
 `feature/codex-showcase-library-screens`, targeting `master`, with its PR left open.
 Preserve pre-existing staged `.codex/` files and local dependency edits. Showcase changes only.
 
+## Sample toolbar and motion follow-up (2026-10-06)
+
+- [x] Add a fixed design-system toolbar to every library sample, above the content scroll.
+- [x] Return directly to the catalogue, including deep links and intermediate sample screens.
+- [x] Remove the extra page heading and back button; use 16 dp page/card gaps and responsive card padding.
+- [x] Crossfade tabs in 180 ms; use bounded directional 240 ms transitions inside each tab.
+- [x] Preserve RTL direction, system duration scale and platform predictive back.
+- [x] Add direct-link return, fixed-toolbar scroll and macro transition interaction checks.
+- [x] Extend visual coverage to Event Observer at 2x font and Storage in landscape.
+
+Validation: all CI gates and `validateDebugScreenshotTest` passed with the PR's
+dependency versions: 1811 actionable tasks, 157 executed, 1654 up-to-date, 6m 5s.
+All 19 app JVM tests and 107 screenshot checks passed. All 53 changed references
+were visually reviewed; strict MkDocs passed. Apple shared Klibs compiled on Windows;
+native execution and the iOS host require macOS CI.
+
 ## Library catalogue follow-up (2026-10-05)
 
 - [x] Open on the adaptive Toolkit catalogue with sample and GitHub links for all five libraries.

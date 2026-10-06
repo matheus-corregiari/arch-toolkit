@@ -49,11 +49,21 @@ is not manual simulator or accessibility inspection.
 
 - **Start:** the Toolkit catalogue introduces all five libraries. Each card links
   to a dedicated sample screen and its GitHub repository. Return to the catalogue
-  from any sample; Toolkit remains selected in the adaptive navigation.
+  from every sample's fixed toolbar, including direct links without a catalogue
+  in the stack; Toolkit remains selected in the adaptive navigation.
 - **Layout:** the navigation scaffold stays outside destination transitions.
   Catalogue cards adapt to the available width. Each library screen has one scroll
-  for the entire page, including its heading, controls, results and expanded code.
+  for all content below the toolbar, including controls, results and expanded code.
   Reading content fills the available width up to a centered 760 dp column.
+  Page/card gaps are 16 dp; card padding is 16 dp on compact screens and 24 dp
+  on larger screens. The toolbar title replaces the duplicated page heading.
+- **Motion:** top-level tabs crossfade in 180 ms. Navigation inside a tab uses a
+  240 ms fade with a directional displacement capped at 48 dp (one eighth of the
+  content width). Returning reverses the movement, including a direct-link toolbar
+  return; RTL reverses direction. Predictive back retains the platform gesture
+  animation. Compose's system animation duration scale applies to timed transitions.
+  The policy reads the route class metadata emitted by Easy Navigation 1.2; scenes
+  without that metadata fall back to a fade.
 - **GitHub:** search, language filters, pagination and retry, repository details,
   and the last 20 opened repository identities persisted in Room. New searches
   cancel previous requests and reject late results. Page failures retain rows.
@@ -83,6 +93,8 @@ is not manual simulator or accessibility inspection.
 
 ## Navigation and links
 
+![Fixed sample toolbars with large text, dark theme, tablet and landscape layouts](assets/showcase-toolbar-layouts.png)
+
 Feature-owned serializable routes use Easy Navigation `@Route`, `@Scope`,
 `@Deeplink` and `@ParentRoute`. The app aggregates generated registries in one
 Navigation3 controller. Details require only owner/name and load independently.
@@ -99,7 +111,9 @@ Android handles initial
 and new intents; iOS forwards SwiftUI URL events; Desktop accepts a launch argument.
 Foreign schemes and invalid links are ignored. Navigation3 saves the typed stack;
 GitHub saves query, filters and rows without restoring loading flags. Back returns
-to the previous destination. Top-level tabs start a new stack.
+to the previous destination. Sample toolbars return explicitly to the catalogue,
+popping intermediate samples or starting the catalogue stack when it is absent.
+Top-level tabs start a new stack.
 
 ## Architecture
 
@@ -172,14 +186,14 @@ project dependencies are checked separately; production targets still depend on
 
 ### Coverage matrix
 
-The suite contains 105 references. Following Android's guidance, representative
+The suite contains 107 references. Following Android's guidance, representative
 configurations are sampled instead of multiplying every state by every device.
 
 | Area | References | Visual contracts |
 | --- | ---: | --- |
 | GitHub list and detail | 29 | Loading, empty search, content/recent history, pagination loading/error/end, all four domain errors, missing metadata, long names/descriptions/topics, localized dates and counts |
 | Settings | 10 | All six light/dark contrast palettes, system/language selections, narrow large text, wide layout |
-| Toolkit | 21 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, Event Observer and Arch Android screens, expanded executable source, adaptive five-repository catalogue with sample/GitHub links |
+| Toolkit | 23 | Lumber output, Storage empty/saved/read/deleted/invalid-key/error/busy states, Event Observer and Arch Android screens, fixed toolbars at 2x font and in landscape, expanded executable source, adaptive five-repository catalogue with sample/GitHub links |
 | Splinter | 11 | OneShot and polling snapshots, failure, expanded source, light/dark contrasts, large font and wide layouts |
 | Design | 8 | Real tokens, button styles, disabled/loading/error/empty widgets, selected/unselected chips, scrolled content |
 | App shell | 22 | All selected destinations, library destination selection, compact bottom bar, tablet rail, large-window drawer, phone/tablet landscape, tablet portrait, localized and large-text navigation |
