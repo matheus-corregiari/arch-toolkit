@@ -30,6 +30,7 @@ import br.com.arch.toolkit.sample.feature.github.ui.list.GithubListState
 import br.com.arch.toolkit.sample.feature.github.ui.list.RepositoryListContent
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitLibrary
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -65,14 +66,15 @@ class ResponsiveLayoutUiTest {
             CompositionLocalProvider(LocalAppLanguage provides AppLanguage.ENGLISH) {
                 AppTheme {
                     Box(Modifier.requiredSize(width, CONTENT_HEIGHT.dp)) {
-                        ToolkitContent(emptyList(), StorageDemoState())
+                        ToolkitContent(
+                            emptyList(),
+                            StorageDemoState(),
+                            library = ToolkitLibrary.STORAGE
+                        )
                     }
                 }
             }
         }
-        val lumber = onNodeWithText("Lumber").fetchSemanticsNode().boundsInRoot
-        val storage = onNodeWithText("Storage").fetchSemanticsNode().boundsInRoot
-        assertEquals(lumber.top, storage.top)
         onNode(hasText("Key") and hasSetTextAction()).performTextReplacement("responsive-key")
         runOnIdle { width = COMPACT_WIDTH.dp }
         onNodeWithText("responsive-key").performScrollTo().assertIsDisplayed()

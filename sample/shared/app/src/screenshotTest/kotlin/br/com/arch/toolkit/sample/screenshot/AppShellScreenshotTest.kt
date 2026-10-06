@@ -13,9 +13,12 @@ import br.com.arch.toolkit.sample.feature.github.ui.list.GithubListState
 import br.com.arch.toolkit.sample.feature.github.ui.list.RepositoryListContent
 import br.com.arch.toolkit.sample.feature.settings.ui.SettingsContent
 import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
+import br.com.arch.toolkit.sample.feature.toolkit.EcosystemContent
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitLibrary
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitRoute
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitSampleRoute
 import br.com.arch.toolkit.sample.screenshot.ScreenshotEnvironment
 import br.com.arch.toolkit.sample.shared.ui.home.AppHomeContent
 import com.android.tools.screenshot.PreviewTest
@@ -164,7 +167,7 @@ fun AppShellToolkit() {
     ScreenshotEnvironment {
         AppHomeContent(
             currentRoute = ToolkitRoute
-        ) { ToolkitContent(emptyList(), StorageDemoState()) }
+        ) { EcosystemContent() }
     }
 }
 
@@ -220,7 +223,7 @@ fun AppShellGithubTabletLandscape() {
 fun AppShellToolkitTabletLandscape() {
     ScreenshotEnvironment(portuguese = true) {
         AppHomeContent(currentRoute = ToolkitRoute) {
-            ToolkitContent(emptyList(), StorageDemoState())
+            EcosystemContent()
         }
     }
 }
@@ -292,7 +295,7 @@ fun AppShellGithubPhoneLandscape() {
 fun AppShellToolkitPhoneLandscape() {
     ScreenshotEnvironment(portuguese = true) {
         AppHomeContent(currentRoute = ToolkitRoute) {
-            ToolkitContent(emptyList(), StorageDemoState())
+            EcosystemContent()
         }
     }
 }
@@ -370,7 +373,18 @@ fun AppShellSettingsTabletPortrait() {
 fun AppShellToolkitTabletMaximumFont() {
     ScreenshotEnvironment(portuguese = true) {
         AppHomeContent(currentRoute = ToolkitRoute) {
-            ToolkitContent(emptyList(), StorageDemoState())
+            EcosystemContent()
+        }
+    }
+}
+
+@PreviewTest
+@Preview(name = "ShellStorageSample", widthDp = 360, heightDp = 800, locale = "en", apiLevel = 35)
+@Composable
+fun ShellStorageSample() {
+    ScreenshotEnvironment {
+        AppHomeContent(currentRoute = ToolkitSampleRoute(ToolkitLibrary.STORAGE)) {
+            ToolkitContent(emptyList(), StorageDemoState(), library = ToolkitLibrary.STORAGE)
         }
     }
 }

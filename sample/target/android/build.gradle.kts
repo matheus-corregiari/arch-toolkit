@@ -35,6 +35,7 @@ dependencies {
         "screenshotTestImplementation"(project(":sample:shared:features:$feature"))
     }
 
+    implementation(libs.arch.android)
     implementation(libs.arch.lumber)
 
     // Arch Toolkit Dependencies

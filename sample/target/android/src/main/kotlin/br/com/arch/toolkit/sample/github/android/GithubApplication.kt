@@ -1,6 +1,7 @@
 package br.com.arch.toolkit.sample.github.android
 
 import android.app.Application
+import br.com.arch.toolkit.android.util.ContextProvider
 import br.com.arch.toolkit.lumber.DebugOak
 import br.com.arch.toolkit.lumber.Lumber
 import br.com.arch.toolkit.sample.shared.initKoin
@@ -11,6 +12,7 @@ import org.koin.core.context.stopKoin
 internal class GithubApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        ContextProvider.init(this)
         Lumber.plant(DebugOak())
         initKoin { androidContext(this@GithubApplication) }
         observeAndroidTheme()

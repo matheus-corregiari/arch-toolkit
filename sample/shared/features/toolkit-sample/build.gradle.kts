@@ -39,6 +39,7 @@ kotlin {
             }
         }
         androidMain.dependencies {
+            implementation(libs.arch.android)
             implementation(libs.androidx.lifecycle.livedata)
             compileOnly(libs.square.retrofit.main)
         }

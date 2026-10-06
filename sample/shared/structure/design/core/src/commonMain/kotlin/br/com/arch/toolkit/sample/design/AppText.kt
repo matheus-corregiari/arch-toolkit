@@ -56,6 +56,11 @@ enum class AppText(val english: String, val portuguese: String) {
         "O GitHub retornou uma resposta inesperada."
     ),
     OPEN_GITHUB("Open on GitHub", "Abrir no GitHub"),
+    OPEN_SAMPLE("Open sample", "Abrir exemplo"),
+    BACK_TO_TOOLKIT("Back to catalogue", "Voltar ao catálogo"),
+    ANDROID_ONLY("This example runs on Android.", "Este exemplo é executado no Android."),
+    READ_CONTEXT("Read current context", "Ler contexto atual"),
+    NO_CONTEXT("No active context", "Sem contexto ativo"),
     DESCRIPTION("Description", "Descrição"),
     NO_DESCRIPTION("No description provided", "Sem descrição"),
     STARS("Stars", "Estrelas"),

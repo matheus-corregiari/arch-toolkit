@@ -67,6 +67,12 @@ subprojects {
     if (path.startsWith(":sample:")) {
         configurations.configureEach {
             resolutionStrategy.eachDependency {
+                // Navigation's adaptive adapter calls V2 APIs missing from Adaptive 1.2.
+                // Peer modules must use the same published Multiplatform release.
+                if (requested.group == "org.jetbrains.compose.material3.adaptive") {
+                    useVersion("1.3.0-rc01")
+                    because("Align Adaptive peers required by Easy Navigation's Navigation3 adapter")
+                }
                 if (requested.group == "io.github.matheus-corregiari" &&
                     requested.name.startsWith("arch-lumber")) {
                     useVersion("1.1.0")

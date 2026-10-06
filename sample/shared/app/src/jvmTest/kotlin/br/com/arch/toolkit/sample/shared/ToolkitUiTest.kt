@@ -2,6 +2,9 @@ package br.com.arch.toolkit.sample.shared
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.semantics.SemanticsActions
@@ -23,6 +26,7 @@ import br.com.arch.toolkit.sample.core.model.AppLanguage
 import br.com.arch.toolkit.sample.design.AppText
 import br.com.arch.toolkit.sample.design.AppTheme
 import br.com.arch.toolkit.sample.design.LocalAppLanguage
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitLibrary
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitScreen
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitViewModel
 import br.com.arch.toolkit.sample.repository.ToolkitDemoRepository
@@ -40,7 +44,7 @@ class ToolkitUiTest {
         try {
             setContent {
                 CompositionLocalProvider(LocalAppLanguage provides AppLanguage.ENGLISH) {
-                    AppTheme { Surface { ToolkitScreen(model) } }
+                    AppTheme { Surface { ToolkitScreen(model, ToolkitLibrary.SPLINTER) } }
                 }
             }
             onNode(hasScrollAction()).performScrollToNode(hasText("Run task"))
@@ -62,13 +66,14 @@ class ToolkitUiTest {
 
     @Test
     fun logClearAndStorageControlsAreUsable() = runComposeUiTest {
+        var library by mutableStateOf(ToolkitLibrary.LUMBER)
         val repository = ToolkitDemoRepository(MemoryStoreProvider(database = mutableMapOf()))
         val model = ToolkitViewModel(repository)
         try {
             setContent {
                 CompositionLocalProvider(LocalAppLanguage provides AppLanguage.ENGLISH) {
                     AppTheme {
-                        Surface { ToolkitScreen(model) }
+                        Surface { ToolkitScreen(model, library) }
                     }
                 }
             }
@@ -78,6 +83,7 @@ class ToolkitUiTest {
             onNodeWithText("Write log").performKeyInput { pressKey(Key.Enter) }
             onNodeWithText("Info: Hello from Arch Toolkit").assertIsDisplayed()
             onNodeWithText("Clear").assertIsDisplayed().performClick()
+            runOnIdle { library = ToolkitLibrary.STORAGE }
             onNodeWithText("Save").performScrollTo().performClick()
             waitUntil(timeoutMillis = 5_000) { model.storage.value.message == AppText.SAVED }
             onNodeWithText("Saved").performScrollTo().assertIsDisplayed()
