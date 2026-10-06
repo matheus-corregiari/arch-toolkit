@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
@@ -17,7 +15,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.runComposeUiTest
 import br.com.arch.toolkit.sample.core.model.AppLanguage
@@ -31,6 +28,7 @@ import br.com.arch.toolkit.sample.feature.settings.ui.SettingsContent
 import br.com.arch.toolkit.sample.feature.toolkit.EcosystemContent
 import br.com.arch.toolkit.sample.feature.toolkit.StorageDemoState
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitContent
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitLibrary
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -115,9 +113,6 @@ class DesignInteractionUiTest {
             "Storage" to "arch-storage"
         )
         repositories.forEach { (title, repository) ->
-            onNode(
-                hasScrollAction()
-            ).performScrollToNode(hasContentDescription("Abrir no GitHub: $title"))
             onNodeWithContentDescription("Abrir no GitHub: $title").performScrollTo().performClick()
             runOnIdle {
                 assertEquals(
@@ -127,5 +122,21 @@ class DesignInteractionUiTest {
             }
         }
         runOnIdle { assertEquals(5, opened.size) }
+    }
+
+    @Test
+    fun eachLibraryOpensItsOwnSample() = runComposeUiTest {
+        val opened = mutableListOf<ToolkitLibrary>()
+        setContent {
+            CompositionLocalProvider(LocalAppLanguage provides AppLanguage.ENGLISH) {
+                AppTheme { EcosystemContent(onOpenSample = opened::add) }
+            }
+        }
+        ToolkitLibrary.entries.forEach { library ->
+            onNodeWithContentDescription("Open sample: ${library.title}")
+                .performScrollTo().performClick()
+            runOnIdle { assertEquals(library, opened.last()) }
+        }
+        runOnIdle { assertEquals(ToolkitLibrary.entries.toList(), opened) }
     }
 }

@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +31,7 @@ fun AppPage(
     title: String,
     maxWidth: Dp = AppTheme.dimen.contentMaxWidth,
     description: String? = null,
+    scrollable: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val limit = maxWidth
@@ -42,6 +45,15 @@ fun AppPage(
         Column(
             Modifier.align(Alignment.TopCenter).padding(horizontal = gutter)
                 .widthIn(max = limit).fillMaxWidth().fillMaxHeight()
+                .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier)
+                .padding(bottom = if (scrollable) AppTheme.dimen.spacingXl else 0.dp),
+            verticalArrangement = if (scrollable) {
+                Arrangement.spacedBy(
+                    AppTheme.dimen.spacingXl
+                )
+            } else {
+                Arrangement.Top
+            }
         ) {
             ScreenTitle(
                 Modifier.fillMaxWidth(),

@@ -42,6 +42,7 @@ import br.com.arch.toolkit.sample.feature.design.DesignRoute
 import br.com.arch.toolkit.sample.feature.github.ui.GithubRoute
 import br.com.arch.toolkit.sample.feature.settings.ui.SettingsRoute
 import br.com.arch.toolkit.sample.feature.toolkit.ToolkitRoute
+import br.com.arch.toolkit.sample.feature.toolkit.ToolkitSampleRoute
 import com.pedrobneto.easy.navigation.core.Navigation
 import com.pedrobneto.easy.navigation.core.model.LaunchStrategy
 import com.pedrobneto.easy.navigation.core.model.NavigationRoute
@@ -62,7 +63,7 @@ fun AppHome(deepLink: String? = null, onDeepLinkHandled: () -> Unit = {}) {
         )
     }
     val navigation = rememberNavigationController(
-        initialRoute = GithubRoute,
+        initialRoute = ToolkitRoute,
         directionRegistries = registries
     )
     LaunchedEffect(deepLink) {
@@ -76,7 +77,7 @@ fun AppHome(deepLink: String? = null, onDeepLinkHandled: () -> Unit = {}) {
         onNavigate = { navigation.navigateTo(it, LaunchStrategy.NewStack) }
     ) {
         Navigation(
-            modifier = Modifier,
+            modifier = Modifier.fillMaxSize(),
             controller = navigation
         )
     }
@@ -91,8 +92,9 @@ fun AppHomeContent(
     val itemModifier = Modifier.padding(horizontal = AppTheme.dimen.spacingXs)
     val itemColors = navigationItemColors()
     val items = navigationItems
+    val sectionRoute = if (currentRoute is ToolkitSampleRoute) ToolkitRoute else currentRoute
     val selectedItem =
-        items.firstOrNull { it.route::class == currentRoute::class } ?: items.first()
+        items.firstOrNull { it.route::class == sectionRoute::class } ?: items.first()
     if (AppTheme.screen.windowSize == WindowSize.SMALL &&
         LocalDensity.current.fontScale > NAVIGATION_MENU_FONT_SCALE
     ) {
@@ -111,6 +113,7 @@ fun AppHomeContent(
         return
     }
     NavigationSuiteScaffold(
+        modifier = Modifier.fillMaxSize(),
         layoutType = AppTheme.screen.navigationSuiteType,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
             navigationBarContainerColor = AppTheme.color.backgroundSurfaceTertiary,
@@ -127,7 +130,7 @@ fun AppHomeContent(
                 onNavigate(item.route)
             }
         },
-        content = content
+        content = { Box(Modifier.fillMaxSize()) { content() } }
     )
 }
 
